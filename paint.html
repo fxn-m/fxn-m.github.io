@@ -1,26 +1,36 @@
 <html>
-  <head>
+
+<head>
     <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
 
-  </head>
+<body>
 
-  <body>
-      <button onclick="changeColor()">Repaint!</button>
-  </body>
-  
-      <script>
-        function getRandomColor(){
-          let letters = '0123456789ABCDEF';
-          let color = '#';
-          for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-          }
-          return color;
-        }
-        function changeColor(){
-          let newColor = getRandomColor();
-          document.body.style.backgroundColor = newColor;
-        }
-    </script>
-  
+    <nav>
+        <ul>
+            <li><a href="./index.html">home</a></li>
+            <li><a href="./paint.html">paint</a></li>
+            <li><a href="./cheatsheet.html">cheatsheet</a></li>
+        </ul>
+    </nav>
+
+    <button onclick="changeColor()">Repaint!</button>
+
+</body>
+
 </html>
+
+<script>
+    function getRandomColor() {
+        let letters = '0123456789ABCDEF';
+        let color = '#';
+        for (let i = 0; i < 6; i++) {
+            color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
+    }
+    function changeColor() {
+        let newColor = getRandomColor();
+        document.body.style.backgroundColor = newColor;
+    }
+</script>

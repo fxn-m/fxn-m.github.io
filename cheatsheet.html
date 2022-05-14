@@ -1,0 +1,128 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>basic cheatsheet</title>
+    <link href="styles.css" rel="stylesheet">
+</head>
+
+
+<body>
+
+    <nav>
+        <ul>
+            <li><a href="./index.html">home</a></li>
+            <li><a href="./paint.html">paint</a></li>
+            <li><a href="./cheatsheet.html">cheatsheet</a></li>
+        </ul>
+    </nav>
+
+    <header>
+        <h1>CSS Selectors</h1>
+        <p>
+        CSS selectors are used to “find” (or select) the HTML elements you want to style.<br />
+        This cheatsheet provides a bit of detail on a few popular CSS selectors, before summarising selector sytnax for most use-cases. 
+        </p>
+    </header>
+
+    <main>
+
+        <!--Element Selector-->
+
+        <div class="selector">
+
+            <h3>
+                Element Selector
+            </h3>
+
+            <p>
+                The element selector selects HTML elements based on the element name.<br>
+                Here, all <code>&lt;p&gt;</code> elements on the page will be center-aligned, with a red text color
+            </p>
+
+            <pre><code>
+p {
+    text-align: center;
+    color: red;
+}
+            </code></pre>
+
+        </div>
+
+        <!--ID Selector-->
+
+        <div class="selector">
+
+            <h3>
+                ID Selector
+            </h3>
+
+            <p>
+                The <code>id</code> selector uses the id attribute of an HTML element to select a specific element.<br>
+
+                The <code>id</code> of an element is unique within a page, so the <code>id</code> selector is used to select one unique element!<br>
+
+                To select an element with a specific id, write a hash (<code>#</code>) character, followed by the <code>id</code> of the element.<br>
+
+                The CSS rule below will be applied to the HTML element with <code>id="para1"</code>:
+            </p>
+
+            <pre><code>
+#para1 {
+    text-align: center;
+    color: red;
+}
+            </code></pre>
+
+
+            <p>
+                <b>Note: </b>An id name cannot start with a number!
+            </p>
+
+        </div>
+
+        <!--Class Selector-->
+
+        <div class="selector">
+
+            <h3>
+                Class Selector
+            </h3>
+
+            <p>
+                The class selector selects HTML elements with a specific class attribute.
+
+                To select elements with a specific class, write a period (<code>.</code>) character, followed by the class name.
+
+                In this example, all HTML elements with <code>class="center"</code> will be red and center-aligned:
+            </p>
+
+            <pre><code>
+.center {
+    text-align: center;
+    color: red;
+}
+            </code></pre>
+
+        </div>
+
+
+
+        <!--Full List-->
+        <p>
+            Following links provide more depth on the full range of CSS Selectors and Specificity:
+        </p>
+        <ul>
+            <li class="link"><a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Selectors">Mozilla Developer Web Docs</a></li>
+            <li class="link"><a href="https://www.w3schools.com/cssref/css_selectors.asp">w3schools</a></li>
+            <li class="link"><a href="https://code.tutsplus.com/tutorials/the-30-css-selectors-you-must-memorize--net-16048">30 CSS Selectors to memorize</a></li>
+        </ul>
+
+
+    </main>
+
+
+</body>
+</html>
