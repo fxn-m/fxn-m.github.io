@@ -1,5 +1,4 @@
 body {
-    padding: 25px;
     font-family: sans-serif;
 }
 
@@ -9,19 +8,36 @@ p {
 }
 
 main {
-    margin-right: 60%;
+    margin-right: 50%;
 }
 
 div.selector {
     margin-bottom: 50px;
 }
 
+header {
+    padding-top: 50px;
+}
+
+li.link a {
+    display: inline;
+    color: black;
+    text-align: center;
+    text-decoration: underline;
+    line-height: 50px;
+}
 
 /*nav bar*/
 
 nav {
     background-color: white;
+    opacity: 0.8;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
 }
+
 
 nav ul {
     list-style-type: none;
@@ -48,7 +64,9 @@ li a {
 }
 
 li a:hover {
-    background-color: lightgray;
+    background-color: black;
+    color: white;
+    opacity: 2;
 }
 
 
@@ -61,6 +79,7 @@ pre {
 pre code {
     background-color: #eee;
     border: 1px solid #999;
+    border-radius: 10px;
     display: block;
     padding-left: 20px;
 }
@@ -83,14 +102,4 @@ button {
     padding: 5px;
 }
 
-/*li.link {
-    list-style-type: none;
-}*/
 
-li.link a {
-    display: inline;
-    color: black;
-    text-align: center;
-    text-decoration: none;
-    line-height: 50px;
-}
