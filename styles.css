@@ -31,10 +31,11 @@ li.link a {
 
 nav {
     background-color: white;
-    opacity: 0.8;
+    opacity: 0.9;
     position: fixed;
     top: 0px;
     left: 0px;
+    padding:15px 0px;
     width: 100%;
 }
 
@@ -45,7 +46,7 @@ nav ul {
     padding: 0;
     overflow: hidden;
     display: table;
-    width: 50%;
+    width: auto;
     margin-left: auto;
     margin-right: auto;
 }
@@ -59,14 +60,17 @@ li a {
     color: black;
     text-align: center;
     padding: 15px 0px 15px 0px;
+    margin: 0px;
     text-decoration: none;
     width: 200px;
+    transition: color .5s ease-in-out, background-color .5s ease-in-out;
 }
 
 li a:hover {
     background-color: black;
     color: white;
     opacity: 2;
+    transition: color .5s ease-in-out, background-color .5s ease-in-out;
 }
 
 
