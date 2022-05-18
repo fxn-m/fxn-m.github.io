@@ -60,7 +60,7 @@ li a {
     display: block;
     color: azure;
     text-align: center;
-    padding: 10px 0px 10px 0px;
+    padding: 1em 0px 1em 0px;
     margin: 0px;
     text-decoration: none;
     width: 200px;
@@ -105,6 +105,16 @@ button {
     margin-top: 40%;
     font-size: 16px;
     padding: 5px;
+}
+
+@media only screen and (max-width: 300px), (orientation:portrait) {
+
+    body {
+        font-size: 32px; 
+    }
+
+
+
 }
 
 
