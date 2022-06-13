@@ -5,6 +5,7 @@ body {
     font-size: 16px;
     margin: auto;
     width: 60%;
+    /* transition: background-color 2s;  */
 }
 
 header { 
@@ -67,8 +68,15 @@ div#content {
     margin-top: 100px;
 }
 
-#day-clock {
+#clock-container {
     position:fixed;
-    bottom:0;
-    right:30%
+    bottom:20;
+    right:30%;
+    display: inline-block
+}
+
+.t {
+    display: inline;
+    transition: color .5s ease-in-out;
+    font-weight: 600;
 }
