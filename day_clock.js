@@ -16,12 +16,12 @@ window.onload = updateDayClock;
 setInterval(colorChange, 500)
 
 
-// fake the date
-var fake_date = new Date("November 30, 2022 06:00:00");
+// // fake the date
+// var fake_date = new Date("November 30, 2022 06:00:00");
 
-// overriding date function
-Date = function(){return fake_date;};
-var new_date = new Date();
-alert(new_date);
+// // overriding date function
+// Date = function(){return fake_date;};
+// var new_date = new Date();
+// alert(new_date);
 
-setInterval(updateDayClock, 100)
+// setInterval(updateDayClock, 100)
