@@ -33,7 +33,7 @@ function createStory() {
 
     let storyText = document.createElement('p'); 
     storyText.innerHTML = story
-    document.body.append(storyText)
+    story_section.append(storyText)
 
 }
 
