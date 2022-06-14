@@ -39,6 +39,8 @@ header div nav {
     width: 60%;
 }
 
+/* links */
+
 a.discrete-link {
     text-decoration:none;
     color: rgba(20, 20, 20, 0.8);
@@ -50,6 +52,10 @@ a.discrete-link:hover {
     color: black;
     transition: color .5s;
 }
+
+footer a:visited {
+    color: black;
+  }
 
 header nav li {
     display: flex;
