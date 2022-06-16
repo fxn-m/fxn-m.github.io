@@ -6,7 +6,7 @@ body {
 }
 
 header { 
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     width: 100%;
@@ -81,18 +81,11 @@ button {
 }   
 
 
-
-
-div#content {
-    margin-top: 100px;
+#content {
     width: 40%;
     margin-left:auto;
     margin-right:auto;
 }
-
-
-
-
 
 
 footer {
