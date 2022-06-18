@@ -102,7 +102,7 @@ footer {
 
 #icons {
     width: 40%;
-    margin:auto;
+    margin: auto;
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -111,10 +111,11 @@ footer {
 
 #clock {
     width: 40%;
-    margin:auto;
+    margin: auto;
     text-align: center;
-    margin-bottom:20px;
+    margin-bottom: 20px;
     margin-top: 15px;
+    padding-left: 12;
 }
 
 #clock p {
