@@ -43,6 +43,10 @@ header div nav {
 
 /* links */
 
+a {
+  color: black;
+}
+
 a.project-link {
   color: rgb(136, 166, 223)
 }
