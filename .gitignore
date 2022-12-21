@@ -1,0 +1,6 @@
+# environment variables
+.env
+
+# config files
+config.js
+tsconfig.json
