@@ -11,3 +11,8 @@ function colorChange() {
 }
 window.onload = updateDayClock;
 setInterval(colorChange, 500);
+// // fake the date
+// const fake_date = new Date("November 30, 2024 06:00:00");
+// // overriding date function
+// Date = function(){return fake_date;};
+// updateDayClock()

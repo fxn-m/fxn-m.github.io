@@ -1,0 +1,1 @@
+console.log('%c👀', 'font-size:50px')
