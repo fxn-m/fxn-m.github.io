@@ -21,16 +21,19 @@
 
 		<div id="content">
             <h2>
-                Print HTML
+                Print <span onclick="option = selectType('html')" style="cursor:pointer;" id="span-html">HTML</span>
+				 / <span onclick="option = selectType('json')" style="cursor:pointer; color: rgba(19, 18, 18, 0.2);" id="span-json">JSON</span>
             </h2>
             <p>
-                Input any url and see the corresponding page's HTML below:
+                Input any url and see the corresponding page's <span style="color: rgba(19, 18, 18, 0.548);" id="type">HTML</span> below:
             </p>
 
-            <input type="url" id="url" name="url" placeholder="https://example.com" value="https://example.com"><br><br>
-            <button id="submit" onclick="print()">
-                Submit
-            </button>
+			<form>
+				<input type="url" id="url" name="url" placeholder="https://example.com" value="https://example.com"><br><br>
+				<button type="button" onclick="print()">
+					Submit
+				</button>
+			</form>
 
             <pre  style="
 			overflow-x: auto;
@@ -39,9 +42,8 @@
 			white-space: -pre-wrap;
 			white-space: -o-pre-wrap;
 			word-wrap: break-word;">
-			<code id="print-html-output">
-				
-			</code>
+				<code id="print-html-output">
+				</code>
             </pre>
 		</div>
 
