@@ -13,7 +13,7 @@ const print = () => {
     })
     .then(data => {
         console.log(data)
-        const escaped = data.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        const escaped = '\n' + data.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
         document.getElementById('print-html-output').innerHTML = escaped;
     })
     .catch(error => {
