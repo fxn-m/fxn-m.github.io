@@ -2,7 +2,7 @@
 
 	<head>
 		<title>fxn-m</title>
-		<link rel="icon" type="image/png" href="images/favicon.png"/>
+		<!-- <link rel="icon" type="image/png" href="images/favicon.png"/> -->
 		<link href="styles.css" type="text/css" rel="stylesheet">
 	</head>
 
@@ -15,8 +15,8 @@
 				<h1><a href="./index.html" class="discrete-link">fxn-m.com</a></h1>
 
 				<nav id="navbar">
-					<li><a href="#about" class="discrete-link">About</a></li>
-					<li><a href="#projects" class="discrete-link">Projects</a></li>
+					<li><a href="./index.html#about" class="discrete-link">About</a></li>
+					<li><a href="./index.html#projects" class="discrete-link">Projects</a></li>
 					<!-- <li><a href="#contact" class="discrete-link">Contact</a></li> -->
 				</nav>
 
@@ -26,23 +26,25 @@
 
 		<div id="content">
             <h2>
-                Print HTML
+                Print JSON
             </h2>
             <p>
-                Input any url and see the corresponding page's HTML below:
+                Input any url and see the corresponding page's JSON below:
             </p>
 
-            <input type="url" id="url" name="url" placeholder="e.g. https://google.com" value="https://google.com"><br><br>
+            <input type="url" id="url" name="url" placeholder="https://jsonplaceholder.typicode.com/posts" value="https://jsonplaceholder.typicode.com/posts"><br><br>
             <button id="submit" onclick="print()">
                 Submit
             </button>
 
-            <pre id="print-html-output">
-
+            <pre id="print-html-output" style="
+			overflow-x: auto;
+			white-space: pre-wrap;
+			white-space: -moz-pre-wrap;
+			white-space: -pre-wrap;
+			white-space: -o-pre-wrap;
+			word-wrap: break-word;">
             </pre>
-
-		
-
 		</div>
 
 		<footer>
@@ -61,4 +63,4 @@
 
 <script src="./scripts/day_clock.js"></script>
 <script src="./scripts/listening_to.js"></script>
-<script src="./scripts/print-html.js"></script>
+<script src="./scripts/print-json.js"></script>
