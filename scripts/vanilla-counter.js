@@ -18,4 +18,5 @@ const reset = () => {
         if (i >= 0) {
         counter.innerHTML = i--
     }}, 1500/value)
+    value = 0;
 }
