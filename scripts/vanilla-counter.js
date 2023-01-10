@@ -17,6 +17,6 @@ const reset = () => {
     setInterval(() => {
         if (i >= 0) {
         counter.innerHTML = i--
-    }}, 1500/value)
+    }}, 2000/value)
     value = 0;
 }
