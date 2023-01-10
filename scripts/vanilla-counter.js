@@ -12,7 +12,10 @@ const increment10 = () => {
 }
 
 const reset = () => {
-    value = 0
-    counter.innerHTML = value
     counter.style.fontSize = 16;
+    let i = value
+    setInterval(() => {
+        if (i >= 0) {
+        counter.innerHTML = i--
+    }}, 1500/value)
 }
