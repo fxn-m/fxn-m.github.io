@@ -70,15 +70,14 @@ document.getElementById('url').onkeydown = (e) => {
         url.placeholder = 'https://jsonplaceholder.typicode.com/posts'
         url.value = 'https://jsonplaceholder.typicode.com/posts'
     } else if (option == 'json' && selected == 'html') {
-        document.getElementById('span-json').style.color = grey
-        document.getElementById('span-html').style.color = black
+        jsonElement.style.color = grey
+        htmlElement.style.color = black
         typeElement.innerHTML = 'HTML';
         url.placeholder = 'https://example.com'
         url.value = 'https://example.com'
     }
+    
     option = selected;
-    console.log(url.value)
-    console.log(option)
     return option
  }
 

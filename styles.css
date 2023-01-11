@@ -105,6 +105,19 @@ button {
     margin-right:auto;
 }
 
+span.option {
+    cursor:pointer;
+}
+
+#span-html {
+    color: black;
+    transition: color .5s;
+}
+
+#span-json {
+    color: rgba(19, 18, 18, 0.2);;
+    transition: color .5s;
+}
 
 footer {
     position:fixed;
