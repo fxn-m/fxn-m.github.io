@@ -3,3 +3,6 @@
 
 # config files
 scripts/tsconfig.json
+
+# misc
+desktop.ini
