@@ -7,24 +7,36 @@ const grey = "rgba(19, 18, 18, 0.2)"
 let output = ''
 let option = 'html'
 let url
+const speed = 1;
+
+const reset = () => {
+    document.getElementById('print-html-output').innerHTML = ''
+}
 
 const print = () => {
     url = document.getElementById('url')
-    console.log(url.value)
-    console.log(option)
 
     if (option == 'html') {
         fetch('https://sheltered-everglades-04891.herokuapp.com/' + url.value, {
             method: 'GET'
         })
         .then(response => {
-            console.log(response);
             return response.text();
         })
         .then(data => {
-            console.log(data)
             const escaped = '\n' + data.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-            document.getElementById('print-html-output').innerHTML = escaped;
+            reset()
+            let i = 0;
+            function typeWriter() {
+                if (i < escaped.length) {
+                    document.getElementById('print-html-output').innerHTML += escaped.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
+                }
+            }
+
+            typeWriter()
+            
         })
         .catch(error => {
             console.log(error);
@@ -35,11 +47,21 @@ const print = () => {
             method: 'GET'
         })
         .then(response => {
-            console.log(response);
             return response.json();
         })
         .then(data => {
-            document.getElementById('print-html-output').innerHTML = '\n' + JSON.stringify(data, undefined, 2);
+            const result = '\n' + JSON.stringify(data, undefined, 2);
+            reset()
+            let i = 0;
+            function typeWriter() {
+                if (i < result.length) {
+                    document.getElementById('print-html-output').innerHTML += result.charAt(i);
+                    i++;
+                    setTimeout(typeWriter, speed);
+                }
+            }
+
+            typeWriter()
         })
         .catch(error => {
             console.log(error);
