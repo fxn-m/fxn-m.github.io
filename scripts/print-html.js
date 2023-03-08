@@ -25,7 +25,6 @@ const print = () => {
         })
         .then(data => {
             const escaped = '\n' + data.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-            console.log(escaped)
             reset()
             let i = 0;
             function typeWriter() {
@@ -35,7 +34,9 @@ const print = () => {
                     setTimeout(typeWriter, speed);
                 }
             }
+
             typeWriter()
+            
         })
         .catch(error => {
             console.log(error);
@@ -59,6 +60,7 @@ const print = () => {
                     setTimeout(typeWriter, speed);
                 }
             }
+
             typeWriter()
         })
         .catch(error => {
