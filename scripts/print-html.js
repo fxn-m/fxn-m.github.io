@@ -4,27 +4,38 @@ const typeElement = document.getElementById('type')
 const black = "rgba(0,0,0,1)";
 const grey = "rgba(19, 18, 18, 0.2)"
 
-let output = ''
+let output = document.getElementById('print-html-output')
 let option = 'html'
 let url
+let timer
+const typeWriter = (data) => {
+    if (timer) {
+        clearInterval(timer)
+    }
+    output.innerHTML = ''
+    let i = 0
+    timer = setInterval(() => {
+        if ( i < data.length) {
+            output.innerHTML += data.charAt(i);
+            i++
+        } else {
+            clearInterval(timer)
+        }
+    }, 10)
+}
 
 const print = () => {
     url = document.getElementById('url')
-    console.log(url.value)
-    console.log(option)
 
     if (option == 'html') {
         fetch('https://sheltered-everglades-04891.herokuapp.com/' + url.value, {
             method: 'GET'
         })
         .then(response => {
-            console.log(response);
             return response.text();
         })
         .then(data => {
-            console.log(data)
-            const escaped = '\n' + data.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-            document.getElementById('print-html-output').innerHTML = escaped;
+            typeWriter(data)
         })
         .catch(error => {
             console.log(error);
@@ -35,11 +46,11 @@ const print = () => {
             method: 'GET'
         })
         .then(response => {
-            console.log(response);
+
             return response.json();
         })
         .then(data => {
-            document.getElementById('print-html-output').innerHTML = '\n' + JSON.stringify(data, undefined, 2);
+            typeWriter('\n' + JSON.stringify(data, undefined, 2));
         })
         .catch(error => {
             console.log(error);
