@@ -12,7 +12,7 @@ const typeWriter = (data) => {
     if (timer) {
         clearInterval(timer)
     }
-    output.innerHTML = ''
+    output.innerHTML = '\n'
     let i = 0
     timer = setInterval(() => {
         if ( i < data.length) {
@@ -21,7 +21,7 @@ const typeWriter = (data) => {
         } else {
             clearInterval(timer)
         }
-    }, 10)
+    }, 1)
 }
 
 const print = () => {
@@ -39,6 +39,7 @@ const print = () => {
         })
         .catch(error => {
             console.log(error);
+            clearInterval(timer)
             document.getElementById('print-html-output').innerHTML = error
         })
     } else { 
@@ -46,14 +47,15 @@ const print = () => {
             method: 'GET'
         })
         .then(response => {
-
             return response.json();
         })
         .then(data => {
-            typeWriter('\n' + JSON.stringify(data, undefined, 2));
+            data = JSON.stringify(data, undefined, 2)
+            typeWriter(data);
         })
         .catch(error => {
             console.log(error);
+            clearInterval(timer)
             document.getElementById('print-html-output').innerHTML = error
         })
     }
