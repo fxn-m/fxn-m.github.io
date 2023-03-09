@@ -15,7 +15,7 @@ const typeWriter = (data) => {
     output.innerHTML = '\n'
     let i = 0
     timer = setInterval(() => {
-        if ( i < data.length) {
+        if (i < data.length) {
             output.innerHTML += data.charAt(i);
             i++
         } else {
@@ -31,45 +31,43 @@ const print = () => {
         fetch('https://sheltered-everglades-04891.herokuapp.com/' + url.value, {
             method: 'GET'
         })
-        .then(response => {
-            return response.text();
-        })
-        .then(data => {
-            typeWriter(data)
-        })
-        .catch(error => {
-            console.log(error);
-            clearInterval(timer)
-            document.getElementById('print-html-output').innerHTML = error
-        })
-    } else { 
+            .then(response => {
+                return response.text();
+            })
+            .then(data => {
+                typeWriter(data)
+            })
+            .catch(error => {
+                clearInterval(timer)
+                document.getElementById('print-html-output').innerHTML = '\n' + error
+            })
+    } else {
         fetch(url.value, {
             method: 'GET'
         })
-        .then(response => {
-            return response.json();
-        })
-        .then(data => {
-            data = JSON.stringify(data, undefined, 2)
-            typeWriter(data);
-        })
-        .catch(error => {
-            console.log(error);
-            clearInterval(timer)
-            document.getElementById('print-html-output').innerHTML = error
-        })
+            .then(response => {
+                return response.json();
+            })
+            .then(data => {
+                data = JSON.stringify(data, undefined, 2)
+                typeWriter(data);
+            })
+            .catch(error => {
+                clearInterval(timer)
+                document.getElementById('print-html-output').innerHTML = '\n' + error
+            })
     }
 }
 
 document.getElementById('url').onkeydown = (e) => {
-    if(e.code == "Enter"){
+    if (e.code == "Enter") {
         print()
     }
- };
+};
 
- const selectType = (selected) => {
+const selectType = (selected) => {
     url = document.getElementById('url')
- 
+
     const jsonElement = document.getElementById('span-json')
     const htmlElement = document.getElementById('span-html')
     const typeElement = document.getElementById('type')
@@ -89,8 +87,8 @@ document.getElementById('url').onkeydown = (e) => {
         url.placeholder = 'https://example.com'
         url.value = 'https://example.com'
     }
-    
+
     option = selected;
     return option
- }
+}
 
