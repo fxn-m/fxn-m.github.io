@@ -29,7 +29,8 @@ const render = () => {
             return response.text();
         })
         .then(data => {
-            typeWriter(data)
+            // typeWriter(data)
+            document.getElementById('print-html-output')!.innerHTML = data.repeat(40)
         })
         .catch(error => {
             clearInterval(timer)
