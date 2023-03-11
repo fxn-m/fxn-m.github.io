@@ -1,3 +1,4 @@
+import './styles.css';
 import setupRender from './htmlCORS'
 
 const anyhtml = () => {
