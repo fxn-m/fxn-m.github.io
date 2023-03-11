@@ -13,13 +13,11 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "gh-pages": "^5.0.0",
     "sass": "^1.59.1",
     "typescript": "^4.9.3",
     "vite": "^4.1.0"
   },
   "dependencies": {
-    "@popperjs/core": "^2.11.6",
     "bootstrap": "^3.4.1"
   }
 }
