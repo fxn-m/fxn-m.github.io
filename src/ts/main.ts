@@ -6,7 +6,7 @@ import '../scss/styles.scss'
 
 import setupRender from './htmlCORS'
 
-console.log('Hello from main.ts!');
+// console.log('Hello from main.ts!');
 
 const anyhtml = () => {
   document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
