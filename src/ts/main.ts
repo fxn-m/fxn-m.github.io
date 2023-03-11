@@ -1,4 +1,9 @@
-import './styles.css';
+// Import our custom CSS
+import '../scss/styles.scss'
+
+// Import all of Bootstrap's JS
+// import * as bootstrap from 'bootstrap'
+
 import setupRender from './htmlCORS'
 
 const anyhtml = () => {
