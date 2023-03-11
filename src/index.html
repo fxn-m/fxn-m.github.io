@@ -5,6 +5,8 @@
   <meta charset="UTF-8" />
   <link rel="icon" href="/favicon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <script type="module" src="ts/main.ts"></script>
+  <script src="https://kit.fontawesome.com/fc27f7afcf.js" crossorigin="anonymous"></script>
   <title>fxn-m</title>
 </head>
 
@@ -14,9 +16,9 @@
     <div class="container">
       <header>
         <h1><a href='/'>fxn-m 🏡</a></h1>
-        <ul class="nav nav-pills">
-          <li><a href="./#about">About</a></li>
-          <li><a href="./#projects">Projects</a></li>
+        <ul class="nav justify-content-en" >
+          <li class="nav-item"><a class="nav-link" href="./#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="./#projects">Projects</a></li>
         </ul>
       </header>
     </div>
@@ -29,7 +31,7 @@
       <h2 id="projects">Projects</h2>
       <p><a href="https://fxn-m.com/jammming/" target="_blank">Jammming</a> - Create Spotify
         playlists in the browser <br> <em style="font-size: small;">(React, TypeScript, Spotify API)</em></p>
-      <p><a id="anyhtml" style="cursor: pointer">AnyHTML</a> - Request HTML from any url, and print it to the
+      <p><a id="anyhtml">AnyHTML</a> - Request HTML from any url, and print it to the
         page <br> <em style="font-size: small;">(CORS-Anywhere)</em></p>
 
       <br><br>
@@ -52,8 +54,7 @@
       </div>
 
     </div>
-    <script type="module" src="ts/main.ts"></script>
-    <script src="https://kit.fontawesome.com/fc27f7afcf.js" crossorigin="anonymous"></script>
+
 </body>
 
 </html>

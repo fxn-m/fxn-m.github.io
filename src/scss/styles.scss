@@ -1,5 +1,5 @@
 // Import all of Bootstrap's CSS
-@import "~bootstrap/scss/bootstrap";
+@import "node_modules/bootstrap/scss/bootstrap";
 
 body { 
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -15,7 +15,7 @@ header {
 header ul {
   display: flex;
   flex: 1;
-  justify-content: space-between;
+  justify-content: space-around;
   list-style: none;
   padding: 0;
 }
@@ -23,25 +23,34 @@ header ul {
 header h1 {
   flex: 0 0 auto;
   margin: 15px 0;
+  text-decoration: none;
 }
 
-h1 a:hover {
+h1 a, h1 a:hover {
   text-decoration:none;
 }
 
-h1 a:link {
+h1 a:link, h1 a:visited {
   color: #213547;
 }
 
-h1 a:visited {
-  color: #213547;
+a, a.nav-link  {
+  color: #1e82f3;
+  text-decoration:none;
 }
 
-footer a:link {
-  color: black;
+a:hover, a.nav-link:hover, #anyhtml:hover {
+  color: #184eca;
+  text-decoration:none;
+  transition: cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 
-footer a:visited {
+#anyhtml {
+  color: #1e82f3;
+  cursor: pointer
+}
+
+footer a:link, footer a:visited {
   color: black;
 }
 
@@ -93,40 +102,36 @@ input {
     background-color: #1f2b44;
     color: #c3e3f1;
   }
+  
+  a, a.nav-link {
+    color: #9ec8f8;
+    text-decoration:none;
+  }
+
+  #anyhtml {
+    color: #9ec8f8;
+  }
 
   footer {
     background-color: #1f2b44;
   }
-
-  footer a:visited {
+  footer a:visited, footer a:link  {
     color: #ffffff;
   }
 
-  footer a:link {
-    color: #ffffff;
-  }
-
-  a {
-    color: #3baad6;
-  }
-
-  h1 a:link {
+  h1 a:link, h1 a:visited {
     color: #eaf0f3;
+    text-decoration:none;
   }
-  
-  h1 a:visited {
-    color: #eaf0f3;
-  }
-
   input {
     border : 1px solid hsla(231, 66%, 77%, 0.411);
     background-color: #1f2b44;
+    color: #c3e3f1;
   }
 
   button {
     background-color: #1f2b44;
     color: #c3e3f1;
-    /* border: #1f2b44; */
   }
 
   pre {
