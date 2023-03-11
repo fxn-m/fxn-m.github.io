@@ -1,9 +1,5 @@
 // Import our custom CSS
-import '../scss/styles.scss'
-
-// Import all of Bootstrap's JS
-// import * as bootstrap from 'bootstrap'
-
+import '../scss/styles.scss';
 import setupRender from './htmlCORS'
 
 // console.log('Hello from main.ts!');
