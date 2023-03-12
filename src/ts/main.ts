@@ -1,6 +1,7 @@
 // Import our custom CSS
 import '../scss/styles.scss';
 import setupRender from './htmlCORS'
+import TypeIt from 'typeit';
 
 // console.log('Hello from main.ts!');
 
@@ -22,15 +23,8 @@ const anyhtml = () => {
 
   <br>
   
-  <pre style="
-    overflow-x: auto;
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
-    word-wrap: break-word;">
-      <code id="print-html-output">
-      </code>
+  <pre>
+    <code id="print-html-output"></code>
   </pre>
   `
 }
@@ -45,4 +39,33 @@ const showAnyhtml = (element: HTMLAnchorElement) => {
 
 showAnyhtml(document.querySelector('#anyhtml')!);
 
+// TypeIt
+const intro = [['Hi there! '], ['I\'m Felix.'], ['<br>Engineer ⚙️'], ['<br>Designer 📐'], ['<br>Runner 👟']];
+// @ts-ignore
+new TypeIt("#typed", {
+  speed: 100,
+  waitUntilVisible: true,
+  lifeLike: true,
+
+  afterComplete: (instance: any) => {
+    instance.destroy();
+  }
+})
+  .pause(2000)
+  .type(intro[0])
+  .pause(1000)
+  .type(intro[1])
+  .pause(500)
+  .move(-10)
+  .pause(500)
+  .type('👋 ')
+  .pause(1000)
+  .move(11)
+  .pause(500)
+  .type(intro[2])
+  .pause(1000)
+  .type(intro[3])
+  .pause(1000)
+  .type(intro[4])
+  .go();
 export {}

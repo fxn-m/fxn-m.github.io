@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="dark">
 
 <head>
   <meta charset="UTF-8" />
@@ -15,43 +15,51 @@
     <!-- header -->
     <div class="container">
       <header>
+        <div id="links">
         <h1><a href='/'>fxn-m 🏡</a></h1>
-        <ul class="nav justify-content-en" >
+        <ul class="nav">
           <li class="nav-item"><a class="nav-link" href="./#about">About</a></li>
           <li class="nav-item"><a class="nav-link" href="./#projects">Projects</a></li>
+        </div>
+          <div id="icons">
+            <a href="https://github.com/fxn-m" target="_blank"><i class="fa-brands fa-github fa-2x"></i></a>
+            <a href="https://www.linkedin.com/in/felix-newport-mangell-0a89a8150/" target="_blank"><i
+                class="fa-brands fa-linkedin-in fa-2x"></i></a>
+            <a href="https://www.kaggle.com/felixnewportmangell" target="_blank"><i
+                class="fa-brands fa-kaggle fa-2x"></i></a>
+          </div>
         </ul>
       </header>
     </div>
 
     <!-- main body -->
     <div id="main" class="container-fluid">
-      <h2 id="about">About</h2>
-      <p>MEng 2023 Engineering Design @ UoB</p>
-      <p>Learning to code.</p>
-      <h2 id="projects">Projects</h2>
-      <p><a href="https://fxn-m.com/jammming/" target="_blank">Jammming</a> - Create Spotify
-        playlists in the browser <br> <em style="font-size: small;">(React, TypeScript, Spotify API)</em></p>
-      <p><a id="anyhtml">AnyHTML</a> - Request HTML from any url, and print it to the
-        page <br> <em style="font-size: small;">(CORS-Anywhere)</em></p>
-
-      <br><br>
+      <div id="content">
+        <p id="typed"></p>
+        <h2 id="about">About Me</h2>
+        <p>Currently studying for a Master's in Engineering Design at the University of Bristol - Graduating 2023.</p>
+        <p>Along the way, I've taken units in all sorts of interesting things, from introductory courses in artificial intelligence, to <a href="https://github.com/fxn-m/optimisation-theory" target="_blank">implementing</a> stuff from optimisation theory. Last year I learnt about non-linear dynamics and chaos, and this year I modelled a neuron spiking with the same techniques!<br>Right now, I'm designing a universal interface to re-use e-scooter batteries in stationary storage for my thesis.</p>
+        <p></p>
+        <h2 id="projects">Projects</h2>
+        <p>I get up to quite a lot outside of my studies - including learning how to build this kind of thing!</p>
+        <p><a href="https://fxn-m.com/jammming/" target="_blank">Jammming</a> - Create Spotify
+          playlists in the browser <br> <em style="font-size: small;">(React, TypeScript, Spotify API)</em></p>
+        <p><a id="anyhtml">AnyHTML</a> - Request HTML from any url, and render it to the
+          page <br> <em style="font-size: small;">(CORS-Anywhere)</em></p>
+        <p><a id="reefnet"
+            href="https://www.kaggle.com/code/felixnewportmangell/lionfish-object-detection-starter-with-yolov5"
+            target="_blank">ReefNet</a> - Trained and optimised the YOLOv5 object detection model to detect Lionfish, an
+          invasive species<br> <em style="font-size: small;">(Python, RoboFlow, YOLOv5, Weights & Biases)</em></p>
+        <p><a></a></p>
+        <h2>Courses</h2>
+        <p>Wrapping my head around software development, data science, and machine learning took some time, and I can confidently say that I'm bottoming out on the <a href="https://en.wikipedia.org/wiki/Dunning%E2%80%93Kruger_effect">Dunning-Kruger</a> curve. I found these courses helpful in getting me started.</p>
+        <p><a href="" target="_blank">Front-End Development</a> - CodeCademy</p>
+        <p><a href="" target="_blank">Machine Learning</a> - Andrew Ng, Stanford University</p>
+        <p><a href="" target="_blank">Data Science Professional</a> - IBM</p>
+        <br>
+      </div>
 
       <div id="app"></div>
-
-      <!-- footer -->
-      <div class="container">
-        <footer>
-          <div class="container">
-            <div id="icons">
-              <a href="https://github.com/fxn-m" target="_blank"><i class="fa-brands fa-github fa-2x"></i></a>
-              <a href="https://www.linkedin.com/in/felix-newport-mangell-0a89a8150/" target="_blank"><i
-                  class="fa-brands fa-linkedin-in fa-2x"></i></a>
-              <a href="https://www.kaggle.com/felixnewportmangell" target="_blank"><i
-                  class="fa-brands fa-kaggle fa-2x"></i></a>
-            </div>
-          </div>
-        </footer>
-      </div>
 
     </div>
 

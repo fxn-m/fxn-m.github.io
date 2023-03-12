@@ -19,6 +19,7 @@
     "vite": "^4.1.0"
   },
   "dependencies": {
-    "bootstrap": "^5.2.3"
+    "bootstrap": "^5.2.3",
+    "typeit": "^8.7.1"
   }
 }
