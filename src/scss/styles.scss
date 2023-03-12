@@ -1,4 +1,4 @@
-// Import all of Bootstrap's CSS
+// Import all of Bootstrap's SCSS
 @import "~bootstrap/scss/bootstrap";
 
 body {
@@ -18,12 +18,14 @@ header #links {
   display: flex;
   flex: 1;
   align-items: baseline;
-  max-width: 75%;
+  max-width: 50%;
   flex-wrap: wrap;
+  // justify-content: space-between;
 }
 
 header ul.nav {
   max-width: 50%;
+  // min-width: 50%;
   flex-wrap: nowrap;
 }
 
@@ -52,6 +54,10 @@ a.nav-link {
   font-weight: 500;
 }
 
+a.nav-link {
+  padding: 0 10px 0 0;
+}
+
 a:hover,
 a.nav-link:hover,
 #anyhtml:hover {
@@ -73,12 +79,13 @@ a.nav-link:hover,
 }
 
 #icons a {
-  padding: 0 10px;
+  padding: 10px 2px;
+  font-size: small;
 }
 
 #icons a:link,
 #icons a:visited {
-  color: black;
+  color: rgba(0, 0, 0, 0.699);
   transition: 1s ease-out;
 }
 
