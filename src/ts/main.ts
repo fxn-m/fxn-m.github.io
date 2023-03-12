@@ -40,7 +40,7 @@ const showAnyhtml = (element: HTMLAnchorElement) => {
 showAnyhtml(document.querySelector('#anyhtml')!);
 
 // TypeIt
-const intro = [['Hi there! '], ['I\'m Felix.'], ['<br>Engineer ⚙️'], ['<br>/Designer 📐'], ['<br>/Runner 👟']];
+const intro = [['Hi there! '], ['I\'m Felix.'], ['<br>Engineer ⚙️'], ['<br>/ Designer 📐'], ['<br>/ Runner 👟']];
 // @ts-ignore
 new TypeIt("#typed", {
   speed: 100,
