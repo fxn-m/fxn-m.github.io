@@ -212,6 +212,17 @@ pre {
   header h1 a:visited {
     color: #eaf0f3;
     text-decoration: none;
+    
+  }
+
+  #house{
+    transition: 1s ease-out;
+    filter: drop-shadow(0 0 0.15em #e9b5689d);
+  }
+
+  #house:hover {
+    filter: drop-shadow(0 0 0.15em #00000000);
+    transition-duration: .5s;
   }
 
   input {
