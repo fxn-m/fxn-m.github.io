@@ -19,12 +19,12 @@ const setupRender = () => {
       .then(data => {
         // stop loading animation
         loader.style.display = 'none'
-
         typeWriter(data)
       })
       .catch(error => {
         clearInterval(timer)
         document.getElementById('print-html-output')!.innerHTML = '\n' + error
+        loader.style.display = 'none'
       })
   }
 
