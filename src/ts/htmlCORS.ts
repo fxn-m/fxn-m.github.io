@@ -2,9 +2,13 @@ const setupRender = () => {
 
   let url: any
   let timer: any
+  let loader: HTMLDivElement = document.querySelector('.loader')!
 
   const render = () => {
     url = document.getElementById('url')
+    // start loading animation
+    loader.style.display = 'block'
+
 
     fetch('https://sheltered-everglades-04891.herokuapp.com/' + url.value, {
       method: 'GET'
@@ -13,6 +17,9 @@ const setupRender = () => {
         return response.text();
       })
       .then(data => {
+        // stop loading animation
+        loader.style.display = 'none'
+
         typeWriter(data)
       })
       .catch(error => {

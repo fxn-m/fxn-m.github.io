@@ -16,6 +16,7 @@ const anyhtml = () => {
   <button id="submit">
     Submit
   </button>
+  <div class="loader"></div>
   </div>
 
   <br>

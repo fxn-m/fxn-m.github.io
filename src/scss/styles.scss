@@ -144,6 +144,8 @@ input {
 #app {
   flex: 1;
   min-width: max(40%, 350px);
+  // display: flex;
+  // justify-content: center;
 }
 
 pre {
@@ -157,6 +159,8 @@ pre {
   padding: 0px 10px;
   border-radius: 10px;
 }
+
+// scrollbar styling
 
 ::-webkit-scrollbar-track {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
@@ -174,6 +178,26 @@ pre {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
   background-color: #c7c7c723;
 }
+
+// loader styling
+
+.loader {
+  border: 5px solid #f3f3f3; 
+  border-top: 5px solid #646cff63;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+  margin:auto;
+  display: none;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+// dark mode styling
 
 @media (prefers-color-scheme: dark) {
   body {
