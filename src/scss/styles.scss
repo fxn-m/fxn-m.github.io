@@ -18,14 +18,12 @@ header #links {
   display: flex;
   flex: 1;
   align-items: baseline;
-  max-width: 50%;
+  // max-width: 50%;
   flex-wrap: wrap;
-  // justify-content: space-between;
 }
 
 header ul.nav {
   max-width: 50%;
-  // min-width: 50%;
   flex-wrap: nowrap;
 }
 
@@ -33,12 +31,13 @@ header h1 {
   flex: 0 0 auto;
   margin: 15px 0;
   text-decoration: none;
+  font-size: 2em;
 }
 
 header h1 a,
 header h1 a:hover {
   text-decoration: none;
-  padding-right: 20px;
+  padding-right: 25px;
 }
 
 header h1 a:link,
@@ -55,7 +54,7 @@ a.nav-link {
 }
 
 a.nav-link {
-  padding: 0 10px 0 0;
+  padding: 0 15px 0 0;
 }
 
 a:hover,
@@ -69,7 +68,7 @@ a.nav-link:hover,
 #typed {
   font-size: large;
   font-weight: 450;
-  height:6em;
+  height: 6em;
 }
 
 #anyhtml,
@@ -95,9 +94,9 @@ a.nav-link:hover,
 }
 
 #icons {
-  min-width: 25%;
+  min-width: 150px;
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -144,8 +143,6 @@ input {
 #app {
   flex: 1;
   min-width: max(40%, 350px);
-  // display: flex;
-  // justify-content: center;
 }
 
 pre {
@@ -182,19 +179,25 @@ pre {
 // loader styling
 
 .loader {
-  border: 5px solid #f3f3f3; 
+  border: 5px solid #f3f3f3;
   border-top: 5px solid #646cff63;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   animation: spin 2s linear infinite;
-  margin:auto;
+  margin: auto;
   display: none;
+  aspect-ratio: 1/1;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 // dark mode styling
@@ -236,10 +239,10 @@ pre {
   header h1 a:visited {
     color: #eaf0f3;
     text-decoration: none;
-    
+
   }
 
-  #house{
+  #house {
     transition: 1s ease-out;
     filter: drop-shadow(0 0 0.15em #e9b5689d);
   }
@@ -282,3 +285,11 @@ pre {
     background-color: #0f1e3fa2;
   }
 }
+
+// @media (min-width: 500px) {
+//   header #links {
+//     // max-width: none;
+//     // justify-content: space-between;
+//     // border: 1px solid #ff0000;
+//   }
+// }
