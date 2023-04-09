@@ -7,6 +7,10 @@ body {
   padding-bottom: 20px;
 }
 
+b {
+  font-size: larger;
+}
+
 header {
   display: flex;
   align-items: baseline;
@@ -94,7 +98,7 @@ a.nav-link:hover,
 }
 
 #icons {
-  min-width: 150px;
+  min-width: 250px;
   display: flex;
   justify-content: space-between;
   align-items: center;
