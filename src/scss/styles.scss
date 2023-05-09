@@ -18,8 +18,6 @@ header #links {
   display: flex;
   flex: 1;
   align-items: baseline;
-  // max-width: 50%;
-  // flex-wrap: wrap;
 }
 
 header ul.nav {
@@ -31,18 +29,11 @@ header h1 {
   flex: 0 0 auto;
   margin: 15px 0;
   text-decoration: none;
-  font-size: 2em;
 }
 
-header h1 a,
-header h1 a:hover {
+header h1:hover {
   text-decoration: none;
-  // padding-right: 25px;
-}
-
-header h1 a:link,
-header h1 a:visited {
-  color: #213547;
+  cursor: default;
 }
 
 b {
@@ -57,16 +48,26 @@ a.nav-link {
   font-weight: 500;
 }
 
+a:not([href]):not([class]) {
+  color: #1e82f3;
+  text-decoration: none;
+}
+
 a.nav-link {
   padding: 0 15px 0 0;
 }
 
-a:hover,
-a.nav-link:hover,
-#anyhtml:hover {
+a:hover, 
+a.nav-link:hover {
   transition-duration: .25s;
   color: #1a54f1;
   text-decoration: none;
+}
+
+a:not([href]):not([class]):hover {
+  color: #1a54f1;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 #typed {
@@ -75,15 +76,11 @@ a.nav-link:hover,
   height: 6em;
 }
 
-#anyhtml,
-#anyhtml:visited {
-  color: #1e82f3;
-  cursor: pointer
-}
+
 
 #icons a {
   padding: 10px 2px;
-  font-size: small;
+  font-size: 1em;
 }
 
 #icons a:link,
@@ -212,20 +209,18 @@ pre {
   }
 
   a,
-  a.nav-link {
-    color: #9ec8f8;
+  a.nav-link,
+  a:not([href]):not([class]) {
+    color: #c5dffd;
     text-decoration: none;
   }
 
   a:hover,
   a.nav-link:hover,
-  #anyhtml:hover {
+  a:not([href]):not([class]):hover {
     color: #f8f8f8;
   }
 
-  #anyhtml {
-    color: #9ec8f8;
-  }
 
   #icons a:visited,
   #icons a:link {
