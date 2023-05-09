@@ -41,16 +41,12 @@ b {
 }
 
 a,
-a.nav-link {
+a.nav-link,
+a:not([href]):not([class]) {
   color: #1e82f3;
   text-decoration: none;
   transition: 1s cubic-bezier(0.075, 0.82, 0.165, 1);
   font-weight: 500;
-}
-
-a:not([href]):not([class]) {
-  color: #1e82f3;
-  text-decoration: none;
 }
 
 a.nav-link {
@@ -58,13 +54,9 @@ a.nav-link {
 }
 
 a:hover, 
-a.nav-link:hover {
-  transition-duration: .25s;
-  color: #1a54f1;
-  text-decoration: none;
-}
-
+a.nav-link:hover,
 a:not([href]):not([class]):hover {
+  transition-duration: .25s;
   color: #1a54f1;
   text-decoration: none;
   cursor: pointer;
