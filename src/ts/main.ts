@@ -32,9 +32,26 @@ const showAnyhtml = (element: HTMLAnchorElement) => {
     anyhtml();
     setupRender();
     });
-  
 }
 
 showAnyhtml(document.querySelector('#anyhtml')!);
+
+const favicon = <HTMLLinkElement>document.querySelector("link[rel='icon']");
+
+
+const toggleFavicon = () => {
+  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  if (isDarkMode) {
+    favicon.setAttribute('href', 'favicon-dark.png');
+  } else {
+    favicon.setAttribute('href', 'favicon.png');
+  }
+};
+
+toggleFavicon(); // initial call to set favicon based on current color scheme
+
+// update favicon when color scheme changes
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', toggleFavicon);
 
 export {}
