@@ -1,6 +1,19 @@
 // Import all of Bootstrap's SCSS
 @import "~bootstrap/scss/bootstrap";
 
+:root {
+  --text-color: #1f2b44;
+  --link-color: #1e82f3;
+  --link-hover-color: #1a54f1;
+  --link-visited-color: #1e82f3;
+  --icon-color: rgba(0, 0, 0, 0.699);
+  --icon-hover-color: #1a54f1;
+  --button-background-color: #ffffff;
+  --button-border-color: transparent;
+  --button-border-hover-color: #646cff;
+  
+}
+
 body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   padding-top: 10px;
@@ -90,7 +103,11 @@ a:not([href]):not([class]):hover {
   min-width: 250px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: top;
+}
+
+#icons a#kaggle {
+  padding-top: 8px;
 }
 
 button {
@@ -182,110 +199,111 @@ pre {
   aspect-ratio: 1/1;
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
-    transform: rotate(360deg);
-  }
+// dark mode toggle styling
+#toggle-btn {
+  background-color: #ffffff00;
+  border: none;
+  font-size: 1.3em;
+  padding: 0;
+  position: absolute;
+  right: 10px;
+  top: 0px;
 }
+
 
 // dark mode styling
 
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: #1f2b44;
-    color: #c3e3f1;
-  }
+body.dark {
+  background-color: #1f2b44;
+  color: #c3e3f1;
+}
 
-  a,
-  a.nav-link,
-  a:not([href]):not([class]) {
-    color: #c5dffd;
-    text-decoration: none;
-  }
+body.dark a,
+body.dark a.nav-link,
+body.dark a:not([href]):not([class]) {
+  color: #c5dffd;
+  text-decoration: none;
+}
 
-  a:hover,
-  a.nav-link:hover,
-  a:not([href]):not([class]):hover {
-    color: #f8f8f8;
-  }
+body.dark a:hover,
+body.dark a.nav-link:hover,
+body.dark a:not([href]):not([class]):hover {
+  color: #f8f8f8;
+}
 
 
-  #icons a:visited,
-  #icons a:link {
-    color: #a9c0c4b6;
-    transition: 1s ease-out;
-  }
+body.dark #icons a:visited,
+body.dark #icons a:link {
+  color: #a9c0c4b6;
+  transition: 1s ease-out;
+}
 
-  #icons a:hover {
-    transition-duration: .25s;
-    color: #ffffff;
-  }
+body.dark #icons a:hover {
+  transition-duration: .25s;
+  color: #ffffff;
+}
 
-  header h1 a:link,
-  header h1 a:visited {
-    color: #eaf0f3;
-    text-decoration: none;
+body.dark header h1 a:link,
+body.dark header h1 a:visited {
+  color: #eaf0f3;
+  text-decoration: none;
 
-  }
+}
 
-  #house {
-    transition: 1s ease-out;
-    filter: drop-shadow(0 0 0.15em #e9b5689d);
-  }
+body.dark #house {
+  transition: 1s ease-out;
+  filter: drop-shadow(0 0 0.15em #e9b5689d);
+}
 
-  #house:hover {
-    filter: drop-shadow(0 0 0.15em #00000000);
-    transition-duration: .5s;
-  }
+body.dark #house:hover {
+  filter: drop-shadow(0 0 0.15em #00000000);
+  transition-duration: .5s;
+}
 
-  input {
-    border: 1px solid hsla(231, 66%, 77%, 0.411);
-    background-color: #1f2b44;
-    color: #c3e3f1;
-  }
+body.dark input {
+  border: 1px solid hsla(231, 66%, 77%, 0.411);
+  background-color: #1f2b44;
+  color: #c3e3f1;
+}
 
-  button {
-    background-color: #1f2b44;
-    color: #c3e3f1;
-  }
+body.dark button {
+  background-color: #1f2b44;
+  color: #c3e3f1;
+}
 
-  pre {
-    background-color: #1f2b44;
-    color: #c3e3f1;
-  }
+body.dark pre {
+  background-color: #1f2b44;
+  color: #c3e3f1;
+}
 
-  ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    background-color: #1f2b44;
-  }
+body.dark ::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #1f2b44;
+}
 
-  ::-webkit-scrollbar {
-    width: 12px;
-    background-color: #1f2b44;
-  }
+body.dark ::-webkit-scrollbar {
+  width: 12px;
+  background-color: #1f2b44;
+}
 
-  ::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
-    background-color: #0f1e3fa2;
-  }
+body.dark ::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #0f1e3fa2;
 }
 
 @media (max-width: 576px) {
+
   #icons {
     min-width: 40%;
   }
-}
 
-// @media (min-width: 500px) {
-//   header #links {
-//     // max-width: none;
-//     // justify-content: space-between;
-//     // border: 1px solid #ff0000;
-//   }
-// }
+  #toggle-btn {
+    position: absolute;
+    right: 20px;
+    bottom: 0px;
+    top: auto;
+  }
+
+}

@@ -6,6 +6,7 @@
   <link rel="icon" href="public/favicon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <script type="module" src="src/ts/main.ts"></script>
+  <script type="module" src="src/ts/toggle-theme.ts"></script>
   <script src="https://kit.fontawesome.com/fc27f7afcf.js" crossorigin="anonymous"></script>
   <title>fxn-m</title>
 </head>
@@ -17,16 +18,15 @@
       <header>
         <div id="links">
           <h1>fxn-m <span id="house">🏡</span></h1>
-          <ul class="nav">
         </div>
         <div id="icons">
           <a href="https://github.com/fxn-m" target="_blank"><i class="fa-brands fa-github fa-2x"></i></a>
           <a href="https://www.linkedin.com/in/felix-newport-mangell-0a89a8150/" target="_blank"><i
               class="fa-brands fa-linkedin-in fa-2x"></i></a>
-          <a href="https://www.kaggle.com/felixnewportmangell" target="_blank"><i
+          <a href="https://www.kaggle.com/felixnewportmangell" target="_blank" id="kaggle"><i
               class="fa-brands fa-kaggle fa-2x"></i></a>
         </div>
-        </ul>
+        <button id="toggle-btn">☀</button>
       </header>
     </div>
 
