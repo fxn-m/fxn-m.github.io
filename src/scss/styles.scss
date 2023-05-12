@@ -184,6 +184,16 @@ pre {
   aspect-ratio: 1/1;
 }
 
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 // dark mode toggle styling
 
 #toggle-btn {
