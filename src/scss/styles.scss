@@ -131,8 +131,7 @@ input {
 
 #content {
   flex: 1;
-  min-width: max(40%, 250px);
-  margin-right: 10%;
+  min-width: max(50%, 250px);
 }
 
 #app {
@@ -290,6 +289,14 @@ body.dark ::-webkit-scrollbar-thumb {
   background-color: #0f1e3fa2;
 }
 
+@media (min-width: 992px) {
+
+  #content {
+    margin-right: 10%;
+  }
+
+}
+
 @media (max-width: 630px) {
 
   #icons {
@@ -297,21 +304,21 @@ body.dark ::-webkit-scrollbar-thumb {
   }
 
   #toggle-btn {
-    position: fixed;
-    right: 0px;
-    bottom: 0px;
-    top: auto;
+    display: none;
   }
 
 }
 
 @media (max-width: 450px) {
+
   body {
     font-size: small;
   }
+
 }
 
 @media (max-width: 350px) {
+
   body {
     font-size: x-small;
   }
@@ -319,4 +326,5 @@ body.dark ::-webkit-scrollbar-thumb {
   em {
     font-size: x-small;
   }
+
 }
