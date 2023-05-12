@@ -1,19 +1,6 @@
 // Import all of Bootstrap's SCSS
 @import "~bootstrap/scss/bootstrap";
 
-:root {
-  --text-color: #1f2b44;
-  --link-color: #1e82f3;
-  --link-hover-color: #1a54f1;
-  --link-visited-color: #1e82f3;
-  --icon-color: rgba(0, 0, 0, 0.699);
-  --icon-hover-color: #1a54f1;
-  --button-background-color: #ffffff;
-  --button-border-color: transparent;
-  --button-border-hover-color: #646cff;
-  
-}
-
 body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   padding-top: 10px;
