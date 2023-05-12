@@ -5,6 +5,7 @@ body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   padding-top: 10px;
   padding-bottom: 20px;
+  transition: background-color 0.5s ease-in-out, color 1s ease-in-out;
 }
 
 header {
@@ -45,8 +46,8 @@ a.nav-link,
 a:not([href]):not([class]) {
   color: #1e82f3;
   text-decoration: none;
-  transition: 1s cubic-bezier(0.075, 0.82, 0.165, 1);
   font-weight: 500;
+  transition: color 1s ease-in-out;
 }
 
 a.nav-link {
