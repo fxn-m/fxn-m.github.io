@@ -34,3 +34,5 @@ toggleBtn!.addEventListener("click", (e) => {
   toggleTheme();
 });
 setTheme(localStorage.getItem("theme") === "dark");
+
+export {}

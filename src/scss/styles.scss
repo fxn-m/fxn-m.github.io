@@ -53,7 +53,7 @@ a.nav-link {
   padding: 0 15px 0 0;
 }
 
-a:hover, 
+a:hover,
 a.nav-link:hover,
 a:not([href]):not([class]):hover {
   transition-duration: .25s;
@@ -67,8 +67,6 @@ a:not([href]):not([class]):hover {
   font-weight: 450;
   height: 6em;
 }
-
-
 
 #icons a {
   padding: 10px 2px;
@@ -187,6 +185,7 @@ pre {
 }
 
 // dark mode toggle styling
+
 #toggle-btn {
   background-color: #ffffff00;
   border: none;
