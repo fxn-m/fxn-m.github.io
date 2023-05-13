@@ -51,6 +51,21 @@ colorSchemeQuery.addEventListener("change", () => {
   updateTheme();
 });
 
+
+// clear local storage on page load
+function clearStorage() {
+
+    let session = sessionStorage.getItem('register');
+
+    if (session == null) {
+        localStorage.removeItem('theme');
+        console.log(localStorage);
+        window.location.reload();
+    }
+    sessionStorage.setItem('register', 'true');
+}
+window.addEventListener('load', clearStorage);
+
 // set theme for initial load
 setTheme(localStorage.getItem("theme") === "dark");
 
