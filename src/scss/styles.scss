@@ -74,15 +74,29 @@ a:not([href]):not([class]):hover {
   font-size: 0.9em;
 }
 
-#icons a:link,
-#icons a:visited {
-  color: rgba(0, 0, 0, 0.699);
+#icons a:link i.fa-github,
+#icons a:link i.fa-linkedin-in,
+#icons a:link i.fa-kaggle,
+#icons a:visited i.fa-github,
+#icons a:visited i.fa-linkedin-in,
+#icons a:visited i.fa-kaggle {
+  color: rgba(0, 0, 0, 0.55);
   transition: 1s ease-out;
 }
 
-#icons a:hover {
-  transition-duration: .25s;
-  color: #1a54f1;
+#icons a:hover i.fa-github {
+  transition-duration: .5s;
+  color: #000001;
+}
+
+#icons a:hover i.fa-linkedin-in {
+  transition-duration: .5s;
+  color: #0a66c2;
+}
+
+#icons a:hover i.fa-kaggle {
+  transition-duration: .5s;
+  color: #20beff;
 }
 
 #icons {
@@ -104,7 +118,7 @@ button {
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition-duration: 1s;
 
   &:hover {
     border-color: #646cff;
@@ -120,6 +134,7 @@ input {
   border-radius: 8px;
   border: 1px solid hsla(231, 66%, 77%, 0.411);
   padding: 0.5em 1em;
+  transition-duration: 1s;
 }
 
 #main {
@@ -149,6 +164,7 @@ pre {
   background-color: #e5e9eb93;
   padding: 0px 10px;
   border-radius: 10px;
+  transition-duration: 1s;
 }
 
 // scrollbar styling
@@ -228,15 +244,29 @@ body.dark a:not([href]):not([class]):hover {
 }
 
 
-body.dark #icons a:visited,
-body.dark #icons a:link {
+body.dark #icons a:visited i.fa-github,
+body.dark #icons a:visited i.fa-linkedin-in,
+body.dark #icons a:visited i.fa-kaggle,
+body.dark #icons a:link i.fa-github,
+body.dark #icons a:link i.fa-linkedin-in,
+body.dark #icons a:link i.fa-kaggle {
   color: #a9c0c4b6;
-  transition: 1s ease-out;
+  transition-duration: 1s;
 }
 
-body.dark #icons a:hover {
-  transition-duration: .25s;
+body.dark #icons a:hover i.fa-github {
+  transition-duration: .5s;
   color: #ffffff;
+}
+
+body.dark #icons a:hover i.fa-linkedin-in {
+  transition-duration: .5s;
+  color: #0a66c2;
+}
+
+body.dark #icons a:hover i.fa-kaggle {
+  transition-duration: .5s;
+  color: #20beff;
 }
 
 body.dark header h1 a:link,
@@ -260,16 +290,19 @@ body.dark input {
   border: 1px solid hsla(231, 66%, 77%, 0.411);
   background-color: #1f2b44;
   color: #c3e3f1;
+  transition-duration: 1s;
 }
 
 body.dark button {
   background-color: #1f2b44;
   color: #c3e3f1;
+  transition-duration: 1s;
 }
 
 body.dark pre {
   background-color: #1f2b44;
   color: #c3e3f1;
+  transition-duration: 1s;
 }
 
 body.dark ::-webkit-scrollbar-track {
