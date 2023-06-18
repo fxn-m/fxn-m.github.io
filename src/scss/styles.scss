@@ -8,6 +8,10 @@ body {
   transition: background-color 0.5s ease-in-out, color 1s ease-in-out;
 }
 
+p, li {
+  color: #555;
+}
+
 header {
   display: flex;
   align-items: baseline;
@@ -44,10 +48,12 @@ b {
 a,
 a.nav-link,
 a:not([href]):not([class]) {
-  color: #1e82f3;
+  color: #1b4677;
   text-decoration: none;
   font-weight: 500;
   transition: color 1s ease-in-out;
+  border-bottom: 1px solid rgba(125,125,125,.3);
+  transition: border .3s ease-in-out;
 }
 
 a.nav-link {
@@ -58,9 +64,11 @@ a:hover,
 a.nav-link:hover,
 a:not([href]):not([class]):hover {
   transition-duration: .25s;
-  color: #1a54f1;
+  color: #0d2138;
   text-decoration: none;
   cursor: pointer;
+  border-bottom: 1px solid rgba(60,60,60,.5);
+  transition: border .3s ease-in-out;
 }
 
 #typed {
@@ -72,6 +80,7 @@ a:not([href]):not([class]):hover {
 #icons a {
   padding: 10px 2px;
   font-size: 0.9em;
+  border-bottom: none;
 }
 
 #icons a:link i.fa-github,
@@ -118,7 +127,7 @@ button {
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition-duration: 1s;
+  transition-duration: .5s;
 
   &:hover {
     border-color: #646cff;
@@ -134,7 +143,7 @@ input {
   border-radius: 8px;
   border: 1px solid hsla(231, 66%, 77%, 0.411);
   padding: 0.5em 1em;
-  transition-duration: 1s;
+  transition-duration: .5s;
 }
 
 #main {
@@ -164,7 +173,7 @@ pre {
   background-color: #e5e9eb93;
   padding: 0px 10px;
   border-radius: 10px;
-  transition-duration: 1s;
+  transition-duration: .5s;
 }
 
 // scrollbar styling
@@ -290,19 +299,19 @@ body.dark input {
   border: 1px solid hsla(231, 66%, 77%, 0.411);
   background-color: #1f2b44;
   color: #c3e3f1;
-  transition-duration: 1s;
+  transition-duration: .5s;
 }
 
 body.dark button {
   background-color: #1f2b44;
   color: #c3e3f1;
-  transition-duration: 1s;
+  transition-duration: .5s;
 }
 
 body.dark pre {
   background-color: #1f2b44;
   color: #c3e3f1;
-  transition-duration: 1s;
+  transition-duration: .5s;
 }
 
 body.dark ::-webkit-scrollbar-track {

@@ -6,12 +6,12 @@ function setTheme(isDark: boolean) {
   if (isDark) {
     localStorage.setItem("theme", "dark");
     document.body.classList.add("dark");
-    toggleBtn!.innerHTML = "☀️";
+    toggleBtn!.innerHTML = "🌙";
     toggleBtn!.setAttribute("aria-label", "enable light theme");
   } else {
     localStorage.setItem("theme", "light");
     document.body.classList.remove("dark");
-    toggleBtn!.innerHTML = "🌙";
+    toggleBtn!.innerHTML = "☀️";
     toggleBtn!.setAttribute("aria-label", "enable dark theme");
   }
 }
