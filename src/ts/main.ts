@@ -54,4 +54,8 @@ toggleFavicon(); // initial call to set favicon based on current color scheme
 // update favicon when color scheme changes
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', toggleFavicon);
 
+anyhtml();
+setupRender();
+
+
 export {}

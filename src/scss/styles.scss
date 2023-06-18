@@ -90,21 +90,21 @@ a:not([href]):not([class]):hover {
 #icons a:visited i.fa-linkedin-in,
 #icons a:visited i.fa-kaggle {
   color: rgba(0, 0, 0, 0.55);
-  transition: 1s ease-out;
+  // transition: 1s ease-out;
 }
 
 #icons a:hover i.fa-github {
-  transition-duration: .5s;
+  // transition-duration: .5s;
   color: #000001;
 }
 
 #icons a:hover i.fa-linkedin-in {
-  transition-duration: .5s;
+  // transition-duration: .5s;
   color: #0a66c2;
 }
 
 #icons a:hover i.fa-kaggle {
-  transition-duration: .5s;
+  // transition-duration: .5s;
   color: #20beff;
 }
 
@@ -237,6 +237,10 @@ pre {
 body.dark {
   background-color: #1f2b44;
   color: #c3e3f1;
+}
+
+body.dark p, li {
+    color: #c3e3f1;
 }
 
 body.dark a,
