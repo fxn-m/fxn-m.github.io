@@ -55,7 +55,7 @@ a,
 a.nav-link,
 a:not([href]):not([class]),
 a:visited {
-  color: #1b4677;
+  color: #313131;
   text-decoration: none;
   font-weight: 500;
   border-bottom: 1px solid rgba(125,125,125,.3);
@@ -69,7 +69,7 @@ a.nav-link {
 a:hover,
 a.nav-link:hover,
 a:not([href]):not([class]):hover {
-  color: #0d2138;
+  color: #000000;
   text-decoration: none;
   cursor: pointer;
   border-bottom: 1px solid rgba(60,60,60,.5);
@@ -132,7 +132,7 @@ button {
   font-weight: 500;
   font-family: inherit;
   cursor: pointer;
-  transition-duration: .5s;
+  transition: background-color .5s ease-in-out, color 1s ease-in-out, border-color .25s ease-in-out;
 
   &:hover {
     border-color: #646cff;
@@ -148,7 +148,7 @@ input {
   border-radius: 8px;
   border: 1px solid hsla(231, 66%, 77%, 0.411);
   padding: 0.5em 1em;
-  transition-duration: .5s;
+  transition: background-color .5s ease-in-out, color 1s ease-in-out;
 }
 
 #main {
@@ -178,7 +178,7 @@ pre {
   background-color: #e5e9eb93;
   padding: 0px 10px;
   border-radius: 10px;
-  transition-duration: .5s;
+  transition: background-color .5s ease-in-out, color 1s ease-in-out;
 }
 
 // scrollbar styling
@@ -312,19 +312,19 @@ body.dark input {
   border: 1px solid hsla(231, 66%, 77%, 0.411);
   background-color: #1f2b44;
   color: #c3e3f1;
-  transition-duration: .5s;
+  transition: background-color .5s ease-in-out, color 1s ease-in-out;
 }
 
 body.dark button {
   background-color: #1f2b44;
   color: #c3e3f1;
-  transition-duration: .5s;
+  transition: background-color .5s ease-in-out, color 1s ease-in-out, border-color .25s ease-in-out;
 }
 
 body.dark pre {
   background-color: #1f2b44;
   color: #c3e3f1;
-  transition-duration: .5s;
+  transition: background-color .5s ease-in-out, color 1s ease-in-out;
 }
 
 body.dark ::-webkit-scrollbar-track {
