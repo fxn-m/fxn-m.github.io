@@ -5,11 +5,12 @@ body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   padding-top: 10px;
   padding-bottom: 20px;
-  transition: background-color 0.5s ease-in-out, color 1s ease-in-out;
+  transition: background-color 0.5s ease-in-out, 
 }
 
 p, li {
   color: #555;
+  transition: color 1s ease-in-out;
 }
 
 header {
@@ -34,11 +35,16 @@ header h1 {
   flex: 0 0 auto;
   margin: 15px 0;
   text-decoration: none;
+  transition: color 1s ease-in-out;
 }
 
 header h1:hover {
   text-decoration: none;
   cursor: default;
+}
+
+h3 {
+  transition: color 1s ease-in-out;
 }
 
 b {
@@ -47,13 +53,13 @@ b {
 
 a,
 a.nav-link,
-a:not([href]):not([class]) {
+a:not([href]):not([class]),
+a:visited {
   color: #1b4677;
   text-decoration: none;
   font-weight: 500;
-  transition: color 1s ease-in-out;
   border-bottom: 1px solid rgba(125,125,125,.3);
-  transition: border .3s ease-in-out;
+  transition: border .3s ease-in-out, color 1s ease-in-out;;
 }
 
 a.nav-link {
@@ -63,12 +69,11 @@ a.nav-link {
 a:hover,
 a.nav-link:hover,
 a:not([href]):not([class]):hover {
-  transition-duration: .25s;
   color: #0d2138;
   text-decoration: none;
   cursor: pointer;
   border-bottom: 1px solid rgba(60,60,60,.5);
-  transition: border .3s ease-in-out;
+  transition: border .3s ease-in-out, color .25s ease-in-out;
 }
 
 #typed {
@@ -90,21 +95,21 @@ a:not([href]):not([class]):hover {
 #icons a:visited i.fa-linkedin-in,
 #icons a:visited i.fa-kaggle {
   color: rgba(0, 0, 0, 0.55);
-  // transition: 1s ease-out;
+  transition: color 1s ease-out;
 }
 
 #icons a:hover i.fa-github {
-  // transition-duration: .5s;
+  transition-duration: .5s;
   color: #000001;
 }
 
 #icons a:hover i.fa-linkedin-in {
-  // transition-duration: .5s;
+  transition-duration: .5s;
   color: #0a66c2;
 }
 
 #icons a:hover i.fa-kaggle {
-  // transition-duration: .5s;
+  transition-duration: .5s;
   color: #20beff;
 }
 
@@ -242,6 +247,7 @@ body.dark {
 body.dark p, 
 body.dark li {
     color: #c3e3f1;
+    transition-duration: 1s;
 }
 
 body.dark a,
@@ -249,12 +255,14 @@ body.dark a.nav-link,
 body.dark a:not([href]):not([class]) {
   color: #c5dffd;
   text-decoration: none;
+  transition-duration: 1s;
 }
 
 body.dark a:hover,
 body.dark a.nav-link:hover,
 body.dark a:not([href]):not([class]):hover {
   color: #f8f8f8;
+  transition-duration: 1s;
 }
 
 
