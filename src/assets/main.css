@@ -1,0 +1,323 @@
+/* // styles apply to body element */
+body {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  padding: 10px 0px 20px 0px;
+  transition: background-color 0.5s ease-in-out;
+  margin: 100px auto 50px auto;
+  color: #555;
+}
+
+#main {
+  margin: 0px auto 0px 25%;
+  width: 40%;
+}
+
+#content {
+  flex: 1;
+  min-width: max(50%, 250px);
+}
+
+#essay {
+  margin-top: 20px;
+}
+
+p {
+  color: #555;
+  transition: color 1s ease-in-out;
+}
+
+ul {
+  padding: 0%;
+}
+
+li {
+  margin: 1em 0;
+  list-style-type: none;
+  transition: color 1s ease-in-out;
+}
+
+header {
+  position: fixed;
+  /* top: 0px; */
+  right: 0px;
+  display: flex;
+  align-items: baseline;
+  justify-content: right;
+  flex-wrap: wrap;
+  margin-top:-15px;
+  padding: 0 100px
+}
+
+h2 {
+  font-size: 28px;
+  flex: 0 0 auto;
+  margin: 0;
+  text-decoration: none;
+  transition: color 1s ease-in-out;
+  color: #303030;
+}
+
+h2:hover {
+  text-decoration: none;
+  cursor: default;
+}
+
+h3 {
+  transition: color 1s ease-in-out;
+  color: #303030;
+}
+
+/* // links styling */
+
+a,
+a:not([href]):not([class]),
+a:visited {
+  color: #313131;
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(125, 125, 125, .3);
+  transition: border .3s ease-in-out, color 1s ease-in-out;
+}
+
+a:hover,
+a:not([href]):not([class]):hover {
+  color: #000000;
+  text-decoration: none;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(60, 60, 60, .5);
+  transition: border .3s ease-in-out, color .25s ease-in-out;
+}
+
+/* // icons styling */
+
+#icons {
+  min-width: 250px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: top;
+  padding: 0px 30px 0px 0px;
+}
+
+#icons a {
+  padding: 10px 10px;
+  font-size: 0.7em;
+  border-bottom: none;
+}
+
+#icons a:link,
+#icons a:visited {
+  color: #5a5a5a;
+  transition: color 1s ease-out;
+}
+
+#icons a:hover i.fa-github {
+  transition-duration: .5s;
+  color: #000001;
+}
+
+#icons a:hover i.fa-linkedin-in {
+  transition-duration: .5s;
+  color: #0a66c2;
+}
+
+#icons a:hover i.fa-kaggle,
+#icons a:hover i.fa-twitter {
+  transition-duration: .5s;
+  color: #20beff;
+}
+
+#icons a:hover i.fa-strava,
+#icons a:hover i.fa-stack-overflow {
+  transition-duration: .5s;
+  color: #fc4c02;
+}
+
+
+#icons a#kaggle {
+  padding-top: 8px;
+}
+
+/* // back arrow styling */
+
+#back-arrow {
+  position: fixed;
+  top: 50px;
+  left: 50px;
+  font-size: .65em;
+  border: none;
+}
+
+
+/* // scrollbar styling */
+
+::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #ffffff00;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  background-color: #ffffff00;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #c7c7c723;
+}
+
+/* // dark mode toggle styling */
+
+#toggle-btn {
+  background-color: #ffffff00;
+  border: none;
+  font-size: 1.3em;
+}
+
+#toggle-btn:hover {
+  cursor: pointer;
+}
+
+#toggle-btn img {
+  width: 25px;
+  margin-bottom: -4px
+}
+
+#dark-mode-icon {
+  filter: invert(69%) sepia(10%) saturate(17%) hue-rotate(318deg) brightness(84%) contrast(87%);
+  transform: scale(1.3);
+}
+
+#light-mode-icon {
+  filter: invert(33%) sepia(0%) saturate(15%) hue-rotate(279deg) brightness(102%) contrast(91%);
+}
+
+/* // dark mode styling */
+
+body.dark {
+  background-color: #0d121a;
+  color: #cecece;
+  transition: background-color 0.5s ease-in-out;
+}
+
+body.dark p,
+body.dark li,
+body.dark h2,
+body.dark h3 {
+  color: #cecece;
+  transition: color 1s ease-in-out;
+}
+
+body.dark a,
+body.dark a.nav-link,
+body.dark a:not([href]):not([class]) {
+  color: #dbdbdb;
+  text-decoration: none;
+}
+
+body.dark a:hover,
+body.dark a.nav-link:hover,
+body.dark a:not([href]):not([class]):hover {
+  color: #ffffff;
+  border-color: #9b9b9b;
+  transition: border .3s ease-in-out, color 1s ease-in-out;
+}
+
+/* // dark mode icons styling */
+
+body.dark #icons a:visited,
+body.dark #icons a:link {
+  color: #949494;
+}
+
+body.dark #icons a:hover i.fa-github {
+  color: #ffffff;
+}
+
+body.dark #icons a:hover i.fa-linkedin-in {
+  color: #0a66c2;
+}
+
+body.dark #icons a:hover i.fa-kaggle {
+  color: #20beff;
+}
+
+/* // dark mode header styling */
+
+body.dark header h1 a:link,
+body.dark header h1 a:visited {
+  color: #eaf0f3;
+  text-decoration: none;
+}
+
+
+/* // dark mode scrollbar styling */
+
+body.dark ::-webkit-scrollbar-track {
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+  background-color: #1f2b44;
+}
+
+body.dark ::-webkit-scrollbar {
+  width: 12px;
+  background-color: #1f2b44;
+}
+
+body.dark ::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: #0f1e3fa2;
+}
+
+
+/* // media queries */
+
+@media (max-width: 1200px) {
+  #icons {
+    flex-wrap: wrap;
+    min-width: 50px;
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 900px) {
+  #icons {
+    position: fixed;
+    flex-direction: column;
+    right: 60px;
+    top: 140px;
+    max-width: 50px;
+  }
+
+  #icons a {
+    max-width: fit-content;
+    padding: 20px 10px;
+  }
+
+  h2 span {
+    display: block;
+  }
+}
+
+@media (max-width: 500px) {
+  #main {
+    margin: 30px auto 0px 15%;
+    width: 70%;
+  }
+
+  #back-arrow {
+    position: relative;
+    top: 0px
+  }
+
+  header {
+    display: none;
+  }
+
+  #icons {
+    display: none;
+  }
+}

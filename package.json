@@ -1,25 +1,28 @@
 {
   "homepage": "https://fxn-m.com/",
-  "name": "vite-homepage",
-  "private": true,
+  "name": "fxn-m.com",
   "version": "0.0.0",
-  "type": "module",
+  "private": true,
   "scripts": {
-    "start": "vite",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist",
     "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "gh-pages": "^5.0.0",
-    "sass": "^1.59.1",
-    "typescript": "^4.9.3",
-    "vite": "^4.1.0"
+    "build": "run-p type-check build-only",
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
   },
   "dependencies": {
-    "bootstrap": "^5.2.3",
-    "typeit": "^8.7.1"
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.4"
+  },
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.0",
+    "@types/node": "^18.17.5",
+    "@vitejs/plugin-vue": "^4.3.1",
+    "@vitejs/plugin-vue-jsx": "^3.0.2",
+    "@vue/tsconfig": "^0.4.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "~5.1.6",
+    "vite": "^4.4.9",
+    "vue-tsc": "^1.8.8"
   }
 }

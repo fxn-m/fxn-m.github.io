@@ -2,79 +2,16 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" href="favicon" type="image/x-icon">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <script type="module" src="src/ts/main.ts"></script>
-  <script type="module" src="src/ts/toggle-theme.ts"></script>
+  <meta charset="UTF-8">
+  <link rel="icon" href="/favicon" type="image/x-icon">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://kit.fontawesome.com/fc27f7afcf.js" crossorigin="anonymous"></script>
   <title>fxn-m</title>
 </head>
 
 <body>
-  <div class="container">
-    <!-- header -->
-    <div class="container">
-      <header>
-        <div id="links">
-          <h1>fxn-m <span id="house">🏡</span></h1>
-        </div>
-        <div id="icons">
-          <a href="https://github.com/fxn-m" target="_blank"><i class="fa-brands fa-github fa-2x"></i></a>
-          <a href="https://www.linkedin.com/in/felix-newport-mangell-0a89a8150/" target="_blank"><i
-              class="fa-brands fa-linkedin-in fa-2x"></i></a>
-          <a href="https://www.kaggle.com/felixnewportmangell" target="_blank" id="kaggle"><i
-              class="fa-brands fa-kaggle fa-2x"></i></a>
-        </div>
-        <button id="toggle-btn">☀</button>
-      </header>
-    </div>
-
-    <!-- main body -->
-    <div id="main" class="container-fluid">
-      <div id="content">
-        <h3 id="about">About</h3>
-        <p>Currently living in Bristol, UK. Born and raised in Cambridge.</p>
-        <p>I studied Engineering Design @ The University of Bristol 2018-2023.
-          Along the way, I worked on all sorts of interesting things, including:
-        <ul>
-          <li><a href="https://www.kaggle.com/code/felixnewportmangell/lionfish-object-detection-starter-with-yolov5"
-              target="_blank">Detecting</a> invasive lionfish with the YOLOv5 object detector;</li>
-          <li><a href="https://github.com/fxn-m/schedule-optimisation" target="_blank">Optimising</a> a factory schedule
-            with linear progamming and PuLP; <em>and</em></li>
-          <li><a href="https://github.com/fxn-m/optimisation-theory" target="_blank">Implementing</a> optimisation
-            algorithms in Python.</li>
-        </ul>
-        </p>
-        <p>
-          In between my studies, I spent around 18 months in industry.
-        </p>
-        <ul>
-          <li>In the summer of 2022, I helped design the next generation solid-state lithium battery packs at Dyson
-            Research.</li>
-          <li>Before that, from 2020-21, I spent a year working on submarine system design teams at Babcock.</li>
-        </ul>
-        <p>
-          Both were amazing opportunities to learn from experienced engineers and apply what I'd learned to real-world
-          projects.
-          I would go so far as to argue that 80% of what I know about engineering, I learned in industry.
-        </p>
-
-        <h3 id="projects">Projects</h3>
-        <p>Recently, I discovered that my real passion lies in building software products.</p>
-        <p>🖨️ <a id="anyhtml">AnyHTML</a> - My first 'project': request HTML from any url, and print it. <br> <em
-            style="font-size: small;">(CORS-Anywhere, RegEx, HTML, CSS)</em></p>
-        <p>⛅ <a href="https://fxn-m.com/atmosphere.fm/" target="_blank">atmosphere.fm</a> - Pathetic fallacy for
-          spotify playlsits.
-          <br><em style="font-size: small;">(React, Node.js, Express, TypeScript, Spotify SDK & API)</em>
-        </p>
-
-      </div>
-
-      <div id="app"></div>
-
-    </div>
-
+  <div id="app"></div>
+  <script type="module" src="/src/main.ts"></script>
 </body>
 
 </html>
