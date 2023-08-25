@@ -22,7 +22,9 @@ import ToggleTheme from './components/ToggleTheme.vue';
   </header>
 
   <div id="main">
-    <h2><span style="white-space: nowrap">fxn-m</span><span>{{ pageTitle }}</span></h2>
+    <h2><span style="white-space: nowrap">
+      <RouterLink to="/" style="border: none; font-weight: bold;">fxn-m</RouterLink>
+    </span><span>{{ pageTitle }}</span></h2>
     <RouterView />
   </div>
 </template>
