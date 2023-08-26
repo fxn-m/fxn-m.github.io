@@ -9,8 +9,7 @@
         <p>Engineering Design at the University of Bristol, the liberal arts of engineering. </p>
         <p>I worked on projects across a bunch of fields; from operations research to computer vision. My research
             looked at automating lithium-ion battery disassembly and re-purposing.</p>
-        <p>Self-taught software engineer, I&#39;m learning the full stack and looking for open-source projects to
-            get stuck into. </p>
+        <p>Self-taught software engineer. Started in data science & ML projects, now going for full-stack.</p>
         <p>Based in Cambridge, for now. In 2024 I'm moving to London for the foreseeable future.</p>
         <h3 id="experience">Experience</h3>
         <ul>
@@ -30,7 +29,7 @@
                 20:00 5k in October. <a href="https://www.strava.com/athletes/29743058" target="_blank">See my
                     progress</a>.</li>
             <li><strong>Music.</strong> I <a href="https://stats.fm/fnm" target="_blank">listen</a> to a lot of
-                music. I've <a href="https://fxnm.bandcamp.com/" target="_blank">produced</a> some too.</li>
+                music. I've <a href="https://fxnm.bandcamp.com/" target="_blank">produced</a> some too. Drum @ jazz jams.</li>
         </ul>
     </div>
 </template>

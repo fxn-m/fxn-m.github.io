@@ -10,8 +10,9 @@
       <li>
         <!-- <RouterLink to="/work">Work</RouterLink> -->
       </li>
-    <li>
-      <!-- <RouterLink to="/essays">Essays</RouterLink> -->
-    </li>
-  </ul>
-</div></template>
+      <li>
+        <!-- <RouterLink to="/essays">Essays</RouterLink> -->
+      </li>
+    </ul>
+  </div>
+</template>

@@ -313,8 +313,9 @@ body.dark ::-webkit-scrollbar-thumb {
   }
 
   #back-arrow {
-    position: relative;
-    top: 0px
+    position: fixed;
+    top: 30px;
+    left: 30px;
   }
 
   header {

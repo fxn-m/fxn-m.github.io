@@ -3,7 +3,7 @@
 
 <template>
   <div id="content">
-    <p>Welcome to Felix's plot of internet real estate 🏡</p>
+    <p>Welcome to my plot of internet real estate.</p>
     <ul>
       <li>
         <RouterLink to="/about">About Me</RouterLink>

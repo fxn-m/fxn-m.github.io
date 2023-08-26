@@ -4,7 +4,8 @@ import ToggleTheme from './components/ToggleTheme.vue';
 </script>
 
 <template>
-  <RouterLink v-if="$route.path !== '/'" to="#" @click="$router.go(-1)" id="back-arrow"><i class="fa-solid fa-arrow-left fa-2x"></i></RouterLink>
+  <RouterLink v-if="$route.path !== '/'" to="#" @click="$router.go(-1)" id="back-arrow"><i
+      class="fa-solid fa-arrow-left fa-2x"></i></RouterLink>
 
   <header>
     <div id="icons">
@@ -23,8 +24,10 @@ import ToggleTheme from './components/ToggleTheme.vue';
 
   <div id="main">
     <h2><span style="white-space: nowrap">
-      <RouterLink to="/" style="border: none; font-weight: bold;">fxn-m</RouterLink>
-    </span><span>{{ pageTitle }}</span></h2>
+        <RouterLink to="/" style="border: none; font-weight: bold;">fxn-m</RouterLink>
+      </span>
+      <span>{{ pageTitle }}</span>
+    </h2>
     <RouterView />
   </div>
 </template>
