@@ -16,7 +16,7 @@ const setupRender = () => {
             loader.style.display = 'none'
         }, 3000)
 
-        fetch('https://sheltered-everglades-04891.herokuapp.com/' + url.value, {
+        fetch('https://fxnm-server-9b7ca19f81f3.herokuapp.com/' + url.value, {
             method: 'GET'
         })
             .then(response => {
