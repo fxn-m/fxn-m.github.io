@@ -16,7 +16,7 @@ const setupRender = () => {
             loader.style.display = 'none'
         }, 3000)
 
-        fetch('https://fxnm-server-9b7ca19f81f3.herokuapp.com/' + url.value, {
+        fetch('https://fxnm-cors-anywhere-b5bfdd86bf6e.herokuapp.com/' + url.value, {
             method: 'GET'
         })
             .then(response => {

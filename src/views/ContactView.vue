@@ -2,85 +2,109 @@
   <div>
     <br>
     <h3>Let's chat!</h3>
-    <p>
-      I'm always open to new people and opportunities.
-    </p>
-    <p>
-      Feel free to reach out to me using the form below.
-    </p>
-    <form @submit.prevent="sendEmail">
+    <p>I'm always open to new people and opportunities.</p>
+    <p>Feel free to reach out to me using the form below.</p>
+    <form @submit.prevent="sendEmail()">
       <div style="display: flex; gap: 10px; justify-content: space-between">
         <input type="name" id="name" v-model="name" autocomplete="nope" placeholder="Name">
         <input type="email" id="email" v-model="email" autocomplete="off" placeholder="Email" required>
       </div>
-      <textarea id="message" v-model="message" rows="4" placeholder="Message" required @keydown.enter.prevent="submitFormOnEnter"></textarea>
-
-      <button type="submit">Send</button>
+      <textarea id="message" v-model="message" rows="4" placeholder="Message" required
+        @keydown.enter.prevent="submitFormOnEnter"></textarea>
+      <button type="submit">Send{{ sendingEllipses }}</button>
     </form>
-    <component :is="selectedComponent" v-if="selectedComponent" />
+    <ContactToast :sent="toastSent" v-if="toastVisible" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, type Component } from 'vue';
-import axios from 'axios';
 
+import { ref } from 'vue';
+import axios from 'axios';
 import ContactToast from '@/components/ContactToast.vue';
 
 const email = ref('');
 const message = ref('');
 const name = ref('');
+const toastVisible = ref(false);
+const toastSent = ref(false);
+const sendingEllipses = ref('');
 
-const showToast = () => {
-  selectedComponent.value = ContactToast;
+
+const showToast = (sent: boolean) => {
+
+  toastVisible.value = true;
+  toastSent.value = sent; // Update the 'sent' prop value
+
   setTimeout(() => {
-    selectedComponent.value = null;
-  }, 6000);
+    toastVisible.value = false;
+  }, 5000);
+
 };
+
 
 const sendEmail = () => {
 
-  // Validate the email and message here if needed
-  if (!email.value || !message.value) {
-    alert('Please fill in both email and message fields.');
-    return;
-  }
+  let counter = 0;
+  const ending = 'ing';
+  const sendingLoader = setInterval(() => {
+    if (counter > 6) {
+      sendingEllipses.value = 'ing.';
+      counter = 3;
+    } else if (counter > 2) {
+      sendingEllipses.value += '.';
+    } else {
+      sendingEllipses.value += ending[counter];
+    }
+    counter++;
+  }, 400);
+
+  const clearUp = (success: boolean) => {
+    clearInterval(sendingLoader);
+    sendingEllipses.value = '';
+
+    if (success) {
+      email.value = '';
+      message.value = '';
+      name.value = '';
+    }
+  };
 
   axios
-    .post('http://localhost:3000/send-email', {
+    .post('https://fxnm-backend-5c0b9af08231.herokuapp.com/send-email', {
       name: name.value,
       email: email.value,
       message: message.value,
     })
     .then((response) => {
       // Handle success
-      showToast(); // Display the toast component
+      showToast(true); // Display the toast component
+      clearUp(true);
     })
     .catch((error) => {
       // Handle error
-      alert('Email sending failed');
+      showToast(false);
+      clearUp(false);
+      console.log(error)
     });
-
-  // // Clear the form fields after sending the email
-  email.value = '';
-  message.value = '';
-  name.value = '';
 };
 
+
 const submitFormOnEnter = (event: KeyboardEvent) => {
+
   // Check if the Enter key (key code 13) was pressed
   if (event.key === 'Enter') {
     event.preventDefault(); // Prevent the default behavior (newline in textarea)
     sendEmail(); // Call the form submission function
   }
-};
 
-const selectedComponent = ref<Component | null>(null);
+};
 
 </script>
 
 
 <style scoped>
+
 form {
   display: flex;
   flex-direction: column;
@@ -139,7 +163,6 @@ button {
   align-self: right;
   transition: color 1s ease-in-out, background-color .5s ease-in-out, border-color .5s ease-in-out;
 
-
   &:hover {
     border-color: #646cff;
   }
@@ -157,4 +180,5 @@ body.dark button {
   border: 1px solid #646cff8d;
   color: #c3e3f1;
 }
+
 </style>

@@ -1,13 +1,23 @@
 <template>
     <transition name="toast-fade">
         <div class="toast" v-if="showToast" :class="{ hide: hideToast }">
-            Message sent! 👍
+            <p>
+                {{ sent ? "Message sent!" : "Message didn't send." }}
+            </p>
+            <p>
+                {{ sent ? "👍" : "👎" }}
+            </p>
         </div>
     </transition>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+// define props
+const props = defineProps({
+    sent: Boolean,
+});
+
+import { ref, onMounted } from 'vue';
 
 const showToast = ref(false);
 const hideToast = ref(false);
@@ -30,20 +40,28 @@ onMounted(() => {
 <style scoped>
 .toast {
     position: fixed;
-    bottom: 50px;
+    bottom: 30px;
     left: 50%;
     /* Add this property */
     transform: translateX(-75%);
     /* Center the element horizontally */
-    width: 140px;
-    height: 20px;
-    background-color: #33333329;
-    color: #fff;
-    padding: 15px 30px;
+    background-color: rgba(248, 248, 248, 0.5);
+    color: #161515;
+    padding: 10px 30px;
     border-radius: 5px;
     font-size: 14px;
     font-weight: 400;
     text-align: center;
+}
+
+p {
+    padding: 0;
+    margin: 5px 0;
+}
+
+body.dark .toast {
+    background-color: #33333329;
+    color: #fff;
 }
 
 .toast.hide {
@@ -51,4 +69,10 @@ onMounted(() => {
     transition: opacity 2s ease
 }
 
+@media (max-width: 900px) {
+    .toast {
+        bottom: 10px;
+        left: 62%;
+    }
+}
 </style>
