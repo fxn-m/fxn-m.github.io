@@ -57,7 +57,6 @@ const setupRender = () => {
 
     const bar = (element: HTMLInputElement) => {
         element.addEventListener('keydown', (e) => {
-            console.log(e)
             if (e.code == "Enter") render()
         })
     }

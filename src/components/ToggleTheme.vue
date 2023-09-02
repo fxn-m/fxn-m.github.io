@@ -67,7 +67,6 @@ export default {
 
             if (session == null) {
                 localStorage.removeItem('theme');
-                console.log(localStorage);
                 window.location.reload();
             }
             sessionStorage.setItem('register', 'true');
