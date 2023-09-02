@@ -42,6 +42,11 @@ const router = createRouter({
       name: 'funItem',
       component: () => import('../views/FunView.vue')
     },
+    {
+      path: '/contact',
+      name: 'contact',
+      component: () => import('../views/ContactView.vue')
+    }
   ]
 })
 
