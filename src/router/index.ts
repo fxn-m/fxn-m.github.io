@@ -32,16 +32,16 @@ const router = createRouter({
       name: 'essay',
       component: () => import('../views/EssayView.vue')
     },
-    {
-      path: '/blogs',
-      name: 'blogs',
-      component: () => import('../views/BlogsView.vue')
-    },
-    {
-      path: '/blog/:name',
-      name: 'blog',
-      component: () => import('../views/BlogView.vue')
-    },
+    // {
+    //   path: '/blogs',
+    //   name: 'blogs',
+    //   component: () => import('../views/BlogsView.vue')
+    // },
+    // {
+    //   path: '/blog/:name',
+    //   name: 'blog',
+    //   component: () => import('../views/BlogView.vue')
+    // },
     {
       path: '/fun',
       name: 'funList',

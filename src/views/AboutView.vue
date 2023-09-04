@@ -6,7 +6,7 @@
         <p>Travelling, and working on side-quests.</p>
         <p>Currently: near Cambridge.</p>
         <h3 id="i-m-a-software-design-engineer-">I&#39;m a Software &amp;&amp; Design Engineer.</h3>
-        <p>Studied Engineering Design at the University of Bristol, the 'liberal arts of Engineering'.</p>
+        <p>Studied Engineering Design at the University of Bristol; a sort of 'liberal arts' for Engineering.</p>
         <p>I worked on projects across a bunch of fields; from operations research to computer vision. My research
             looked at automating lithium-ion battery disassembly and re-purposing.</p>
         <p>Over 5 years I spent 18 months in industry. I spent a year designing and building <a href="https://www.babcockinternational.com/case-study/whls/" target="_blank">submarine systems</a>, and did research and development on <a href="https://careers.dyson.com/en-gb/what-you-can-do/engineer/energy-storage-batteries/" target="_blank">lithium-ion batteries</a>.</p>
