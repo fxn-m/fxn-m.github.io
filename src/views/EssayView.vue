@@ -7,7 +7,7 @@ function useEssayLoader(essayName: string) {
 
     const fetchEssayContent = async () => {
         try {
-            const response = await fetch(`../src/assets/essays/${essayName}.html`);
+            const response = await fetch(`../src/content/essays/${essayName}.html`);
             if (response.ok) {
                 essayContent.value = await response.text();
             } else {
