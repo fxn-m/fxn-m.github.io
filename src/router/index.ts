@@ -34,13 +34,13 @@ const router = createRouter({
       component: () => import('../views/Essays/EssayView.vue')
     },
     {
-      path: '/blogs',
-      name: 'blogs',
+      path: '/blog',
+      name: 'blog',
       component: () => import('../views/Blog/BlogsView.vue')
     },
     {
-      path: '/blog/:name',
-      name: 'blog',
+      path: '/blog/:post',
+      name: 'blogPost',
       component: () => import('../views/Blog/BlogPostView.vue')
     },
     {

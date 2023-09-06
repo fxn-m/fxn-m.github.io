@@ -1,6 +1,6 @@
 ---
-title: 'Bang in Bash !'
-date: '04-09-2023'
+title: Bang in Bash !
+date: 04-09-2023
 ---
 
 ## Bang in Bash !
