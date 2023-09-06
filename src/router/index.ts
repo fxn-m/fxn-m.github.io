@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+
+import HomeView from '../views/Homepage/HomeView.vue'
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -15,47 +16,47 @@ const router = createRouter({
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue')
+      component: () => import('../views/About/AboutView.vue')
     },
     {
       path: '/work',
       name: 'work',
-      component: () => import('../views/WorkView.vue')
+      component: () => import('../views/Work/WorkView.vue')
     },
     {
       path: '/essays',
       name: 'essays',
-      component: () => import('../views/EssaysView.vue')
+      component: () => import('../views/Essays/EssaysView.vue')
     },
     {
       path: '/essay/:name',
       name: 'essay',
-      component: () => import('../views/EssayView.vue')
+      component: () => import('../views/Essays/EssayView.vue')
     },
-    // {
-    //   path: '/blogs',
-    //   name: 'blogs',
-    //   component: () => import('../views/BlogsView.vue')
-    // },
-    // {
-    //   path: '/blog/:name',
-    //   name: 'blog',
-    //   component: () => import('../views/BlogView.vue')
-    // },
+    {
+      path: '/blogs',
+      name: 'blogs',
+      component: () => import('../views/Blog/BlogsView.vue')
+    },
+    {
+      path: '/blog/:name',
+      name: 'blog',
+      component: () => import('../views/Blog/BlogPostView.vue')
+    },
     {
       path: '/fun',
       name: 'funList',
-      component: () => import('../views/FunsView.vue')
+      component: () => import('../views/Fun/FunsView.vue')
     },
     {
       path: '/fun/:name',
       name: 'funItem',
-      component: () => import('../views/FunView.vue')
+      component: () => import('../views/Fun/FunView.vue')
     },
     {
       path: '/contact',
       name: 'contact',
-      component: () => import('../views/ContactView.vue')
+      component: () => import('../views/Contact/ContactView.vue')
     }
   ]
 })
