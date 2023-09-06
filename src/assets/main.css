@@ -39,12 +39,12 @@ li {
 header {
   position: fixed;
   /* top: 0px; */
-  right: 0px;
+  right: 100px;
   display: flex;
   align-items: baseline;
   justify-content: right;
   flex-wrap: wrap;
-  margin-top:-15px;
+  margin-top: -15px;
   padding: 0 100px
 }
 
@@ -91,7 +91,7 @@ a:not([href]):not([class]):hover {
 /* // icons styling */
 
 #icons {
-  min-width: 250px;
+  min-width: 150px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -278,12 +278,15 @@ body.dark ::-webkit-scrollbar-thumb {
 @media (max-width: 1200px) {
   #icons {
     flex-wrap: wrap;
-    min-width: 50px;
     max-width: 150px;
+  }
+
+  header {
+    right: 50px;
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   #icons {
     position: fixed;
     flex-direction: column;
@@ -300,9 +303,13 @@ body.dark ::-webkit-scrollbar-thumb {
   h2 span {
     display: block;
   }
+
+  header {
+    right: 100px;
+  }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 675px) {
   body {
     margin: 30px auto 50px auto;
   }
@@ -313,7 +320,7 @@ body.dark ::-webkit-scrollbar-thumb {
   }
 
   #back-arrow {
-    position: fixed;
+    position: absolute;
     top: 30px;
     left: 30px;
   }

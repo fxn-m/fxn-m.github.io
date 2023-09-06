@@ -11,13 +11,13 @@ import ToggleTheme from './components/ToggleTheme.vue';
     <div id="icons">
       <a href="https://github.com/fxn-m" target="_blank"><i class="fa-brands fa-github fa-2x"></i></a>
       <a href="https://twitter.com/fxn__m" target="_blank"><i class="fa-brands fa-twitter fa-2x"></i></a>
-      <a href="https://stackoverflow.com/users/16246457/fxn-m" target="_blank"><i
-          class="fa-brands fa-stack-overflow fa-2x"></i></a>
+      <!-- <a href="https://stackoverflow.com/users/16246457/fxn-m" target="_blank"><i
+          class="fa-brands fa-stack-overflow fa-2x"></i></a> -->
       <a href="https://www.strava.com/athletes/29743058" target="_blank"><i class="fa-brands fa-strava fa-2x"></i></a>
-      <a href="https://www.linkedin.com/in/felix-newport-mangell-0a89a8150/" target="_blank"><i
+      <!-- <a href="https://www.linkedin.com/in/felix-newport-mangell-0a89a8150/" target="_blank"><i
           class="fa-brands fa-linkedin-in fa-2x"></i></a>
       <a href="https://www.kaggle.com/felixnewportmangell" target="_blank" id="kaggle"><i
-          class="fa-brands fa-kaggle fa-2x"></i></a>
+          class="fa-brands fa-kaggle fa-2x"></i></a> -->
     </div>
     <ToggleTheme />
   </header>
