@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-    <div style="border-right: solid 1px white; padding-right: 30px;">
+    <div id="section-left" style="border-right: solid 1px rgba(150, 150, 150, 0.7); padding-right: 30px;">
       <p>Here are some discoveries and curiosities I came across when working with computers, and some other general
         ideas, and/or questions.</p>
     </div>
