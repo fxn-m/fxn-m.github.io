@@ -1,5 +1,4 @@
 import showdown from "showdown";
-// import Metadata from showdown metadata extension
 import { type Metadata } from "showdown";
 
 export const getBlogPaths = (): string[] => {
@@ -11,7 +10,17 @@ export const getBlogPaths = (): string[] => {
   return paths;
 };
 
+export const sortPostsByDate = (metadataArray: any[]) => {
+  const sortedPosts = metadataArray.sort((a, b) => {
+    const dateA = new Date(a.date);
+    const dateB = new Date(b.date);
+    return dateA.getTime() - dateB.getTime();
+  });
+  return sortedPosts.reverse();
+};
+
 export const getBlogPostData = async (blogPaths: string[]) => {
+  const contentMetadataTable: { [key: string]: string } = {};
   const contentArray: string[] = [];
   const metadataArray: any[] = [];
   const conv = new showdown.Converter({ metadata: true });
@@ -22,11 +31,20 @@ export const getBlogPostData = async (blogPaths: string[]) => {
       const blogPostData = await fetch(path);
       const blogPost = await blogPostData.text();
       const html = conv.makeHtml(blogPost);
-      const metadata: string | Metadata = conv.getMetadata(); // returns an object with the document metadata
+      const metadata = conv.getMetadata() as Metadata; // returns an object with the document metadata
+      console.log(metadata.date);
+      contentMetadataTable[metadata.title] = html;
       contentArray.push(html);
       metadataArray.push(metadata);
     })
   );
 
-  return { contentArray, metadataArray };
+  // ... previous code ...
+
+  const sortedMetadata = sortPostsByDate(metadataArray);
+  const sortedContentArray = sortedMetadata.map(
+    (meta) => contentMetadataTable[meta.title]
+  );
+
+  return { contentArray: sortedContentArray, metadataArray: sortedMetadata };
 };
