@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AnyHTML from '../components/AnyHTML.vue'
+import AnyHTML from '../../components/AnyHTML.vue'
 import { useRoute } from 'vue-router';
 import { ref, onMounted, type Component } from 'vue';
 
