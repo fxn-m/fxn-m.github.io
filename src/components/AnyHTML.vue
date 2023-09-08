@@ -139,18 +139,6 @@ input {
     align-items: middle;
 }
 
-pre {
-    overflow-x: auto;
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
-    word-wrap: break-word;
-    background-color: #e5e9eb93;
-    padding: 0px 10px;
-    border-radius: 10px;
-    transition: background-color .5s ease-in-out, color 1s ease-in-out;
-}
 
 .loader {
     border: 5px solid #f3f3f3;

@@ -1,14 +1,17 @@
 <template>
-  <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-    <div id="section-left" style="border-right: solid 1px rgba(150, 150, 150, 0.7); padding-right: 30px;">
+  <div class="container">
+    <div id="section-left">
       <p>Here are some discoveries and curiosities I came across when working with computers, and some other general
         ideas, and/or questions.</p>
     </div>
-    <div style="min-width: 50%; padding-left: 30px;">
+    <div id="section-right">
       <ul>
-        <li v-for="blog in blogsMetadata" :key="blog.id" style="display: flex; justify-content: space-between;">
-          <router-link to="blogPost" style="margin: 0px 0px;">{{ blog.title }}</router-link>
-          <p style="margin: 0px 0px;">{{ blog.date }}</p>
+        <li v-for="blog in blogs">
+          <router-link :to="blog.id" style="margin: 0px 0px;">
+            {{ blog.metadata.title }}
+          </router-link>
+
+          <p style="margin: 0px 0px;">{{ blog.metadata.date }}</p>
         </li>
       </ul>
     </div>
@@ -18,14 +21,64 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { getBlogPaths, getBlogPostData } from '@/utils/blog/blogUtils';
+import { type Blog } from "@/types/Blog";
 
-const blogsMetadata = ref<any[]>([]);
+const blogs = ref<Blog[]>([]);
 
 onMounted(async () => {
   const blogPaths: string[] = getBlogPaths();
-  const { metadataArray } = await getBlogPostData(blogPaths);
-
-  blogsMetadata.value = metadataArray;
+  const blogData = await getBlogPostData(blogPaths);
+  blogs.value = blogData;
 });
 
 </script>
+
+<style scoped>
+.container {
+  display: flex;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+#section-left {
+  border-right: solid 1px rgba(150, 150, 150, 0.7);
+  padding-right: 20px;
+}
+
+#section-right {
+  min-width: 50%;
+  padding-left: 20px;
+}
+
+li {
+  display: flex;
+  justify-content: space-between;
+}
+
+@media (max-width: 1200px) {
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
+  }
+
+  #section-left {
+    border-right: none;
+    padding-right: 0px;
+  }
+
+  #section-right {
+    min-width: 100%;
+    padding-left: 0px;
+  }
+}
+
+@media (max-width: 675px) {
+  .container {
+    max-width: 350px
+  }
+}
+</style>
+

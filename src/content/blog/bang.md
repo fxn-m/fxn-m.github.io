@@ -3,7 +3,6 @@ title: Bang in Bash !
 date: 04-09-2023
 ---
 
-## Bang in Bash !
 
 ### The problem
 
@@ -38,10 +37,11 @@ The exclamation mark followed by the single quote (') was being interpreted as a
 ### The solution(s)
 
 There are two:
-1. Escape the special character so it's not interpreted by the terminal (in this case, '`\!'`)
-`$ echo "print('Hello world\!')" > app.py`
-2. Enclose the entire string in single quotes, preventing Bash from intepreting any special characters inside the string.
-`$ echo 'print("Hello world!")' > app.py`
+1. Escape the special character so it's not interpreted by the terminal. <br>
+        `$ echo "print('Hello world\!')" > app.py`
+
+2. Enclose the entire string in single quotes, preventing Bash from intepreting any special characters inside the string. <br>
+        `$ echo 'print("Hello world!")' > app.py`
 
 Now, all's good:
 

@@ -1,5 +1,6 @@
 import showdown from "showdown";
 import { type Metadata } from "showdown";
+import { type Blog } from "@/types/Blog";
 
 export const getBlogPaths = (): string[] => {
   const blogs = import.meta.glob("../../content/blog/*.md", {
@@ -10,19 +11,8 @@ export const getBlogPaths = (): string[] => {
   return paths;
 };
 
-export const sortPostsByDate = (metadataArray: any[]) => {
-  const sortedPosts = metadataArray.sort((a, b) => {
-    const dateA = new Date(a.date);
-    const dateB = new Date(b.date);
-    return dateA.getTime() - dateB.getTime();
-  });
-  return sortedPosts.reverse();
-};
-
 export const getBlogPostData = async (blogPaths: string[]) => {
-  const contentMetadataTable: { [key: string]: string } = {};
-  const contentArray: string[] = [];
-  const metadataArray: any[] = [];
+  const combinedDataArray: Blog[] = [];
   const conv = new showdown.Converter({ metadata: true });
 
   // Use Promise.all to wait for all fetch operations to complete
@@ -32,19 +22,19 @@ export const getBlogPostData = async (blogPaths: string[]) => {
       const blogPost = await blogPostData.text();
       const html = conv.makeHtml(blogPost);
       const metadata = conv.getMetadata() as Metadata; // returns an object with the document metadata
-      console.log(metadata.date);
-      contentMetadataTable[metadata.title] = html;
-      contentArray.push(html);
-      metadataArray.push(metadata);
+      combinedDataArray.push({
+        content: html,
+        metadata: metadata as Metadata,
+        id: `/blog/${path.split("/").pop()!.slice(0, -3)}`,
+      });
     })
   );
 
-  // ... previous code ...
+  const sortedCombinedArray = combinedDataArray.sort((a, b) => {
+    const dateA = new Date(a.metadata.date);
+    const dateB = new Date(b.metadata.date);
+    return dateB.getTime() - dateA.getTime();
+  });
 
-  const sortedMetadata = sortPostsByDate(metadataArray);
-  const sortedContentArray = sortedMetadata.map(
-    (meta) => contentMetadataTable[meta.title]
-  );
-
-  return { contentArray: sortedContentArray, metadataArray: sortedMetadata };
+  return sortedCombinedArray;
 };
