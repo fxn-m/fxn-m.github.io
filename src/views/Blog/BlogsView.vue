@@ -10,8 +10,7 @@
           <router-link :to="blog.id" style="margin: 0px 0px;">
             {{ blog.metadata.title }}
           </router-link>
-
-          <p style="margin: 0px 0px;">{{ blog.metadata.date }}</p>
+          <p>{{ blog.metadata.date }}</p>
         </li>
       </ul>
     </div>
@@ -44,12 +43,19 @@ onMounted(async () => {
 
 #section-left {
   border-right: solid 1px rgba(150, 150, 150, 0.7);
-  padding-right: 20px;
+  padding-right: 35px;
+  text-align: justify;
+}
+
+#section-right p {
+  color: #868686;
+  font-size: 0.95em;
+  margin: 0px 0px;
 }
 
 #section-right {
   min-width: 50%;
-  padding-left: 20px;
+  padding-left: 35px;
 }
 
 li {

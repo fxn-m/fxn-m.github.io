@@ -41,12 +41,17 @@ onMounted(async () => {
 .metadata {
     display: flex;
     flex-direction: row;
-    align-items: center;
+    align-items: baseline;
     justify-content: space-between;
 }
 
 .metadata h3 {
     color: #686868;
+}
+
+.metadata p {
+    color: #b3b3b3;
+    font-size: 0.95em;
 }
 
 body.dark h3 {
