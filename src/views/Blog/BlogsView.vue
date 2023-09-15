@@ -1,3 +1,5 @@
+<!-- https://v2.vuejs.org/v2/cookbook/serverless-blog -->
+
 <template>
   <div class="container">
     <div id="section-left">
