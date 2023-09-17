@@ -7,7 +7,7 @@
       <p>Documenting a work in progress.</p>
     </div>
     <div id="section-right">
-      <ul>
+      <ul v-if="blogs.length > 0">
         <li v-for="blog in blogs">
           <router-link :to="{ name: 'blogPost', params: { post: blog.headerTitle }, query: { id: blog.id, title: blog.title, date: blog.date } }" style="margin: 0px 0px;">
             {{ blog.title }}
@@ -15,6 +15,7 @@
           <p>{{ blog.date }}</p>
         </li>
       </ul>
+      <div v-else id="loader">Load{{ loadingEllipses }}</div> <!-- Render loading message if no data is available -->
     </div>
   </div>
 </template>
@@ -25,6 +26,7 @@ import { type Blog } from "@/types/Blog";
 import { getBlogPosts } from '@/utils/blog/blogUtils'
 
 const blogs = ref([] as Blog[]);
+const loadingEllipses = ref('');
 
 const headerTitleIdMap: Record<string, string> = {}
 
@@ -41,6 +43,26 @@ onMounted(async () => {
     headerTitleIdMap[blog.attributes.HeaderTitle] = blog.attributes.Id;
 });
 });
+
+let counter = 0;
+const ending = 'ing';
+const sendingLoader = setInterval(() => {
+  if (blogs.value.length > 0) {
+    clearInterval(sendingLoader);
+    loadingEllipses.value = '';
+  }
+  if (counter > 6) {
+    loadingEllipses.value = 'ing.';
+    counter = 3;
+  } else if (counter > 2) {
+    loadingEllipses.value += '.';
+  } else {
+    loadingEllipses.value += ending[counter];
+  }
+  counter++;
+}, 400);
+
+
 
 </script>
 
@@ -73,6 +95,11 @@ onMounted(async () => {
 li {
   display: flex;
   justify-content: space-between;
+}
+
+#loader {
+  font-weight: 500;
+  margin: 16px 0px;
 }
 
 @media (max-width: 1200px) {
