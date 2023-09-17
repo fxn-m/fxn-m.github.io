@@ -8,9 +8,9 @@
       <li>
         <RouterLink to="/work">Work</RouterLink>
       </li>
-      <!-- <li>
+      <li>
         <RouterLink to="/blog">Blog</RouterLink>
-      </li> -->
+      </li>
       <li>
         <RouterLink to="/fun" id="fun">Fun</RouterLink>
       </li>

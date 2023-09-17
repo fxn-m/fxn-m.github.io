@@ -1,18 +1,18 @@
 <!-- https://v2.vuejs.org/v2/cookbook/serverless-blog -->
+<!-- https://docs.strapi.io/dev-docs/quick-start#_1-install-strapi-and-create-a-new-project -->
 
 <template>
   <div class="container">
     <div id="section-left">
-      <p>Here are some discoveries and curiosities I came across when working with computers, and some other general
-        ideas, and/or questions.</p>
+      <p>Documenting a work in progress.</p>
     </div>
     <div id="section-right">
       <ul>
         <li v-for="blog in blogs">
-          <router-link :to="blog.id" style="margin: 0px 0px;">
-            {{ blog.metadata.title }}
+          <router-link :to="{ name: 'blogPost', params: { post: blog.headerTitle }, query: { id: blog.id, title: blog.title, date: blog.date } }" style="margin: 0px 0px;">
+            {{ blog.title }}
           </router-link>
-          <p>{{ blog.metadata.date }}</p>
+          <p>{{ blog.date }}</p>
         </li>
       </ul>
     </div>
@@ -21,15 +21,27 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { getBlogPaths, getBlogPostData } from '@/utils/blog/blogUtils';
 import { type Blog } from "@/types/Blog";
+import { getBlogPosts } from '@/utils/blog/blogUtils'
 
-const blogs = ref<Blog[]>([]);
+const blogs = ref([] as Blog[]);
+
+const headerTitleIdMap: Record<string, string> = {}
 
 onMounted(async () => {
-  const blogPaths: string[] = getBlogPaths();
-  const blogData = await getBlogPostData(blogPaths);
-  blogs.value = blogData;
+  const blogPosts = await getBlogPosts();
+  console.log(blogPosts)
+  blogPosts.map((blog: any) => {
+    console.log(blog.attributes.id);
+    blogs.value.push({
+      id: blog.id,
+      title: blog.attributes.Title,
+      headerTitle: blog.attributes.HeaderTitle,
+      date: blog.attributes.Date,
+    });
+
+    headerTitleIdMap[blog.attributes.HeaderTitle] = blog.attributes.Id;
+});
 });
 
 </script>
@@ -39,7 +51,7 @@ onMounted(async () => {
   display: flex;
   flex-wrap: nowrap;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: left;
   margin-top: 20px;
 }
 
