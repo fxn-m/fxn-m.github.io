@@ -30,9 +30,7 @@ const headerTitleIdMap: Record<string, string> = {}
 
 onMounted(async () => {
   const blogPosts = await getBlogPosts();
-  console.log(blogPosts)
   blogPosts.map((blog: any) => {
-    console.log(blog.attributes.id);
     blogs.value.push({
       id: blog.id,
       title: blog.attributes.Title,
