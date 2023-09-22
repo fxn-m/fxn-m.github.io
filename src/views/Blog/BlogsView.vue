@@ -4,7 +4,7 @@
 <template>
   <div class="container">
     <div id="section-left">
-      <p>Documenting a work in progress.</p>
+      <p style="margin-top: 16px">Documenting a work in progress.</p>
     </div>
     <div id="section-right">
       <ul v-if="blogs.length > 0">
