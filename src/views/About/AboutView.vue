@@ -10,7 +10,7 @@
         <p>Later, with my master's project team, we designed a universal LIB interface. The aim was to make it easier to reuse batteries transitioning from their first lives in transport, to stationary storage.</p>
         <p>At some point I picked up programming, starting with data science & ML projects. I'm self-taught and now learning full-stack, improving patient education in healthcare @ <a href="https://www.sanctuaryhealth.io/"
                 target="_blank">Sanctuary Health</a>.</p>
-        <p>I'm based in Cambridge, travelling through late 2023. In 2024 I'll be in London.</p>
+        <p>I'm based in Cambridge, but travelling abroad through late 2023. In 2024 I'll be in London.</p>
         <h3 id="experience">Work</h3>
         <ul>
             <li>2022 Technical Research Intern @ Dyson (3 months)</li>
@@ -29,7 +29,6 @@
                 20:00 5k in October. <a href="https://www.strava.com/athletes/29743058" target="_blank">See my
                     progress</a>.</li>
             <li><strong>Music.</strong> I <a href="https://stats.fm/fnm" target="_blank">love</a> music. I've <a
-                href="https://fxnm.bandcamp.com/" target="_blank">produced</a> some too. Occasionally, I drum at jazz
-            jams.</li>
+                href="https://fxnm.bandcamp.com/" target="_blank">produced</a> some too. Occasionally, play jazz drums.</li>
     </ul>
 </div></template>
