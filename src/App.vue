@@ -20,7 +20,7 @@ import ToggleTheme from './components/ToggleTheme.vue';
     <h2><span style="white-space: nowrap">
         <RouterLink to="/" style="border: none; font-weight: bold;">fxn-m</RouterLink>
       </span>
-      <span>{{ pageTitle }}</span>
+      <span style="user-select: none;">{{ pageTitle }}</span>
     </h2>
     <RouterView />
   </div>

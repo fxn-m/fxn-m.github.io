@@ -6,9 +6,6 @@
         <RouterLink to="/about">About Me</RouterLink>
       </li>
       <li>
-        <RouterLink to="/work">Work</RouterLink>
-      </li>
-      <li>
         <RouterLink to="/blog">Blog</RouterLink>
       </li>
       <li>

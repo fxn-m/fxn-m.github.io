@@ -15,7 +15,7 @@
           <p>{{ blog.date }}</p>
         </li>
       </ul>
-      <div v-else id="loader">Load{{ loadingEllipses }}</div> <!-- Render loading message if no data is available -->
+      <div v-else id="loader">Load{{ loadingEllipses }} <span style="color: darkgray; font-weight: 400;"><em>(takes a few seconds)</em></span></div> <!-- Render loading message if no data is available -->
     </div>
   </div>
 </template>
@@ -98,6 +98,8 @@ li {
 }
 
 #loader {
+  display: flex;
+  justify-content: space-between;
   font-weight: 500;
   margin: 16px 0px;
 }
