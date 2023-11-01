@@ -4,8 +4,9 @@ import ToggleTheme from './components/ToggleTheme.vue';
 </script>
 
 <template>
-  <RouterLink v-if="$route.path !== '/'" to="#" @click="$router.go(-1)" id="back-arrow"><i
-      class="fa-solid fa-arrow-left fa-2x"></i></RouterLink>
+  <RouterLink v-if="$route.path !== '/'" to="#" @click="navigateToParent" id="back-arrow">
+      <i class="fa-solid fa-arrow-left fa-2x"></i>
+    </RouterLink>
 
   <header>
     <div id="icons">
@@ -31,11 +32,18 @@ import ToggleTheme from './components/ToggleTheme.vue';
 export default {
   computed: {
     pageTitle() {
-      // Use the $route object to access the current route's path
       const currentRoute = this.$route.path !=='/' ? this.$route.path : '';
       return `${currentRoute}`.replace(':', '');
     },
   },
+    methods: {
+    navigateToParent() {
+      const pathSegments = this.$route.path.split('/');
+      pathSegments.pop();
+      const parentPath = pathSegments.join('/') || '/';
+      this.$router.push(parentPath);
+    }
+  }
 };
 </script>
 

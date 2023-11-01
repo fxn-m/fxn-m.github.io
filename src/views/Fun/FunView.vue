@@ -3,10 +3,6 @@ import AnyHTML from '../../components/AnyHTML.vue'
 import { useRoute } from 'vue-router';
 import { ref, onMounted, type Component } from 'vue';
 
-const props = defineProps({
-  // Declare props here if you have any
-});
-
 const selectedComponent = ref<Component>();
 
 const selectComponent = () => {
