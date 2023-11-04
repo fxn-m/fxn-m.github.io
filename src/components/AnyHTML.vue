@@ -180,4 +180,8 @@ body.dark pre {
     color: #c3e3f1;
     transition: background-color .5s ease-in-out, color 1s ease-in-out;
 }
+
+p {
+    margin: 30px 0px;
+}
 </style>

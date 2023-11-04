@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AnyHTML from '../../components/AnyHTML.vue'
-import ReadingSuggestion from '../../components/ReadingSuggestion.vue'
+import ReadingSuggestion from '../../components/ReadMe.vue'
 import { useRoute } from 'vue-router';
 import { ref, onMounted, type Component } from 'vue';
 
@@ -17,7 +17,7 @@ const selectComponent = () => {
 
   if (routeName == 'anyhtml') {
     selectedComponent.value = components.AnyHTML;
-  } else if (routeName == 'reading-suggestion') {
+  } else if (routeName == 'readme') {
     selectedComponent.value = components.ReadingSuggestion;
   }
 };

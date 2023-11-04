@@ -18,8 +18,8 @@ const showSeparator = ref(true);
 const fetchReadingSuggestion = async () => {
     isLoading.value = true;  
     try {
-        const response = await fetch('https://fxnm-backend-5c0b9af08231.herokuapp.com/reading-suggestion', {
-        // const response = await fetch('http://localhost:3000/reading-suggestion', {
+        // const response = await fetch('https://fxnm-backend-5c0b9af08231.herokuapp.com/reading-suggestion', {
+        const response = await fetch('http://localhost:3000/reading-suggestion', {
             method: 'GET'
         });
         const data = await response.json();

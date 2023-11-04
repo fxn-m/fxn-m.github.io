@@ -33,6 +33,7 @@ const fetchContent = async (id: LocationQueryValue) => {
         },
     });
     const content = await posts.data.data.attributes.Content;
+    console.log(content)
     const html = conv.makeHtml(content);
     const metadata = conv.getMetadata() as Metadata;
 
