@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AnyHTML from '../../components/AnyHTML.vue'
+import ReadingSuggestion from '../../components/ReadingSuggestion.vue'
 import { useRoute } from 'vue-router';
 import { ref, onMounted, type Component } from 'vue';
 
@@ -11,10 +12,13 @@ const selectComponent = () => {
 
   const components = {
     AnyHTML,
+    ReadingSuggestion,
   };
 
   if (routeName == 'anyhtml') {
     selectedComponent.value = components.AnyHTML;
+  } else if (routeName == 'reading-suggestion') {
+    selectedComponent.value = components.ReadingSuggestion;
   }
 };
 
@@ -26,7 +30,6 @@ onMounted(() => {
 
 <template>
   <div id="content">
-    <!-- Use the dynamic component to render the selected component -->
     <component :is="selectedComponent" v-if="selectedComponent" />
   </div>
 </template>

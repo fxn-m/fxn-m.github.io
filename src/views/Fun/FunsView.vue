@@ -10,6 +10,9 @@
       <li>
         <RouterLink to="/fun/:anyhtml">AnyHTML</RouterLink> - fetches and renders HTML with a CORS proxy.
       </li>
+      <li>
+        <RouterLink to="/fun/:reading-suggestion">Reading Suggestion</RouterLink> - a random reading suggestion from my reading list.
+      </li>
 
     </ul>
   </div>
