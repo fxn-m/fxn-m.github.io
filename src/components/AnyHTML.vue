@@ -10,10 +10,10 @@ const setupRender = () => {
     const render = () => {
         url = document.getElementById('url')
         // start loading animation
-        loader.style.display = 'block'
+        loader.style.opacity = '1'
 
         setTimeout(() => {
-            loader.style.display = 'none'
+            loader.style.opacity = '0'
         }, 3000)
 
         fetch('https://fxnm-cors-anywhere-b5bfdd86bf6e.herokuapp.com/' + url.value, {
@@ -24,7 +24,7 @@ const setupRender = () => {
             })
             .then(data => {
                 // stop loading animation
-                loader.style.display = 'none'
+                loader.style.opacity = '0'
                 typeWriter(data)
             })
             .catch(error => {
@@ -81,11 +81,13 @@ onMounted(() => {
 
         <div style="display: flex; flex-wrap: wrap; justify-content: left;">
             <input type="url" id="url" name="url" placeholder='https://example.com' value='https://example.com'>
-            <button id="submit">
-                Submit
-            </button>
-            <div id="loader-container">
-                <div class="loader"></div>
+            <div class="submit-and-loader" style="display: flex">
+                <button id="submit">
+                    Submit
+                </button>
+                <div id="loader-container">
+                    <div class="loader"></div>
+                </div>
             </div>
         </div>
 
@@ -148,7 +150,7 @@ input {
     height: 20px;
     animation: spin 2s linear infinite;
     margin: auto;
-    display: none;
+    opacity: 0;
     aspect-ratio: 1/1;
 }
 
