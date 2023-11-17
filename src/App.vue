@@ -5,7 +5,7 @@ import ToggleTheme from './components/ToggleTheme.vue';
 
 <template>
   <RouterLink v-if="$route.path !== '/'" to="#" @click="navigateToParent" id="back-arrow">
-      <i class="fa-solid fa-arrow-left fa-2x"></i>
+      <i class="fa-solid fa-arrow-left fa-2x" style="font-size: 18px;"></i>
     </RouterLink>
 
   <header>

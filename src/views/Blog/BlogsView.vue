@@ -78,7 +78,7 @@ const sendingLoader = setInterval(() => {
 #section-left {
   border-right: solid 1px rgba(150, 150, 150, 0.7);
   padding-right: 35px;
-  text-align: justify;
+  text-align: left;
 }
 
 #section-right p {
