@@ -10,10 +10,31 @@ const readingSuggestion = ref({
 });
 
 const isLoading = ref(true);
+const loadingEllipses = ref('');
+const serverUp = ref(false);
+
 
 const metadataDiv = ref(null);
 const suggestionTypeDiv = ref(null);
 const showSeparator = ref(true);
+
+let counter = 0;
+const ending = 'ing';
+const sendingLoader = setInterval(() => {
+    if (readingSuggestion.value.title !== "") {
+        clearInterval(sendingLoader);
+        loadingEllipses.value = '';
+    }
+    if (counter > 6) {
+        loadingEllipses.value = 'ing.';
+        counter = 3;
+    } else if (counter > 2) {
+        loadingEllipses.value += '.';
+    } else {
+        loadingEllipses.value += ending[counter];
+    }
+    counter++;
+}, 400);
 
 const fetchReadingSuggestion = async () => {
     isLoading.value = true;  
@@ -44,12 +65,15 @@ const fetchReadingSuggestion = async () => {
 
         if (!data.properties.Link.url || data.properties.Link.url.slice(0,4) !== "http") {
             fetchReadingSuggestion();
+        } else if (data.properties.Link.url.includes("notion")) {
+            fetchReadingSuggestion();
         }
 
     } catch (error) {
         console.log(error);
     } finally {
         isLoading.value = false;
+        serverUp.value = true;
     }
 };
 
@@ -91,9 +115,8 @@ watchEffect(() => {
             </div>
             <button @click="fetchReadingSuggestion">Another one!</button>
         </div>
-        <div v-else class="reading-suggestion">
-            <p>Loading...</p>
-        </div>
+          <div v-else-if="!serverUp" id="loader" class="reading-suggestion">Load{{ loadingEllipses }} </div> <!-- Render loading message if no data is available -->
+
     </div>
 </template>
 
