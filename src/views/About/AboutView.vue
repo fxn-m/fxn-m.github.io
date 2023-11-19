@@ -19,7 +19,7 @@
         <ul>
             <li><a href="https://chess.com/play/fn-m" target="_blank">Chess</a></li>
             <li><a
-                        href="https://www.goodreads.com/user/show/111634482-felix" target="_blank">Reading</a></li>
+                        href="https://goodreads.com/fxn-m" target="_blank">Reading</a></li>
             <li><a href="https://www.strava.com/athletes/29743058" target="_blank">Running</a></li>
             <li><a
                     href="https://fxnm.bandcamp.com/" target="_blank">Music</a></li>
