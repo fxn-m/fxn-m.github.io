@@ -61,6 +61,8 @@ h2 {
 h2:hover {
   text-decoration: none;
   cursor: default;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 h3 {
@@ -338,10 +340,6 @@ body.dark ::-webkit-scrollbar-thumb {
     padding: 20px 10px;
   }
 
-  h2 span {
-    display: block;
-  }
-
   header {
     right: 100px;
   }
@@ -358,16 +356,10 @@ body.dark ::-webkit-scrollbar-thumb {
   }
 
   #back-arrow {
-    position: absolute;
-    top: 30px;
-    left: 30px;
-  }
-
-  header {
     display: none;
   }
 
-  #icons {
+  header {
     display: none;
   }
 }
