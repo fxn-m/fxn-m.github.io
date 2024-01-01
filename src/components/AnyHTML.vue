@@ -6,11 +6,14 @@ const setupRender = () => {
     let url: any
     let timer: any
     let loader: HTMLDivElement = document.querySelector('.loader')!
+    // select pre tag
+    let htmlOutput: HTMLPreElement = document.querySelector('pre')!
 
     const render = () => {
         url = document.getElementById('url')
         // start loading animation
         loader.style.opacity = '1'
+        htmlOutput.style.opacity = '1'
 
         setTimeout(() => {
             loader.style.opacity = '0'
@@ -94,14 +97,18 @@ onMounted(() => {
         <br>
 
         <pre>
-    <code id="print-html-output"></code>
-  </pre>
+            <code id="print-html-output"></code>
+        </pre>
     </div>
 </template>
 
 <style scoped>
 #content {
     margin-top: 30px;
+}
+
+pre {
+    opacity: 0;
 }
 
 button {
