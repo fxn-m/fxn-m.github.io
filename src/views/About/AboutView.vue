@@ -15,7 +15,4 @@
             <li>2019 Front of House @ Hotel Du Vin (2 months)</li>
             <li>2018 Summer Intern @ Arup (2 months)</li>
         </ul>
-        <br>
-        <p>I'm based in Cambridge, but travelling abroad through late 2023, starting in India.</p>
-
 </div></template>
