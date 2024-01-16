@@ -11,7 +11,7 @@
         <RouterLink to="/fun/:anyhtml">AnyHTML</RouterLink> - get HTML from anywhere with a CORS proxy.
       </li>
       <li>
-        <RouterLink to="/fun/:readme">ReadMe</RouterLink> - a random item from my reading list.
+        <RouterLink to="/fun/:readme">ReadMe</RouterLink> - suggest a random item from my Notion reading list.
       </li>
 
     </ul>

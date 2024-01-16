@@ -104,6 +104,9 @@ watchEffect(() => {
 
 <template>
     <div style="position:relative">
+    <div style="margin-top: 20px">
+        <p>Suggest a random item from my Notion reading list.</p>
+    </div>
         <div v-if="!isLoading" class="reading-suggestion"> 
             <a :href="readingSuggestion.url" target="_blank">{{ readingSuggestion.title }}</a>
             <div class="suggestion-metadata" ref="metadataDiv">
@@ -113,10 +116,9 @@ watchEffect(() => {
                 <p v-if="readingSuggestion.time && readingSuggestion.author && showSeparator">|</p>
                 <p class="reading-time" v-if="readingSuggestion.time">Estimated reading time: {{ readingSuggestion.time }} minutes</p>
             </div>
-            <button @click="fetchReadingSuggestion">Another one!</button>
+            <button @click="fetchReadingSuggestion">Pick another one</button>
         </div>
           <div v-else-if="!serverUp" id="loader" class="reading-suggestion">Load{{ loadingEllipses }} </div> <!-- Render loading message if no data is available -->
-
     </div>
 </template>
 
@@ -129,7 +131,7 @@ watchEffect(() => {
 
 button {
     position: absolute;
-    top: 175px;
+    top: 110px;
     left: 0px;
     font-family: inherit;
     color: #727272;    
