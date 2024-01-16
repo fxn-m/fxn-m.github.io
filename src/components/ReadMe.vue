@@ -103,7 +103,7 @@ watchEffect(() => {
 </script>
 
 <template>
-    <div style="position:relative">
+    <div>
     <div style="margin-top: 20px">
         <p>Suggest a random item from my Notion reading list.</p>
     </div>
