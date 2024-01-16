@@ -10,6 +10,7 @@
                 target="_blank">Sanctuary Health</a>.</p>
         <h3 id="experience">Experience</h3>
         <ul>
+            <li>2023/24 Freelance Full-Stack Developer @ Sanctuary Health (Ongoing)</li>
             <li>2022 Technical Research Intern @ Dyson (3 months)</li>
             <li>2020/21 Mechanical Engineer @ Babcock (12 months)</li>
             <li>2019 Front of House @ Hotel Du Vin (2 months)</li>
