@@ -130,9 +130,6 @@ watchEffect(() => {
 }
 
 button {
-    position: absolute;
-    top: 110px;
-    left: 0px;
     font-family: inherit;
     color: #727272;    
     padding: 10px;
