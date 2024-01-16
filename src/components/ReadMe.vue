@@ -105,7 +105,7 @@ watchEffect(() => {
 <template>
     <div>
     <div style="margin-top: 20px">
-        <p>Suggest a random item from my Notion reading list.</p>
+        <p style="color:#828282; size: 0.85em;">Suggests a random item from my Notion reading list.</p>
     </div>
         <div v-if="!isLoading" class="reading-suggestion"> 
             <a :href="readingSuggestion.url" target="_blank">{{ readingSuggestion.title }}</a>
@@ -130,6 +130,7 @@ watchEffect(() => {
 }
 
 button {
+    margin-top: 40px;
     font-family: inherit;
     color: #727272;    
     padding: 10px;
