@@ -6,12 +6,10 @@ const setupRender = () => {
     let url: any
     let timer: any
     let loader: HTMLDivElement = document.querySelector('.loader')!
-    // select pre tag
     let htmlOutput: HTMLPreElement = document.querySelector('pre')!
 
     const render = () => {
         url = document.getElementById('url')
-        // start loading animation
         loader.style.opacity = '1'
         htmlOutput.style.opacity = '1'
 
@@ -26,7 +24,6 @@ const setupRender = () => {
                 return response.text();
             })
             .then(data => {
-                // stop loading animation
                 loader.style.opacity = '0'
                 typeWriter(data)
             })
@@ -75,14 +72,14 @@ onMounted(() => {
 
 <template>
     <div id="content">
-        <p>
+        <p style="margin-bottom: 8px;">
             My first 'web app'...
         </p>
-        <p>
+        <p style="margin-top: 0;">
             Input any website url and see the corresponding page's HTML below:
         </p>
 
-        <div style="display: flex; flex-wrap: wrap; justify-content: left;">
+        <div style="display: flex; flex-wrap: wrap; justify-content: left; margin-top:30px">
             <input type="url" id="url" name="url" placeholder='https://example.com' value='https://example.com'>
             <div class="submit-and-loader" style="display: flex">
                 <button id="submit">
@@ -104,11 +101,16 @@ onMounted(() => {
 
 <style scoped>
 #content {
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 pre {
     opacity: 0;
+}
+
+p {
+    color:#828282;
+    font-size: 0.85em;
 }
 
 button {
@@ -190,7 +192,4 @@ body.dark pre {
     transition: background-color .5s ease-in-out, color 1s ease-in-out;
 }
 
-p {
-    margin: 30px 0px;
-}
 </style>

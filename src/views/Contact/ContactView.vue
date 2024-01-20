@@ -1,13 +1,12 @@
 <template>
   <div>
     <br>
-    <h3>Let's chat!</h3>
     <p>I'm always open to new people and opportunities.</p>
     <p>Feel free to reach out to me using the form below.</p>
     <form @submit.prevent="sendEmail()">
       <div style="display: flex; gap: 10px; justify-content: space-between">
         <input type="name" id="name" v-model="name" autocomplete="nope" placeholder="Name">
-        <input type="email" id="email" v-model="email" autocomplete="off" placeholder="Email" required>
+        <input type="email" id="email" v-model="email" autocomplete="off" placeholder="Your email" required>
       </div>
       <textarea id="message" v-model="message" rows="4" placeholder="Message" required
         @keydown.enter.prevent="submitFormOnEnter"></textarea>

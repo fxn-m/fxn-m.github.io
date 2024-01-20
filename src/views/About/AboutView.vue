@@ -16,4 +16,5 @@
             <li>2019 Front of House @ Hotel Du Vin (2 months)</li>
             <li>2018 Summer Intern @ Arup (2 months)</li>
         </ul>
-</div></template>
+    </div>
+</template>

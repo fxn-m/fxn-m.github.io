@@ -1,5 +1,6 @@
 <template>
   <div id="content">
+    <br>
     <p>Welcome to my plot of internet real estate.</p>
     <ul>
       <li>
@@ -20,6 +21,11 @@
 
 
 <style scoped>
+
+ul {
+  list-style-type: none;
+  margin-top: 30px;
+}
 
 #fun:hover {
 animation: lightColorCycle 5s infinite;
