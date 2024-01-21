@@ -113,6 +113,10 @@ p {
     font-size: 0.85em;
 }
 
+body.dark p {
+    color: #afafaf;
+}
+
 button {
     border-radius: 8px;
     border: 1px solid transparent;
