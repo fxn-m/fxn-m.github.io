@@ -13,8 +13,9 @@ import ToggleTheme from './components/ToggleTheme.vue';
       <a href="https://github.com/fxn-m" target="_blank"><i class="fa-brands fa-github fa-2x"></i></a>
       <a href="https://x.com/fxn__m" target="_blank"><i class="fa-brands fa-x-twitter fa-2x"></i></a>
       <a href="https://www.strava.com/athletes/29743058" target="_blank"><i class="fa-brands fa-strava fa-2x"></i></a>
+      <a href="https://www.polarsteps.com/FelixNewportMangell" target="_blank"><i class="fa fa-compass fa-2x"></i></a>
+      <ToggleTheme />
     </div>
-    <ToggleTheme />
   </header>
 
   <div id="main">

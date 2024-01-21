@@ -9,7 +9,7 @@ body {
 }
 
 #main {
-  margin: 0px auto 0px 25%;
+  margin: 0px auto 0px 15%;
   width: 45%;
 }
 
@@ -134,7 +134,7 @@ a:not([href]):not([class]):hover {
 /* // icons styling */
 
 #icons {
-  min-width: 150px;
+  min-width: 250px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -163,6 +163,11 @@ a:not([href]):not([class]):hover {
 #icons a:hover i.fa-strava {
   transition-duration: 0.5s;
   color: #fc4c02;
+}
+
+#icons a:hover i.fa-compass {
+  transition-duration: 0.5s;
+  color: #ce264a;
 }
 
 /* // back arrow styling */
@@ -208,7 +213,7 @@ a:not([href]):not([class]):hover {
 }
 
 #toggle-btn img {
-  width: 25px;
+  width: 27px;
   margin-bottom: -4px;
 }
 
@@ -314,38 +319,39 @@ body.dark ::-webkit-scrollbar-thumb {
 }
 
 /* // media queries */
-
+/* 
 @media (max-width: 1200px) {
   #icons {
     flex-wrap: wrap;
     max-width: 150px;
+    padding: 0px;
+  }
+} */
+
+@media (max-width: 1024px) {
+  body {
+    margin: 15px auto 50px auto;
   }
 
-  header {
-    right: 50px;
+  #main {
+    margin: 100px auto 0px 100px;
+    width: 65%;
   }
-}
 
-@media (max-width: 1000px) {
   #icons {
     position: fixed;
-    flex-direction: column;
-    right: 60px;
-    top: 140px;
-    max-width: 50px;
+    flex-direction: column-reverse;
+    top: 120px;
+    min-width: 0px;
+    right: 100px;
   }
 
   #icons a {
-    max-width: fit-content;
     padding: 20px 10px;
-  }
-
-  header {
-    right: 100px;
   }
 }
 
-@media (max-width: 675px) {
+@media (max-width: 700px) {
   body {
     margin: 15px auto 50px auto;
   }

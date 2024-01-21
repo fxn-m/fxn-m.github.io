@@ -1,6 +1,5 @@
 <template>
-    <!-- Your HTML/Template code here if needed -->
-    <button id="toggle-btn">Toggle Theme</button>
+    <button id="toggle-btn" style="width: 0; height:42.4px"></button>
 </template>
   
 <script lang="ts">

@@ -177,12 +177,4 @@ body.dark button:hover {
     color: #dddddd;
 }
 
-@media (max-width: 600px) {
-    button {
-        left: 50%;
-        top: 200px;
-        transform: translateX(-50%);
-    }
-}
-
 </style>
