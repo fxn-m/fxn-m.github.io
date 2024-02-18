@@ -1,19 +1,21 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
 import ToggleTheme from './components/ToggleTheme.vue';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 </script>
 
 <template>
   <RouterLink v-if="$route.path !== '/'" to="#" @click="navigateToParent" id="back-arrow">
-      <i class="fa-solid fa-arrow-left fa-2x" style="font-size: 18px;"></i>
+      <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="2x" />
+
     </RouterLink>
 
   <header>
     <div id="icons">
-      <a href="https://github.com/fxn-m" target="_blank"><i class="fa-brands fa-github fa-2x"></i></a>
-      <a href="https://x.com/fxn__m" target="_blank"><i class="fa-brands fa-x-twitter fa-2x"></i></a>
-      <a href="https://www.strava.com/athletes/29743058" target="_blank"><i class="fa-brands fa-strava fa-2x"></i></a>
-      <a href="https://www.polarsteps.com/FelixNewportMangell" target="_blank"><i class="fa fa-compass fa-2x"></i></a>
+      <a href="https://github.com/fxn-m" target="_blank"><FontAwesomeIcon icon="fa-brands fa-github" size="2x" class="fa-github"/></a>
+      <a href="https://x.com/fxn__m" target="_blank"><FontAwesomeIcon icon="fa-brands fa-x-twitter" size="2x" class="fa-twitter" /></a>
+      <a href="https://www.strava.com/athletes/29743058" target="_blank"><FontAwesomeIcon icon="fa-brands fa-strava" size="2x" class="fa-strava" /></a>
+      <a href="https://www.polarsteps.com/FelixNewportMangell" target="_blank"><FontAwesomeIcon icon="fa-regular fa-compass" size="2x" class="fa-compass" /></a>
       <ToggleTheme />
     </div>
   </header>
