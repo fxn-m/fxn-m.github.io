@@ -1,31 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="fxn-m's personal homepage" />
+    <link rel="icon" href="/favicon" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>fxn-m</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta
-  name="description"
-  content="fxn-m's personal homepage"
-/>
-  <link rel="icon" href="/favicon" type="image/x-icon">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://kit.fontawesome.com/fc27f7afcf.js" crossorigin="anonymous"></script>
-  <title>fxn-m</title>
-</head>
+  <!-- Google tag (gtag.js) -->
+  <script
+    async
+    src="https://www.googletagmanager.com/gtag/js?id=G-C6RP8GV9EB"
+  ></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-C6RP8GV9EB"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    gtag("config", "G-C6RP8GV9EB");
+  </script>
 
-  gtag('config', 'G-C6RP8GV9EB');
-</script>
-
-<body>
-  <div id="app"></div>
-  <script type="module" src="/src/main.ts"></script>
-</body>
-
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
 </html>

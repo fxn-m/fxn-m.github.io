@@ -5,7 +5,8 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "run-p type-check build-only",
+    "build:markdown": "node ./scripts/convertMarkdown.js",
+    "build": "npm run build:markdown && run-p type-check build-only",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
@@ -19,6 +20,7 @@
     "axios": "^1.5.0",
     "dotenv": "^16.3.1",
     "showdown": "^2.1.0",
+    "uuid": "^9.0.1",
     "vue": "^3.3.4",
     "vue-router": "^4.2.4"
   },

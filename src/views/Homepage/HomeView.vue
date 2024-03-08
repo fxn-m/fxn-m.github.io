@@ -4,7 +4,7 @@
     <p>Welcome to my plot of internet real estate.</p>
     <ul>
       <li>
-        <RouterLink to="/about">About Me</RouterLink>
+        <RouterLink to="/about">About</RouterLink>
       </li>
       <li>
         <RouterLink to="/blog">Blog</RouterLink>

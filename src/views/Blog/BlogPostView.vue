@@ -10,42 +10,28 @@
     </div>
 </template>
 
-
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import { useRoute, type LocationQueryValue } from 'vue-router';
-import showdown, { type Metadata } from "showdown";
-import axios from 'axios';
 
-
-const route = useRoute();  // get current route object
+const route = useRoute();
 
 const blogContent = ref<string>('');
-const blogMetadata = ref<Metadata>({});
 
-const conv = new showdown.Converter({ metadata: true });
+const fetchContent = async (title: LocationQueryValue) => {
+    const response = await fetch(`/html/${title}.html`);
+    if (response.ok) {
+        const html = await response.text();
+        blogContent.value = html;
+    } else {
+        console.error('Failed to load blog content:', response.statusText);
+    }
+};
 
-const fetchContent = async (id: LocationQueryValue) => {
-    const k = import.meta.env.VITE_STRAPI_API_KEY
-    const posts = await axios.get(`https://fxnm-strapi-blog-9e2c8c1b9091.herokuapp.com/api/articles/${id}`, {
-        headers: {
-            Authorization: `Bearer ${k}`,
-        },
-    });
-    const content = await posts.data.data.attributes.Content;
-    console.log(content)
-    const html = conv.makeHtml(content);
-    const metadata = conv.getMetadata() as Metadata;
-
-    blogContent.value = html
-    blogMetadata.value = metadata
-
-    return content;
-}
 
 
 onMounted(() => {
-    fetchContent(route.query.id as LocationQueryValue)
+    fetchContent(route.query.title as LocationQueryValue)
 })
 </script>
 
