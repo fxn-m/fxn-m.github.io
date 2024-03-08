@@ -1,3 +1,27 @@
+<template>
+    <div>
+        <div style="margin-top: 20px">
+            <p>Suggests a random item from my Notion reading list.</p>
+        </div>
+        <div v-if="!isLoading" class="reading-suggestion">
+            <a :href="readingSuggestion.url" target="_blank">{{ readingSuggestion.title }}</a>
+            <div class="suggestion-metadata" ref="metadataDiv">
+                <p v-if="readingSuggestion.type" ref="suggestionTypeDiv">{{ readingSuggestion.type }}</p>
+                <p
+                    v-if="readingSuggestion.type && readingSuggestion.author || readingSuggestion.type && readingSuggestion.time">
+                    |</p>
+                <p v-if="readingSuggestion.author" class="author">{{ readingSuggestion.author }}</p>
+                <p v-if="readingSuggestion.time && readingSuggestion.author && showSeparator">|</p>
+                <p class="reading-time" v-if="readingSuggestion.time">Estimated reading time: {{ readingSuggestion.time
+                    }} minutes</p>
+            </div>
+            <button @click="fetchReadingSuggestion">Pick another one</button>
+        </div>
+        <div v-else-if="!serverUp" id="loader" class="reading-suggestion">Load{{ loadingEllipses }} </div>
+    </div>
+</template>
+
+
 <script setup lang="ts">
 import { ref, onMounted, watchEffect } from 'vue';
 
@@ -75,28 +99,31 @@ const fetchReadingSuggestion = async () => {
     }
 };
 
-// const checkWrap = () => {
-//     if (metadataDiv.value && suggestionTypeDiv.value) {
-//         const metadataDivHeight = metadataDiv.value.offsetHeight;
-//         const suggestionTypeDivHeight = suggestionTypeDiv.value.offsetHeight;
-//         if (metadataDivHeight > suggestionTypeDivHeight) {
-//             showSeparator.value = false;
-//         } else {
-//             showSeparator.value = true;
-//         }
-//     }
-// }
+
+const checkWrap = () => {
+    if (metadataDiv.value && suggestionTypeDiv.value) {
+        // @ts-ignore
+        const metadataDivHeight = metadataDiv.value.offsetHeight;
+        // @ts-ignore
+        const suggestionTypeDivHeight = suggestionTypeDiv.value.offsetHeight;
+        if (metadataDivHeight > suggestionTypeDivHeight) {
+            showSeparator.value = false;
+        } else {
+            showSeparator.value = true;
+        }
+    }
+}
 
 onMounted(() => {
     fetchReadingSuggestion();
-    // window.addEventListener('resize', checkWrap);
+    window.addEventListener('resize', checkWrap);
 });
 
-// watchEffect(() => {
-//     if (suggestionTypeDiv.value && metadataDiv.value) {
-//         checkWrap();
-//     }
-// })
+watchEffect(() => {
+    if (suggestionTypeDiv.value && metadataDiv.value) {
+        checkWrap();
+    }
+})
 
 </script>
 
