@@ -1,6 +1,3 @@
-<!-- https://v2.vuejs.org/v2/cookbook/serverless-blog -->
-<!-- https://docs.strapi.io/dev-docs/quick-start#_1-install-strapi-and-create-a-new-project -->
-
 <template>
     <div class="container">
         <ul>
@@ -19,9 +16,7 @@
 import { ref, onMounted } from 'vue';
 import { type Blog } from "@/types/Blog";
 
-// const blogList = import something something
 const blogs = ref([] as Blog[]);
-const loadingEllipses = ref('');
 
 const headerTitleIdMap: Record<string, string> = {}
 
@@ -32,10 +27,6 @@ onMounted(async () => {
             throw new Error('Failed to load blog list');
         }
         const blogList: Blog[] = await response.json();
-
-        console.log("blogLists:", blogList)
-
-
 
         blogList
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
