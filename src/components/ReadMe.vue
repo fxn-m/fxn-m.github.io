@@ -37,10 +37,9 @@ const sendingLoader = setInterval(() => {
 }, 400);
 
 const fetchReadingSuggestion = async () => {
-    isLoading.value = true;  
+    isLoading.value = true;
     try {
         const response = await fetch('https://fxnm-backend-5c0b9af08231.herokuapp.com/reading-suggestion', {
-        // const response = await fetch('http://localhost:3000/reading-suggestion', {
             method: 'GET'
         });
         const data = await response.json();
@@ -52,7 +51,7 @@ const fetchReadingSuggestion = async () => {
                 author = "";
             }
         } catch (error) {
-            // handle error if necessary
+            console.error(error);
         }
 
         readingSuggestion.value = {
@@ -63,7 +62,7 @@ const fetchReadingSuggestion = async () => {
             type: data.properties.Type.select.name
         };
 
-        if (!data.properties.Link.url || data.properties.Link.url.slice(0,4) !== "http") {
+        if (!data.properties.Link.url || data.properties.Link.url.slice(0, 4) !== "http") {
             fetchReadingSuggestion();
         } else if (data.properties.Link.url.includes("notion")) {
             fetchReadingSuggestion();
@@ -77,55 +76,59 @@ const fetchReadingSuggestion = async () => {
     }
 };
 
-const checkWrap = () => {
-     // @ts-ignore
-    const metadataDivHeight = metadataDiv.value?.offsetHeight;
-     // @ts-ignore
-    const suggestionTypeDivHeight = suggestionTypeDiv.value?.offsetHeight;
-    if (metadataDivHeight > suggestionTypeDivHeight) {
-        showSeparator.value = false;
-    } else {
-        showSeparator.value = true;
-    }
-}
+// // const checkWrap = () => {
+// //     if (metadataDiv.value && suggestionTypeDiv.value) {
+// //         const metadataDivHeight = metadataDiv.value.offsetHeight;
+// //         const suggestionTypeDivHeight = suggestionTypeDiv.value.offsetHeight;
+// //         if (metadataDivHeight > suggestionTypeDivHeight) {
+// //             showSeparator.value = false;
+// //         } else {
+// //             showSeparator.value = true;
+// //         }
+// //     }
+// // }
 
-onMounted(() => {
-    fetchReadingSuggestion();
-    window.addEventListener('resize', checkWrap);
-});
+// onMounted(() => {
+//     fetchReadingSuggestion();
+//     window.addEventListener('resize', checkWrap);
+// });
 
-watchEffect(() => {
-    if (suggestionTypeDiv.value && metadataDiv.value) {
-        checkWrap();
-    }
-})
+// watchEffect(() => {
+//     if (suggestionTypeDiv.value && metadataDiv.value) {
+//         checkWrap();
+//     }
+// })
 
 </script>
 
 <template>
     <div>
-    <div style="margin-top: 20px">
-        <p>Suggests a random item from my Notion reading list.</p>
-    </div>
-        <div v-if="!isLoading" class="reading-suggestion"> 
+        <div style="margin-top: 20px">
+            <p>Suggests a random item from my Notion reading list.</p>
+        </div>
+        <div v-if="!isLoading" class="reading-suggestion">
             <a :href="readingSuggestion.url" target="_blank">{{ readingSuggestion.title }}</a>
             <div class="suggestion-metadata" ref="metadataDiv">
                 <p v-if="readingSuggestion.type" ref="suggestionTypeDiv">{{ readingSuggestion.type }}</p>
-                <p v-if="readingSuggestion.type && readingSuggestion.author || readingSuggestion.type && readingSuggestion.time">|</p>
+                <p
+                    v-if="readingSuggestion.type && readingSuggestion.author || readingSuggestion.type && readingSuggestion.time">
+                    |</p>
                 <p v-if="readingSuggestion.author" class="author">{{ readingSuggestion.author }}</p>
                 <p v-if="readingSuggestion.time && readingSuggestion.author && showSeparator">|</p>
-                <p class="reading-time" v-if="readingSuggestion.time">Estimated reading time: {{ readingSuggestion.time }} minutes</p>
+                <p class="reading-time" v-if="readingSuggestion.time">Estimated reading time: {{ readingSuggestion.time
+                    }} minutes</p>
             </div>
             <button @click="fetchReadingSuggestion">Pick another one</button>
         </div>
-          <div v-else-if="!serverUp" id="loader" class="reading-suggestion">Load{{ loadingEllipses }} </div> <!-- Render loading message if no data is available -->
+        <div v-else-if="!serverUp" id="loader" class="reading-suggestion">Load{{ loadingEllipses }} </div>
+        <!-- Render loading message if no data is available -->
     </div>
 </template>
 
 
 <style scoped>
 p {
-    color:#828282;
+    color: #828282;
     font-size: 0.85em;
 }
 
@@ -141,7 +144,7 @@ body.dark p {
 button {
     margin-top: 40px;
     font-family: inherit;
-    color: #727272;    
+    color: #727272;
     padding: 10px;
     border: none;
     cursor: pointer;
@@ -160,8 +163,8 @@ button {
     margin-top: 0;
 }
 
-.suggestion-metadata > * {
-    margin: 0 1rem 0 0; 
+.suggestion-metadata>* {
+    margin: 0 1rem 0 0;
 }
 
 body.dark button {
@@ -176,5 +179,4 @@ button:hover {
 body.dark button:hover {
     color: #dddddd;
 }
-
 </style>

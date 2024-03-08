@@ -12,7 +12,6 @@
 </template>
 
 <script setup lang="ts">
-// define props
 const props = defineProps({
     sent: Boolean,
 });
@@ -26,7 +25,6 @@ onMounted(() => {
     showToast.value = true;
 
     setTimeout(() => {
-        // add .hide class to the toast
         hideToast.value = true;
     }, 3000);
 
@@ -42,9 +40,7 @@ onMounted(() => {
     position: fixed;
     bottom: 30px;
     left: 50%;
-    /* Add this property */
     transform: translateX(-75%);
-    /* Center the element horizontally */
     background-color: rgba(248, 248, 248, 0.5);
     color: #161515;
     padding: 10px 30px;

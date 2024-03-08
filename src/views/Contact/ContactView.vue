@@ -103,7 +103,6 @@ const submitFormOnEnter = (event: KeyboardEvent) => {
 
 
 <style scoped>
-
 form {
   display: flex;
   flex-direction: column;
@@ -179,5 +178,4 @@ body.dark button {
   border: 1px solid #646cff8d;
   color: #c3e3f1;
 }
-
 </style>

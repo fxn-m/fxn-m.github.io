@@ -14,7 +14,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { type Blog } from "@/types/Blog";
+
+type Blog = {
+    id: number;
+    title: string;
+    headerTitle: string;
+    date: string;
+};
+
 
 const blogs = ref([] as Blog[]);
 
