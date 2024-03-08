@@ -13,7 +13,6 @@ const isLoading = ref(true);
 const loadingEllipses = ref('');
 const serverUp = ref(false);
 
-
 const metadataDiv = ref(null);
 const suggestionTypeDiv = ref(null);
 const showSeparator = ref(true);
@@ -76,22 +75,22 @@ const fetchReadingSuggestion = async () => {
     }
 };
 
-// // const checkWrap = () => {
-// //     if (metadataDiv.value && suggestionTypeDiv.value) {
-// //         const metadataDivHeight = metadataDiv.value.offsetHeight;
-// //         const suggestionTypeDivHeight = suggestionTypeDiv.value.offsetHeight;
-// //         if (metadataDivHeight > suggestionTypeDivHeight) {
-// //             showSeparator.value = false;
-// //         } else {
-// //             showSeparator.value = true;
-// //         }
-// //     }
-// // }
+// const checkWrap = () => {
+//     if (metadataDiv.value && suggestionTypeDiv.value) {
+//         const metadataDivHeight = metadataDiv.value.offsetHeight;
+//         const suggestionTypeDivHeight = suggestionTypeDiv.value.offsetHeight;
+//         if (metadataDivHeight > suggestionTypeDivHeight) {
+//             showSeparator.value = false;
+//         } else {
+//             showSeparator.value = true;
+//         }
+//     }
+// }
 
-// onMounted(() => {
-//     fetchReadingSuggestion();
-//     window.addEventListener('resize', checkWrap);
-// });
+onMounted(() => {
+    fetchReadingSuggestion();
+    // window.addEventListener('resize', checkWrap);
+});
 
 // watchEffect(() => {
 //     if (suggestionTypeDiv.value && metadataDiv.value) {
