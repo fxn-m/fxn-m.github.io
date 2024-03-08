@@ -9,7 +9,7 @@ body {
 }
 
 #main {
-  margin: 0px auto 0px 15%;
+  margin: auto;
   width: 45%;
 }
 
@@ -325,16 +325,6 @@ body.dark ::-webkit-scrollbar-thumb {
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
   background-color: #0f1e3fa2;
 }
-
-/* // media queries */
-/* 
-@media (max-width: 1200px) {
-  #icons {
-    flex-wrap: wrap;
-    max-width: 150px;
-    padding: 0px;
-  }
-} */
 
 @media (max-width: 1024px) {
   body {

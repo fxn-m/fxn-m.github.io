@@ -1,7 +1,7 @@
 <template>
     <button id="toggle-btn" style="width: 0; height:42.4px"></button>
 </template>
-  
+
 <script lang="ts">
 export default {
     mounted() {
@@ -92,4 +92,4 @@ export default {
         setTheme(localStorage.getItem("theme") === "dark");
     }
 };
-</script>  
+</script>

@@ -3,22 +3,15 @@
 
 <template>
     <div class="container">
-        <div id="section-left">
-            <p style="margin-top: 16px">Documenting a work in progress.</p>
-        </div>
-        <div id="section-right">
-            <ul v-if="blogs.length > 0">
-                <li v-for="blog in blogs">
-                    <router-link
-                        :to="{ name: 'blogPost', params: { post: blog.headerTitle }, query: { id: blog.id, title: blog.title, date: blog.date } }"
-                        style="margin: 0px 0px;">
-                        {{ blog.title }}
-                    </router-link>
-                    <p>{{ blog.date }}</p>
-                </li>
-            </ul>
-            <div v-else id="loader">Load{{ loadingEllipses }}</div>
-        </div>
+        <ul>
+            <li v-for="blog in blogs">
+                <p>{{ blog.date }}</p>
+                <router-link
+                    :to="{ name: 'blogPost', params: { post: blog.headerTitle }, query: { id: blog.id, title: blog.title, date: blog.date } }">
+                    {{ blog.title }}
+                </router-link>
+            </li>
+        </ul>
     </div>
 </template>
 
@@ -62,24 +55,6 @@ onMounted(async () => {
         console.error('Failed to load blog list:', error);
     }
 });
-
-let counter = 0;
-const ending = 'ing';
-const sendingLoader = setInterval(() => {
-    if (blogs.value.length > 0) {
-        clearInterval(sendingLoader);
-        loadingEllipses.value = '';
-    }
-    if (counter > 6) {
-        loadingEllipses.value = 'ing.';
-        counter = 3;
-    } else if (counter > 2) {
-        loadingEllipses.value += '.';
-    } else {
-        loadingEllipses.value += ending[counter];
-    }
-    counter++;
-}, 400);
 </script>
 
 <style scoped>
@@ -91,26 +66,15 @@ const sendingLoader = setInterval(() => {
     margin-top: 20px;
 }
 
-#section-left {
-    border-right: solid 1px rgba(150, 150, 150, 0.7);
-    padding-right: 35px;
-    text-align: left;
-}
-
-#section-right p {
+.container p {
     color: #868686;
     font-size: 0.95em;
-    margin: 0px 0px;
-}
-
-#section-right {
-    min-width: 50%;
-    padding-left: 35px;
+    margin: 0px 32px 0px 0px;
 }
 
 li {
     display: flex;
-    justify-content: space-between;
+    align-items: center;
 }
 
 #loader {

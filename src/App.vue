@@ -6,16 +6,24 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 <template>
   <RouterLink v-if="$route.path !== '/'" to="#" @click="navigateToParent" id="back-arrow">
-      <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="2x" />
+    <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="2x" />
 
-    </RouterLink>
+  </RouterLink>
 
   <header>
     <div id="icons">
-      <a href="https://github.com/fxn-m" target="_blank"><FontAwesomeIcon icon="fa-brands fa-github" size="2x" class="fa-github"/></a>
-      <a href="https://x.com/fxn__m" target="_blank"><FontAwesomeIcon icon="fa-brands fa-x-twitter" size="2x" class="fa-twitter" /></a>
-      <a href="https://www.strava.com/athletes/29743058" target="_blank"><FontAwesomeIcon icon="fa-brands fa-strava" size="2x" class="fa-strava" /></a>
-      <a href="https://www.polarsteps.com/FelixNewportMangell" target="_blank"><FontAwesomeIcon icon="fa-regular fa-compass" size="2x" class="fa-compass" /></a>
+      <a href="https://github.com/fxn-m" target="_blank">
+        <FontAwesomeIcon icon="fa-brands fa-github" size="2x" class="fa-github" />
+      </a>
+      <a href="https://x.com/fxn__m" target="_blank">
+        <FontAwesomeIcon icon="fa-brands fa-x-twitter" size="2x" class="fa-twitter" />
+      </a>
+      <a href="https://www.strava.com/athletes/29743058" target="_blank">
+        <FontAwesomeIcon icon="fa-brands fa-strava" size="2x" class="fa-strava" />
+      </a>
+      <a href="https://www.polarsteps.com/FelixNewportMangell" target="_blank">
+        <FontAwesomeIcon icon="fa-regular fa-compass" size="2x" class="fa-compass" />
+      </a>
       <ToggleTheme />
     </div>
   </header>
@@ -35,11 +43,11 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 export default {
   computed: {
     pageTitle() {
-      const currentRoute = this.$route.path !=='/' ? this.$route.path : '';
+      const currentRoute = this.$route.path !== '/' ? this.$route.path : '';
       return `${currentRoute}`.replace(':', '');
     },
   },
-    methods: {
+  methods: {
     navigateToParent() {
       const pathSegments = this.$route.path.split('/');
       pathSegments.pop();
@@ -48,7 +56,6 @@ export default {
     }
   }
 };
-// print multiline string
 console.log(`
    __                                                 
   / _|_  ___ __        _ __ ___    ___ ___  _ __ ___  
@@ -58,4 +65,3 @@ console.log(`
                                                      
 `)
 </script>
-

@@ -8,15 +8,15 @@ const markdownDir = path.join(__dirname, "../src/markdown"); // Source directory
 const outputDir = path.join(__dirname, "../public/html"); // Output directory for HTML files
 const index = [];
 
-// Ensure the output directory exists
-if (!fs.existsSync(outputDir)) {
-  fs.mkdirSync(outputDir, { recursive: true });
+if (fs.existsSync(outputDir)) {
+  fs.rmSync(outputDir, { recursive: true });
 }
+
+fs.mkdirSync(outputDir, { recursive: true });
 
 // Convert each Markdown file to HTML
 fs.readdirSync(markdownDir).forEach(async (file) => {
   console.log("Converting", file, "to HTML");
-
   if (file.endsWith(".md")) {
     const markdown = fs.readFileSync(path.join(markdownDir, file), "utf-8");
     const html = converter.makeHtml(markdown);
