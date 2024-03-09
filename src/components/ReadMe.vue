@@ -108,7 +108,7 @@ const checkWrap = () => {
 
 onMounted(async () => {
     try {
-        const response = await fetch('http://localhost:3000/get-reading-list', {
+        const response = await fetch('https://fxnm-backend-5c0b9af08231.herokuapp.com/get-reading-list', {
             method: 'GET'
         });
         const data = await response.json();
