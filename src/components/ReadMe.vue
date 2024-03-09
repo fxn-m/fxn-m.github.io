@@ -1,24 +1,22 @@
 <template>
-    <div>
-        <div style="margin-top: 20px">
-            <p>Suggests a random item from my Notion reading list.</p>
-        </div>
-        <div v-if="!isLoading" class="reading-suggestion">
-            <a :href="readingSuggestion.url" target="_blank">{{ readingSuggestion.title }}</a>
-            <div class="suggestion-metadata" ref="metadataDiv">
-                <p v-if="readingSuggestion.type" ref="suggestionTypeDiv">{{ readingSuggestion.type }}</p>
-                <p
-                    v-if="readingSuggestion.type && readingSuggestion.author || readingSuggestion.type && readingSuggestion.time">
-                    |</p>
-                <p v-if="readingSuggestion.author" class="author">{{ readingSuggestion.author }}</p>
-                <p v-if="readingSuggestion.time && readingSuggestion.author && showSeparator">|</p>
-                <p class="reading-time" v-if="readingSuggestion.time">Estimated reading time: {{ readingSuggestion.time
-                    }} minutes</p>
-            </div>
-            <button @click="fetchReadingSuggestion">Pick another one</button>
-        </div>
-        <div v-else-if="!serverUp" id="loader" class="reading-suggestion">Load{{ loadingEllipses }} </div>
+    <div style="margin-top: 20px">
+        <p>Suggests a random item from my Notion reading list.</p>
     </div>
+    <div v-if="!isLoading" class="reading-suggestion">
+        <a :href="readingSuggestion.url" target="_blank">{{ readingSuggestion.title }}</a>
+        <div class="suggestion-metadata" ref="metadataDiv">
+            <p v-if="readingSuggestion.type" ref="suggestionTypeDiv">{{ readingSuggestion.type }}</p>
+            <p
+                v-if="readingSuggestion.type && readingSuggestion.author || readingSuggestion.type && readingSuggestion.time">
+                |</p>
+            <p v-if="readingSuggestion.author" class="author">{{ readingSuggestion.author }}</p>
+            <p v-if="readingSuggestion.time && readingSuggestion.author && showSeparator">|</p>
+            <p class="reading-time" v-if="readingSuggestion.time">Estimated reading time: {{ readingSuggestion.time
+                }} minutes</p>
+        </div>
+        <button @click="fetchReadingSuggestion">Pick another one</button>
+    </div>
+    <div v-else id="loader" class="reading-suggestion">Load{{ loadingEllipses }} </div>
 </template>
 
 
@@ -35,7 +33,7 @@ const readingSuggestion = ref({
 
 const isLoading = ref(true);
 const loadingEllipses = ref('');
-const serverUp = ref(false);
+const readingList = ref([] as any);
 
 const metadataDiv = ref(null);
 const suggestionTypeDiv = ref(null);
@@ -59,46 +57,39 @@ const sendingLoader = setInterval(() => {
     counter++;
 }, 400);
 
-const fetchReadingSuggestion = async () => {
-    isLoading.value = true;
-    try {
-        const response = await fetch('https://fxnm-backend-5c0b9af08231.herokuapp.com/reading-suggestion', {
-            method: 'GET'
-        });
-        const data = await response.json();
-
-        let author = "";
+const fetchReadingSuggestion = () => {
+    if (readingList.value.length > 0) {
         try {
-            author = data.properties['Author/Publisher'].select.name;
+            const randomIndex = Math.floor(Math.random() * readingList.value.length);
+            const randomArticle = readingList.value[randomIndex].properties;
+            let author = "";
+            author = randomArticle['Author/Publisher'].select.name;
             if (author == "" || author == "Other") {
                 author = "";
             }
+
+            console.log(randomArticle.Name.title[0].plain_text, randomArticle.Link.url, randomArticle["Reading Time"].number, randomArticle.Type.select.name, author)
+
+            readingSuggestion.value = {
+                title: randomArticle.Name.title[0].plain_text,
+                author: author,
+                url: randomArticle.Link.url,
+                time: randomArticle["Reading Time"].number,
+                type: randomArticle.Type.select.name
+            };
+
+            if (!randomArticle.Link.url ||
+                randomArticle.Link.url.slice(0, 4) !== "http" ||
+                randomArticle.Link.url.includes("notion")) {
+                fetchReadingSuggestion();
+            }
         } catch (error) {
-            console.error(error);
+            console.error("Error reading file:", error);
         }
-
-        readingSuggestion.value = {
-            title: data.properties.Name.title[0].plain_text,
-            author: author,
-            url: data.properties.Link.url,
-            time: data.properties["Reading Time"].number,
-            type: data.properties.Type.select.name
-        };
-
-        if (!data.properties.Link.url || data.properties.Link.url.slice(0, 4) !== "http") {
-            fetchReadingSuggestion();
-        } else if (data.properties.Link.url.includes("notion")) {
-            fetchReadingSuggestion();
-        }
-
-    } catch (error) {
-        console.log(error);
-    } finally {
-        isLoading.value = false;
-        serverUp.value = true;
+    } else {
+        console.error("Reading list not found",);
     }
 };
-
 
 const checkWrap = () => {
     if (metadataDiv.value && suggestionTypeDiv.value) {
@@ -114,9 +105,22 @@ const checkWrap = () => {
     }
 }
 
-onMounted(() => {
-    fetchReadingSuggestion();
+
+onMounted(async () => {
+    try {
+        const response = await fetch('http://localhost:3000/get-reading-list', {
+            method: 'GET'
+        });
+        const data = await response.json();
+        readingList.value = data;
+        fetchReadingSuggestion(); // Ensure this function handles its asynchronous operations correctly.
+        isLoading.value = false;
+    } catch (error) {
+        console.error("Error fetching reading list:", error);
+    }
+
     window.addEventListener('resize', checkWrap);
+
 });
 
 watchEffect(() => {
