@@ -19,7 +19,6 @@
     <div v-else id="loader" class="reading-suggestion">Load{{ loadingEllipses }} </div>
 </template>
 
-
 <script setup lang="ts">
 import { ref, onMounted, watchEffect } from 'vue';
 
@@ -67,9 +66,6 @@ const fetchReadingSuggestion = () => {
             if (author == "" || author == "Other") {
                 author = "";
             }
-
-            console.log(randomArticle.Name.title[0].plain_text, randomArticle.Link.url, randomArticle["Reading Time"].number, randomArticle.Type.select.name, author)
-
             readingSuggestion.value = {
                 title: randomArticle.Name.title[0].plain_text,
                 author: author,
@@ -105,7 +101,6 @@ const checkWrap = () => {
     }
 }
 
-
 onMounted(async () => {
     try {
         const response = await fetch('https://fxnm-backend-5c0b9af08231.herokuapp.com/get-reading-list', {
@@ -113,7 +108,7 @@ onMounted(async () => {
         });
         const data = await response.json();
         readingList.value = data;
-        fetchReadingSuggestion(); // Ensure this function handles its asynchronous operations correctly.
+        fetchReadingSuggestion();
         isLoading.value = false;
     } catch (error) {
         console.error("Error fetching reading list:", error);
