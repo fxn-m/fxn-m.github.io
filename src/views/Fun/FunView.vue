@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AnyHTML from '../../components/AnyHTML.vue'
-import ReadingSuggestion from '../../components/ReadMe.vue'
+import AnyHTML from './AnyHTML/AnyHTML.vue'
+import ReadingSuggestion from './ReadMe/ReadMe.vue'
 import { useRoute } from 'vue-router';
 import { ref, onMounted, type Component } from 'vue';
 
@@ -33,3 +33,4 @@ onMounted(() => {
     <component :is="selectedComponent" v-if="selectedComponent" />
   </div>
 </template>
+./AnyHTML/AnyHTML.vue./ReadMe/ReadMe.vue
