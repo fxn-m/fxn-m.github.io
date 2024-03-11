@@ -21,11 +21,6 @@
 </template>
 
 <style scoped>
-ul li {
-  line-height: 1.5rem;
-  margin: 2rem 0;
-}
-
 span {
   color: #828282;
   font-size: 0.95em;

@@ -1,3 +1,24 @@
+<template>
+    <div id="content">
+        <p>Input any website url and see the corresponding page's HTML below:</p>
+
+        <div style="display: flex; flex-wrap: wrap; justify-content: left; margin:1.5em 0">
+            <input type="url" id="url" name="url" placeholder='https://example.com' value='https://example.com'>
+            <div style="display: flex">
+                <button id="submit">
+                    Submit
+                </button>
+                <div id="loader-container">
+                    <div class="loader"></div>
+                </div>
+            </div>
+        </div>
+        <pre>
+            <code id="print-html-output"></code>
+        </pre>
+    </div>
+</template>
+
 <script setup lang="ts">
 import { onMounted } from 'vue';
 
@@ -70,46 +91,14 @@ onMounted(() => {
 })
 </script>
 
-<template>
-    <div id="content">
-        <p style="margin-bottom: 8px;">
-            My first 'web app'...
-        </p>
-        <p style="margin-top: 0;">
-            Input any website url and see the corresponding page's HTML below:
-        </p>
-
-        <div style="display: flex; flex-wrap: wrap; justify-content: left; margin-top:30px">
-            <input type="url" id="url" name="url" placeholder='https://example.com' value='https://example.com'>
-            <div class="submit-and-loader" style="display: flex">
-                <button id="submit">
-                    Submit
-                </button>
-                <div id="loader-container">
-                    <div class="loader"></div>
-                </div>
-            </div>
-        </div>
-
-        <br>
-
-        <pre>
-            <code id="print-html-output"></code>
-        </pre>
-    </div>
-</template>
-
 <style scoped>
-#content {
-    margin-top: 20px;
-}
-
 pre {
     opacity: 0;
+    padding: 10px 20px;
 }
 
 p {
-    color:#828282;
+    color: #828282;
     font-size: 0.85em;
 }
 
@@ -195,5 +184,4 @@ body.dark pre {
     color: #c3e3f1;
     transition: background-color .5s ease-in-out, color 1s ease-in-out;
 }
-
 </style>

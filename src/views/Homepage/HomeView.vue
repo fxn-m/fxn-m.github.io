@@ -1,14 +1,9 @@
 <template>
   <div id="content">
-    <br>
-    <p>Welcome to my plot of internet real estate.</p>
     <ul>
       <li>
         <RouterLink to="/about">About</RouterLink>
       </li>
-      <!-- <li>
-        <RouterLink to="/blog">Blog</RouterLink>
-      </li> -->
       <li>
         <RouterLink to="/fun" id="fun">Fun</RouterLink>
       </li>
@@ -21,11 +16,6 @@
 
 
 <style scoped>
-ul {
-  list-style-type: none;
-  margin-top: 30px;
-}
-
 #fun:hover {
   animation: lightColorCycle 5s infinite;
 }

@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <br>
+  <div id="content">
     <p>I'm always open to new people and opportunities.</p>
     <p>Feel free to reach out to me using the form below.</p>
     <form @submit.prevent="sendEmail()">

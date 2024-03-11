@@ -1,16 +1,15 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import ToggleTheme from './components/ToggleTheme.vue';
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-</script>
-
 <template>
-  <RouterLink v-if="$route.path !== '/'" to="#" @click="navigateToParent" id="back-arrow">
-    <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="2x" />
-
-  </RouterLink>
-
   <header>
+    <h2>
+      <div style="position: relative">
+        <FontAwesomeIcon icon="fa-solid fa-caret-left" size="2xs" id="popup-arrow"
+          :style="{ visibility: (isHovering && route.path !== '/') ? 'visible' : 'hidden' }" />
+      </div>
+      <span style="white-space: nowrap" @mouseover="isHovering = true" @mouseout="isHovering = false">
+        <RouterLink to="/" @click="navigateToParent" style="border: none; font-weight: bold;">fxn-m{{
+            pageTitle }}</RouterLink>
+      </span>
+    </h2>
     <div id="icons">
       <a href="https://github.com/fxn-m" target="_blank">
         <FontAwesomeIcon icon="fa-brands fa-github" size="2x" class="fa-github" />
@@ -28,34 +27,44 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
     </div>
   </header>
 
-  <div id="main">
-    <h2><span style="white-space: nowrap">
-        <RouterLink to="/" style="border: none; font-weight: bold;">fxn-m</RouterLink>
-      </span>
-      <span style="user-select: none;">{{ pageTitle }}</span>
-    </h2>
-    <RouterView />
-  </div>
+  <RouterView />
+
 </template>
 
+<style scoped>
+#popup-arrow {
+  position: absolute;
+  top: -5px;
+  left: -9px;
+  transform: rotate(45deg);
+  transition: color 1s ease-in-out;
+}
+</style>
 
-<script lang="ts">
-export default {
-  computed: {
-    pageTitle() {
-      const currentRoute = this.$route.path !== '/' ? this.$route.path : '';
-      return `${currentRoute}`.replace(':', '');
-    },
-  },
-  methods: {
-    navigateToParent() {
-      const pathSegments = this.$route.path.split('/');
-      pathSegments.pop();
-      const parentPath = pathSegments.join('/') || '/';
-      this.$router.push(parentPath);
-    }
-  }
+
+<script setup lang="ts">
+import { RouterLink, RouterView } from 'vue-router'
+import ToggleTheme from './components/ToggleTheme.vue';
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { ref, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
+const route = useRoute();
+const router = useRouter();
+const isHovering = ref(false);
+
+const pageTitle = computed(() => {
+  const currentRoute = route.path !== '/' ? route.path : '';
+  return `${currentRoute}`.replace(':', '');
+});
+
+const navigateToParent = () => {
+  const pathSegments = route.path.split('/');
+  pathSegments.pop();
+  const parentPath = pathSegments.join('/') || '/';
+  router.push(parentPath);
 };
+
 console.log(`
    __                                                 
   / _|_  ___ __        _ __ ___    ___ ___  _ __ ___  

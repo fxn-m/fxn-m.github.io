@@ -1,22 +1,23 @@
 <template>
-    <div style="margin-top: 20px">
+    <div id="content">
         <p>Suggests a random item from my Notion reading list.</p>
-    </div>
-    <div v-if="!isLoading" class="reading-suggestion">
-        <a :href="readingSuggestion.url" target="_blank">{{ readingSuggestion.title }}</a>
-        <div class="suggestion-metadata" ref="metadataDiv">
-            <p v-if="readingSuggestion.type" ref="suggestionTypeDiv">{{ readingSuggestion.type }}</p>
-            <p
-                v-if="readingSuggestion.type && readingSuggestion.author || readingSuggestion.type && readingSuggestion.time">
-                |</p>
-            <p v-if="readingSuggestion.author" class="author">{{ readingSuggestion.author }}</p>
-            <p v-if="readingSuggestion.time && readingSuggestion.author && showSeparator">|</p>
-            <p class="reading-time" v-if="readingSuggestion.time">Estimated reading time: {{ readingSuggestion.time
-                }} minutes</p>
+        <div v-if="!isLoading" class="reading-suggestion">
+            <a :href="readingSuggestion.url" target="_blank">{{ readingSuggestion.title }}</a>
+            <div class="suggestion-metadata" ref="metadataDiv">
+                <p v-if="readingSuggestion.type" ref="suggestionTypeDiv">{{ readingSuggestion.type }}</p>
+                <p
+                    v-if="readingSuggestion.type && readingSuggestion.author || readingSuggestion.type && readingSuggestion.time">
+                    |</p>
+                <p v-if="readingSuggestion.author" class="author">{{ readingSuggestion.author }}</p>
+                <p v-if="readingSuggestion.time && readingSuggestion.author && showSeparator">|</p>
+                <p class="reading-time" v-if="readingSuggestion.time">Estimated reading time: {{ readingSuggestion.time
+                    }} minutes</p>
+            </div>
+            <button @click="fetchReadingSuggestion">Pick another one</button>
         </div>
-        <button @click="fetchReadingSuggestion">Pick another one</button>
+        <div v-else id="loader" class="reading-suggestion">Load{{ loadingEllipses }} </div>
     </div>
-    <div v-else id="loader" class="reading-suggestion">Load{{ loadingEllipses }} </div>
+
 </template>
 
 <script setup lang="ts">
@@ -103,7 +104,7 @@ const checkWrap = () => {
 
 onMounted(async () => {
     try {
-        const response = await fetch('https://fxnm-backend-5c0b9af08231.herokuapp.com/get-reading-list', {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/get-reading-list`, {
             method: 'GET'
         });
         const data = await response.json();
@@ -136,8 +137,8 @@ body.dark p {
 }
 
 .reading-suggestion {
-    line-height: 2rem;
-    margin-top: 2rem;
+    line-height: 2em;
+    margin: 1.5em 0;
 }
 
 button {

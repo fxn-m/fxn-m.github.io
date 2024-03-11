@@ -6,10 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build:markdown": "node ./scripts/convertMarkdown.js",
-    "build": "npm run build:markdown && run-p type-check build-only",
-    "preview": "vite preview",
     "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false"
+    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
+    "build": "npm run build:markdown && run-p type-check build-only",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
