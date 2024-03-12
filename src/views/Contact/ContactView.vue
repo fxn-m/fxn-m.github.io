@@ -4,11 +4,30 @@
     <p>Feel free to reach out to me using the form below</p>
     <form @submit.prevent="sendEmail()">
       <div id="input-fields">
-        <input type="name" id="name" v-model="name" autocomplete="nope" placeholder="Name" />
-        <input type="email" id="email" v-model="email" autocomplete="off" placeholder="Your email" required />
+        <input
+          type="name"
+          id="name"
+          v-model="name"
+          autocomplete="nope"
+          placeholder="Name"
+        />
+        <input
+          type="email"
+          id="email"
+          v-model="email"
+          autocomplete="off"
+          placeholder="Your email"
+          required
+        />
       </div>
-      <textarea id="message" v-model="message" rows="4" placeholder="Message" required
-        @keydown.enter.prevent="submitFormOnEnter"></textarea>
+      <textarea
+        id="message"
+        v-model="message"
+        rows="4"
+        placeholder="Message"
+        required
+        @keydown.enter.prevent="submitFormOnEnter"
+      ></textarea>
       <button type="submit">Send{{ sendingEllipses }}</button>
     </form>
     <ContactToast :sent="toastSent" v-if="toastVisible" />
@@ -16,50 +35,50 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-import axios from "axios";
-import ContactToast from "@/components/ContactToast.vue";
+import { ref } from "vue"
+import axios from "axios"
+import ContactToast from "@/components/ContactToast.vue"
 
-const email = ref("");
-const message = ref("");
-const name = ref("");
-const toastVisible = ref(false);
-const toastSent = ref(false);
-const sendingEllipses = ref("");
+const email = ref("")
+const message = ref("")
+const name = ref("")
+const toastVisible = ref(false)
+const toastSent = ref(false)
+const sendingEllipses = ref("")
 
 const showToast = (sent: boolean) => {
-  toastVisible.value = true;
-  toastSent.value = sent;
+  toastVisible.value = true
+  toastSent.value = sent
   setTimeout(() => {
-    toastVisible.value = false;
-  }, 5000);
-};
+    toastVisible.value = false
+  }, 5000)
+}
 
 const sendEmail = () => {
-  let counter = 0;
-  const ending = "ing";
+  let counter = 0
+  const ending = "ing"
   const sendingLoader = setInterval(() => {
     if (counter > 6) {
-      sendingEllipses.value = "ing.";
-      counter = 3;
+      sendingEllipses.value = "ing."
+      counter = 3
     } else if (counter > 2) {
-      sendingEllipses.value += ".";
+      sendingEllipses.value += "."
     } else {
-      sendingEllipses.value += ending[counter];
+      sendingEllipses.value += ending[counter]
     }
-    counter++;
-  }, 400);
+    counter++
+  }, 400)
 
   const clearUp = (success: boolean) => {
-    clearInterval(sendingLoader);
-    sendingEllipses.value = "";
+    clearInterval(sendingLoader)
+    sendingEllipses.value = ""
 
     if (success) {
-      email.value = "";
-      message.value = "";
-      name.value = "";
+      email.value = ""
+      message.value = ""
+      name.value = ""
     }
-  };
+  }
 
   axios
     .post("https://fxnm-backend-5c0b9af08231.herokuapp.com/send-email", {
@@ -68,22 +87,22 @@ const sendEmail = () => {
       message: message.value,
     })
     .then(() => {
-      showToast(true);
-      clearUp(true);
+      showToast(true)
+      clearUp(true)
     })
     .catch((error) => {
-      showToast(false);
-      clearUp(false);
-      console.log(error);
-    });
-};
+      showToast(false)
+      clearUp(false)
+      console.log(error)
+    })
+}
 
 const submitFormOnEnter = (event: KeyboardEvent) => {
   if (event.key === "Enter") {
-    event.preventDefault();
-    sendEmail();
+    event.preventDefault()
+    sendEmail()
   }
-};
+}
 </script>
 
 <style scoped>

@@ -14,7 +14,6 @@
   </div>
 </template>
 
-
 <style scoped>
 #fun:hover {
   animation: lightColorCycle 5s infinite;

@@ -127,6 +127,10 @@ a:not([href]):not([class]):hover {
 
 /* // icons styling */
 
+a > svg[class*="fa-"] {
+  font-size: 20px;
+}
+
 #icons {
   display: flex;
   flex-direction: row;
@@ -209,7 +213,7 @@ a:not([href]):not([class]):hover {
 }
 
 #toggle-btn img {
-  width: 27px;
+  width: 26px;
   margin-bottom: -4px;
 }
 

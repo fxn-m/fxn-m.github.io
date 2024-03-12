@@ -1,6 +1,6 @@
-import { createRouter, createWebHashHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router"
 
-import HomeView from "../views/Homepage/HomeView.vue";
+import HomeView from "../views/Homepage/HomeView.vue"
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -43,6 +43,6 @@ const router = createRouter({
     },
     { path: "/:catchAll(.*)", redirect: "/" },
   ],
-});
+})
 
-export default router;
+export default router
