@@ -35,14 +35,15 @@ onMounted(() => {
     </p>
     <p>
       I studied Engineering Design at the University of Bristol, graduating in
-      2023. There I had the flexibility to work on projects across domains and
-      explore fields from product design to artificial intelligence, like a
-      'liberal arts' approach but within the engineering discipline.
+      2023. There I had the flexibility to work on projects across domains,
+      exploring fields from product design to artificial intelligence. It's like
+      a 'liberal arts' approach but within the engineering discipline.
     </p>
     <p>
       While studying, I picked up programming, and began incorporating it in as
       many projects as I could. My gateway was data science & machine learning,
-      but soon became interested in full-stack web development.
+      but soon became interested in full-stack web development, building on the
+      worlds largest platform: the internet.
     </p>
     <p>
       Now, I'm at <a href="https://sanctuaryhealth.io">Sanctuary Health</a> as a
