@@ -72,7 +72,7 @@
 
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router"
-import ToggleTheme from "./components/ToggleTheme.vue"
+import ToggleTheme from "@/components/ToggleTheme.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { ref, computed } from "vue"
 import { useRoute, useRouter } from "vue-router"
@@ -105,3 +105,4 @@ console.log(`
                                                      
 `)
 </script>
+./ToggleTheme.vue

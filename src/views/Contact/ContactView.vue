@@ -37,7 +37,7 @@
 <script setup lang="ts">
 import { ref } from "vue"
 import axios from "axios"
-import ContactToast from "@/components/ContactToast.vue"
+import ContactToast from "./ContactToast.vue"
 
 const email = ref("")
 const message = ref("")
@@ -125,7 +125,6 @@ form {
 
 input,
 textarea {
-  width: 100%;
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
