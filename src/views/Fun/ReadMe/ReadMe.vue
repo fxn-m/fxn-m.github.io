@@ -137,10 +137,13 @@ onMounted(async () => {
     } catch (error) {
       console.error("Error fetching reading list:", error)
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 1000))
   }
 
   readingList.value = data
   isLoading.value = false
+  fetchReadingSuggestion()
 
   window.addEventListener("resize", checkWrap)
 })
