@@ -173,12 +173,12 @@ body.dark p {
 button {
   margin-top: 40px;
   font-family: inherit;
-  color: #727272;
+  color: #707070;
   padding: 10px;
   border: none;
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  border: 1px solid #cccccc;
+  border: 1px solid #747474;
   border-radius: 10px;
   background-color: transparent;
 }
@@ -198,7 +198,7 @@ button {
 
 body.dark button {
   color: #969696;
-  border: 1px solid #272727;
+  border: 1px solid #606060;
 }
 
 button:hover {

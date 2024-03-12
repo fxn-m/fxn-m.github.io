@@ -131,7 +131,7 @@ textarea {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   transition: color 1s ease-in-out, background-color 0.5s ease-in-out,
     border-color 0.5s ease-in-out;
-  font-size: 1em;
+  font-size: 0.9em;
 
   &:focus,
   &:focus-visible {
