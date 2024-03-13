@@ -30,8 +30,8 @@ onMounted(() => {
 <template>
   <div id="content">
     <p>
-      You've reached Felix Newport-Mangell's (my) homepage. Welcome to my plot
-      of internet real estate!
+      You've reached Felix Newport-Mangell's homepage. Welcome to my plot of
+      internet real estate!
     </p>
     <p>
       I studied Engineering Design at the University of Bristol, graduating in
