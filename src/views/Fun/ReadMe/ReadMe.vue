@@ -177,10 +177,14 @@ body.dark p {
   justify-content: left;
   font-size: 0.8rem;
   line-height: 2em;
-  margin: 0px auto 1.5em auto;
+  margin: 0px auto 24px auto;
 }
 
 .suggestion-metadata > * {
   margin: 0 1rem 0 0;
+}
+
+button {
+  font-size: 0.9em;
 }
 </style>

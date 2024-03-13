@@ -145,7 +145,7 @@ a:visited {
   text-decoration: none;
   font-weight: 500;
   border-bottom: 1px solid rgba(125, 125, 125, 0.3);
-  transition: border 0.3s ease-in-out, color 1s ease-in-out;
+  transition: border 0.3s ease-in-out, color 0.5s ease-in-out;
 }
 
 a:hover,
@@ -154,7 +154,7 @@ a:not([href]):not([class]):hover {
   text-decoration: none;
   cursor: pointer;
   border-bottom: 1px solid rgba(60, 60, 60, 0.5);
-  transition: border 0.3s ease-in-out, color 0.25s ease-in-out;
+  transition: border 0.3s ease-in-out, color 0.5s ease-in-out;
 }
 
 /* // icons styling */
@@ -289,7 +289,6 @@ body.dark li,
 body.dark h2,
 body.dark h3 {
   color: #cecece;
-  transition: color 1s ease-in-out;
 }
 
 body.dark pre,
@@ -311,7 +310,7 @@ body.dark a.nav-link:hover,
 body.dark a:not([href]):not([class]):hover {
   color: #ffffff;
   border-color: #9b9b9b;
-  transition: border 0.3s ease-in-out, color 1s ease-in-out;
+  transition: border 0.3s ease-in-out, color 0.5s ease-in-out;
 }
 
 body.dark blockquote {

@@ -49,7 +49,7 @@ onMounted(() => {
       Now, I'm at <a href="https://sanctuaryhealth.io">Sanctuary Health</a> as a
       freelance full-stack developer.
     </p>
-    <h3>Experience</h3>
+    <p id="experience">Experience</p>
     <ul>
       <li v-for="exp in experienceRef" :key="exp.id">
         <span class="date">{{ exp.date }}</span> &bull; {{ exp.detail }}
@@ -69,5 +69,18 @@ li {
 
 h3 {
   font-size: 1.1rem;
+}
+
+#experience {
+  font-weight: bold;
+  margin-top: 2rem;
+  width: 100%;
+  border-bottom: 1px solid #eaeaea;
+  padding-bottom: 2px;
+  transition: all 0.5s ease-in-out;
+}
+
+body.dark #experience {
+  border-bottom: 1px solid #4f4f4f;
 }
 </style>
