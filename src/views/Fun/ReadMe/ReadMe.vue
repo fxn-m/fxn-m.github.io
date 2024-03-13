@@ -170,42 +170,17 @@ body.dark p {
   margin: 1.5em 0;
 }
 
-button {
-  margin-top: 40px;
-  font-family: inherit;
-  color: #707070;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  border: 1px solid #747474;
-  border-radius: 10px;
-  background-color: transparent;
-}
-
 .suggestion-metadata {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
   justify-content: left;
   font-size: 0.8rem;
-  margin-top: 0;
+  line-height: 2em;
+  margin: 0px auto 1.5em auto;
 }
 
 .suggestion-metadata > * {
   margin: 0 1rem 0 0;
-}
-
-body.dark button {
-  color: #969696;
-  border: 1px solid #606060;
-}
-
-button:hover {
-  color: #111111;
-}
-
-body.dark button:hover {
-  color: #dddddd;
 }
 </style>

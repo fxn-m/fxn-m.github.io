@@ -119,28 +119,6 @@ body.dark p {
   color: #afafaf;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  margin: 10px 0px;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: background-color 0.5s ease-in-out, color 1s ease-in-out,
-    border-color 0.25s ease-in-out;
-
-  &:hover {
-    border-color: #646cff;
-  }
-
-  &:focus,
-  &:focus-visible {
-    outline: 4px auto -webkit-focus-ring-color;
-  }
-}
-
 input {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   font-size: 1em;
@@ -184,13 +162,6 @@ body.dark input {
   background-color: #0d121a;
   color: #c3e3f1;
   transition: background-color 0.5s ease-in-out, color 1s ease-in-out;
-}
-
-body.dark button {
-  background-color: #0d121a;
-  color: #c3e3f1;
-  transition: background-color 0.5s ease-in-out, color 1s ease-in-out,
-    border-color 0.25s ease-in-out;
 }
 
 body.dark pre {

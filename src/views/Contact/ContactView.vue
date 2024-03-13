@@ -149,37 +149,10 @@ textarea {
   min-height: 100px;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  margin: 10px 0px;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  background-color: rgb(248, 248, 248);
-  max-width: 50%;
-  min-width: 100px;
-  align-self: right;
-  transition: color 1s ease-in-out, background-color 0.5s ease-in-out,
-    border-color 0.5s ease-in-out;
-
-  &:hover {
-    border-color: #646cff;
-  }
-}
-
 body.dark input,
 body.dark textarea {
-  border: 1px solid hsla(231, 66%, 77%, 0.411);
+  border: 1px solid #9ea9eb69;
   background-color: #0d121a;
-  color: #c3e3f1;
-}
-
-body.dark button {
-  background-color: #0d121a;
-  border: 1px solid #646cff8d;
   color: #c3e3f1;
 }
 
