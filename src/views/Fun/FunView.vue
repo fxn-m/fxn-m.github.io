@@ -1,3 +1,9 @@
+<template>
+  <div id="content">
+    <component :is="selectedComponent" v-if="selectedComponent" />
+  </div>
+</template>
+
 <script setup lang="ts">
 import AnyHTML from "./AnyHTML/AnyHTML.vue"
 import ReadingSuggestion from "./ReadMe/ReadMe.vue"
@@ -26,10 +32,3 @@ onMounted(() => {
   selectComponent()
 })
 </script>
-
-<template>
-  <div id="content">
-    <component :is="selectedComponent" v-if="selectedComponent" />
-  </div>
-</template>
-./AnyHTML/AnyHTML.vue./ReadMe/ReadMe.vue

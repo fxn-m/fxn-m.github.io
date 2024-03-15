@@ -1,32 +1,3 @@
-<script setup lang="ts">
-import { onMounted, ref } from "vue"
-const experienceRef = ref()
-
-const experiences = [
-  {
-    id: 1,
-    date: "2023-Present",
-    detail: "Freelance Full-Stack Developer @ Sanctuary Health",
-  },
-  {
-    id: 2,
-    date: "2022",
-    detail: "Technical Research Intern @ Dyson (3 months)",
-  },
-  {
-    id: 3,
-    date: "2020-2021",
-    detail: "Mechanical Engineer @ Babcock (12 months)",
-  },
-  { id: 4, date: "2019", detail: "Front of House @ Hotel Du Vin (2 months)" },
-  { id: 5, date: "2018", detail: "Summer Intern @ Arup (2 months)" },
-]
-
-onMounted(() => {
-  experienceRef.value = experiences
-})
-</script>
-
 <template>
   <div id="content">
     <p>
@@ -57,6 +28,35 @@ onMounted(() => {
     </ul>
   </div>
 </template>
+
+<script setup lang="ts">
+import { onMounted, ref } from "vue"
+const experienceRef = ref()
+
+const experiences = [
+  {
+    id: 1,
+    date: "2023-Present",
+    detail: "Freelance Full-Stack Developer @ Sanctuary Health",
+  },
+  {
+    id: 2,
+    date: "2022",
+    detail: "Technical Research Intern @ Dyson (3 months)",
+  },
+  {
+    id: 3,
+    date: "2020-2021",
+    detail: "Mechanical Engineer @ Babcock (12 months)",
+  },
+  { id: 4, date: "2019", detail: "Front of House @ Hotel Du Vin (2 months)" },
+  { id: 5, date: "2018", detail: "Summer Intern @ Arup (2 months)" },
+]
+
+onMounted(() => {
+  experienceRef.value = experiences
+})
+</script>
 
 <style scoped>
 span.date {
