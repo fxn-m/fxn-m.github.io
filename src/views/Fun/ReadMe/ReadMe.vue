@@ -186,5 +186,6 @@ body.dark p {
 
 button {
   font-size: 0.9em;
+  color: red;
 }
 </style>
