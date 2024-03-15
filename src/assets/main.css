@@ -136,6 +136,12 @@ body.dark button {
     border-color: #868cff;
   }
 }
+
+button a {
+  text-decoration: none;
+  color: inherit;
+}
+
 /* // links styling */
 
 a,
