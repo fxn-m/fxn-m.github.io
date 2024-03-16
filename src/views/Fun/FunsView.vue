@@ -22,7 +22,7 @@
   </div>
 </template>
 
-<script setup type="ts">
+<script setup lang="ts">
 import { ref } from "vue"
 const frontendUrl = ref("")
 frontendUrl.value = import.meta.env.VITE_FRONTEND_URL
