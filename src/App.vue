@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h1>
+    <h1 style="display: flex">
       <div style="position: relative">
         <FontAwesomeIcon
           icon="fa-solid fa-caret-left"
@@ -11,18 +11,19 @@
           }"
         />
       </div>
-      <span
-        style="white-space: nowrap"
+      <RouterLink
         @mouseover="isHovering = true"
         @mouseout="isHovering = false"
-      >
-        <RouterLink
-          to="/"
-          @click="navigateToParent"
-          style="border: none; font-weight: bold"
-          >fxn-m{{ pageTitle }}
-        </RouterLink>
-      </span>
+        to="/"
+        @click="navigateToParent"
+        style="
+          white-space: nowrap;
+          border: none;
+          font-weight: bold;
+          align-self: center;
+        "
+        >fxn-m{{ pageTitle }}
+      </RouterLink>
     </h1>
     <div id="icons">
       <a href="https://github.com/fxn-m" target="_blank">
@@ -63,7 +64,6 @@
 <style scoped>
 #popup-arrow {
   position: absolute;
-  top: -5px;
   left: -9px;
   transform: rotate(45deg);
   transition: color 1s ease-in-out;
