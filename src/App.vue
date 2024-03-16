@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h2>
+    <h1>
       <div style="position: relative">
         <FontAwesomeIcon
           icon="fa-solid fa-caret-left"
@@ -23,7 +23,7 @@
           >fxn-m{{ pageTitle }}
         </RouterLink>
       </span>
-    </h2>
+    </h1>
     <div id="icons">
       <a href="https://github.com/fxn-m" target="_blank">
         <FontAwesomeIcon

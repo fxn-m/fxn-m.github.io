@@ -1,5 +1,3 @@
-<script setup lang="ts"></script>
-
 <template>
   <div id="content">
     <ul>
@@ -7,7 +5,10 @@
         <a href="https://www.fxn-m.com/atmosphere.fm" target="_blank"
           >Atmosphere.fm</a
         >
-        - <span>pathetic fallacy for spotify playlists.</span>
+        - <span>soundtracks powered by skies. </span>
+        <span class="subText"
+          ><a :href="`${frontendUrl}/#/atmosphere.fm/about`">(About)</a></span
+        >
       </li>
       <li>
         <RouterLink to="/fun/:anyhtml">AnyHTML</RouterLink> -
@@ -21,6 +22,12 @@
   </div>
 </template>
 
+<script setup type="ts">
+import { ref } from "vue"
+const frontendUrl = ref("")
+frontendUrl.value = import.meta.env.VITE_FRONTEND_URL
+</script>
+
 <style scoped>
 span {
   color: #828282;
@@ -28,8 +35,22 @@ span {
   transition: color 1s ease-in-out;
 }
 
+span.subText {
+  color: #afafaf;
+  font-size: small;
+  margin-left: 15px;
+}
+
 body.dark span {
   color: #afafaf;
   transition: color 1s ease-in-out;
+}
+
+body.dark span.subText a {
+  color: #cecece;
+
+  &:hover {
+    color: white;
+  }
 }
 </style>

@@ -45,13 +45,18 @@ header {
   justify-content: space-between;
 }
 
-h2 {
+h1 {
   font-size: 28px;
-  flex: 0 0 auto;
   margin: 0;
+  flex: 0 0 auto;
   text-decoration: none;
   transition: color 1s ease-in-out;
-  color: #303030;
+}
+
+h2 {
+  flex: 0 0 auto;
+  text-decoration: none;
+  transition: color 1s ease-in-out;
 }
 
 h2:hover {
