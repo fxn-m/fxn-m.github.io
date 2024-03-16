@@ -7,7 +7,7 @@
         >
         - <span>soundtracks powered by skies. </span>
         <span class="subText"
-          ><a :href="`${frontendUrl}/#/atmosphere.fm/about`">(About)</a></span
+          ><a :href="`#/atmosphere.fm/about`">(About)</a></span
         >
       </li>
       <li>
