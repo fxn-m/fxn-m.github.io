@@ -8,19 +8,22 @@
         desktop/laptop).
       </li>
       <li>
-        Enable location services (the app needs to figure out the weather near
-        you!).
+        Enable location services: the app needs to figure out the weather near
+        you!.
       </li>
-      <li>You should see a page like this (image below).</li>
+      <li>
+        You should see a page like this (images coming soon). Now's a good time
+        to make sure your volume isn't too high because music will automatically
+        start playing after you log in.
+      </li>
       <li>
         Login with your Spotify account. You’ll need a premium subscription for
         this app to work - the same goes for any application built on Spotify’s
         API and SDK.
       </li>
       <li>
-        Once you’re logged in, music will start playing (might be a good idea to
-        turn your volume down ahead of time). You can control audio either with
-        your keyboard:
+        Once you’re logged in, music will start playing. You can control audio
+        either with your keyboard:
         <ul class="keymap">
           <li>Spacebar or Enter - Play/Pause</li>
           <li>RightArrow - Next track</li>
@@ -104,7 +107,7 @@
     <p>
       If you’re interested in the story of
       <a href="http://Atmosphere.fm">Atmosphere.fm</a> - with some more of the
-      gory details - here’s the <strong>blog post</strong>.
+      gory details - here’s the <strong>blog post</strong> (coming soon).
     </p>
     <h3 id="notes">Notes</h3>
     <p>
@@ -125,12 +128,7 @@
 
 <style scoped>
 h3 {
-  font-size: 1.3em;
   color: black;
-  transition: color 0.5s;
-}
-
-h3 {
   transition: color 0.5s;
   font-size: 1.1em;
   margin-top: 1.5em;
@@ -142,14 +140,31 @@ h3 {
 }
 
 body.dark h3 {
-  transition: color 0.5s;
+  transition: all 0.5s ease-in-out;
   border-bottom: 1px solid #4f4f4f;
 }
 
-ul.keymap li {
-  list-style-type: disc;
+li {
+  transition: all 0.5s ease-in-out;
+}
+
+a {
+  transition: all 0.5s ease-in-out;
+}
+
+ul {
   margin-left: 20px;
   line-height: 1.5em;
+  transition: all 0.5s ease-in-out;
+}
+
+ul li {
+  list-style-type: disc;
+  transition: all 0.5s ease-in-out;
+}
+
+body.dark ul {
+  transition: all 0.5s ease-in-out;
 }
 
 ol,

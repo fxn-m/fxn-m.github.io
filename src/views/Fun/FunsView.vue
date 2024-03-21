@@ -1,11 +1,15 @@
 <template>
   <div id="content">
     <ul>
-      <li>
-        <a href="https://www.fxn-m.com/atmosphere.fm" target="_blank"
-          >Atmosphere.fm</a
-        >
-        - <span>soundtracks powered by skies. </span>
+      <li
+        style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center"
+      >
+        <div>
+          <a href="https://www.fxn-m.com/atmosphere.fm" target="_blank"
+            >Atmosphere.fm</a
+          >
+          - <span>soundtracks shaped by skies. </span>
+        </div>
         <span class="subText"
           ><a :href="`#/atmosphere.fm/about`">(About)</a></span
         >
@@ -38,7 +42,6 @@ span {
 span.subText {
   color: #afafaf;
   font-size: small;
-  margin-left: 15px;
 }
 
 body.dark span {
