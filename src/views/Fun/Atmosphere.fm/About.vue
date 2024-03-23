@@ -203,4 +203,10 @@ img {
   display: block;
   border-radius: 5px;
 }
+
+@media (max-width: 700px) {
+  img {
+    width: 100%;
+  }
+}
 </style>
