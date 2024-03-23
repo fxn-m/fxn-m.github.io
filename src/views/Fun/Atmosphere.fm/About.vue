@@ -4,45 +4,51 @@
     <ol>
       <li>
         Go to
-        <a href="http://fxn-m.com/atmosphere.fm">Atmosphere.fm</a> (supported on
-        desktop/laptop).
+        <a href="http://fxn-m.com/atmosphere.fm">fxn-m.com/atmosphere.fm</a>.
       </li>
       <li>
         Enable location services: the app needs to figure out the weather near
-        you!.
+        you!
       </li>
+      <img
+        src="/public/images/enable-location.png"
+        alt="Enable location services"
+      />
       <li>
-        You should see a page like this (images coming soon). Now's a good time
-        to make sure your volume isn't too high because music will automatically
-        start playing after you log in.
+        You should see a page like this. Now's a good time to make sure your
+        volume isn't too high because music will automatically start playing
+        after you log in.
       </li>
+      <img src="/public/images/atmosphere-fm.png" alt="Atmosphere.fm" />
       <li>
         Login with your Spotify account. You’ll need a premium subscription for
         this app to work - the same goes for any application built on Spotify’s
         API and SDK.
       </li>
+      <img src="/public/images/spotify-login.png" alt="Spotify login" />
       <li>
         Once you’re logged in, music will start playing. You can control audio
-        either with your keyboard:
+        either with your keyboard, or with the clickable user interface in the
+        bottom left corner.:
         <ul class="keymap">
           <li>Spacebar or Enter - Play/Pause</li>
           <li>RightArrow - Next track</li>
-          <li>
-            LeftArrow - Prev track or with the clickable user interface in the
-            bottom left corner. Hopefully it’s quite intuitive. Clicking the
-            heart will add the current song to your liked songs. If it’s already
-            in your liked songs, it will remove it, so be careful!
-          </li>
+          <li>LeftArrow - Prev track</li>
         </ul>
+        Hopefully it’s quite intuitive.
+        <p>
+          Clicking the heart will add the current song to your liked songs. If
+          it’s already in your liked songs, it will remove it, so be careful!
+        </p>
       </li>
+      <img src="/public/images/playback-controls.png" alt="Playback controls" />
       <li>
-        For a better experience, go fullscreen by clicking the full screen link
-        that appears at the top of the page. Or don’t, your call. You can always
-        revert by pushing Esc, and if you change your mind and do want to go
-        full screen, there are
+        For a better experience, go fullscreen! This includes removing the
+        bookmarks and address bars. If you're not sure how to do this,
         <a
           href="https://www.google.com/search?q=how+do+i+go+full+screen+on+my+browser&oq=how+do+i+go+full+screen+on+my+browser&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORigATIHCAEQIRigATIHCAIQIRigAdIBCDY2MTZqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8"
-          >other ways</a
+          target="_blank"
+          >start here</a
         >.
       </li>
       <li>
@@ -50,23 +56,39 @@
         top-left of the page. Clicking it will reveal a side-bar showing all the
         tracks in the current playlist. Clicking on a track will play it.
       </li>
-      <li>
-        Hover around the icon (”atmosphere”) in the middle of the page. A menu
-        will appear. Click on the icon to keep the menu there when you move your
-        mouse away. This menu lets you choose what plays depending on the
-        weather. Defaults have been set to be Spotify mixes. These were chosen
-        because they are relevant to their description (and hopefully to the
-        atmosphere), they are tailored to your tastes, and are updated daily.
-      </li>
+      <img src="/public/images/now-playing.png" alt="Now playing" />
       <li>
         The atmosphere will update depending on the weather detected near you,
-        but if you really can’t wait for a sunny day to come around, the
-        drop-down in the top right lets you choose.
+        and the playlist that plays will update depending on the atmosphere, but
+        if you really can’t wait for a sunny day to come around, the drop-down
+        in the top right lets you choose.
       </li>
+      <div>
+        <img src="/public/images/i-wish-it-was-1.png" alt="Weather dropdown" />
+        <img
+          src="/public/images/i-wish-it-was-2-2.png"
+          alt="Weather dropdown"
+        />
+      </div>
       <li>
-        If you want to hide the tracklist for a slightly more minimal
-        experience, click the playlist name in the track description section.
+        <p>
+          Hover around the icon (”atmosphere”) in the middle of the page. A menu
+          will appear. Click on the icon to keep the menu there when you move
+          your mouse away. This menu lets you choose what plays depending on the
+          weather.
+        </p>
+        <p>
+          Defaults have been set to be Spotify mixes because they are relevant
+          to their description (and hopefully to the atmosphere), tailored to
+          your tastes, and are updated daily. Feel free to customise them to
+          your liking.
+        </p>
       </li>
+      <img src="/public/images/atmosphere-menu.png" alt="Atmosphere menu" />
+      <img
+        src="/public/images/customize-playlist.png"
+        alt="Customize Playlist"
+      />
     </ol>
     <h3 id="howitworks">How It Works</h3>
     <p>The app has two main parts:</p>
@@ -144,7 +166,10 @@ body.dark h3 {
   border-bottom: 1px solid #4f4f4f;
 }
 
-li {
+ol li,
+ol li ul li,
+body.dark ol li,
+body.dark ol li ul li {
   transition: all 0.5s ease-in-out;
 }
 
@@ -155,16 +180,11 @@ a {
 ul {
   margin-left: 20px;
   line-height: 1.5em;
-  transition: all 0.5s ease-in-out;
 }
 
-ul li {
+ul.keymap,
+ul.keymap li {
   list-style-type: disc;
-  transition: all 0.5s ease-in-out;
-}
-
-body.dark ul {
-  transition: all 0.5s ease-in-out;
 }
 
 ol,
@@ -175,5 +195,12 @@ li {
 
 ol {
   padding: 0 0 0 1.3em;
+}
+
+img {
+  width: 500px;
+  margin: 2em auto;
+  display: block;
+  border-radius: 5px;
 }
 </style>

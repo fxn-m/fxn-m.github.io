@@ -2,7 +2,7 @@
 body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   padding: 10px 0px 20px 0px;
-  transition: background-color 0.5s ease-in-out;
+  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
   margin: 100px auto 50px auto;
   color: #555;
   overflow-y: scroll;
