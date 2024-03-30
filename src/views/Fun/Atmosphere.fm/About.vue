@@ -10,22 +10,27 @@
         Enable location services: the app needs to figure out the weather near
         you!
       </li>
-      <img
-        src="/public/images/enable-location.png"
-        alt="Enable location services"
-      />
+      <img src="/images/enable-location.webp" alt="Enable location services" />
       <li>
         You should see a page like this. Now's a good time to make sure your
         volume isn't too high because music will automatically start playing
         after you log in.
       </li>
-      <img src="/public/images/atmosphere-fm.png" alt="Atmosphere.fm" />
+      <img
+        src="/images/atmosphere-fm.webp"
+        alt="Atmosphere.fm"
+        class="fullwidth"
+      />
       <li>
         Login with your Spotify account. You’ll need a premium subscription for
         this app to work - the same goes for any application built on Spotify’s
         API and SDK.
       </li>
-      <img src="/public/images/spotify-login.png" alt="Spotify login" />
+      <img
+        src="/images/spotify-login.webp"
+        alt="Spotify login"
+        class="fullwidth"
+      />
       <li>
         Once you’re logged in, music will start playing. You can control audio
         either with your keyboard, or with the clickable user interface in the
@@ -41,7 +46,7 @@
           it’s already in your liked songs, it will remove it, so be careful!
         </p>
       </li>
-      <img src="/public/images/playback-controls.png" alt="Playback controls" />
+      <img src="/images/playback-controls.webp" alt="Playback controls" />
       <li>
         For a better experience, go fullscreen! This includes removing the
         bookmarks and address bars. If you're not sure how to do this,
@@ -56,7 +61,7 @@
         top-left of the page. Clicking it will reveal a side-bar showing all the
         tracks in the current playlist. Clicking on a track will play it.
       </li>
-      <img src="/public/images/now-playing.png" alt="Now playing" />
+      <img src="/images/now-playing.webp" alt="Now playing" class="fullwidth" />
       <li>
         The atmosphere will update depending on the weather detected near you,
         and the playlist that plays will update depending on the atmosphere, but
@@ -64,10 +69,15 @@
         in the top right lets you choose.
       </li>
       <div>
-        <img src="/public/images/i-wish-it-was-1.png" alt="Weather dropdown" />
         <img
-          src="/public/images/i-wish-it-was-2-2.png"
+          src="/images/i-wish-it-was-1.webp"
           alt="Weather dropdown"
+          class="fullwidth"
+        />
+        <img
+          src="/images/i-wish-it-was-2-2.webp"
+          alt="Weather dropdown"
+          class="fullwidth"
         />
       </div>
       <li>
@@ -84,10 +94,10 @@
           your liking.
         </p>
       </li>
-      <img src="/public/images/atmosphere-menu.png" alt="Atmosphere menu" />
       <img
-        src="/public/images/customize-playlist.png"
-        alt="Customize Playlist"
+        src="/images/atmosphere-menu.webp"
+        alt="Atmosphere menu"
+        class="fullwidth"
       />
     </ol>
     <h3 id="howitworks">How It Works</h3>
@@ -202,6 +212,10 @@ img {
   margin: 2em auto;
   display: block;
   border-radius: 5px;
+}
+
+img.fullwidth {
+  width: 90%;
 }
 
 @media (max-width: 700px) {
