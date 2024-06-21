@@ -1,24 +1,15 @@
 <template>
   <div id="content">
     <p>
-      You've reached Felix Newport-Mangell's homepage. Welcome to my plot of
-      internet real estate!
+      Studied Engineering Design at the University of Bristol, graduating in
+      2023. The course encourages students to work on projects across
+      disciplines - like a 'liberal arts' for engineers.
     </p>
     <p>
-      I studied Engineering Design at the University of Bristol, graduating in
-      2023. There I had the flexibility to work on projects across domains,
-      exploring fields from product design to artificial intelligence. It's like
-      a 'liberal arts' approach but within the engineering discipline.
-    </p>
-    <p>
-      While studying, I picked up programming, and began incorporating it in as
-      many projects as I could. My gateway was data science & machine learning,
-      but soon became interested in full-stack web development, building on the
-      worlds largest platform: the internet.
-    </p>
-    <p>
-      Now, I'm at <a href="https://sanctuaryhealth.io">Sanctuary Health</a> as a
-      freelance full-stack developer.
+      While studying I picked up programming and began incorporating it in as
+      many projects as I could. I started in data science & machine learning,
+      but soon became interested in web development, building on the world's
+      largest platform.
     </p>
     <p id="experience">Experience</p>
     <ul>
@@ -36,8 +27,8 @@ const experienceRef = ref()
 const experiences = [
   {
     id: 1,
-    date: "2023-Present",
-    detail: "Freelance Full-Stack Developer @ Sanctuary Health",
+    date: "2023-2024",
+    detail: "Freelance Full-Stack Developer @ Sanctuary Health (8 months)",
   },
   {
     id: 2,
