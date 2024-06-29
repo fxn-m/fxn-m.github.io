@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h1 style="display: flex">
+    <h2 style="display: flex">
       <div style="position: relative">
         <FontAwesomeIcon
           icon="fa-solid fa-caret-left"
@@ -24,7 +24,7 @@
         "
         >fxn-m{{ pageTitle }}
       </RouterLink>
-    </h1>
+    </h2>
     <div id="icons">
       <a href="https://github.com/fxn-m" target="_blank">
         <FontAwesomeIcon
@@ -66,7 +66,6 @@
   position: absolute;
   left: -9px;
   transform: rotate(45deg);
-  transition: color 1s ease-in-out;
 }
 </style>
 
@@ -85,6 +84,9 @@ const pageTitle = computed(() => {
   const currentRoute = route.path !== "/" ? route.path : ""
   if (currentRoute[currentRoute.length - 1] === "-") {
     return `${currentRoute}`.slice(0, -1).replace(":", "")
+  }
+  if (currentRoute.split("/").length > 2) {
+    return "/" + `${currentRoute}`.split("/")[1].replace(":", "")
   }
   return `${currentRoute}`.replace(":", "")
 })
@@ -105,4 +107,3 @@ console.log(`
                                                      
 `)
 </script>
-./ToggleTheme.vue

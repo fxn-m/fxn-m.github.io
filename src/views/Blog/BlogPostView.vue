@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="metadata">
-      <h3>{{ $route.query.title }}</h3>
+      <h1>{{ $route.query.title }}</h1>
       <p>{{ $route.query.date }}</p>
     </div>
     <hr />
@@ -34,7 +34,7 @@ onMounted(() => {
 
 <style scoped>
 .container {
-  margin-top: 20px;
+  margin-top: 50px;
   width: 100%;
 }
 
@@ -55,6 +55,50 @@ onMounted(() => {
 }
 
 body.dark h3 {
+  color: #b3b3b3;
+}
+
+.blog {
+  margin-top: 50px;
+}
+
+.blog >>> ul li {
+  list-style-type: disc;
+  margin: 0.5em 0;
+}
+
+.blog >>> ul {
+  margin: 1em 0em 1em 2em;
+}
+
+.blog >>> h1 {
+  margin: 1em 0 auto 0;
+}
+
+.blog >>> img {
+  max-width: 100%;
+  margin: 1em 0;
+}
+
+.blog >>> div.YTContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 2em 0;
+}
+
+.blog >>> div.YTContainer iframe {
+  width: 75%;
+  aspect-ratio: 16 / 9;
+  margin: 1em 0;
+}
+
+.blog >>> div.YTContainer::after {
+  content: attr(title);
+  text-align: center;
+  font-size: 0.8em;
   color: #b3b3b3;
 }
 </style>

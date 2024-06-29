@@ -1,15 +1,19 @@
 <template>
   <div id="content">
+    <p>Studied Engineering Design at the University of Bristol.</p>
     <p>
-      Studied Engineering Design at the University of Bristol, graduating in
-      2023. The course encourages students to work on projects across
-      disciplines - like a 'liberal arts' for engineers.
+      It's a course than allows students to work on projects across disciplines
+      - like a 'liberal arts' for engineers.
     </p>
     <p>
-      While studying I picked up programming and began incorporating it in as
-      many projects as I could. I started in data science & machine learning,
-      but soon became interested in web development, building on the world's
-      largest platform.
+      In my third year, I worked on submarine defence systems at Babock. I
+      designed battery packs at Dyson during my internship there.
+    </p>
+    <p>
+      Picked up programming towards the end of my studies and set to writing
+      code in as many projects as I reasonably could. I started in data science
+      & machine learning, but wanted to build products, so I moved to web
+      development.
     </p>
     <p id="experience">Experience</p>
     <ul>

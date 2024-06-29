@@ -7,6 +7,9 @@
       <li>
         <RouterLink to="/fun" id="fun">Fun</RouterLink>
       </li>
+      <li>
+        <RouterLink to="/blog">Blog</RouterLink>
+      </li>
     </ul>
   </div>
 </template>

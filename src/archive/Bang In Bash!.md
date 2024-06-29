@@ -1,6 +1,6 @@
 ---
-title: Bang in Bash !
-date: 05-11-2023
+title: Bang in Bash!
+date: 2023-05-11
 ---
 
 ### The problem
