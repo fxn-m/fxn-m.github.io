@@ -1,51 +1,37 @@
 <template>
   <div id="content">
-    <p>Studied Engineering Design at the University of Bristol.</p>
+    <p style="font-size: 20px">Hey 👋</p>
+    <p>My name's Felix.</p>
+    <p>I'm an engineer based in Cambridge/London, open to work.</p>
     <p>
-      It's a course than allows students to work on projects across disciplines
-      - like a 'liberal arts' for engineers.
+      For the past few months, I've been freelancing as a developer, building AI
+      wrappers at
+      <a href="https://www.sanctuaryhealth.io/">Sanctuary Health</a>.
     </p>
     <p>
-      In my third year, I worked on submarine defence systems at Babock. I
-      designed battery packs at Dyson during my internship there.
+      Before that, I studied Engineering Design, and did a research internship
+      at Dyson where I worked on designing high-performance lithium-battery
+      packs (see my full
+      <a
+        href="https://file.notion.so/f/f/35056b62-82a3-4737-b2d7-acfd0718645c/fd140dd2-686d-4b8e-b5b8-4a630d3c59fa/Felix_Newport-Mangell_Resume.pdf?id=faee9ca3-0256-4d82-9149-8be5e5baced9&table=block&spaceId=35056b62-82a3-4737-b2d7-acfd0718645c&expirationTimestamp=1719770400000&signature=tFeif9aStJO0vLAFb-uNapCYouLN3LkY2LVuwb1RwJQ&downloadName=Felix+Newport-Mangell+Resume.pdf"
+        target="_blank"
+        >resumé</a
+      >).
     </p>
     <p>
-      Picked up programming towards the end of my studies and set to writing
-      code in as many projects as I reasonably could. I started in data science
-      & machine learning, but wanted to build products, so I moved to web
-      development.
+      <RouterLink to="/contact">Get in touch</RouterLink> if you'd like a call
+      and I might be able to help you with your project!
     </p>
+    <p>
+      Outside of building stuff I like to read about technology, philosophy, and
+      economics. I've started
+      <RouterLink to="/writing">writing</RouterLink> about ideas I get from
+      reading and working on projects.
+    </p>
+    <p></p>
+    <footer>Last updated: 29-07-2024</footer>
   </div>
 </template>
-
-<script setup lang="ts">
-import { onMounted, ref } from "vue"
-const experienceRef = ref()
-
-const experiences = [
-  {
-    id: 1,
-    date: "2023-2024",
-    detail: "Freelance Full-Stack Developer @ Sanctuary Health (8 months)",
-  },
-  {
-    id: 2,
-    date: "2022",
-    detail: "Technical Research Intern @ Dyson (3 months)",
-  },
-  {
-    id: 3,
-    date: "2020-2021",
-    detail: "Mechanical Engineer @ Babcock (12 months)",
-  },
-  { id: 4, date: "2019", detail: "Front of House @ Hotel Du Vin (2 months)" },
-  { id: 5, date: "2018", detail: "Summer Intern @ Arup (2 months)" },
-]
-
-onMounted(() => {
-  experienceRef.value = experiences
-})
-</script>
 
 <style scoped>
 span.date {
@@ -71,5 +57,12 @@ h3 {
 
 body.dark #experience {
   border-bottom: 1px solid #4f4f4f;
+}
+
+footer {
+  margin: 2rem 0;
+  font-size: 0.8rem;
+  color: #b3b3b3;
+  text-align: right;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h2 style="display: flex">
+    <h2 style="display: flex; --arrow-color: currentcolor">
       <div style="position: relative">
         <FontAwesomeIcon
           icon="fa-solid fa-caret-left"
@@ -8,6 +8,7 @@
           id="popup-arrow"
           :style="{
             visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden',
+            color: 'var(--arrow-color)',
           }"
         />
       </div>
@@ -73,10 +74,11 @@
 </template>
 
 <style scoped>
-#popup-arrow {
+h2 #popup-arrow {
   position: absolute;
   left: -9px;
   transform: rotate(45deg);
+  color: inherit;
 }
 </style>
 
@@ -96,7 +98,7 @@ const pageTitle = computed(() => {
   if (currentRoute[currentRoute.length - 1] === "-") {
     return `${currentRoute}`.slice(0, -1).replace(":", "")
   }
-  if (currentRoute.split("/").length > 2) {
+  if (currentRoute.split("/")[1] === "writing") {
     return "/" + `${currentRoute}`.split("/")[1].replace(":", "")
   }
   return `${currentRoute}`.replace(":", "")

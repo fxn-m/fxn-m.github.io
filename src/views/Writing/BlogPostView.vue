@@ -4,7 +4,6 @@
       <h1>{{ $route.query.title }}</h1>
       <p>{{ $route.query.date }}</p>
     </div>
-    <hr />
     <div class="blog" v-html="blogContent"></div>
   </div>
 </template>
@@ -63,28 +62,28 @@ body.dark h3 {
 }
 
 .blog {
-  margin-top: 50px;
+  margin-top: 1em;
 }
 
-.blog >>> ul li {
+.blog:deep(ul li) {
   list-style-type: disc;
   margin: 0.5em 0;
 }
 
-.blog >>> ul {
+.blog:deep(ul) {
   margin: 1em 0em 1em 2em;
 }
 
-.blog >>> h1 {
+.blog:deep(h1) {
   margin: 1em 0 auto 0;
 }
 
-.blog >>> img {
+.blog:deep(img) {
   max-width: 100%;
   margin: 1em 0;
 }
 
-.blog >>> div.YTContainer {
+.blog:deep(div.YTContainer) {
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -93,13 +92,13 @@ body.dark h3 {
   margin: 2em 0;
 }
 
-.blog >>> div.YTContainer iframe {
+.blog:deep(div.YTContainer iframe) {
   width: 75%;
   aspect-ratio: 16 / 9;
   margin: 1em 0;
 }
 
-.blog >>> div.YTContainer::after {
+.blog:deep(div.YTContainer::after) {
   content: attr(title);
   text-align: center;
   font-size: 0.8em;

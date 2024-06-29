@@ -4,7 +4,6 @@ body {
   padding: 10px 0px 20px 0px;
   transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
   margin: 70px auto 50px auto;
-  color: #555;
   overflow-y: scroll;
   width: 50%;
 }
@@ -29,23 +28,25 @@ p {
 ul {
   padding: 0;
   margin: 0;
-  transition: color 0s ease-in-out;
 }
 
 ul li {
   margin: 1.2em 0;
   list-style-type: none;
-  transition: color 0s ease-in-out;
 }
 
 header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #e5e9eb;
 }
 
 #restOfHeader {
   display: flex;
+  flex-grow: 1;
+  justify-content: end;
   align-items: center;
   gap: 20px;
 }
@@ -62,6 +63,16 @@ header {
   text-decoration: none;
   transition: color 0.5s ease-in-out;
   border: none;
+}
+
+#navigation a:hover {
+  color: #000;
+  transition: color 0.5s ease-in-out;
+}
+
+body.dark #navigation a:hover {
+  color: #cecece;
+  transition: color 0.5s ease-in-out;
 }
 
 h1 {
@@ -145,7 +156,7 @@ button {
     border-color 0.5s ease-in-out;
 
   &:hover {
-    border-color: #868cff;
+    border-color: #aaa;
   }
 }
 
@@ -157,7 +168,7 @@ body.dark button {
     border-color 0.25s ease-in-out;
 
   &:hover {
-    border-color: #868cffc0;
+    border-color: #a4a9fcc0;
   }
 }
 
@@ -405,7 +416,7 @@ body.dark ::-webkit-scrollbar-thumb {
 
 @media (max-width: 700px) {
   body {
-    margin: 1em auto 50px 2em;
+    margin: 1em auto 50px auto;
     width: 90%;
   }
 
@@ -423,5 +434,11 @@ body.dark ::-webkit-scrollbar-thumb {
 
   #icons {
     display: none;
+  }
+
+  footer {
+    position: fixed;
+    bottom: 0;
+    width: 90%;
   }
 }

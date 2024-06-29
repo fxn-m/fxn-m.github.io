@@ -1,7 +1,10 @@
 <template>
   <div id="content">
     <p>I'm always open to new people and opportunities :)</p>
-    <p>Feel free to reach out to me using the form below</p>
+    <p>
+      Feel free to reach out to me using the form below, or just send me an
+      <a href="mailto:fnewportmangell@gmail.com">e-mail</a>
+    </p>
     <form @submit.prevent="sendEmail()">
       <div id="input-fields">
         <input
@@ -9,7 +12,7 @@
           id="name"
           v-model="name"
           autocomplete="nope"
-          placeholder="Name"
+          placeholder="Your name"
         />
         <input
           type="email"
@@ -24,7 +27,7 @@
         id="message"
         v-model="message"
         rows="4"
-        placeholder="Message"
+        placeholder="Your message"
         required
         @keydown.enter.prevent="submitFormOnEnter"
       ></textarea>
@@ -154,6 +157,11 @@ body.dark textarea {
   border: 1px solid #9ea9eb69;
   background-color: #0d121a;
   color: #c3e3f1;
+}
+
+button {
+  margin-left: auto;
+  min-width: 200px;
 }
 
 @media (max-width: 600px) {

@@ -42,7 +42,7 @@ const router = createRouter({
       component: () => import("../views/Contact/ContactView.vue"),
     },
     {
-      path: "/atmosphere.fm/about",
+      path: "/fun/atmosphere.fm-about",
       name: "atmosphereAbout",
       component: () => import("../views/Fun/Atmosphere.fm/About.vue"),
     },
