@@ -41,6 +41,8 @@ onMounted(() => {
 .metadata {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
+
   align-items: baseline;
   justify-content: space-between;
 }
@@ -52,6 +54,8 @@ onMounted(() => {
 .metadata p {
   color: #b3b3b3;
   font-size: 0.95em;
+  flex-grow: 1;
+  text-align: right;
 }
 
 body.dark h3 {

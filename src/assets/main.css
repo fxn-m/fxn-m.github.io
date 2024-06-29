@@ -44,6 +44,26 @@ header {
   align-items: center;
 }
 
+#restOfHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+#navigation {
+  display: flex;
+  gap: 20px;
+  padding-top: 2px;
+}
+
+#navigation a {
+  font-size: 0.9em;
+  color: #777;
+  text-decoration: none;
+  transition: color 0.5s ease-in-out;
+  border: none;
+}
+
 h1 {
   margin: 0;
   flex: 0 0 auto;
@@ -385,8 +405,16 @@ body.dark ::-webkit-scrollbar-thumb {
 
 @media (max-width: 700px) {
   body {
-    margin: 1em auto 50px auto;
+    margin: 1em auto 50px 2em;
     width: 90%;
+  }
+
+  #content {
+    margin: 0.5em 0 0;
+  }
+
+  #content li {
+    margin-top: 0;
   }
 
   #back-arrow {

@@ -25,36 +25,47 @@
         >fxn-m{{ pageTitle }}
       </RouterLink>
     </h2>
-    <div id="icons">
-      <a href="https://github.com/fxn-m" target="_blank">
-        <FontAwesomeIcon
-          icon="fa-brands fa-github"
-          size="2xl"
-          class="fa-github"
-        />
-      </a>
-      <a href="https://x.com/fxn__m" target="_blank">
-        <FontAwesomeIcon
-          icon="fa-brands fa-x-twitter"
-          size="2xl"
-          class="fa-twitter"
-        />
-      </a>
-      <a href="https://www.strava.com/athletes/29743058" target="_blank">
-        <FontAwesomeIcon
-          icon="fa-brands fa-strava"
-          size="2xl"
-          class="fa-strava"
-        />
-      </a>
-      <a href="https://www.polarsteps.com/FelixNewportMangell" target="_blank">
-        <FontAwesomeIcon
-          icon="fa-regular fa-compass"
-          size="2xl"
-          class="fa-compass"
-        />
-      </a>
-      <ToggleTheme />
+
+    <div id="restOfHeader">
+      <ul id="navigation">
+        <RouterLink to="/">About</RouterLink>
+        <RouterLink to="/writing">Writing</RouterLink>
+        <RouterLink to="/fun">Fun</RouterLink>
+      </ul>
+      <div id="icons">
+        <a href="https://github.com/fxn-m" target="_blank">
+          <FontAwesomeIcon
+            icon="fa-brands fa-github"
+            size="2xl"
+            class="fa-github"
+          />
+        </a>
+        <a href="https://x.com/fxn__m" target="_blank">
+          <FontAwesomeIcon
+            icon="fa-brands fa-x-twitter"
+            size="2xl"
+            class="fa-twitter"
+          />
+        </a>
+        <a href="https://www.strava.com/athletes/29743058" target="_blank">
+          <FontAwesomeIcon
+            icon="fa-brands fa-strava"
+            size="2xl"
+            class="fa-strava"
+          />
+        </a>
+        <a
+          href="https://www.polarsteps.com/FelixNewportMangell"
+          target="_blank"
+        >
+          <FontAwesomeIcon
+            icon="fa-regular fa-compass"
+            size="2xl"
+            class="fa-compass"
+          />
+        </a>
+        <ToggleTheme />
+      </div>
     </div>
   </header>
 

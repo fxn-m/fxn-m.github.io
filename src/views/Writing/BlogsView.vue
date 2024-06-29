@@ -5,7 +5,7 @@
         <p>{{ blog.date }}</p>
         <router-link
           :to="{
-            name: 'blogPost',
+            name: 'writingPost',
             params: { post: blog.headerTitle },
             query: { id: blog.id, title: blog.title, date: blog.date },
           }"
