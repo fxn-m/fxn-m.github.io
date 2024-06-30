@@ -13,7 +13,7 @@
       at Dyson where I worked on designing high-performance lithium-battery
       packs (see my full
       <a
-        href="https://file.notion.so/f/f/35056b62-82a3-4737-b2d7-acfd0718645c/fd140dd2-686d-4b8e-b5b8-4a630d3c59fa/Felix_Newport-Mangell_Resume.pdf?id=faee9ca3-0256-4d82-9149-8be5e5baced9&table=block&spaceId=35056b62-82a3-4737-b2d7-acfd0718645c&expirationTimestamp=1719770400000&signature=tFeif9aStJO0vLAFb-uNapCYouLN3LkY2LVuwb1RwJQ&downloadName=Felix+Newport-Mangell+Resume.pdf"
+        href="https://fxn-m.notion.site/resum-c5ac0413bd41470897875c72f55013f4"
         target="_blank"
         >resumé</a
       >).
