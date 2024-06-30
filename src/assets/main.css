@@ -388,6 +388,15 @@ body.dark header h1 a:visited {
   text-decoration: none;
 }
 
+body.dark header #navigation a {
+  color: #aaaaaa;
+  text-decoration: none;
+}
+
+body.dark header {
+  border-bottom: 1px solid #2a3855;
+}
+
 /* // dark mode scrollbar styling */
 
 body.dark ::-webkit-scrollbar-track {
