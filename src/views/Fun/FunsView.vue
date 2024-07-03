@@ -77,6 +77,14 @@ const projects = ref([
     link: "/fun/:readme",
     aboutLink: "",
   },
+  {
+    id: 3,
+    title: "Hall of Fame",
+    description: "Test your luck",
+    image: "/images/hof.webp",
+    link: "/fun/:hall-of-fame",
+    aboutLink: "",
+  },
   // Add more projects as needed
 ])
 </script>

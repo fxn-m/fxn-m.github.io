@@ -1,6 +1,10 @@
 import "./assets/main.css"
 
-import { faArrowLeft, faCaretLeft } from "@fortawesome/free-solid-svg-icons"
+import {
+  faArrowLeft,
+  faArrowsRotate,
+  faCaretLeft,
+} from "@fortawesome/free-solid-svg-icons"
 import {
   faGithub,
   faStrava,
@@ -14,7 +18,15 @@ import { faCompass } from "@fortawesome/free-regular-svg-icons"
 import { library } from "@fortawesome/fontawesome-svg-core"
 import router from "./router"
 
-library.add(faArrowLeft, faGithub, faXTwitter, faStrava, faCompass, faCaretLeft)
+library.add(
+  faArrowLeft,
+  faArrowsRotate,
+  faGithub,
+  faXTwitter,
+  faStrava,
+  faCompass,
+  faCaretLeft
+)
 
 const app = createApp(App)
 

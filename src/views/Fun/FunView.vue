@@ -6,6 +6,7 @@
 
 <script setup lang="ts">
 import ReadingSuggestion from "./ReadMe/ReadMe.vue"
+import HallOfFame from "./HallOfFame/HallOfFame.vue"
 import { useRoute } from "vue-router"
 import { ref, onMounted, type Component } from "vue"
 
@@ -17,10 +18,13 @@ const selectComponent = () => {
 
   const components = {
     ReadingSuggestion,
+    HallOfFame,
   }
 
   if (routeName == "readme") {
     selectedComponent.value = components.ReadingSuggestion
+  } else if (routeName == "hall-of-fame") {
+    selectedComponent.value = components.HallOfFame
   }
 }
 
