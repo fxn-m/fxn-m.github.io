@@ -73,6 +73,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue"
+import { useThemeState } from "@/components/themeState"
 import { Bar } from "vue-chartjs"
 import {
   Chart as ChartJS,
@@ -85,8 +86,6 @@ import {
 } from "chart.js"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import JSConfetti from "js-confetti"
-
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
 
 enum Suit {
   HEARTS = "\u2665\uFE0F", // Red Heart
@@ -155,6 +154,8 @@ const finalGuessSuit = ref<Suit | null>(null)
 const unknownCard = ref<boolean>(true)
 const gameOver = ref<boolean>(false)
 const scores = ref<number[]>([0, 0, 0, 0, 0, 0])
+
+const { isDarkTheme } = useThemeState()
 
 const suits = Object.values(Suit)
 
@@ -304,57 +305,6 @@ function makeFinalGuess() {
   endGame()
 }
 
-const chartData = computed(() => ({
-  labels: ["Stage 1", "Stage 2", "Stage 3", "Stage 4", "Stage 5"],
-  datasets: [
-    {
-      label: "Times Reached",
-      backgroundColor: [
-        "rgba(255, 99, 132, .5)",
-        "rgba(54, 162, 235, .5)",
-        "rgba(255, 206, 86, .5)",
-        "rgba(75, 192, 192, .5)",
-        "rgba(153, 102, 255, .5)",
-      ],
-      data: scores.value,
-    },
-  ],
-}))
-
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: {
-      display: false,
-    },
-    title: {
-      display: false,
-      text: "Stages Reached",
-    },
-  },
-  scales: {
-    x: {
-      grid: {
-        display: false,
-      },
-    },
-    y: {
-      grid: {
-        display: false,
-      },
-      ticks: {
-        display: false,
-      },
-    },
-  },
-  datasets: {
-    bar: {
-      maxBarThickness: 30,
-    },
-  },
-}
-
 function loadScores() {
   const savedScores = localStorage.getItem("cardGameScores")
   if (savedScores) {
@@ -381,6 +331,74 @@ function endGame() {
   loadScores()
 }
 
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+
+const chartData = computed(() => {
+  const lightModeColors = [
+    "rgba(255, 99, 132, .5)",
+    "rgba(54, 162, 235, .5)",
+    "rgba(255, 206, 86, .5)",
+    "rgba(75, 192, 192, .5)",
+    "rgba(153, 102, 255, .5)",
+  ]
+
+  const darkModeColors = [
+    "rgba(255, 99, 132, .8)",
+    "rgba(54, 162, 235, .8)",
+    "rgba(255, 206, 86, .8)",
+    "rgba(75, 192, 192, .8)",
+    "rgba(153, 102, 255, .8)",
+  ]
+
+  return {
+    labels: ["Stage 1", "Stage 2", "Stage 3", "Stage 4", "Stage 5"],
+    datasets: [
+      {
+        label: "Times Reached",
+        backgroundColor: isDarkTheme.value ? darkModeColors : lightModeColors,
+        data: scores.value,
+      },
+    ],
+  }
+})
+
+const chartOptions = computed(() => ({
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
+    title: {
+      display: false,
+      text: "Stages Reached",
+    },
+  },
+  scales: {
+    x: {
+      grid: {
+        display: false,
+      },
+      ticks: {
+        color: isDarkTheme.value ? "#c3e3f1" : "#555",
+      },
+    },
+    y: {
+      grid: {
+        display: false,
+      },
+      ticks: {
+        display: false,
+      },
+    },
+  },
+  datasets: {
+    bar: {
+      maxBarThickness: 30,
+    },
+  },
+}))
+
 onMounted(() => {
   loadScores()
   startNewGame()
@@ -389,7 +407,7 @@ onMounted(() => {
 
 <style scoped>
 #game-container {
-  margin: 2rem auto;
+  margin: 3rem auto;
   padding: 20px;
 }
 
@@ -500,25 +518,16 @@ onMounted(() => {
 .data-footer {
   color: #6e6e6e;
   display: flex;
-  justify-content: center;
   align-items: center;
 }
 
 .data-footer button {
   display: flex;
   align-items: center;
-  background: none;
-  border: none;
-  color: inherit;
   cursor: pointer;
-  padding: 0;
   font: inherit;
   margin: 0;
   gap: 10px;
-}
-
-.data-footer button:hover {
-  color: #000;
 }
 
 .data-footer button:focus {
@@ -532,7 +541,8 @@ onMounted(() => {
 
   .data {
     flex-direction: column;
-    margin: 0 0 32px 0;
+    margin: 0 auto 32px auto;
+    width: 80%;
   }
 
   .chart-container {
@@ -540,19 +550,25 @@ onMounted(() => {
   }
 
   .game-log {
-    width: 100%;
     min-height: 300px;
+    width: 100%;
   }
 }
 
 body.dark .card {
   background-color: #33333300;
+  border: 1px solid #aaaaaa;
   color: #fff;
   transition: all 0.5s;
 }
 
 body.dark .unknown-card {
-  background-color: #333333;
+  background-color: #33333350;
+  color: #fff;
+}
+
+body.dark .final-stage-inputs > * {
+  background-color: #00000000;
   color: #fff;
 }
 </style>
