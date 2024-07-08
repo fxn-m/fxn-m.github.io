@@ -42,6 +42,7 @@ header {
   align-items: center;
   border-bottom: 1px solid #e5e9eb;
   padding: 20px 0px;
+  transition: border 0.5s ease-in-out;
 }
 
 header h2 {
