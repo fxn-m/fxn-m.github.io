@@ -4,14 +4,14 @@
     <p>My name's Felix.</p>
     <p>I'm an engineer based in Cambridge/London, open to work.</p>
     <p>
-      For the past few months, I've been freelancing as a developer, building AI
-      wrappers at
+      For the past few months, I've been freelancing as a developer, mostly
+      building LLM applications at
       <a href="https://www.sanctuaryhealth.io/">Sanctuary Health</a>.
     </p>
     <p>
       Before that, I studied Engineering Design, and did a research internship
       at Dyson where I worked on designing high-performance lithium-battery
-      packs (see my full
+      packs, among a few other things... (see my full
       <a
         href="https://fxn-m.notion.site/resum-c5ac0413bd41470897875c72f55013f4"
         target="_blank"
@@ -19,8 +19,8 @@
       >).
     </p>
     <p>
-      <RouterLink to="/contact">Get in touch</RouterLink> if you'd like a call
-      and I might be able to help you with your project!
+      Do <RouterLink to="/contact">get in touch</RouterLink> if you'd like a
+      call and I might be able to help you with your project!
     </p>
     <p>
       Outside of building stuff I like to read about technology, philosophy, and
@@ -29,7 +29,7 @@
       reading and working on projects.
     </p>
     <p></p>
-    <footer>Last updated: 29-07-2024</footer>
+    <footer>Last updated: 09-07-2024</footer>
   </div>
 </template>
 
