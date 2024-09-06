@@ -28,7 +28,6 @@ dist-ssr
 
 # misc
 desktop.ini
-.prettierrc
 
 /public/html
 

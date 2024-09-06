@@ -72,8 +72,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue"
-import { useThemeState } from "@/components/themeState"
+import { ref, onMounted, computed, watch } from "vue"
+import { theme } from "@/components/themeState"
 import { Bar } from "vue-chartjs"
 import {
   Chart as ChartJS,
@@ -107,7 +107,7 @@ const cardValueMap: { [key: number]: string } = {
 }
 
 class Card {
-  constructor(public value: number, public suit: Suit) {}
+  constructor(public value: number, public suit: Suit) { }
 
   get color(): Color {
     return this.suit === Suit.HEARTS || this.suit === Suit.DIAMONDS
@@ -131,7 +131,7 @@ class Deck {
   shuffle() {
     for (let i = this.cards.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1))
-      ;[this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]]
+        ;[this.cards[i], this.cards[j]] = [this.cards[j], this.cards[i]]
     }
   }
 
@@ -155,7 +155,25 @@ const unknownCard = ref<boolean>(true)
 const gameOver = ref<boolean>(false)
 const scores = ref<number[]>([0, 0, 0, 0, 0, 0])
 
-const { isDarkTheme } = useThemeState()
+const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+const isDarkTheme = ref(
+  theme.value === "dark" || (theme.value === "system" && prefersDarkScheme.matches)
+);
+
+watch(
+  () => theme.value,
+  (newTheme) => {
+    isDarkTheme.value =
+      newTheme === "dark" || (newTheme === "system" && prefersDarkScheme.matches);
+  }
+);
+
+prefersDarkScheme.addEventListener('change', (e) => {
+  if (theme.value === "system") {
+    isDarkTheme.value = e.matches;
+  }
+});
 
 const suits = Object.values(Suit)
 
@@ -258,8 +276,7 @@ function handleBetweenOutsideGuess(guess: "BETWEEN" | "OUTSIDE") {
 function handleSuitGuess(guess: Suit) {
   const result = guess === cards.value[3].suit
   gameLogs.value.push(
-    `Stage 4: You guessed <span class="suit">${guess}</span>... ${
-      result ? correctHTML : incorrectHTML
+    `Stage 4: You guessed <span class="suit">${guess}</span>... ${result ? correctHTML : incorrectHTML
     }`
   )
   if (result) {
@@ -280,13 +297,11 @@ function makeFinalGuess() {
     finalGuessValue.value === cards.value[4].value &&
     finalGuessSuit.value === cards.value[4].suit
   gameLogs.value.push(
-    `Final guess: ${
-      cardValueMap[finalGuessValue.value] || finalGuessValue.value
+    `Final guess: ${cardValueMap[finalGuessValue.value] || finalGuessValue.value
     } <span class="suit">${finalGuessSuit.value}</span>.`
   )
   gameLogs.value.push(
-    `Actual card: ${
-      cardValueMap[cards.value[4].value] || cards.value[4].value
+    `Actual card: ${cardValueMap[cards.value[4].value] || cards.value[4].value
     } <span class="suit">${cards.value[4].suit}</span>.`
   )
   revealCard()
@@ -480,7 +495,7 @@ onMounted(() => {
   align-items: center;
 }
 
-::v-deep .suit {
+:deep(.suit) {
   text-decoration: none;
   font-weight: normal;
   font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji",
@@ -567,7 +582,7 @@ body.dark .unknown-card {
   color: #fff;
 }
 
-body.dark .final-stage-inputs > * {
+body.dark .final-stage-inputs>* {
   background-color: #00000000;
   color: #fff;
 }

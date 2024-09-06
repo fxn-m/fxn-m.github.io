@@ -7,30 +7,11 @@
     </p>
     <form @submit.prevent="sendEmail()">
       <div id="input-fields">
-        <input
-          type="name"
-          id="name"
-          v-model="name"
-          autocomplete="nope"
-          placeholder="Your name"
-        />
-        <input
-          type="email"
-          id="email"
-          v-model="email"
-          autocomplete="off"
-          placeholder="Your email"
-          required
-        />
+        <input type="name" id="name" v-model="name" autocomplete="nope" placeholder="Your name" />
+        <input type="email" id="email" v-model="email" autocomplete="off" placeholder="Your email" required />
       </div>
-      <textarea
-        id="message"
-        v-model="message"
-        rows="4"
-        placeholder="Your message"
-        required
-        @keydown.enter.prevent="submitFormOnEnter"
-      ></textarea>
+      <textarea id="message" v-model="message" rows="4" placeholder="Your message" required
+        @keydown.enter.prevent="submitFormOnEnter"></textarea>
       <button type="submit">Send{{ sendingEllipses }}</button>
     </form>
     <ContactToast :sent="toastSent" v-if="toastVisible" />

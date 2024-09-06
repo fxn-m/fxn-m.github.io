@@ -2,68 +2,39 @@
   <header>
     <h2 style="display: flex; --arrow-color: currentcolor">
       <div style="position: relative">
-        <FontAwesomeIcon
-          icon="fa-solid fa-caret-left"
-          size="2xs"
-          id="popup-arrow"
-          :style="{
-            visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden',
-            color: 'var(--arrow-color)',
-          }"
-        />
+        <FontAwesomeIcon icon="fa-solid fa-caret-left" size="2xs" id="popup-arrow" :style="{
+          visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden',
+          color: 'var(--arrow-color)',
+        }" />
       </div>
-      <RouterLink
-        @mouseover="isHovering = true"
-        @mouseout="isHovering = false"
-        to="/"
-        @click="navigateToParent"
-        style="
+      <RouterLink @mouseover="isHovering = true" @mouseout="isHovering = false" to="/" @click="navigateToParent" style="
           white-space: nowrap;
           border: none;
           font-weight: bold;
           align-self: center;
-        "
-        >fxn-m{{ pageTitle }}
+        ">fxn-m.com{{ pageTitle }}
       </RouterLink>
     </h2>
 
     <div id="restOfHeader">
       <ul id="navigation">
-        <RouterLink to="/">About</RouterLink>
-        <RouterLink to="/writing">Writing</RouterLink>
-        <RouterLink to="/fun">Fun</RouterLink>
+        <li v-for="route in routes" :key="route.path">
+          <RouterLink :to="route.path" :class="{ active: route.path === route.path }">{{ route.name }}</RouterLink>
+        </li>
       </ul>
+
       <div id="icons">
         <a href="https://github.com/fxn-m" target="_blank">
-          <FontAwesomeIcon
-            icon="fa-brands fa-github"
-            size="2xl"
-            class="fa-github"
-          />
+          <FontAwesomeIcon icon="fa-brands fa-github" size="2xl" class="fa-github" />
         </a>
         <a href="https://x.com/fxn__m" target="_blank">
-          <FontAwesomeIcon
-            icon="fa-brands fa-x-twitter"
-            size="2xl"
-            class="fa-twitter"
-          />
+          <FontAwesomeIcon icon="fa-brands fa-x-twitter" size="2xl" class="fa-twitter" />
         </a>
         <a href="https://www.strava.com/athletes/29743058" target="_blank">
-          <FontAwesomeIcon
-            icon="fa-brands fa-strava"
-            size="2xl"
-            class="fa-strava"
-          />
+          <FontAwesomeIcon icon="fa-brands fa-strava" size="2xl" class="fa-strava" />
         </a>
-        <a
-          href="https://www.polarsteps.com/FelixNewportMangell"
-          target="_blank"
-        >
-          <FontAwesomeIcon
-            icon="fa-regular fa-compass"
-            size="2xl"
-            class="fa-compass"
-          />
+        <a href="https://www.polarsteps.com/FelixNewportMangell" target="_blank">
+          <FontAwesomeIcon icon="fa-regular fa-compass" size="2xl" class="fa-compass" />
         </a>
         <ToggleTheme />
       </div>
@@ -92,6 +63,12 @@ import { useRoute, useRouter } from "vue-router"
 const route = useRoute()
 const router = useRouter()
 const isHovering = ref(false)
+
+const routes = [
+  { path: "/", name: "About" },
+  { path: "/writing", name: "Writing" },
+  { path: "/fun", name: "Fun" },
+]
 
 const pageTitle = computed(() => {
   const currentRoute = route.path !== "/" ? route.path : ""

@@ -1,15 +1,7 @@
 import "./assets/main.css"
 
-import {
-  faArrowLeft,
-  faArrowsRotate,
-  faCaretLeft,
-} from "@fortawesome/free-solid-svg-icons"
-import {
-  faGithub,
-  faStrava,
-  faXTwitter,
-} from "@fortawesome/free-brands-svg-icons"
+import { faArrowLeft, faArrowsRotate, faCaretLeft, faLaptop } from "@fortawesome/free-solid-svg-icons"
+import { faGithub, faStrava, faXTwitter } from "@fortawesome/free-brands-svg-icons"
 
 import App from "./App.vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
@@ -18,15 +10,7 @@ import { faCompass } from "@fortawesome/free-regular-svg-icons"
 import { library } from "@fortawesome/fontawesome-svg-core"
 import router from "./router"
 
-library.add(
-  faArrowLeft,
-  faArrowsRotate,
-  faGithub,
-  faXTwitter,
-  faStrava,
-  faCompass,
-  faCaretLeft
-)
+library.add(faArrowLeft, faArrowsRotate, faGithub, faXTwitter, faStrava, faCompass, faCaretLeft, faLaptop)
 
 const app = createApp(App)
 

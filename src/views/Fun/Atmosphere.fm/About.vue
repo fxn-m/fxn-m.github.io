@@ -16,21 +16,13 @@
         volume isn't too high because music will automatically start playing
         after you log in.
       </li>
-      <img
-        src="/images/atmosphere-fm.webp"
-        alt="Atmosphere.fm"
-        class="fullwidth"
-      />
+      <img src="/images/atmosphere-fm.webp" alt="Atmosphere.fm" class="fullwidth" />
       <li>
         Login with your Spotify account. You’ll need a premium subscription for
         this app to work - the same goes for any application built on Spotify’s
         API and SDK.
       </li>
-      <img
-        src="/images/spotify-login.webp"
-        alt="Spotify login"
-        class="fullwidth"
-      />
+      <img src="/images/spotify-login.webp" alt="Spotify login" class="fullwidth" />
       <li>
         Once you’re logged in, music will start playing. You can control audio
         either with your keyboard, or with the clickable user interface in the
@@ -50,11 +42,8 @@
       <li>
         For a better experience, go fullscreen! This includes removing the
         bookmarks and address bars. If you're not sure how to do this,
-        <a
-          href="https://www.google.com/search?q=how+do+i+go+full+screen+on+my+browser&oq=how+do+i+go+full+screen+on+my+browser&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORigATIHCAEQIRigATIHCAIQIRigAdIBCDY2MTZqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8"
-          target="_blank"
-          >start here</a
-        >.
+        <a href="https://www.google.com/search?q=how+do+i+go+full+screen+on+my+browser&oq=how+do+i+go+full+screen+on+my+browser&gs_lcrp=EgZjaHJvbWUyCQgAEEUYORigATIHCAEQIRigATIHCAIQIRigAdIBCDY2MTZqMGo3qAIAsAIA&sourceid=chrome&ie=UTF-8"
+          target="_blank">start here</a>.
       </li>
       <li>
         See what’s playing by clicking on the Now Playing dropdown at the
@@ -69,16 +58,8 @@
         in the top right lets you choose.
       </li>
       <div>
-        <img
-          src="/images/i-wish-it-was-1.webp"
-          alt="Weather dropdown"
-          class="fullwidth"
-        />
-        <img
-          src="/images/i-wish-it-was-2-2.webp"
-          alt="Weather dropdown"
-          class="fullwidth"
-        />
+        <img src="/images/i-wish-it-was-1.webp" alt="Weather dropdown" class="fullwidth" />
+        <img src="/images/i-wish-it-was-2-2.webp" alt="Weather dropdown" class="fullwidth" />
       </div>
       <li>
         <p>
@@ -94,11 +75,7 @@
           your liking.
         </p>
       </li>
-      <img
-        src="/images/atmosphere-menu.webp"
-        alt="Atmosphere menu"
-        class="fullwidth"
-      />
+      <img src="/images/atmosphere-menu.webp" alt="Atmosphere menu" class="fullwidth" />
     </ol>
     <h3 id="howitworks">How It Works</h3>
     <p>The app has two main parts:</p>

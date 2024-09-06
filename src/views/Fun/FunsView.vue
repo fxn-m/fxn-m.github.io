@@ -7,43 +7,23 @@
           <a v-if="project.id === 1" :href="project.link" target="_blank">
             <div class="project-overlay">
               <h3>
-                <a
-                  v-if="project.id === 1"
-                  :href="project.link"
-                  target="_blank"
-                  >{{ project.title }}</a
-                >
+                <a v-if="project.id === 1" :href="project.link" target="_blank">{{ project.title }}</a>
                 <RouterLink v-else :to="project.link">{{
                   project.title
                 }}</RouterLink>
               </h3>
-              <a
-                v-if="project.aboutLink"
-                :href="project.aboutLink"
-                class="about-link"
-                >About</a
-              >
+              <a v-if="project.aboutLink" :href="project.aboutLink" class="about-link">About</a>
             </div>
           </a>
           <RouterLink v-else :to="project.link">
             <div class="project-overlay">
               <h3>
-                <a
-                  v-if="project.id === 1"
-                  :href="project.link"
-                  target="_blank"
-                  >{{ project.title }}</a
-                >
+                <a v-if="project.id === 1" :href="project.link" target="_blank">{{ project.title }}</a>
                 <RouterLink v-else :to="project.link">{{
                   project.title
                 }}</RouterLink>
               </h3>
-              <a
-                v-if="project.aboutLink"
-                :href="project.aboutLink"
-                class="about-link"
-                >About</a
-              >
+              <a v-if="project.aboutLink" :href="project.aboutLink" class="about-link">About</a>
             </div>
           </RouterLink>
         </div>
@@ -67,7 +47,7 @@ const projects = ref([
     description: "Soundtracks shaped by skies",
     image: "/images/sunset2.webp",
     link: "https://www.fxn-m.com/atmosphere.fm",
-    aboutLink: "#/fun/atmosphere.fm-about",
+    aboutLink: "/fun/atmosphere-fm-about",
   },
   {
     id: 2,

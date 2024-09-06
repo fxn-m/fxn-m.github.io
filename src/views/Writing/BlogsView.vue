@@ -3,13 +3,11 @@
     <ul>
       <li v-for="blog in blogs">
         <p>{{ blog.date }}</p>
-        <router-link
-          :to="{
-            name: 'writingPost',
-            params: { post: blog.headerTitle },
-            query: { id: blog.id, title: blog.title, date: blog.date },
-          }"
-        >
+        <router-link :to="{
+          name: 'writingPost',
+          params: { post: blog.headerTitle },
+          query: { id: blog.id, title: blog.title, date: blog.date },
+        }">
           {{ blog.title }}
         </router-link>
       </li>
@@ -63,6 +61,7 @@ onMounted(async () => {
   flex-wrap: nowrap;
   flex-direction: row;
   justify-content: left;
+  margin-top: 1em;
 }
 
 .container p {
