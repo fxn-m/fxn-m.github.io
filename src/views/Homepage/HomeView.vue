@@ -28,7 +28,9 @@
           Thankfully, I made a full recovery and was reminded to always wear a helmet! <a
             href="https://fxn-m.notion.site/x-ray-e4254363d06d406eb3a05d0e6ab0392a?pvs=4" target="_blank">Here's a
             photo of the X-ray</a> if you're curious.
-          <span class="popover-close" @click="hidePopover" ><FontAwesomeIcon icon="fa-regular fa-circle-xmark" size="lg" /></span>
+          <span class="popover-close" @click="hidePopover">
+            <FontAwesomeIcon icon="fa-regular fa-circle-xmark" size="lg" />
+          </span>
 
         </span>
       </span>
@@ -160,21 +162,21 @@ footer p {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-  body.dark .asterisk .popover, 
-  body.dark .asterisk .popover a {
-    color: #333;
-    background-color: #bbbbbb;
-    border-color: #4f4f4f;
-  }
+body.dark .asterisk .popover,
+body.dark .asterisk .popover a {
+  color: #333;
+  background-color: #bbbbbb;
+  border-color: #4f4f4f;
+}
 
-  .popover .popover-close {
-    display: none;
-    color: #555555;
-  }
+.popover .popover-close {
+  display: none;
+  color: #555555;
+}
 
-  .popover .inner-asterisk {
-    display: none;
-  }
+.popover .inner-asterisk {
+  display: none;
+}
 
 @media (max-width: 800px) {
   .asterisk .popover {
@@ -193,7 +195,7 @@ footer p {
   }
 
   .popover .popover-close {
-    display: block; 
+    display: block;
     position: absolute;
     top: 5px;
     right: 9px;

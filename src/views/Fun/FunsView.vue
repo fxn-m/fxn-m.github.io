@@ -10,7 +10,7 @@
                 <a v-if="project.id === 1" :href="project.link" target="_blank">{{ project.title }}</a>
                 <RouterLink v-else :to="project.link">{{
                   project.title
-                  }}</RouterLink>
+                }}</RouterLink>
               </h3>
               <a v-if="project.aboutLink" :href="project.aboutLink" class="about-link">About</a>
             </div>
@@ -21,7 +21,7 @@
                 <a v-if="project.id === 1" :href="project.link" target="_blank">{{ project.title }}</a>
                 <RouterLink v-else :to="project.link">{{
                   project.title
-                  }}</RouterLink>
+                }}</RouterLink>
               </h3>
               <a v-if="project.aboutLink" :href="project.aboutLink" class="about-link">About</a>
             </div>
