@@ -1,62 +1,95 @@
 <template>
-  <button id="toggle-btn" @click="toggleTheme" :title="tooltipText">
-    <img v-if="iconSrc" :src="iconSrc" :id="iconId" />
-    <div v-if="!iconSrc" :id="iconId">
-      <FontAwesomeIcon icon="fa-solid fa-laptop" size="sm" />
-    </div>
-  </button>
+  <div class="theme-toggle-wrapper">
+    <button id="toggle-btn" @click="toggleTheme" :title="tooltipText" @mouseenter="showTooltip = true"
+      @mouseleave="showTooltip = false">
+      <img v-if="iconSrc" :src="iconSrc" :id="iconId" :alt="tooltipText" />
+    </button>
+
+    <span v-if="showTooltip" class="tooltip">{{ tooltipText }}</span>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { computed, onMounted, watch } from "vue"
+import { ref, computed, onMounted, watch } from "vue"
 import { theme } from "./themeState";
 
-const tooltipText = computed(() => `Current theme: ${theme.value}`)
+const showTooltip = ref(false);
+const tooltipText = computed(() => `${theme.value}`);
+
+const currentIconSrc = ref("/light-mode.svg");
+const currentIconId = ref("light-mode-icon");
 
 const toggleTheme = () => {
   theme.value = theme.value === "system" ? "dark" : theme.value === "dark" ? "light" : "system";
-  sessionStorage.setItem("theme", theme.value)
-  document.body.classList.toggle("dark", theme.value === "dark" || (theme.value === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches))
-}
+  sessionStorage.setItem("theme", theme.value);
+  updateBodyClass();
+};
 
-const iconSrc = computed(() =>
-  theme.value === "dark" ? "/dark-mode.svg" : theme.value === "light" ? "/light-mode.svg" : null
-)
+const updateBodyClass = () => {
+  const isDark = theme.value === "dark" || (theme.value === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+  document.body.classList.toggle("dark", isDark);
 
-const iconId = computed(() =>
-  theme.value === "dark" ? "dark-mode-icon" : theme.value === "light" ? "light-mode-icon" : "system-mode-icon"
-)
+  currentIconSrc.value = isDark ? "/dark-mode.svg" : "/light-mode.svg";
+  currentIconId.value = isDark ? "dark-mode-icon" : "light-mode-icon";
+};
+
+const iconSrc = computed(() => currentIconSrc.value);
+const iconId = computed(() => currentIconId.value);
+
 
 onMounted(() => {
-  const darkColorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)")
-
-  if (theme.value === "dark" || (theme.value === "system" && darkColorSchemeQuery.matches)) {
-    document.body.classList.add("dark")
-  }
+  const darkColorSchemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
   if (!sessionStorage.getItem("theme")) {
-    theme.value = "system"
-    document.body.classList.toggle("dark", darkColorSchemeQuery.matches)
+    theme.value = "system";
   }
 
-  darkColorSchemeQuery.addEventListener("change", () => {
-    if (theme.value === "system") {
-      document.body.classList.toggle("dark", darkColorSchemeQuery.matches)
-    } else {
-      document.body.classList.toggle("dark", theme.value === "dark")
-    }
-  })
+  updateBodyClass();
 
-  const favicon = document.querySelector("link[rel='icon']") as HTMLLinkElement
+  darkColorSchemeQuery.addEventListener("change", updateBodyClass);
+
+  const favicon = document.querySelector("link[rel='icon']") as HTMLLinkElement;
   const toggleFavicon = () => {
-    favicon.setAttribute(
-      "href",
-      theme.value === "dark" ? "/favicon-dark.png" : "/favicon.png"
-    )
-  }
+    const isDark = theme.value === "dark" || (theme.value === "system" && darkColorSchemeQuery.matches);
+    favicon.setAttribute("href", isDark ? "/favicon-dark.png" : "/favicon.png");
+  };
 
-  toggleFavicon()
-  watch(theme, toggleFavicon)
-})
+  toggleFavicon();
+  watch(theme, () => {
+    toggleFavicon();
+    updateBodyClass();
+  });
+});
 </script>
+
+<style scoped>
+button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  justify-content: center;
+  width: 40px;
+}
+
+.theme-toggle-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+}
+
+.tooltip {
+  position: absolute;
+  transform: translateX(40px);
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  text-align: center;
+  color: #777
+}
+
+body.dark .tooltip {
+  color: #aaa;
+}
+</style>

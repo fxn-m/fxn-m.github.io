@@ -58,7 +58,6 @@ header h2 {
   justify-content: end;
   align-items: center;
   gap: 20px;
-  /* margin: 10px 0px; */
 }
 
 #navigation {
@@ -271,13 +270,12 @@ a > svg[class*="fa-"] {
 /* // dark mode toggle styling */
 
 #toggle-btn {
-  background-color: #ffffff00;
+  background-color: none;
   border: none;
   font-size: 1.3em;
-  padding: 0px;
-  margin: 0px;
-  width: 40px;
-  min-width: 0px !important;
+  padding: 0;
+  margin: 0;
+  min-width: 40px;
 }
 
 #toggle-btn:hover {
