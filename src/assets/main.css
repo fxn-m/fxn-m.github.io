@@ -422,6 +422,12 @@ body.dark header {
   }
 }
 
+@media (max-width: 1440px) {
+  body {
+    width: 60%;
+  }
+}
+
 @media (max-width: 1024px) {
   body {
     width: 80%;
