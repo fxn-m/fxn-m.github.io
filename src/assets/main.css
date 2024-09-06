@@ -1,11 +1,11 @@
 html {
   height: 100vh;
-  width: 100vw;
+  scrollbar-gutter: stable;
 }
 
 body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  width: 50%;
+  width: 60%;
   margin: 0 auto;
   padding: 20px 0;
   transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
@@ -268,25 +268,6 @@ a > svg[class*="fa-"] {
   transition-duration: 0.2s;
 }
 
-/* // scrollbar styling */
-
-::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-  background-color: #ffffff00;
-}
-
-::-webkit-scrollbar {
-  width: 12px;
-  background-color: #ffffff00;
-}
-
-::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  background-color: #c7c7c723;
-}
-
 /* // dark mode toggle styling */
 
 #toggle-btn {
@@ -433,25 +414,6 @@ body.dark header #navigation a.router-link-active.router-link-exact-active.activ
 
 body.dark header {
   border-bottom: 1px solid #2a3855;
-}
-
-/* // dark mode scrollbar styling */
-
-body.dark ::-webkit-scrollbar-track {
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  border-radius: 10px;
-  background-color: #1f2b44;
-}
-
-body.dark ::-webkit-scrollbar {
-  width: 12px;
-  background-color: #1f2b44;
-}
-
-body.dark ::-webkit-scrollbar-thumb {
-  border-radius: 10px;
-  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  background-color: #0f1e3fa2;
 }
 
 @media (max-width: 1640px) {
