@@ -142,10 +142,11 @@ footer p {
   width: 30px;
   cursor: pointer;
   color: #d97757;
+  font-size: larger;
 }
 
 .asterisk .popover {
-  font-size: 0.9em;
+  font-size: 14px;
   text-wrap: wrap;
   min-width: 500px;
   max-width: 800px;
