@@ -436,7 +436,8 @@ body.dark header {
 
 @media (max-width: 700px) {
   body {
-    margin: 1em auto 50px auto;
+    margin: 0 auto 50px auto;
+    padding: 0;
     width: 90%;
   }
 

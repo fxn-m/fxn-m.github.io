@@ -24,7 +24,12 @@
       Straight after graduating in 2023, I solo-backpacked around Asia for a few months, before I fractured my
       collarbone in a motorbike accident. <span class="asterisk" @mouseenter="showPopover" @mouseleave="hidePopover">*
         <span v-if="isPopoverVisible" class="popover">
-          Thankfully, I made a full recovery and learned to always wear a helmet!
+          <span class="inner-asterisk" style="font-size: 1.2em ; color: #d97757">*</span>
+          Thankfully, I made a full recovery and was reminded to always wear a helmet! <a
+            href="https://fxn-m.notion.site/x-ray-e4254363d06d406eb3a05d0e6ab0392a?pvs=4" target="_blank">Here's a
+            photo of the X-ray</a> if you're curious.
+          <span class="popover-close" @click="hidePopover" ><FontAwesomeIcon icon="fa-regular fa-circle-xmark" size="lg" /></span>
+
         </span>
       </span>
     </p>
@@ -70,6 +75,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
 const isPopoverVisible = ref(false)
 
@@ -127,14 +133,22 @@ footer p {
 }
 
 .asterisk {
+  display: inline-block;
   position: relative;
+  text-align: center;
+  right: 10px;
+  width: 30px;
   cursor: pointer;
   color: #d97757;
 }
 
 .asterisk .popover {
   font-size: 0.9em;
+  text-wrap: wrap;
+  min-width: 500px;
+  max-width: 800px;
   position: absolute;
+  text-align: left;
   bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
@@ -143,7 +157,55 @@ footer p {
   border: 1px solid #ccc;
   padding: 5px 10px;
   border-radius: 4px;
-  white-space: nowrap;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+  body.dark .asterisk .popover, 
+  body.dark .asterisk .popover a {
+    color: #333;
+    background-color: #bbbbbb;
+    border-color: #4f4f4f;
+  }
+
+  .popover .popover-close {
+    display: none;
+    color: #555555;
+  }
+
+  .popover .inner-asterisk {
+    display: none;
+  }
+
+@media (max-width: 800px) {
+  .asterisk .popover {
+    position: fixed;
+    bottom: 2%;
+    left: 5vw;
+    max-width: none;
+    min-width: 10px;
+    width: calc(90vw - 40px);
+    padding: 20px;
+    transform: none;
+    border-radius: 0;
+    white-space: normal;
+    z-index: 1000;
+    border-radius: 15px;
+  }
+
+  .popover .popover-close {
+    display: block; 
+    position: absolute;
+    top: 5px;
+    right: 9px;
+    cursor: pointer;
+  }
+
+  .popover .inner-asterisk {
+    display: block;
+    position: absolute;
+    top: 15px;
+    left: 8px;
+    font-size: 1.5em !important;
+  }
 }
 </style>
