@@ -4,29 +4,27 @@
       <div v-for="project in projects" :key="project.id" class="project-card">
         <div class="project-image">
           <img :src="project.image" :alt="project.title" />
-          <a v-if="project.id === 1" :href="project.link" target="_blank">
-            <div class="project-overlay">
+
+          <a v-if="project.link.includes('https')" :href="project.link" target="_blank">
+            <div :class="project.whiteBg ? 'project-overlay white' : 'project-overlay'">
               <h3>
-                <a v-if="project.id === 1" :href="project.link" target="_blank">{{ project.title }}</a>
-                <RouterLink v-else :to="project.link">{{
-                  project.title
-                }}</RouterLink>
+                <a v-if="project.link.includes('https')" :href="project.link" target="_blank">{{ project.title }}</a>
               </h3>
               <a v-if="project.aboutLink" :href="project.aboutLink" class="about-link">About</a>
             </div>
           </a>
+
           <RouterLink v-else :to="project.link">
-            <div class="project-overlay">
+            <div :class="project.whiteBg ? 'project-overlay-white' : 'project-overlay'">
               <h3>
-                <a v-if="project.id === 1" :href="project.link" target="_blank">{{ project.title }}</a>
-                <RouterLink v-else :to="project.link">{{
-                  project.title
-                }}</RouterLink>
+                <RouterLink :to="project.link">{{ project.title }}</RouterLink>
               </h3>
               <a v-if="project.aboutLink" :href="project.aboutLink" class="about-link">About</a>
             </div>
           </RouterLink>
+
         </div>
+
         <div class="project-info">
           <p>{{ project.description }}</p>
         </div>
@@ -38,11 +36,17 @@
 <script setup lang="ts">
 import { ref } from "vue"
 
-const frontendUrl = ref(import.meta.env.VITE_FRONTEND_URL)
-
 const projects = ref([
   {
     id: 1,
+    title: "ReadMe",
+    description: "Find what you need to read",
+    image: "/images/image.webp",
+    link: "/fun/:readme",
+    aboutLink: "",
+  },
+  {
+    id: 2,
     title: "Atmosphere.fm",
     description: "Soundtracks shaped by skies",
     image: "/images/sunset2.webp",
@@ -50,23 +54,15 @@ const projects = ref([
     aboutLink: "#/fun/atmosphere-fm-about",
   },
   {
-    id: 2,
-    title: "ReadMe",
-    description: "For reading at random",
-    image: "/images/image.webp",
-    link: "/fun/:readme",
-    aboutLink: "",
-  },
-  {
     id: 3,
-    title: "Hall of Fame",
-    description: "Test your luck",
-    image: "/images/hof.webp",
-    link: "/fun/:hall-of-fame",
+    title: "PGT",
+    description: "Paul Graham's Essays Translated",
+    image: "/images/pgt.svg",
+    link: "https://paulgraham-translated.vercel.app",
     aboutLink: "",
-  },
-  // Add more projects as needed
-])
+    whiteBg: true,
+  }
+].reverse())
 </script>
 
 <style scoped>
@@ -79,8 +75,7 @@ const projects = ref([
 
 .project-card {
   border-radius: 8px;
-  border: 1px solid white;
-  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+  border: 1px solid #e3e3e3;
   overflow: hidden;
   transition: all 0.5s ease-in-out;
 }
@@ -125,7 +120,8 @@ const projects = ref([
   margin: 0;
 }
 
-.project-overlay h3 a {
+.project-overlay h3 a,
+body.dark .project-overlay.white h3 a {
   color: #cecece;
   text-decoration: none;
   font-size: 1.5rem;
@@ -135,7 +131,20 @@ const projects = ref([
   transition: color 0.3s ease-in-out;
 }
 
-.project-overlay h3 a:hover {
+.project-overlay.white {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.project-overlay.white h3 a {
+  color: #5e5e5e;
+}
+
+.project-overlay.white h3 a:hover {
+  color: #000000;
+}
+
+.project-overlay h3 a:hover,
+body.dark .project-overlay.white h3 a:hover {
   color: #fff;
 }
 
@@ -164,7 +173,7 @@ const projects = ref([
 }
 
 body.dark .project-card {
-  border: 1px solid #4f4f4f;
+  border: none;
   transition: all 0.5s ease-in-out;
 }
 

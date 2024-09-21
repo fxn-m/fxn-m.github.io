@@ -1,8 +1,7 @@
 <template>
   <div id="content">
-    <p>I'm always open to new people and opportunities :)</p>
     <p>
-      Feel free to reach out to me using the form below, or just send me an
+      Feel free to get in touch using the form below, or just send me an
       <a href="mailto:fnewportmangell@gmail.com">e-mail</a>
     </p>
     <form @submit.prevent="sendEmail()">

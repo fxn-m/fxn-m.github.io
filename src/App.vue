@@ -24,18 +24,10 @@
       </ul>
 
       <div id="icons">
-        <a href="https://github.com/fxn-m" target="_blank">
-          <FontAwesomeIcon icon="fa-brands fa-github" size="2xl" class="fa-github" />
+        <a v-for="link in links" :key="link.href" :href="link.href" target="_blank">
+          <FontAwesomeIcon :icon="link.icon" :size="'2xl'" :class="link.class" />
         </a>
-        <a href="https://x.com/fxn__m" target="_blank">
-          <FontAwesomeIcon icon="fa-brands fa-x-twitter" size="2xl" class="fa-twitter" />
-        </a>
-        <a href="https://www.strava.com/athletes/29743058" target="_blank">
-          <FontAwesomeIcon icon="fa-brands fa-strava" size="2xl" class="fa-strava" />
-        </a>
-        <a href="https://www.polarsteps.com/FelixNewportMangell" target="_blank">
-          <FontAwesomeIcon icon="fa-regular fa-compass" size="2xl" class="fa-compass" />
-        </a>
+
         <ToggleTheme />
       </div>
     </div>
@@ -87,6 +79,29 @@ const navigateToParent = () => {
   const parentPath = pathSegments.join("/") || "/"
   router.push(parentPath)
 }
+
+const links = [{
+  href: "https://github.com/fxn-m",
+  icon: "fa-brands fa-github",
+  class: "fa-github"
+},
+{
+  href: "https://x.com/fxn__m",
+  icon: "fa-brands fa-x-twitter",
+  class: "fa-twitter"
+},
+{
+  href: "https://www.strava.com/athletes/29743058",
+  icon: "fa-brands fa-strava",
+  class: "fa-strava"
+},
+{
+  href: "https://www.polarsteps.com/FelixNewportMangell",
+  icon: "fa-regular fa-compass",
+  class: "fa-compass"
+}
+]
+
 
 console.log(`
    __                                                 

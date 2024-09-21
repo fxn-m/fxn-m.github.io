@@ -5,7 +5,7 @@
     <p>I'm a full-stack engineer based in London. </p>
 
     <p>
-      Born and raised in Chippenham, East Cambridgeshire.
+      I grew up in Chippenham, Cambridgeshire.
     </p>
 
     <p>
@@ -21,24 +21,11 @@
     </p>
 
     <p>
-      Straight after graduating in 2023, I solo-backpacked around Asia for a few months, before I fractured my
-      collarbone in a motorbike accident. <span class="asterisk" @mouseenter="showPopover" @mouseleave="hidePopover">*
-        <span v-if="isPopoverVisible" class="popover">
-          <span class="inner-asterisk" style="font-size: 1.2em ; color: #d97757">*</span>
-          Thankfully, I made a full recovery and was reminded to always wear a helmet! <a
-            href="https://fxn-m.notion.site/x-ray-e4254363d06d406eb3a05d0e6ab0392a?pvs=4" target="_blank">Here's a
-            photo of the X-ray</a> if you're curious.
-          <span class="popover-close" @click="hidePopover">
-            <FontAwesomeIcon icon="fa-regular fa-circle-xmark" size="lg" />
-          </span>
-
-        </span>
-      </span>
+      After graduating in 2023, I solo-backpacked around Asia for a few months, freelancing along the way.
     </p>
 
-    <p>
-      Over the past year I freelanced. Between September and May I spent a lot of time at <a
-        href="https://www.sanctuaryhealth.io/" target="_blank">Sanctuary Health</a>, implementing features powered by
+    <p>Between September and May I spent a lot of time at <a href="https://www.sanctuaryhealth.io/"
+        target="_blank">Sanctuary Health</a>, implementing features powered by
       LLMs and learning Next.js.
     </p>
 
@@ -138,8 +125,9 @@ footer p {
   display: inline-block;
   position: relative;
   text-align: center;
-  right: 10px;
-  width: 30px;
+  right: 20px;
+  width: 100px;
+  transform: translateX(-25px);
   cursor: pointer;
   color: #d97757;
   font-size: larger;
