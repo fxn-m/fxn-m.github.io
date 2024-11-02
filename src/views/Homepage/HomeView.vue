@@ -2,26 +2,17 @@
   <div id="content">
     <p style="font-size: 20px">Hey 👋</p>
     <p>My name's Felix.</p>
-    <p>I'm a full-stack engineer based in London. </p>
-
-    <p>
-      I grew up in Chippenham, Cambridgeshire.
-    </p>
-
-    <p>
-      Went to school in Cambridge, and studied Engineering Design at the University of Bristol.
-    </p>
-
+    <p>I'm a software engineer based in London.</p>
     <br />
 
     <p>
-      I discovered that software development was my passion towards the end of my studies. In my final year I went
-      through Codecademy and with some of what I learned, I built <a href="https://fxn-m.com/atmosphere.fm"
-        target="_blank">atmosphere.fm</a>.
+      I studied engineering design, but discovered that software development was my passion towards the end of my
+      studies. In my final year I
+      took a full-stack course and built <a href="https://fxn-m.com/atmosphere.fm" target="_blank">atmosphere.fm</a>.
     </p>
 
     <p>
-      After graduating in 2023, I solo-backpacked around Asia for a few months, freelancing along the way.
+      After graduating in 2023, I nomad-ed around Asia for a few months, freelancing along the way.
     </p>
 
     <p>Between September and May I spent a lot of time at <a href="https://www.sanctuaryhealth.io/"
@@ -39,23 +30,16 @@
       If you're looking for one, I'd love to chat about how I might help you build your product.
     </p>
 
+    <br />
+
     <p>Email me at <a href="mailto:fnewportmangell@gmail.com">fnewportmangell@gmail.com</a> or <RouterLink
         to="/contact">get in touch</RouterLink> here.
       Here's my <a href="https://fxn-m.notion.site/resum-c5ac0413bd41470897875c72f55013f4" target="_blank">resumé</a>.
     </p>
 
-    <br />
-
-    <p>
-      In my spare time I like to read about technology, philosophy, and
-      economics. I've started
-      <RouterLink to="/writing">writing</RouterLink> about ideas I get from
-      reading and working on projects.
-    </p>
-
     <footer>
       <p>
-        Last updated: 06-09-2024
+        Last updated: 02-11-2024
       </p>
     </footer>
 
