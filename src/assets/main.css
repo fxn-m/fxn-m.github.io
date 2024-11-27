@@ -5,20 +5,29 @@ html {
 
 body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  width: 40%;
+  width: 50%;
+  height: 100vh;
   margin: 0 auto;
-  padding: 20px 0;
   transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
 }
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+} 
+
 
 #content {
   flex: 1;
   min-width: max(50%, 250px);
-  margin: 2em 0 0 0;
+  margin: 2em 0 2em 0;
+  display: flex;
+  flex-direction: column;
 }
 
-#essay {
-  margin-top: 20px;
+.blog {
+  margin: 4em 0;
 }
 
 p {
@@ -45,6 +54,7 @@ header {
   align-items: center;
   border-bottom: 1px solid #e5e9eb;
   padding: 20px 0px;
+  margin-top: 4em;
   transition: border 0.5s ease-in-out;
 }
 
@@ -416,7 +426,7 @@ body.dark header {
 
 @media (max-width: 1640px) {
   body {
-    margin: 20px auto 50px auto;
+    margin: 0 auto 50px auto;
   }
 }
 

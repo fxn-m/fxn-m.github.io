@@ -12,12 +12,19 @@
     </p>
 
     <p>
-      After graduating in 2023, I nomad-ed around Asia for a few months, freelancing along the way.
+      After graduating in 2023, I nomad-ed around Asia until September 2024, freelancing along the way.
     </p>
 
     <p>Between September and May I spent a lot of time at <a href="https://www.sanctuaryhealth.io/"
         target="_blank">Sanctuary Health</a>, implementing features powered by
       LLMs and learning Next.js.
+    </p>
+
+    <p>
+      I then spent September-November 2024 at <a href="https://unplugged.rest" target="_blank">Unplugged</a>, building
+      an LLM-powered
+      cabin recommendation system in Python. Try it out <a href="https://unplugged.rest/cabin-recommendation"
+        target="_blank">here</a>!
     </p>
 
     <br />
@@ -39,27 +46,12 @@
 
     <footer>
       <p>
-        Last updated: 02-11-2024
+        Last updated: 27-11-2024
       </p>
     </footer>
 
   </div>
 </template>
-
-<script setup lang="ts">
-import { ref } from 'vue'
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-
-const isPopoverVisible = ref(false)
-
-const showPopover = () => {
-  isPopoverVisible.value = true
-}
-
-const hidePopover = () => {
-  isPopoverVisible.value = false
-}
-</script>
 
 <style scoped>
 span.date {
@@ -72,6 +64,10 @@ li {
 
 h3 {
   font-size: 1.1rem;
+}
+
+p {
+  margin: 0.4em 0;
 }
 
 #experience {
@@ -97,6 +93,7 @@ footer {
   left: 0;
   bottom: 0;
   width: 100%;
+  margin-top: auto;
 }
 
 footer p {
