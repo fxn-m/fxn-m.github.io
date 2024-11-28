@@ -449,6 +449,10 @@ body.dark header {
     width: 90%;
   }
 
+  header {
+    margin-top: 0;
+  }
+
   #content {
     margin: 0.5em 0 0;
   }
