@@ -434,6 +434,10 @@ body.dark header {
   body {
     width: 60%;
   }
+
+  header {
+    margin-top: 2em;
+  }
 }
 
 @media (max-width: 1024px) {
