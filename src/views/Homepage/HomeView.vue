@@ -3,6 +3,7 @@
     <p style="font-size: 20px">Hey 👋</p>
     <p>My name's Felix.</p>
     <p>I'm a software engineer based in London.</p>
+
     <br />
 
     <p>
@@ -12,25 +13,29 @@
     </p>
 
     <p>
-      After graduating in 2023, I nomad-ed around Asia until September 2024, freelancing along the way.
+      After graduating in 2023, I nomad-ed around Asia until September 2024.
     </p>
 
-    <p>Between September and May I spent a lot of time at <a href="https://www.sanctuaryhealth.io/"
-        target="_blank">Sanctuary Health</a>, implementing features powered by
+    <p>Along the way, I worked with <a href="https://www.sanctuaryhealth.io/" target="_blank">Sanctuary Health</a>,
+      implementing features and tools powered by
       LLMs and learning Next.js.
     </p>
 
     <p>
-      I then spent September-November 2024 at <a href="https://unplugged.rest" target="_blank">Unplugged</a>, building
-      an LLM-powered
-      cabin recommendation system in Python. Try it out <a href="https://unplugged.rest/cabin-recommendation"
+      After I got back, I worked solo on a <a href="https://paulgraham-translated.vercel.app/"
+        target="_blank">project</a>
+      translating 223 of Paul Graham's Essays into 8 languages.</p>
+
+    <p>My latest project was with <a href="https://unplugged.rest" target="_blank">Unplugged</a>,
+      where I built an LLM-powered
+      cabin recommendation system with Python. Try it out <a href="https://unplugged.rest/cabin-recommendation"
         target="_blank">here</a>!
     </p>
 
     <br />
 
     <p>
-      Having returned to the U.K., I'm now looking for a full-time role in London as a product/full-stack engineer.
+      I'm now looking for a full-time role in London as a product/full-stack engineer.
     </p>
 
     <p>
@@ -46,7 +51,7 @@
 
     <footer>
       <p>
-        Last updated: 27-11-2024
+        Last updated: 30-11-2024
       </p>
     </footer>
 
