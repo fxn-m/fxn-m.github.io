@@ -2,7 +2,7 @@
   <div id="content">
     <p style="font-size: 20px">Hey 👋</p>
     <p>My name's Felix.</p>
-    <p>I'm a software engineer based in London.</p>
+    <p>I'm a full-stack engineer @ <a href="https://verdn.com" target="_blank">Verdn</a>, based in London.</p>
 
     <br />
 
@@ -22,11 +22,7 @@
     </p>
 
     <p>
-      After I got back, I worked solo on a <a href="https://paulgraham-translated.vercel.app/"
-        target="_blank">project</a>
-      translating 223 of Paul Graham's Essays into 8 languages.</p>
-
-    <p>My latest project was with <a href="https://unplugged.rest" target="_blank">Unplugged</a>,
+      I then worked with <a href="https://unplugged.rest" target="_blank">Unplugged</a>,
       where I built an LLM-powered
       cabin recommendation system with Python. Try it out <a href="https://unplugged.rest/cabin-recommendation"
         target="_blank">here</a>!
@@ -34,24 +30,17 @@
 
     <br />
 
-    <p>
-      I'm now looking for a full-time role in London as a product/full-stack engineer.
-    </p>
+    <p>I'm now at Verdn, helping non-profits
+      supercharge their donations and communicate their impact.</p>
 
     <p>
-      If you're looking for one, I'd love to chat about how I might help you build your product.
-    </p>
-
-    <br />
-
-    <p>Email me at <a href="mailto:fnewportmangell@gmail.com">fnewportmangell@gmail.com</a> or <RouterLink
-        to="/contact">get in touch</RouterLink> here.
-      Here's my <a href="https://fxn-m.notion.site/resum-c5ac0413bd41470897875c72f55013f4" target="_blank">resumé</a>.
+      Email me at <a href="mailto:fnewportmangell@gmail.com">fnewportmangell@gmail.com</a> or <RouterLink to="/contact">
+        get in touch</RouterLink> here.
     </p>
 
     <footer>
       <p>
-        Last updated: 30-11-2024
+        Last updated: 29-12-2024
       </p>
     </footer>
 

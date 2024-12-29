@@ -53,7 +53,7 @@ header {
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #e5e9eb;
-  padding: 20px 0px;
+  padding: 10px 0px;
   margin-top: 4em;
   transition: border 0.5s ease-in-out;
 }
@@ -436,7 +436,7 @@ body.dark header {
   }
 
   header {
-    margin-top: 2em;
+    margin-top: 1em;
   }
 }
 
