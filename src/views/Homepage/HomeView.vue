@@ -40,12 +40,18 @@
 
     <footer>
       <p>
-        Last updated: 29-12-2024
+        Last updated: 30-12-2024
       </p>
     </footer>
 
+    <CurrentTrack />
+
   </div>
 </template>
+
+<script setup>
+import CurrentTrack from '@/components/spotify/CurrentTrack.vue';
+</script>
 
 <style scoped>
 span.date {
