@@ -164,6 +164,7 @@ body.dark .mini-player {
   .info-container {
     width: auto;
     margin-left: 0;
+    max-width: 300px;
   }
 
   .info-container.expanded {
@@ -178,8 +179,8 @@ body.dark .mini-player {
 }
 
 @media (max-width: 600px) {
-  .mini-player {
-    display: none;
+  .info-container {
+    max-width: 150px;
   }
 }
 </style>
