@@ -25,7 +25,7 @@ const track = ref();
 
 async function fetchCurrentTrack() {
   try {
-    const response = await fetch('http://localhost:3000/spotify/current-track');
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/spotify/current-track`);
     if (!response.ok) throw new Error('Failed to fetch current track');
 
     const data = await response.json();
