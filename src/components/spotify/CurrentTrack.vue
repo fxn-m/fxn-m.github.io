@@ -56,6 +56,7 @@ onMounted(() => {
   border-radius: 9999px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   cursor: pointer;
+  height: fit-content;
   width: fit-content;
   max-width: calc(100% - 2rem);
 }
@@ -147,11 +148,12 @@ body.dark .mini-player {
 
 @media (max-width: 1024px) {
   .mini-player {
-    top: auto;
-    bottom: 1rem;
-    left: 1rem;
+    position: relative;
+    display: flex;
     width: fit-content;
     padding: 0.5rem;
+    top: 0;
+    right: 0;
   }
 
   .mini-player a {
@@ -171,14 +173,6 @@ body.dark .mini-player {
 
   .info {
     padding-right: 0.75rem;
-  }
-
-  .track-link {
-    font-size: 0.9rem;
-  }
-
-  .track-link small {
-    font-size: 0.75rem;
   }
 
 }

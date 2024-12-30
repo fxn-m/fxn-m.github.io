@@ -39,12 +39,13 @@
     </p>
 
     <footer>
+      <CurrentTrack />
+
       <p>
         Last updated: 30-12-2024
       </p>
     </footer>
 
-    <CurrentTrack />
 
   </div>
 </template>
@@ -84,8 +85,9 @@ body.dark #experience {
 }
 
 footer {
-  font-size: 0.8rem;
-  color: #b3b3b3;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background-color: inherit;
   z-index: 1;
   text-align: right;
@@ -94,12 +96,13 @@ footer {
   bottom: 0;
   width: 100%;
   margin-top: auto;
+  padding: 4rem 0 1rem 0;
 }
 
 footer p {
-  color: inherit;
-  margin-top: 5rem;
-  padding: 0.5rem;
+  color: #b3b3b3;
+  font-size: 0.8rem;
+  margin-left: auto;
 }
 
 .asterisk {
