@@ -343,7 +343,7 @@ body.dark #system-mode-icon:hover {
 /* // dark mode styling */
 
 body.dark {
-  background-color: #171b21;
+  background-color: #0a0a0a;
   color: #cecece;
   transition: background-color 0.5s ease-in-out;
 }
