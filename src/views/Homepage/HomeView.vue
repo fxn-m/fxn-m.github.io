@@ -49,7 +49,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import CurrentTrack from '@/components/spotify/CurrentTrack.vue';
 </script>
 

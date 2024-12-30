@@ -17,11 +17,11 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from 'vue';
 
 const isExpanded = ref(false);
-const track = ref(null);
+const track = ref();
 
 async function fetchCurrentTrack() {
   try {
