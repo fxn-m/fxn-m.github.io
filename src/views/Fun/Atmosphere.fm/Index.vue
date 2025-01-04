@@ -54,10 +54,12 @@
 
 .notice-link {
   color: #0070f3;
+  border: none;
 }
 
 .notice-link:hover {
   color: #3392ff;
+  border: none;
 }
 
 .notice-footer {
