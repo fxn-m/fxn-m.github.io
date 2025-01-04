@@ -50,7 +50,7 @@ const projects = ref([
     title: "Atmosphere.fm",
     description: "Soundtracks shaped by skies",
     image: "/images/sunset2.webp",
-    link: "https://www.fxn-m.com/atmosphere.fm",
+    link: "/fun/:atmosphere-fm",
     aboutLink: "#/fun/atmosphere-fm-about",
   },
   {
