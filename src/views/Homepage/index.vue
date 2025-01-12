@@ -43,7 +43,7 @@
       <CurrentTrack />
 
       <p>
-        Last updated: 30-12-2024
+        Last updated: {{ buildDate }}
       </p>
     </footer>
 
@@ -53,6 +53,9 @@
 
 <script setup lang="ts">
 import CurrentTrack from '@/components/spotify/CurrentTrack.vue';
+import { format } from 'date-fns';
+
+const buildDate = format(new Date(__BUILD_DATE__), 'dd-MM-yyyy');
 </script>
 
 <style scoped>

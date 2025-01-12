@@ -19,6 +19,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.6",
     "axios": "^1.5.0",
     "chart.js": "^4.4.3",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.3.1",
     "js-confetti": "^0.12.0",
     "showdown": "^2.1.0",
