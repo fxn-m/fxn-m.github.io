@@ -9,8 +9,7 @@
     <p>
       I studied engineering design, but discovered that software development was my passion towards the end of my
       studies. In my final year I
-      took a full-stack course and built <a href="https://fxn-m.com/#/fun/:atmosphere-fm"
-        target="_blank">atmosphere.fm</a>.
+      took a full-stack course and built <a href="https://fxn-m.com/#/fun/:atmosphere-fm">atmosphere.fm</a>.
     </p>
 
     <p>
