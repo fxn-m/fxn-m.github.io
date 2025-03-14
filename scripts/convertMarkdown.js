@@ -3,6 +3,12 @@ import path from "path"
 import showdown from "showdown"
 import { v4 as uuidv4 } from "uuid"
 
+import { fileURLToPath } from "node:url"
+import { dirname } from "node:path"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
+
 const converter = new showdown.Converter({ metadata: true })
 const markdownDir = path.join(__dirname, "../src/markdown") // Source directory for Markdown files
 const outputDir = path.join(__dirname, "../public/html") // Output directory for HTML files
