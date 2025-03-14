@@ -1,4 +1,4 @@
-import mailGun, { Options } from "nodemailer-mailgun-transport"
+import mailGun, { type Options } from "nodemailer-mailgun-transport"
 import nodemailer from "nodemailer"
 import dotenv from "dotenv"
 dotenv.config()
