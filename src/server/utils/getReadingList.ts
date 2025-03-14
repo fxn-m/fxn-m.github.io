@@ -1,13 +1,12 @@
+import { Client } from "@notionhq/client"
+import dotenv from "dotenv"
+dotenv.config()
+
 export const getReadingList = async () => {
-    const dotenv = require("dotenv")
-    const { Client } = require("@notionhq/client")
-
-    dotenv.config()
-
     console.log("Getting reading list...")
 
     const NOTIONAPIKEY = process.env.NOTIONAPIKEY
-    const NOTIONDATABASEID = process.env.NOTIONDATABASEID
+    const NOTIONDATABASEID = process.env.NOTIONDATABASEID ?? ""
 
     const notion = new Client({
         auth: NOTIONAPIKEY

@@ -1,5 +1,4 @@
 import express from "express"
-import { Request, Response } from "express"
 import cors from "cors"
 import fs from "fs"
 import path from "path"
@@ -13,18 +12,15 @@ const domain = process.env.DOMAIN || "fxn-m.com"
 
 const origin = `${protocol}://${domain}${domain === "localhost" ? `:5173` : ""}`
 
+import { Request, Response } from "express"
 import { getReadingList } from "./utils/getReadingList"
 import { sendMail } from "./utils/mailgun"
 
-interface SpotifyTrack {
-    external_urls: { spotify: string }
-    name: string
-    artists: { name: string }[]
-    album: {
-        name: string
-        images: { url: string }[]
-    }
-}
+import { fileURLToPath } from "node:url"
+import { dirname } from "node:path"
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const writeReadingList = async () => {
     const readingList = await getReadingList()
@@ -65,7 +61,6 @@ app.post("/mark-read/:id", (req: any, res: any) => {
     const secret = req.body.secret
     const id = req.params.id
 
-    console.log(secret, id)
     if (secret !== process.env.README_SECRET) {
         return res.status(401).json({ message: "Unauthorized" })
     }
@@ -93,9 +88,7 @@ async function getSpotifyAccessToken() {
         throw new Error("Failed to refresh Spotify access token")
     }
 
-    const data = await response.json()
-    if (typeof data !== "object" || data === null) return false
-    if (!("access_token" in data)) return false
+    const data = (await response.json()) as any
     return data.access_token
 }
 
@@ -110,17 +103,15 @@ async function getCurrentPlayingTrack(token: string) {
         throw new Error("Failed to fetch current track")
     }
 
-    const data = await response.json()
-    if (typeof data !== "object" || data === null) return false
-    if (!("item" in data)) return false
+    const data = (await response.json()) as any
     return data.item // Currently playing track
 }
 
 app.get("/spotify/current-track", async (_: any, res: any) => {
     console.log("Fetching current song...")
     try {
-        const accessToken = (await getSpotifyAccessToken()) as string
-        const currentTrack = (await getCurrentPlayingTrack(accessToken)) as SpotifyTrack
+        const accessToken = await getSpotifyAccessToken()
+        const currentTrack = await getCurrentPlayingTrack(accessToken)
 
         if (!currentTrack) {
             return res.status(200).json({ message: "No song currently playing" })
