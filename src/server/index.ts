@@ -12,7 +12,7 @@ const domain = process.env.DOMAIN || "fxn-m.com"
 
 const origin = `${protocol}://${domain}${domain === "localhost" ? `:5173` : ""}`
 
-import { Request, Response } from "express"
+import type { Request, Response } from "express"
 import { getReadingList } from "./utils/getReadingList"
 import { sendMail } from "./utils/mailgun"
 
@@ -51,7 +51,7 @@ app.post("/send-email", (req: Request, res: Response) => {
     })
 })
 
-app.get("/get-reading-list", (req: Request, res: Response) => {
+app.get("/get-reading-list", (_: Request, res: Response) => {
     const filePath = path.join(__dirname, "readingList.json")
     const readingList = fs.readFileSync(filePath, "utf8")
     res.status(200).json(JSON.parse(readingList))
