@@ -32,4 +32,5 @@ desktop.ini
 /public/html
 
 *.code-workspace
-```
+
+.vscode
