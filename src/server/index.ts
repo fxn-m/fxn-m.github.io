@@ -7,10 +7,6 @@ import dotenv from "dotenv"
 dotenv.config()
 
 const port = process.env.PORT || 3000
-const protocol = process.env.PROTOCOL || "https"
-const domain = process.env.DOMAIN || "fxn-m.com"
-
-const origin = `${protocol}://${domain}${domain === "localhost" ? `:5173` : ""}`
 
 import type { Request, Response } from "express"
 import { getReadingList } from "./utils/getReadingList"
@@ -32,7 +28,7 @@ const app = express()
 app.use(express.json())
 app.use(
     cors({
-        origin: origin,
+        origin: "*",
         methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
         credentials: true // Allow cookies, if needed
     })
