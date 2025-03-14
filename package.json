@@ -11,7 +11,8 @@
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "build": "npm run build:markdown && run-p type-check build-only",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server/index.ts"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.1",
