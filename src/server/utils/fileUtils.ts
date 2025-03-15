@@ -8,23 +8,23 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 export const getReadingListFilePath = (): string => {
-  return path.join(dirname(__dirname), "readingList.json")
+    return path.join(dirname(__dirname), "readingList.json")
 }
 
 export const writeReadingListToFile = async (): Promise<void> => {
-  const readingList = await getReadingList()
-  const filePath = getReadingListFilePath()
-  fs.writeFileSync(filePath, JSON.stringify(readingList, null, 2))
+    const readingList = await getReadingList()
+    const filePath = getReadingListFilePath()
+    fs.writeFileSync(filePath, JSON.stringify(readingList, null, 2))
 }
 
 export const readReadingListFromFile = (): any => {
-  const filePath = getReadingListFilePath()
-  return JSON.parse(fs.readFileSync(filePath, "utf8"))
+    const filePath = getReadingListFilePath()
+    return JSON.parse(fs.readFileSync(filePath, "utf8"))
 }
 
 export const ensureReadingListFileExists = async (): Promise<void> => {
-  const filePath = getReadingListFilePath()
-  if (!fs.existsSync(filePath)) {
-    await writeReadingListToFile()
-  }
+    const filePath = getReadingListFilePath()
+    if (!fs.existsSync(filePath)) {
+        await writeReadingListToFile()
+    }
 }

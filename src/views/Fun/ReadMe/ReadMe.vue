@@ -1,11 +1,8 @@
 <template>
-
     <p>Suggests a random item from my Notion reading list.</p>
     <div v-if="!isLoading" class="reading-suggestion">
         <a :href="readingSuggestion.url" target="_blank">
-            {{
-                readingSuggestion.title
-            }}
+            {{ readingSuggestion.title }}
         </a>
 
         <div class="suggestion-metadata" ref="metadataDiv">
@@ -13,35 +10,21 @@
                 {{ readingSuggestion.type }}
             </p>
 
-            <p v-if="
-                (readingSuggestion.type && readingSuggestion.author) ||
-                (readingSuggestion.type && readingSuggestion.time)
-            ">
-                |
-            </p>
+            <p v-if="(readingSuggestion.type && readingSuggestion.author) || (readingSuggestion.type && readingSuggestion.time)">|</p>
 
             <p v-if="readingSuggestion.author" class="author">
                 {{ readingSuggestion.author }}
             </p>
 
-            <p v-if="
-                readingSuggestion.time && readingSuggestion.author && showSeparator
-            ">
-                |
-            </p>
+            <p v-if="readingSuggestion.time && readingSuggestion.author && showSeparator">|</p>
 
-            <p class="reading-time" v-if="readingSuggestion.time">
-                Estimated reading time: {{ readingSuggestion.time }} minutes
-            </p>
+            <p class="reading-time" v-if="readingSuggestion.time">Estimated reading time: {{ readingSuggestion.time }} minutes</p>
         </div>
 
         <button @click="fetchReadingSuggestion">Pick another one</button>
     </div>
 
-    <div v-else id="loader" class="reading-suggestion">
-        Load{{ loadingEllipses }}
-    </div>
-
+    <div v-else id="loader" class="reading-suggestion">Load{{ loadingEllipses }}</div>
 </template>
 
 <script setup lang="ts">
@@ -53,7 +36,7 @@ const readingSuggestion = ref({
     author: "",
     url: "",
     time: 0,
-    type: "",
+    type: ""
 })
 
 const isLoading = ref(true)
@@ -101,14 +84,10 @@ const fetchReadingSuggestion = async () => {
                 author: author,
                 url: randomArticle.Link.url,
                 time: randomArticle["Reading Time"].number,
-                type: randomArticle.Type.select.name,
+                type: randomArticle.Type.select.name
             }
 
-            if (
-                !randomArticle.Link.url ||
-                randomArticle.Link.url.slice(0, 4) !== "http" ||
-                randomArticle.Link.url.includes("notion")
-            ) {
+            if (!randomArticle.Link.url || randomArticle.Link.url.slice(0, 4) !== "http" || randomArticle.Link.url.includes("notion")) {
                 fetchReadingSuggestion()
             }
         } catch (error) {
@@ -133,34 +112,31 @@ const checkWrap = () => {
 
 onMounted(async () => {
     try {
-        const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/get-reading-list`,
-            {
-                method: "GET",
-            }
-        )
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/get-reading-list`, {
+            method: "GET"
+        })
         const data = await response.json()
         readingList.value = data
         isLoading.value = false
         fetchReadingSuggestion()
 
-        const params = new URLSearchParams(window.location.search);
+        const params = new URLSearchParams(window.location.search)
         if (params.has("secret")) {
-            const secret = params.get("secret");
+            const secret = params.get("secret")
             if (readingSuggestion && readingSuggestion.value && readingSuggestion.value.id) {
                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/mark-read/${readingSuggestion.value.id}`, {
                     method: "POST",
                     headers: {
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ secret }),
-                });
+                    body: JSON.stringify({ secret })
+                })
 
-                const json = await JSON.parse(await response.text());
+                const json = await JSON.parse(await response.text())
 
-                console.log("Marked as read:", json.message);
+                console.log("Marked as read:", json.message)
             } else {
-                console.error("readingSuggestion or readingSuggestion.value.id is not properly initialized");
+                console.error("readingSuggestion or readingSuggestion.value.id is not properly initialized")
             }
         }
 
@@ -175,7 +151,6 @@ watchEffect(() => {
         checkWrap()
     }
 })
-
 </script>
 
 <style scoped>
@@ -203,7 +178,7 @@ body.dark p {
     margin: 0px auto 24px auto;
 }
 
-.suggestion-metadata>* {
+.suggestion-metadata > * {
     margin: 0 1rem 0 0;
 }
 </style>
