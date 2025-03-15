@@ -34,11 +34,6 @@ const router = createRouter({
             name: "contact",
             component: () => import("@/views/Contact/ContactView.vue")
         },
-        {
-            path: "/fun/atmosphere-fm-about",
-            name: "atmosphereAbout",
-            component: () => import("@/views/Fun/Atmosphere.fm/About.vue")
-        },
         { path: "/:catchAll(.*)", redirect: "/" }
     ]
 })
