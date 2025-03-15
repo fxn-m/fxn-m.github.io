@@ -123,7 +123,7 @@ onMounted(async () => {
         const params = new URLSearchParams(window.location.search)
         if (params.has("secret")) {
             const secret = params.get("secret")
-            if (readingSuggestion && readingSuggestion.value && readingSuggestion.value.id) {
+            if (readingSuggestion.value && readingSuggestion.value && readingSuggestion.value.id) {
                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/mark-read/${readingSuggestion.value.id}`, {
                     method: "POST",
                     headers: {

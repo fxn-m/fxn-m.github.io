@@ -33,7 +33,7 @@ async function fetchCurrentTrack() {
 
     console.log(`Currently, I'm listening to ${data.name} by ${data.artist} 🎵`);
     track.value = data;
-  } catch (error) {
+  } catch {
     console.log("Currently, I'm not listening to anything.");
     track.value = null;
   }
