@@ -43,6 +43,7 @@
 import CurrentTrack from "@/components/spotify/CurrentTrack.vue"
 import { format } from "date-fns"
 
+// eslint-disable-next-line no-undef
 const buildDate = format(new Date(__BUILD_DATE__), "dd-MM-yyyy")
 </script>
 

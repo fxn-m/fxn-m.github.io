@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <ul>
-            <li v-for="blog in blogs">
+            <li v-for="blog in blogs" :key="blog.id">
                 <p>{{ blog.date }}</p>
                 <router-link
                     :to="{
@@ -41,7 +41,7 @@ onMounted(async () => {
 
         blogList
             .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-            .map((blog: any) => {
+            .map((blog: Blog) => {
                 blogs.value.push({
                     id: blog.id,
                     title: blog.title,
@@ -49,7 +49,7 @@ onMounted(async () => {
                     date: blog.date
                 })
 
-                headerTitleIdMap[blog.headerTitle] = blog.id
+                headerTitleIdMap[blog.headerTitle] = blog.id.toString()
             })
     } catch (error) {
         console.error("Failed to load blog list:", error)

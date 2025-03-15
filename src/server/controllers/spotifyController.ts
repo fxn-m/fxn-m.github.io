@@ -19,7 +19,7 @@ export const getCurrentTrackController = async (_: Request, res: Response): Prom
             album: currentTrack.album.name,
             cover: currentTrack.album.images[0]?.url
         })
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error(error)
         res.status(500).json({ error: "Failed to fetch current song" })
     }

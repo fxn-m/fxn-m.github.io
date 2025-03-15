@@ -12,7 +12,8 @@
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "build": "npm run build:markdown && run-p type-check build-only",
     "preview": "vite preview",
-    "start": "node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server/index.ts"
+    "start": "node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server/index.ts",
+    "lint": "npx eslint --ext .ts,.js,.vue src"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",

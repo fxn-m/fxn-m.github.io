@@ -72,7 +72,7 @@ const sendEmail = () => {
             showToast(true)
             clearUp(true)
         })
-        .catch((error) => {
+        .catch(() => {
             showToast(false)
             clearUp(false)
         })
