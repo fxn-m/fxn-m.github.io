@@ -1,40 +1,72 @@
 <template>
-  <div id="content">
-    <p>
+  <div class="max-w-2xl mx-auto px-4">
+    <p class="text-base mb-6 dark:text-gray-200">
       Feel free to get in touch using the form below, or just send me an
-      <a href="mailto:fnewportmangell@gmail.com">e-mail</a>
+      <a href="mailto:fnewportmangell@gmail.com" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">e-mail</a>
     </p>
-    <form @submit.prevent="sendEmail()">
-      <div id="input-fields">
-        <input type="name" id="name" v-model="name" autocomplete="nope" placeholder="Your name" />
-        <input type="email" id="email" v-model="email" autocomplete="off" placeholder="Your email" required />
+    <form @submit.prevent="sendEmail" class="flex flex-col gap-4 my-6">
+      <div class="flex flex-col gap-4">
+        <input
+          type="name"
+          id="name"
+          v-model="name"
+          autocomplete="nope"
+          placeholder="Your name"
+          class="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
+        />
+        <input
+          type="email"
+          id="email"
+          v-model="email"
+          autocomplete="off"
+          placeholder="Your email"
+          required
+          class="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors text-sm"
+        />
       </div>
-      <textarea id="message" v-model="message" rows="4" placeholder="Your message" required @keydown.enter.prevent="submitFormOnEnter"></textarea>
-      <button type="submit">Send{{ sendingEllipses }}</button>
+      <textarea
+        id="message"
+        v-model="message"
+        rows="4"
+        placeholder="Your message"
+        required
+        @keydown.enter.prevent="submitFormOnEnter"
+        class="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors resize-y min-h-[100px] text-sm font-sans"
+      ></textarea>
+      <button type="submit" class="ml-auto min-w-[200px] px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors">
+        Send{{ sendingEllipses }}
+      </button>
     </form>
-    <ContactToast :sent="toastSent" v-if="toastVisible" />
+
+    <!-- Radix Vue Toast -->
+    <ToastProvider>
+      <ToastRoot v-model:open="toastOpen" class="bg-white dark:bg-gray-900 text-black dark:text-white shadow-lg rounded-lg p-4">
+        <ToastTitle class="font-semibold text-sm">
+          {{ toastSent ? "Message Sent!" : "Message Failed" }}
+        </ToastTitle>
+        <ToastDescription class="text-xs">
+          {{ toastSent ? "Your message was successfully delivered." : "Something went wrong. Please try again." }}
+        </ToastDescription>
+      </ToastRoot>
+      <ToastViewport class="fixed bottom-4 right-4 flex flex-col gap-2 w-auto z-50" />
+    </ToastProvider>
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref } from "vue"
   import axios from "axios"
-  import ContactToast from "./Toast.vue"
+  import { ToastProvider, ToastRoot, ToastTitle, ToastDescription, ToastViewport } from "radix-vue"
+
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
   const email = ref("")
   const message = ref("")
   const name = ref("")
-  const toastVisible = ref(false)
-  const toastSent = ref(false)
   const sendingEllipses = ref("")
 
-  const showToast = (sent: boolean) => {
-    toastVisible.value = true
-    toastSent.value = sent
-    setTimeout(() => {
-      toastVisible.value = false
-    }, 5000)
-  }
+  const toastOpen = ref(false)
+  const toastSent = ref(false)
 
   const sendEmail = () => {
     let counter = 0
@@ -54,7 +86,6 @@
     const clearUp = (success: boolean) => {
       clearInterval(sendingLoader)
       sendingEllipses.value = ""
-
       if (success) {
         email.value = ""
         message.value = ""
@@ -63,18 +94,22 @@
     }
 
     axios
-      .post("https://fxnm-backend-5c0b9af08231.herokuapp.com/send-email", {
+      .post(`${BACKEND_URL}/send-email`, {
         name: name.value,
         email: email.value,
         message: message.value
       })
       .then(() => {
-        showToast(true)
+        toastSent.value = true
+        toastOpen.value = true
         clearUp(true)
+        setTimeout(() => (toastOpen.value = false), 5000)
       })
       .catch(() => {
-        showToast(false)
+        toastSent.value = false
+        toastOpen.value = true
         clearUp(false)
+        setTimeout(() => (toastOpen.value = false), 5000)
       })
   }
 
@@ -85,70 +120,3 @@
     }
   }
 </script>
-
-<style scoped>
-  div#input-fields {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-}
-
-form {
-    display: flex;
-    flex-direction: column;
-    margin: 1.5em 0;
-    align-items: left;
-    transition:
-        color 1s ease-in-out,
-        background-color 0.5s ease-in-out,
-        border-color 0.5s ease-in-out;
-    gap: 1em;
-    border-radius: 5px;
-}
-
-input,
-textarea {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-    transition:
-        color 1s ease-in-out,
-        background-color 0.5s ease-in-out,
-        border-color 0.5s ease-in-out;
-    font-size: 0.9em;
-
-    &:focus,
-    &:focus-visible {
-        outline: 1px auto rgba(179, 179, 179, 0.449);
-    }
-}
-
-input:-webkit-autofill,
-textarea:-webkit-autofill {
-    background-color: inherit !important;
-}
-
-textarea {
-    resize: vertical;
-    min-height: 100px;
-}
-
-body.dark input,
-body.dark textarea {
-    border: 1px solid #9ea9eb69;
-    background-color: #0d121a;
-    color: #c3e3f1;
-}
-
-button {
-    margin-left: auto;
-    min-width: 200px;
-}
-
-@media (max-width: 600px) {
-    p {
-        font-size: small;
-    }
-}
-</style>
