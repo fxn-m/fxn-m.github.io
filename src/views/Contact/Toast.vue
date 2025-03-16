@@ -1,41 +1,41 @@
 <template>
-    <transition name="toast-fade">
-        <div class="toast" v-if="showToast" :class="{ hide: hideToast }">
-            <p>
-                {{ sent ? "Message sent!" : "Message didn't send." }}
-            </p>
-            <p>
-                {{ sent ? "👍" : "👎" }}
-            </p>
-        </div>
-    </transition>
+  <transition name="toast-fade">
+    <div class="toast" v-if="showToast" :class="{ hide: hideToast }">
+      <p>
+        {{ sent ? "Message sent!" : "Message didn't send." }}
+      </p>
+      <p>
+        {{ sent ? "👍" : "👎" }}
+      </p>
+    </div>
+  </transition>
 </template>
 
 <script setup lang="ts">
-defineProps({
+  defineProps({
     sent: Boolean
-})
+  })
 
-import { ref, onMounted } from "vue"
+  import { ref, onMounted } from "vue"
 
-const showToast = ref(false)
-const hideToast = ref(false)
+  const showToast = ref(false)
+  const hideToast = ref(false)
 
-onMounted(() => {
+  onMounted(() => {
     showToast.value = true
 
     setTimeout(() => {
-        hideToast.value = true
+      hideToast.value = true
     }, 3000)
 
     setTimeout(() => {
-        showToast.value = false
+      showToast.value = false
     }, 6000)
-})
+  })
 </script>
 
 <style scoped>
-.toast {
+  .toast {
     position: fixed;
     bottom: 30px;
     left: 50%;

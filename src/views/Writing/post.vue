@@ -1,38 +1,38 @@
 <template>
-    <div class="container">
-        <div class="metadata">
-            <h1>{{ $route.query.title }}</h1>
-            <p>{{ $route.query.date }}</p>
-        </div>
-        <div class="blog" v-html="blogContent"></div>
+  <div class="container">
+    <div class="metadata">
+      <h1>{{ $route.query.title }}</h1>
+      <p>{{ $route.query.date }}</p>
     </div>
+    <div class="blog" v-html="blogContent"></div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, ref } from "vue"
-import { useRoute, type LocationQueryValue } from "vue-router"
+  import { onMounted, ref } from "vue"
+  import { useRoute, type LocationQueryValue } from "vue-router"
 
-const route = useRoute()
+  const route = useRoute()
 
-const blogContent = ref<string>("")
+  const blogContent = ref<string>("")
 
-const fetchContent = async (title: LocationQueryValue) => {
+  const fetchContent = async (title: LocationQueryValue) => {
     const response = await fetch(`/html/${title}.html`)
     if (response.ok) {
-        const html = await response.text()
-        blogContent.value = html
+      const html = await response.text()
+      blogContent.value = html
     } else {
-        console.error("Failed to load blog content:", response.statusText)
+      console.error("Failed to load blog content:", response.statusText)
     }
-}
+  }
 
-onMounted(() => {
+  onMounted(() => {
     fetchContent(route.query.title as LocationQueryValue)
-})
+  })
 </script>
 
 <style scoped>
-.container {
+  .container {
     margin-top: 50px;
     width: 100%;
 }

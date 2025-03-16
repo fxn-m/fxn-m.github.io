@@ -1,64 +1,64 @@
 <template>
-    <div class="container">
-        <ul>
-            <li v-for="blog in blogs" :key="blog.id">
-                <p>{{ blog.date }}</p>
-                <router-link
-                    :to="{
-                        name: 'writingPost',
-                        params: { post: blog.headerTitle },
-                        query: { id: blog.id, title: blog.title, date: blog.date }
-                    }"
-                >
-                    {{ blog.title }}
-                </router-link>
-            </li>
-        </ul>
-    </div>
+  <div class="container">
+    <ul>
+      <li v-for="blog in blogs" :key="blog.id">
+        <p>{{ blog.date }}</p>
+        <router-link
+          :to="{
+            name: 'writingPost',
+            params: { post: blog.headerTitle },
+            query: { id: blog.id, title: blog.title, date: blog.date }
+          }"
+        >
+          {{ blog.title }}
+        </router-link>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
+  import { ref, onMounted } from "vue"
 
-type Blog = {
+  type Blog = {
     id: number
     title: string
     headerTitle: string
     date: string
-}
+  }
 
-const blogs = ref([] as Blog[])
+  const blogs = ref([] as Blog[])
 
-const headerTitleIdMap: Record<string, string> = {}
+  const headerTitleIdMap: Record<string, string> = {}
 
-onMounted(async () => {
+  onMounted(async () => {
     try {
-        const response = await fetch("/html/index.json")
-        if (!response.ok) {
-            throw new Error("Failed to load blog list")
-        }
-        const blogList: Blog[] = await response.json()
+      const response = await fetch("/html/index.json")
+      if (!response.ok) {
+        throw new Error("Failed to load blog list")
+      }
+      const blogList: Blog[] = await response.json()
 
-        blogList
-            .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-            .map((blog: Blog) => {
-                blogs.value.push({
-                    id: blog.id,
-                    title: blog.title,
-                    headerTitle: blog.headerTitle,
-                    date: blog.date
-                })
+      blogList
+        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+        .map((blog: Blog) => {
+          blogs.value.push({
+            id: blog.id,
+            title: blog.title,
+            headerTitle: blog.headerTitle,
+            date: blog.date
+          })
 
-                headerTitleIdMap[blog.headerTitle] = blog.id.toString()
-            })
+          headerTitleIdMap[blog.headerTitle] = blog.id.toString()
+        })
     } catch (error) {
-        console.error("Failed to load blog list:", error)
+      console.error("Failed to load blog list:", error)
     }
-})
+  })
 </script>
 
 <style scoped>
-.container {
+  .container {
     display: flex;
     flex-wrap: nowrap;
     flex-direction: row;

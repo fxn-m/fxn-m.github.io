@@ -2,7 +2,7 @@
   <div v-if="track" class="mini-player" @mouseenter="isExpanded = true" @mouseleave="isExpanded = false">
     <a :href="track.externalUrl" target="_blank">
       <div class="artwork-container">
-        <img :src="track.cover" :alt="track.name" class="artwork spinning">
+        <img :src="track.cover" :alt="track.name" class="artwork spinning" />
       </div>
 
       <div class="info-container" :class="{ expanded: isExpanded }">
@@ -18,35 +18,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+  import { ref, onMounted } from "vue"
 
-const isExpanded = ref(false);
-const track = ref();
+  const isExpanded = ref(false)
+  const track = ref()
 
-async function fetchCurrentTrack() {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/spotify/current-track`);
-    if (!response.ok) throw new Error('Failed to fetch current track');
+  async function fetchCurrentTrack() {
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/spotify/current-track`)
+      if (!response.ok) throw new Error("Failed to fetch current track")
 
-    const data = await response.json();
-    if (!data.name) throw new Error('No track data found');
+      const data = await response.json()
+      if (!data.name) throw new Error("No track data found")
 
-    console.log(`Currently, I'm listening to ${data.name} by ${data.artist} 🎵`);
-    track.value = data;
-  } catch {
-    console.log("Currently, I'm not listening to anything.");
-    track.value = null;
+      console.log(`Currently, I'm listening to ${data.name} by ${data.artist} 🎵`)
+      track.value = data
+    } catch {
+      console.log("Currently, I'm not listening to anything.")
+      track.value = null
+    }
   }
-}
 
-onMounted(() => {
-  fetchCurrentTrack();
-  setInterval(fetchCurrentTrack, 30000);
-});
+  onMounted(() => {
+    fetchCurrentTrack()
+    setInterval(fetchCurrentTrack, 30000)
+  })
 </script>
 
 <style scoped>
-.mini-player {
+  .mini-player {
   z-index: 2;
   position: fixed;
   top: 1rem;

@@ -15,12 +15,12 @@ configureRoutes(app)
 
 // Start the server
 app.listen(port, async () => {
-    console.log(`Server is running on port ${port}`)
+  console.log(`Server is running on port ${port}`)
 
-    try {
-        await ensureReadingListFileExists()
-        console.log("Reading list file is ready")
-    } catch (error) {
-        console.error("Error ensuring reading list file exists:", error)
-    }
+  try {
+    await ensureReadingListFileExists()
+    console.log("Reading list file is ready")
+  } catch (error) {
+    console.error("Error ensuring reading list file exists:", error)
+  }
 })

@@ -1,19 +1,25 @@
 {
   "plugins": ["prettier-plugin-vue"],
   "vueIndentScriptAndStyle": true,
+  "parser": "typescript",
   "arrowParens": "always",
   "bracketSpacing": true,
   "endOfLine": "auto",
   "htmlWhitespaceSensitivity": "css",
   "bracketSameLine": false,
   "jsxSingleQuote": false,
-  "parser": "typescript",
   "printWidth": 160,
   "proseWrap": "preserve",
   "quoteProps": "as-needed",
   "semi": false,
   "singleQuote": false,
-  "tabWidth": 4,
+  "tabWidth": 2,
   "trailingComma": "none",
-  "useTabs": false
+  "useTabs": false,
+  "overrides": [
+    {
+      "files": "*.vue",
+      "options": { "parser": "vue" }
+    }
+  ]
 }

@@ -1,73 +1,73 @@
 <template>
-    <div id="content">
-        <div class="project-grid">
-            <div v-for="project in projects" :key="project.id" class="project-card">
-                <div class="project-image">
-                    <img :src="project.image" :alt="project.title" />
+  <div id="content">
+    <div class="project-grid">
+      <div v-for="project in projects" :key="project.id" class="project-card">
+        <div class="project-image">
+          <img :src="project.image" :alt="project.title" />
 
-                    <a v-if="project.link.includes('https')" :href="project.link" target="_blank">
-                        <div :class="project.whiteBg ? 'project-overlay white' : 'project-overlay'">
-                            <h3>
-                                <a v-if="project.link.includes('https')" :href="project.link" target="_blank">{{ project.title }}</a>
-                            </h3>
-                            <a v-if="project.aboutLink" :href="project.aboutLink" class="about-link">About</a>
-                        </div>
-                    </a>
-
-                    <RouterLink v-else :to="project.link">
-                        <div :class="project.whiteBg ? 'project-overlay-white' : 'project-overlay'">
-                            <h3>
-                                <RouterLink :to="project.link">{{ project.title }}</RouterLink>
-                            </h3>
-                            <a v-if="project.aboutLink" :href="project.aboutLink" class="about-link">About</a>
-                        </div>
-                    </RouterLink>
-                </div>
-
-                <div class="project-info">
-                    <p>{{ project.description }}</p>
-                </div>
+          <a v-if="project.link.includes('https')" :href="project.link" target="_blank">
+            <div :class="project.whiteBg ? 'project-overlay white' : 'project-overlay'">
+              <h3>
+                <a v-if="project.link.includes('https')" :href="project.link" target="_blank">{{ project.title }}</a>
+              </h3>
+              <a v-if="project.aboutLink" :href="project.aboutLink" class="about-link">About</a>
             </div>
+          </a>
+
+          <RouterLink v-else :to="project.link">
+            <div :class="project.whiteBg ? 'project-overlay-white' : 'project-overlay'">
+              <h3>
+                <RouterLink :to="project.link">{{ project.title }}</RouterLink>
+              </h3>
+              <a v-if="project.aboutLink" :href="project.aboutLink" class="about-link">About</a>
+            </div>
+          </RouterLink>
         </div>
+
+        <div class="project-info">
+          <p>{{ project.description }}</p>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+  import { ref } from "vue"
 
-const projects = ref(
+  const projects = ref(
     [
-        {
-            id: 1,
-            title: "ReadMe",
-            description: "Find what you need to read",
-            image: "/images/image.webp",
-            link: "/fun/:readme",
-            aboutLink: ""
-        },
-        {
-            id: 2,
-            title: "Atmosphere.fm",
-            description: "Soundtracks shaped by skies",
-            image: "/images/sunset2.webp",
-            link: "/fun/:atmosphere-fm",
-            aboutLink: "#/fun/atmosphere-fm-about"
-        },
-        {
-            id: 3,
-            title: "PGT",
-            description: "Paul Graham's Essays Translated",
-            image: "/images/pgt.svg",
-            link: "https://paulgraham-translated.vercel.app",
-            aboutLink: "",
-            whiteBg: true
-        }
+      {
+        id: 1,
+        title: "ReadMe",
+        description: "Find what you need to read",
+        image: "/images/image.webp",
+        link: "/fun/:readme",
+        aboutLink: ""
+      },
+      {
+        id: 2,
+        title: "Atmosphere.fm",
+        description: "Soundtracks shaped by skies",
+        image: "/images/sunset2.webp",
+        link: "/fun/:atmosphere-fm",
+        aboutLink: "#/fun/atmosphere-fm-about"
+      },
+      {
+        id: 3,
+        title: "PGT",
+        description: "Paul Graham's Essays Translated",
+        image: "/images/pgt.svg",
+        link: "https://paulgraham-translated.vercel.app",
+        aboutLink: "",
+        whiteBg: true
+      }
     ].reverse()
-)
+  )
 </script>
 
 <style scoped>
-.project-grid {
+  .project-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 2rem;

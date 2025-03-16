@@ -1,4 +1,4 @@
-import "./assets/main.css"
+import "./main.css"
 
 import { faArrowLeft, faArrowsRotate, faCaretLeft, faLaptop } from "@fortawesome/free-solid-svg-icons"
 import { faCircleXmark, faCompass } from "@fortawesome/free-regular-svg-icons"
@@ -15,7 +15,5 @@ library.add(faArrowLeft, faArrowsRotate, faGithub, faXTwitter, faStrava, faCompa
 const app = createApp(App)
 
 app.use(router)
-
 app.component("font-awesome-icon", FontAwesomeIcon)
-
 app.mount("#app")
