@@ -1,4 +1,3 @@
-// import "./styles/tailwind.css"
 import "./main.css"
 
 import { faArrowLeft, faArrowsRotate, faCaretLeft, faLaptop } from "@fortawesome/free-solid-svg-icons"

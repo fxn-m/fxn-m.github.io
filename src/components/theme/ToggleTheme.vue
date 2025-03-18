@@ -1,9 +1,15 @@
 <template>
   <div class="theme-toggle-wrapper">
-    <button id="toggle-btn" @click="toggleTheme" :title="tooltipText" @mouseenter="showTooltip = true" @mouseleave="showTooltip = false">
-      <img v-if="iconSrc" :src="iconSrc" :id="iconId" :alt="tooltipText" />
+    <button
+      class="size-full flex items-center justify-center"
+      id="toggle-btn"
+      @click="toggleTheme"
+      :title="tooltipText"
+      @mouseenter="showTooltip = true"
+      @mouseleave="showTooltip = false"
+    >
+      <img class="size-[28px]" v-if="iconSrc" :src="iconSrc" :id="iconId" :alt="tooltipText" />
     </button>
-
     <span v-if="showTooltip" class="tooltip">{{ tooltipText }}</span>
   </div>
 </template>
@@ -66,7 +72,6 @@
   border: none;
   cursor: pointer;
   justify-content: center;
-  width: 40px;
 }
 
 .theme-toggle-wrapper {
@@ -89,5 +94,63 @@
 
 body.dark .tooltip {
   color: #aaa;
+}
+
+/* // dark mode toggle styling */
+
+#toggle-btn {
+  background-color: none;
+  border: none;
+  font-size: 1.3em;
+  padding: 0;
+  margin: 0;
+  min-width: 40px;
+}
+
+#toggle-btn:hover {
+  cursor: pointer;
+}
+
+#system-mode-icon {
+  color: #5a5a5a;
+  transition: 0.5s ease-in-out;
+}
+
+#system-mode-icon:hover {
+  color: #000001;
+  transition: 0.5s ease-in-out;
+}
+
+body.dark #system-mode-icon {
+  color: #949494;
+  transition: 0.5s ease-in-out;
+}
+
+body.dark #system-mode-icon:hover {
+    color: #ffffff;
+    transition: 0.5s ease-in-out;
+}
+
+#dark-mode-icon {
+  filter: invert(69%) sepia(10%) saturate(17%) hue-rotate(318deg)
+    brightness(84%) contrast(87%);
+  transform: scale(1.3);
+  transition: filter 0.5s ease-in-out;
+}
+
+#dark-mode-icon:hover {
+  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%)
+    contrast(100%);
+}
+
+#light-mode-icon {
+  filter: invert(33%) sepia(0%) saturate(15%) hue-rotate(279deg)
+    brightness(102%) contrast(91%);
+  transition: filter 0.5s ease-in-out;
+}
+
+#light-mode-icon:hover {
+  filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%)
+    contrast(100%);
 }
 </style>
