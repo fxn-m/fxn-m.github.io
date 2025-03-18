@@ -1,8 +1,9 @@
 <script setup lang="ts">
-  import { ref, onMounted, watch } from "vue"
-  import axios from "axios"
+  import { ref, onMounted, watch, defineProps } from "vue"
+  // import axios from "axios"
   import { format } from "date-fns"
   import polyline from "@mapbox/polyline"
+  import axios from "axios"
 
   interface StravaActivity {
     id: number
@@ -31,10 +32,12 @@
   const error = ref<string | null>(null)
   const canvasRef = ref<HTMLCanvasElement | null>(null)
 
+  // Dummy data to replace the fetching logic, as requested:
   const fetchActivities = async () => {
     try {
       loading.value = true
       error.value = null
+
       const response = await axios.get("https://www.strava.com/api/v3/athlete/activities", {
         headers: {
           Authorization: `Bearer ${props.accessToken}`
@@ -45,7 +48,7 @@
       })
       activities.value = response.data
     } catch (e) {
-      error.value = "Failed to load activities. Please check your Strava access token."
+      error.value = "Failed to load activities."
       console.error(e)
     } finally {
       loading.value = false
@@ -71,15 +74,12 @@
     canvas.style.width = `${rect.width}px`
     canvas.style.height = `${rect.height}px`
 
-    // Get the decoded coordinates
+    // Decode polyline
     const coordinates = polyline.decode(activity.map.summary_polyline)
-
-    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-
     if (coordinates.length === 0) return
 
-    // Find the bounds of the coordinates
+    // Find bounds
     const bounds = coordinates.reduce(
       (acc, [lat, lng]) => ({
         minLat: Math.min(acc.minLat, lat),
@@ -87,27 +87,46 @@
         minLng: Math.min(acc.minLng, lng),
         maxLng: Math.max(acc.maxLng, lng)
       }),
-      { minLat: Infinity, maxLat: -Infinity, minLng: Infinity, maxLng: -Infinity }
+      {
+        minLat: Infinity,
+        maxLat: -Infinity,
+        minLng: Infinity,
+        maxLng: -Infinity
+      }
     )
 
-    // Calculate the scale and offset to fit the canvas with padding
-    const padding = 20 * dpr
-    const width = rect.width * dpr - padding * 2
-    const height = rect.height * dpr - padding * 2
-    const latRange = bounds.maxLat - bounds.minLat || 0.01 // Prevent division by zero
-    const lngRange = bounds.maxLng - bounds.minLng || 0.01 // Prevent division by zero
-    const scale = Math.min(width / lngRange, height / latRange)
+    // Calculate scale and center offsets
+    const padding = 20
+    const canvasWidth = rect.width
+    const canvasHeight = rect.height
 
-    // Start drawing
+    const latRange = bounds.maxLat - bounds.minLat || 0.0001
+    const lngRange = bounds.maxLng - bounds.minLng || 0.0001
+
+    // The available drawing area
+    const drawWidth = canvasWidth - padding * 2
+    const drawHeight = canvasHeight - padding * 2
+    const scale = Math.min(drawWidth / lngRange, drawHeight / latRange)
+
+    // Route's actual width/height in pixels after scaling
+    const routeWidth = lngRange * scale
+    const routeHeight = latRange * scale
+
+    // Offsets to center the route
+    const offsetX = (canvasWidth - routeWidth) / 2
+    const offsetY = (canvasHeight - routeHeight) / 2
+
     ctx.beginPath()
-    ctx.strokeStyle = "#222222"
-    ctx.lineWidth = 2 * dpr
+    ctx.strokeStyle = "#444"
+    ctx.lineWidth = 2
     ctx.lineCap = "round"
     ctx.lineJoin = "round"
 
     coordinates.forEach(([lat, lng], index) => {
-      const x = padding + (lng - bounds.minLng) * scale
-      const y = rect.height * dpr - (padding + (lat - bounds.minLat) * scale)
+      // Convert lat, lng to x, y
+      const x = offsetX + (lng - bounds.minLng) * scale
+      // invert lat so up is positive y on the canvas
+      const y = offsetY + routeHeight - (lat - bounds.minLat) * scale
 
       if (index === 0) {
         ctx.moveTo(x, y)
@@ -151,6 +170,7 @@
     drawPolyline()
   }
 
+  // Re-draw whenever the index changes
   watch(currentIndex, () => {
     drawPolyline()
   })
@@ -161,6 +181,7 @@
     updateCanvasSize()
   })
 
+  // Re-draw whenever we get new activities
   watch(
     activities,
     () => {
@@ -174,43 +195,50 @@
 
 <template>
   <div class="strava-activity-viewer">
+    <!-- Loading / Error states -->
     <div v-if="loading" class="loading">Loading activities...</div>
     <div v-else-if="error" class="error">
       {{ error }}
     </div>
     <div v-else-if="activities.length > 0" class="activity-card">
+      <!-- Route / Stats Split -->
       <div class="activity-content">
+        <!-- Left Panel: Route Canvas -->
         <div class="polyline-container">
           <canvas ref="canvasRef"></canvas>
         </div>
+
+        <!-- Right Panel: Stats -->
         <div class="activity-info">
-          <div class="activity-header">
-            <button @click="previousActivity" :disabled="currentIndex === 0" class="nav-button">←</button>
-            <div class="activity-title">
-              <h2>{{ activities[currentIndex].name }}</h2>
-              <div class="activity-date">
-                {{ format(new Date(activities[currentIndex].start_date), "PPP") }}
+          <div class="activity-stats">
+            <!-- Muted/smaller date -->
+            <div class="activity-date">
+              {{ format(new Date(activities[currentIndex].start_date), "PPP") }}
+            </div>
+            <div class="stats">
+              <div class="stat">
+                <span class="label">Distance</span>
+                <span class="value">{{ formatDistance(activities[currentIndex].distance) }}</span>
+              </div>
+              <div class="stat">
+                <span class="label">Duration</span>
+                <span class="value">{{ formatDuration(activities[currentIndex].moving_time) }}</span>
+              </div>
+              <div class="stat">
+                <span class="label">Avg Speed</span>
+                <span class="value">{{ formatSpeed(activities[currentIndex].average_speed) }}</span>
+              </div>
+              <div class="stat">
+                <span class="label">Elevation</span>
+                <span class="value">{{ activities[currentIndex].total_elevation_gain }}m</span>
               </div>
             </div>
-            <button @click="nextActivity" :disabled="currentIndex === activities.length - 1" class="nav-button">→</button>
           </div>
-          <div class="stats">
-            <div class="stat">
-              <span class="label">Distance</span>
-              <span class="value">{{ formatDistance(activities[currentIndex].distance) }}</span>
-            </div>
-            <div class="stat">
-              <span class="label">Duration</span>
-              <span class="value">{{ formatDuration(activities[currentIndex].moving_time) }}</span>
-            </div>
-            <div class="stat">
-              <span class="label">Avg Speed</span>
-              <span class="value">{{ formatSpeed(activities[currentIndex].average_speed) }}</span>
-            </div>
-            <div class="stat">
-              <span class="label">Elevation</span>
-              <span class="value">{{ activities[currentIndex].total_elevation_gain }}m</span>
-            </div>
+
+          <!-- Small navigation arrows at bottom-right -->
+          <div class="navigation">
+            <button @click="previousActivity" :disabled="currentIndex === 0" class="nav-button">←</button>
+            <button @click="nextActivity" :disabled="currentIndex === activities.length - 1" class="nav-button">→</button>
           </div>
         </div>
       </div>
@@ -220,64 +248,108 @@
 </template>
 
 <style scoped>
-  .strava-activity-viewer {
+  /* Container around the entire component */
+.strava-activity-viewer {
   width: 100%;
-  max-width: 1000px;
+  max-width: 800px;
   margin: 0 auto;
+  font-family: sans-serif;
+  color: #222;
 }
 
+/* Card-like wrapper for the route/stats */
 .activity-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
+/* Split the layout into two columns on larger screens:
+   Left: route, Right: stats */
 .activity-content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 175px;
   min-height: 400px;
 }
 
+/* Canvas container on the left */
+.polyline-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-color: #ffffff; /* subtle neutral background */
+}
+
+/* Make the canvas fill its container */
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Right panel for stats */
 .activity-info {
-  padding: 32px;
+  padding: 1rem;
+  position: relative; /* needed for absolutely positioned nav buttons */
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 
-.activity-header {
+/* Stats group */
+.activity-stats {
+  margin-bottom: 2rem;
+}
+
+/* Muted date, smaller font */
+.activity-date {
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+/* Stats and labels */
+.stats {
+  display: grid;
+  grid-template-columns: 1fr ;
+  row-gap: 1rem;
+  column-gap: 1rem;
+}
+
+.stat {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 32px;
+  flex-direction: column;
+  gap: 2px;
 }
 
-.activity-title {
-  flex: 1;
-  text-align: center;
+.label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #555;
+  letter-spacing: 0.5px;
 }
 
-h2 {
-  margin: 0;
-  font-size: 1.5em;
-  color: #222;
+.value {
+  font-size: 1.1rem;
   font-weight: 500;
 }
 
-.activity-date {
-  font-size: 0.9em;
-  color: #666;
-  margin-top: 4px;
+/* Nav buttons at bottom right */
+.navigation {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .nav-button {
   background: none;
   border: none;
-  color: #222;
-  font-size: 24px;
+  color: #333;
+  font-size: 1rem;
   cursor: pointer;
-  padding: 8px;
+  padding: 0.3rem 0.6rem;
   transition: opacity 0.2s;
 }
 
@@ -290,65 +362,36 @@ h2 {
   opacity: 0.7;
 }
 
-.stats {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.stat {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.label {
-  font-size: 0.85em;
-  color: #666;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.value {
-  font-size: 1.2em;
-  color: #222;
-  font-weight: 500;
-}
-
-.polyline-container {
-  height: 100%;
-  width: 100%;
-  position: relative;
-}
-
-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-  padding: 10px;
-  box-sizing: border-box;
-}
-
-.loading, .error, .no-activities {
+/* Loading, error, no-activities states */
+.loading,
+.error,
+.no-activities {
   text-align: center;
-  padding: 32px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  color: #222;
+  padding: 2rem;
+  background: #fefefe;
+  border: 1px solid #ddd;
+  margin-top: 1rem;
+  border-radius: 8px;
 }
 
 .error {
   color: #dc2626;
 }
 
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .activity-content {
     grid-template-columns: 1fr;
   }
-
   .polyline-container {
     height: 300px;
+  }
+  .activity-stats {
+    margin-bottom: 4rem;
+  }
+  .navigation {
+    bottom: 0.5rem;
+    right: 0.5rem;
   }
 }
 </style>
