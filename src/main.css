@@ -186,20 +186,20 @@ button {
 
 body.dark button {
   background-color: inherit;
-  border: 1px solid #9ea9eb69;
+  /* border: 1px solid #9ea9eb69;
   color: #c3e3f1;
   transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out,
     border-color 0.25s ease-in-out;
 
   &:hover {
     border-color: #a4a9fcc0;
-  }
+  } */
 }
 
-button > * {
+/* button > * {
   text-decoration: none !important;
   color: inherit;
-}
+} */
 
 /* // links styling */
 

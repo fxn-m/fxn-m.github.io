@@ -45,7 +45,7 @@
         }
       })
 
-      // 1) Filter out activities that have no summary_polyline
+      // Filter out activities that have no summary_polyline
       const allActivities = response.data as StravaActivity[]
       const validActivities = allActivities.filter((act) => act.map && act.map.summary_polyline)
 
@@ -77,10 +77,13 @@
     canvas.style.width = `${rect.width}px`
     canvas.style.height = `${rect.height}px`
 
-    // Decode polyline
+    // Decode the polyline
     const coordinates = polyline.decode(activity.map.summary_polyline)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     if (coordinates.length === 0) return
+
+    // Determine if dark mode is active
+    const isDark = document.body.classList.contains("dark")
 
     // Find bounds
     const bounds = coordinates.reduce(
@@ -110,7 +113,6 @@
     const drawHeight = canvasHeight - padding * 2
     const scale = Math.min(drawWidth / lngRange, drawHeight / latRange)
 
-    // Route's width/height in px after scaling
     const routeWidth = lngRange * scale
     const routeHeight = latRange * scale
 
@@ -118,14 +120,14 @@
     const offsetY = (canvasHeight - routeHeight) / 2
 
     ctx.beginPath()
-    ctx.strokeStyle = "#444"
+    // Switch stroke color depending on dark mode
+    ctx.strokeStyle = isDark ? "#bbb" : "#444"
     ctx.lineWidth = 2
     ctx.lineCap = "round"
     ctx.lineJoin = "round"
 
     coordinates.forEach(([lat, lng], index) => {
       const x = offsetX + (lng - bounds.minLng) * scale
-      // invert lat so up is positive y on the canvas
       const y = offsetY + routeHeight - (lat - bounds.minLat) * scale
 
       if (index === 0) {
@@ -179,7 +181,6 @@
   onMounted(async () => {
     await fetchActivities()
 
-    // 2) Once data is in, reset to 0 if there's any valid activity
     if (activities.value.length > 0) {
       currentIndex.value = 0
       await nextTick()
@@ -210,10 +211,7 @@
     <div v-if="loading" class="activity-card loading-skeleton">
       <div class="activity-content">
         <!-- Left skeleton: spinner for map area -->
-        <div class="polyline-container skeleton-canvas">
-          <div class="spinner"></div>
-        </div>
-
+        <div class="polyline-container skeleton-canvas"></div>
         <!-- Right skeleton: greyed-out lines for stats -->
         <div class="activity-info skeleton-info">
           <div class="skeleton-line short"></div>
@@ -276,28 +274,8 @@
   </div>
 </template>
 
-<style scoped>
-  :root {
-   --bg-canvas: #ffffff;
-   --bg-canvas-dark: #1e1e1e;
-   --sidebar-bg: #fefefe;
-   --sidebar-bg-dark: #2c2c2c;
-   --text-color: #222;
-   --text-color-dark: #ddd;
-   --accent-color: #444;
-   --accent-color-dark: #bbb;
-   --spinner-border: #555;
-   --spinner-border-dark: #ccc;
- }
- 
- body.dark {
-   --bg-canvas: var(--bg-canvas-dark);
-   --sidebar-bg: var(--sidebar-bg-dark);
-   --text-color: var(--text-color-dark);
-   --accent-color: var(--accent-color-dark);
-   --spinner-border: var(--spinner-border-dark);
- }
-
+<style>
+  /* Base (light mode) styles */
 .strava-activity-viewer {
   width: 100%;
   max-width: 800px;
@@ -306,7 +284,6 @@
   color: #222;
 }
 
-/* Card-like wrapper for the route/stats */
 .activity-card {
   display: flex;
   flex-direction: column;
@@ -314,19 +291,19 @@
   margin-top: 1rem;
 }
 
-/* Split the layout into two columns for normal content */
 .activity-content {
   display: grid;
   grid-template-columns: 1fr 175px;
   min-height: 400px;
 }
 
-/* Canvas container on the left */
+
+/* Light mode canvas background */
 .polyline-container {
   width: 100%;
   height: 100%;
   position: relative;
-  background-color: var(--bg-canvas);
+  background-color: inherit;
 }
 
 /* Fill canvas container */
@@ -343,23 +320,20 @@ canvas {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background-color: var(--sidebar-bg);
-  color: var(--text-color);
+  color: #222;
+  background-color: inherit;
 }
 
-/* Stats section */
 .activity-stats {
   margin-bottom: 2rem;
 }
 
-/* Smaller, muted date text */
 .activity-date {
   font-size: 0.85rem;
   color: #666;
   margin-bottom: 1.5rem;
 }
 
-/* Stats layout */
 .stats {
   display: grid;
   grid-template-columns: 1fr;
@@ -384,7 +358,6 @@ canvas {
   font-weight: 500;
 }
 
-/* Navigation arrow styling */
 .navigation {
   position: absolute;
   bottom: 1rem;
@@ -396,7 +369,7 @@ canvas {
 .nav-button {
   background: none;
   border: none;
-  color: var(--text-color);
+  color: #222;
   font-size: 1rem;
   cursor: pointer;
   padding: 0.3rem 0.6rem;
@@ -427,7 +400,7 @@ canvas {
   color: #dc2626;
 }
 
-/* ---------------- SKELETON LOADING STYLES ---------------- */
+/* Skeleton loading */
 .loading-skeleton {
   margin-top: 1rem;
 }
@@ -439,22 +412,6 @@ canvas {
   justify-content: center;
 }
 
-.spinner {
-  border: 6px solid var(--spinner-border);
-  border-top: 6px solid var(--spinner-border);
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Greyed-out lines for text skeleton */
 .skeleton-info {
   padding: 1rem;
 }
@@ -471,7 +428,7 @@ canvas {
   width: 60%;
 }
 
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
   .activity-content {
     grid-template-columns: 1fr;
@@ -486,5 +443,34 @@ canvas {
     bottom: 0.5rem;
     right: 0.5rem;
   }
+}
+
+/* ------------------ DARK MODE OVERRIDES ------------------ */
+body.dark .strava-activity-viewer {
+  color: #ddd;
+}
+
+body.dark .activity-info {
+  background-color: inherit;
+  color: #ddd;
+}
+
+body.dark .activity-date {
+  color: #aaa;
+}
+
+body.dark .label {
+  color: #bbb;
+}
+
+body.dark .nav-button {
+  color: #ddd;
+}
+
+body.dark .no-activities,
+body.dark .error {
+  background: #2c2c2c;
+  color: #ddd;
+  border: 1px solid #444;
 }
 </style>
