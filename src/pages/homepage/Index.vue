@@ -44,7 +44,7 @@
   import CurrentTrack from "@/components/spotify/CurrentTrack.vue"
   import { format } from "date-fns"
 
-  const stravaAccessToken = "11fdb7bf998412006600b687e356b5bf4793394d"
+  const stravaAccessToken = "8709eb737bafc071d200da8761a5aa8ecac1b5ed"
 
   // eslint-disable-next-line no-undef
   const buildDate = format(new Date(__BUILD_DATE__), "dd-MM-yyyy")

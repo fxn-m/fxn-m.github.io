@@ -5,8 +5,8 @@
 </template>
 
 <script setup lang="ts">
-  import ReadingSuggestion from "@/views/Fun/ReadMe/Index.vue"
-  import AtmosphereFM from "@/views/Fun/Atmosphere.fm/Index.vue"
+  import ReadingSuggestion from "@/pages/fun/ReadMe/Index.vue"
+  import AtmosphereFM from "@/pages/fun/Atmosphere.fm/Index.vue"
   import { useRoute } from "vue-router"
   import { ref, onMounted, type Component } from "vue"
 

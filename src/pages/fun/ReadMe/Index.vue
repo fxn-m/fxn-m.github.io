@@ -1,27 +1,32 @@
 <template>
-  <p>Suggests a random item from my Notion reading list.</p>
   <div v-if="!isLoading" class="reading-suggestion">
-    <a :href="readingSuggestion.url" target="_blank">
-      {{ readingSuggestion.title }}
-    </a>
+    <div class="flex justify-between items-center">
+      <div>
+        <a :href="readingSuggestion.url" target="_blank">
+          {{ readingSuggestion.title }}
+        </a>
 
-    <div class="suggestion-metadata" ref="metadataDiv">
-      <p v-if="readingSuggestion.type" ref="suggestionTypeDiv">
-        {{ readingSuggestion.type }}
-      </p>
+        <div class="suggestion-metadata" ref="metadataDiv">
+          <p v-if="readingSuggestion.type" ref="suggestionTypeDiv">
+            {{ readingSuggestion.type }}
+          </p>
 
-      <p v-if="(readingSuggestion.type && readingSuggestion.author) || (readingSuggestion.type && readingSuggestion.time)">|</p>
+          <p v-if="(readingSuggestion.type && readingSuggestion.author) || (readingSuggestion.type && readingSuggestion.time)">|</p>
 
-      <p v-if="readingSuggestion.author" class="author">
-        {{ readingSuggestion.author }}
-      </p>
+          <p v-if="readingSuggestion.author" class="author">
+            {{ readingSuggestion.author }}
+          </p>
 
-      <p v-if="readingSuggestion.time && readingSuggestion.author && showSeparator">|</p>
+          <p v-if="readingSuggestion.time && readingSuggestion.author && showSeparator">|</p>
 
-      <p class="reading-time" v-if="readingSuggestion.time">Estimated reading time: {{ readingSuggestion.time }} minutes</p>
+          <p class="reading-time" v-if="readingSuggestion.time">Estimated reading time: {{ readingSuggestion.time }} minutes</p>
+        </div>
+      </div>
+
+      <button @click="fetchReadingSuggestion">
+        <FontAwesomeIcon icon="fa-solid fa-arrows-rotate" size="lg" />
+      </button>
     </div>
-
-    <button @click="fetchReadingSuggestion">Pick another one</button>
   </div>
 
   <div v-else id="loader" class="reading-suggestion">Load{{ loadingEllipses }}</div>
@@ -29,6 +34,7 @@
 
 <script setup lang="ts">
   import { ref, onMounted, watchEffect } from "vue"
+  import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
   const readingSuggestion = ref({
     id: "",
@@ -163,19 +169,35 @@ body.dark p {
     color: #afafaf;
 }
 
+button {
+  min-width: 0px;
+  padding: 0px;
+  border-radius: 100%;
+  width: 36px;
+  aspect-ratio: 1/1;
+}
+
+body.dark button {
+  background-color: inherit;
+  color: #cecece;
+  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+  border: 1px solid #cecece;
+  &:hover {
+    border-color: transparent;
+  }
+}
+
 .reading-suggestion {
     line-height: 2em;
-    margin: 1.5em 0;
 }
 
 .suggestion-metadata {
     display: flex;
     flex-wrap: wrap;
-    flex-direction: row;
+    flex-direction: row;  
     justify-content: left;
     font-size: 0.8rem;
     line-height: 2em;
-    margin: 0px auto 24px auto;
 }
 
 .suggestion-metadata > * {

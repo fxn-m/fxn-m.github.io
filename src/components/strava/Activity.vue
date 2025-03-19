@@ -1,8 +1,9 @@
 <script setup lang="ts">
-  import { ref, onMounted, watch, defineProps, nextTick } from "vue"
+  import { ref, onMounted, watch, defineProps, nextTick, onUnmounted } from "vue"
   import axios from "axios"
   import { format } from "date-fns"
   import polyline from "@mapbox/polyline"
+  import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
   interface StravaActivity {
     id: number
@@ -205,7 +206,8 @@
     drawPolyline()
   })
 
-  // Fetch data on mount, handle resizing
+  let countdownInterval: ReturnType<typeof setInterval> | undefined
+
   onMounted(async () => {
     updateCountdown()
     await fetchActivities()
@@ -216,10 +218,27 @@
       drawPolyline()
     }
 
-    setInterval(updateCountdown, 1000)
+    countdownInterval = setInterval(updateCountdown, 1000)
 
     window.addEventListener("resize", updateCanvasSize)
+    window.addEventListener("keydown", handleKeydown)
     updateCanvasSize()
+  })
+
+  const handleKeydown = (e: KeyboardEvent) => {
+    if (e.key === "ArrowLeft") {
+      previousActivity()
+    } else if (e.key === "ArrowRight") {
+      nextActivity()
+    }
+  }
+
+  // Cleanup on unmount
+  onUnmounted(() => {
+    if (countdownInterval) clearInterval(countdownInterval)
+
+    window.removeEventListener("resize", updateCanvasSize)
+    window.removeEventListener("keydown", handleKeydown)
   })
 
   // Re-draw whenever we get new activities
@@ -237,7 +256,7 @@
 </script>
 
 <template>
-  <div class="strava-activity-viewer">
+  <div class="strava-activity-viewer mt-12">
     <!-- Loading / Error states -->
     <div v-if="loading" class="activity-card loading-skeleton">
       <div class="activity-content">
@@ -265,7 +284,11 @@
           <canvas ref="canvasRef"></canvas>
         </div>
 
-        <div class="countdown text-xs absolute top-0 left-0 text-gray-400">{{ countdown }}</div>
+        <div class="countdown text-xs absolute top-0 left-0 text-gray-400 z-10">
+          <!-- <FontAwesomeIcon icon="fa-solid fa-circle-question" /> -->
+          <FontAwesomeIcon icon="fa-solid fa-flag-checkered" class="mx-1" />
+          <a class="underline" href="https://worldsmarathons.com/marathon/lgt-alpin-marathon" target="_blank">{{ countdown }}</a>
+        </div>
 
         <!-- Right Panel: Stats -->
         <div class="activity-info">
@@ -304,6 +327,8 @@
 
     <!-- If we have no valid activities left -->
     <div v-else class="no-activities">No activities found</div>
+
+    <p>(I'm also training for a marathon)</p>
   </div>
 </template>
 
@@ -311,8 +336,7 @@
   /* Base (light mode) styles */
 .strava-activity-viewer {
   width: 100%;
-  /* max-width: 800px; */
-  margin: 0 auto;
+
   font-family: sans-serif;
   color: #222;
 }
@@ -490,6 +514,7 @@ canvas {
   }
   .activity-date {
     font-size: 0.7rem;
+    margin-bottom: 0;
   }
   .stats {
     row-gap: 10px;
