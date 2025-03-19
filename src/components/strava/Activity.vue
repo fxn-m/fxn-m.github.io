@@ -58,6 +58,24 @@
     }
   }
 
+  // a countdown timer for the days remaining until the 14th of June 2025 09:00:00
+  // displays days, hours seconds, counts down every second
+  const countdown = ref<string>("")
+
+  const countdownTo = new Date("2025-06-14T09:00:00Z").getTime()
+
+  const updateCountdown = () => {
+    const now = new Date().getTime()
+    const distance = countdownTo - now
+
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24))
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000)
+
+    countdown.value = `${days}d ${hours}h ${minutes}m ${seconds}s`
+  }
+
   const drawPolyline = () => {
     if (!canvasRef.value || !activities.value.length) return
 
@@ -189,6 +207,7 @@
 
   // Fetch data on mount, handle resizing
   onMounted(async () => {
+    updateCountdown()
     await fetchActivities()
 
     if (activities.value.length > 0) {
@@ -196,6 +215,8 @@
       await nextTick()
       drawPolyline()
     }
+
+    setInterval(updateCountdown, 1000)
 
     window.addEventListener("resize", updateCanvasSize)
     updateCanvasSize()
@@ -238,15 +259,17 @@
 
     <!-- Main Content: Only show if we have valid activities -->
     <div v-else-if="activities.length > 0" class="activity-card">
-      <div class="activity-content">
+      <div class="activity-content relative">
         <!-- Left Panel: Route Canvas -->
         <div class="polyline-container">
           <canvas ref="canvasRef"></canvas>
         </div>
 
+        <div class="countdown text-xs absolute top-0 left-0 text-gray-400">{{ countdown }}</div>
+
         <!-- Right Panel: Stats -->
         <div class="activity-info">
-          <div class="activity-stats bg-gradient-to-r w-full from-white to-transparent to-50%">
+          <div class="activity-stats bg-gradient-to-r w-full from-white dark:from-black to-transparent to-50%">
             <div class="activity-date">
               {{ format(new Date(activities[currentIndex].start_date), "PPP") }}
             </div>
@@ -288,7 +311,7 @@
   /* Base (light mode) styles */
 .strava-activity-viewer {
   width: 100%;
-  max-width: 800px;
+  /* max-width: 800px; */
   margin: 0 auto;
   font-family: sans-serif;
   color: #222;
@@ -464,6 +487,9 @@ canvas {
   .navigation {
     bottom: 0.5rem;
     right: 0.5rem;
+  }
+  .activity-date {
+    font-size: 0.7rem;
   }
   .stats {
     row-gap: 10px;
