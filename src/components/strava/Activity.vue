@@ -150,9 +150,19 @@
     return `${(meters / 1000).toFixed(2)} km`
   }
 
-  const formatSpeed = (mps: number): string => {
-    const kph = mps * 3.6
-    return `${kph.toFixed(1)} km/h`
+  const formatSpeed = (mps: number, unit: "kmh" | "mkm" = "mkm"): string => {
+    const minutesPerKm = 60 / (mps * 3.6)
+    const minutes = Math.floor(minutesPerKm)
+    const seconds = Math.round((minutesPerKm - minutes) * 60)
+
+    switch (unit) {
+      case "kmh":
+        return `${(mps * 3.6).toFixed(1)} km/h`
+      case "mkm":
+        return `${minutes}m ${seconds}s / km`
+      default:
+        return `${(mps * 3.6).toFixed(1)} km/h`
+    }
   }
 
   const nextActivity = () => {
@@ -236,7 +246,7 @@
 
         <!-- Right Panel: Stats -->
         <div class="activity-info">
-          <div class="activity-stats">
+          <div class="activity-stats bg-gradient-to-r w-full from-white to-transparent to-50%">
             <div class="activity-date">
               {{ format(new Date(activities[currentIndex].start_date), "PPP") }}
             </div>
@@ -432,16 +442,40 @@ canvas {
 @media (max-width: 768px) {
   .activity-content {
     grid-template-columns: 1fr;
+    min-height: 0px;
+    width: 100%;
+    position: relative;
   }
   .polyline-container {
     height: 300px;
   }
+  .activity-info {
+    position: static;
+  }
   .activity-stats {
-    margin-bottom: 4rem;
+    position: absolute;
+    top: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
   }
   .navigation {
     bottom: 0.5rem;
     right: 0.5rem;
+  }
+  .stats {
+    row-gap: 10px;
+  }
+  .stat {
+    gap: 0px;
+  }
+  .value {
+    font-size: 0.9rem;
+  }
+  .label {
+    font-size: 0.5rem;
   }
 }
 
