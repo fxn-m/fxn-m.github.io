@@ -9,7 +9,10 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "types": ["node"]
+    "moduleResolution": "Node",
+    "types": ["node"],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   }
 }

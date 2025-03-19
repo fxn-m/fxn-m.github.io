@@ -15,6 +15,7 @@ export const getCurrentTrackController = async (_: Request, res: Response): Prom
     res.status(200).json({
       externalUrl: currentTrack.external_urls.spotify,
       name: currentTrack.name,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       artist: currentTrack.artists.map((a: any) => a.name).join(", "),
       album: currentTrack.album.name,
       cover: currentTrack.album.images[0]?.url

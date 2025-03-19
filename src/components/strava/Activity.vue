@@ -4,22 +4,7 @@
   import { format } from "date-fns"
   import polyline from "@mapbox/polyline"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-
-  interface StravaActivity {
-    id: number
-    name: string
-    distance: number
-    moving_time: number
-    elapsed_time: number
-    total_elevation_gain: number
-    start_date: string
-    map: {
-      summary_polyline: string
-    }
-    average_speed: number
-    max_speed: number
-    type: string
-  }
+  import type { StravaActivity } from "@/shared/types/strava"
 
   const props = defineProps<{
     accessToken: string

@@ -10,5 +10,7 @@ export default {
   mailgunDomain: process.env.MAILGUN_DOMAIN,
   notionApiKey: process.env.NOTIONAPIKEY,
   notionDatabaseId: process.env.NOTIONDATABASEID || "",
-  readmeSecret: process.env.README_SECRET
+  readmeSecret: process.env.README_SECRET,
+  stravaClientSecret: process.env.STRAVA_CLIENT_SECRET,
+  stravaRefreshToken: process.env.STRAVA_REFRESH_TOKEN
 }
