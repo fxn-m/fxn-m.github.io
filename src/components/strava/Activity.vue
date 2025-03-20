@@ -305,10 +305,11 @@
                 {{ format(new Date(activities[currentIndex].start_date), "PPP") }}
               </div>
               <div class="activity-link">
-                <a :href="`https://strava.com/activities/${activities[currentIndex].id}`" target="_blank" class="text-xs font-bold">
+                <a :href="`https://strava.com/activities/${activities[currentIndex].id}`" target="_blank" class="group text-xs font-bold">
                   <span>
+                    <FontAwesomeIcon icon="fa-brands fa-strava" class="strava-icon opacity-80 text-[#fc4c02] group-hover:opacity-100 transition" />
                     view activity on Strava
-                    <FontAwesomeIcon icon="fa-solid fa-arrow-left" class="-scale-x-100 size-2" />
+                    <FontAwesomeIcon icon="fa-solid fa-arrow-left" class="-scale-x-100 size-2 -rotate-45" />
                   </span>
                 </a>
               </div>
@@ -336,8 +337,12 @@
 
           <!-- Navigation arrows at bottom-right -->
           <div class="navigation">
-            <button @click="previousActivity" :disabled="currentIndex === 0" class="nav-button">←</button>
-            <button @click="nextActivity" :disabled="currentIndex === activities.length - 1" class="nav-button">→</button>
+            <button @click="previousActivity" :disabled="currentIndex === 0" class="nav-button">
+              <FontAwesomeIcon icon="fa-solid fa-arrow-left" class="size-4" />
+            </button>
+            <button @click="nextActivity" :disabled="currentIndex === activities.length - 1" class="nav-button">
+              <FontAwesomeIcon icon="fa-solid fa-arrow-left" class="-scale-x-100 size-4" />
+            </button>
           </div>
         </div>
       </div>

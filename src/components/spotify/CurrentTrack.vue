@@ -92,13 +92,13 @@ body.dark .mini-player:hover {
 }
 
 .info-container {
-  width: 0;
+  max-width: 0;
   overflow: hidden;
-  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .info-container.expanded {
-  width: 125px;
+  max-width: 125px;
   margin-left: 0.75rem;
 }
 
@@ -165,11 +165,6 @@ body.dark .mini-player {
     width: auto;
     margin-left: 0;
     max-width: 300px;
-  }
-
-  .info-container.expanded {
-    width: 100%;
-    margin-left: 0;
   }
 
   .info {

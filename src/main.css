@@ -286,6 +286,7 @@ body.dark p code {
   background-color: #212d4199;
   color: #c3e3f1;
   transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+  font-size: small;
 }
 
 body.dark a,
