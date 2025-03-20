@@ -10,6 +10,8 @@
   const loading = ref(true)
   const error = ref<string | null>(null)
   const canvasRef = ref<HTMLCanvasElement | null>(null)
+  const isDark = ref(false)
+  const observer = ref<MutationObserver | null>(null)
 
   const fetchActivities = async () => {
     try {
@@ -74,7 +76,7 @@
     if (coordinates.length === 0) return
 
     // Determine if dark mode is active
-    const isDark = document.body.classList.contains("dark")
+    // const isDark = document.body.classList.contains("dark")
 
     // Find bounds
     const bounds = coordinates.reduce(
@@ -112,7 +114,7 @@
 
     ctx.beginPath()
     // Switch stroke color depending on dark mode
-    ctx.strokeStyle = isDark ? "#bbb" : "#444"
+    ctx.strokeStyle = isDark.value ? "#bbb" : "#444"
     ctx.lineWidth = 2
     ctx.lineCap = "round"
     ctx.lineJoin = "round"
@@ -182,6 +184,25 @@
 
   onMounted(async () => {
     updateCountdown()
+    // Initialize isDark based on current body class
+    isDark.value = document.body.classList.contains("dark")
+
+    // Create a mutation observer that checks for attribute changes (i.e., class changes)
+    observer.value = new MutationObserver((mutationsList) => {
+      for (const mutation of mutationsList) {
+        if (mutation.type === "attributes" && mutation.attributeName === "class") {
+          // Update our isDark ref whenever the body class changes
+          isDark.value = document.body.classList.contains("dark")
+        }
+      }
+    })
+
+    // Observe the body element for class attribute changes
+    observer.value.observe(document.body, {
+      attributes: true,
+      attributeFilter: ["class"] // Only watch the 'class' attribute
+    })
+
     await fetchActivities()
 
     if (activities.value.length > 0) {
@@ -208,6 +229,8 @@
   // Cleanup on unmount
   onUnmounted(() => {
     if (countdownInterval) clearInterval(countdownInterval)
+
+    if (observer.value) observer.value.disconnect()
 
     window.removeEventListener("resize", updateCanvasSize)
     window.removeEventListener("keydown", handleKeydown)
@@ -257,7 +280,6 @@
         </div>
 
         <div class="countdown flex gap-3 items-center text-xs absolute top-0 left-0 text-gray-400 z-10">
-          <!-- <FontAwesomeIcon icon="fa-solid fa-circle-question" /> -->
           <FontAwesomeIcon icon="fa-solid fa-flag-checkered" />
           <div>
             <p class="my-0!">LGT Alpin Marathon</p>
@@ -267,8 +289,18 @@
 
         <!-- Right Panel: Stats -->
         <div class="activity-info select-none">
-          <div class="activity-stats bg-gradient-to-r w-full from-white dark:from-black to-transparent to-50%">
-            <div class="activity-metadata sm:mb-6">
+          <div class="activity-stats relative w-full h-full">
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent transition-opacity duration-500 sm:invisible"
+              :class="{ 'opacity-0': isDark }"
+            ></div>
+
+            <div
+              class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent transition-opacity duration-500 sm:invisible"
+              :class="{ 'opacity-0': !isDark }"
+            ></div>
+
+            <div class="activity-metadata sm:mb-6 z-10">
               <div class="activity-date">
                 {{ format(new Date(activities[currentIndex].start_date), "PPP") }}
               </div>
@@ -282,7 +314,7 @@
               </div>
             </div>
 
-            <div class="stats">
+            <div class="stats z-10">
               <div class="stat">
                 <span class="label">Distance</span>
                 <span class="value">{{ formatDistance(activities[currentIndex].distance) }}</span>
@@ -367,6 +399,7 @@ canvas {
 
 .activity-stats {
   margin-bottom: 2rem;
+  transition: all 0.5s ease-in-out;
 }
 
 .activity-date {

@@ -2,15 +2,9 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-html {
-  height: 100vh;
-  /* scrollbar-gutter: stable; */
-}
-
 body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   width: 50%;
-  height: 100vh;
   margin: 0 auto;
   transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
 }
