@@ -256,10 +256,13 @@
           <canvas ref="canvasRef"></canvas>
         </div>
 
-        <div class="countdown text-xs absolute top-0 left-0 text-gray-400 z-10">
+        <div class="countdown flex gap-3 items-center text-xs absolute top-0 left-0 text-gray-400 z-10">
           <!-- <FontAwesomeIcon icon="fa-solid fa-circle-question" /> -->
-          <FontAwesomeIcon icon="fa-solid fa-flag-checkered" class="mx-1" />
-          <a class="underline" href="https://worldsmarathons.com/marathon/lgt-alpin-marathon" target="_blank">{{ countdown }}</a>
+          <FontAwesomeIcon icon="fa-solid fa-flag-checkered" />
+          <div>
+            <p class="my-0!">LGT Alpin Marathon</p>
+            <a href="https://worldsmarathons.com/marathon/lgt-alpin-marathon" target="_blank">{{ countdown }}</a>
+          </div>
         </div>
 
         <!-- Right Panel: Stats -->
@@ -397,10 +400,9 @@ canvas {
 
 .navigation {
   position: absolute;
-  bottom: 1rem;
-  right: 1rem;
+  bottom: 0;
+  right: 0;
   display: flex;
-  gap: 0.5rem;
 }
 
 .nav-button {
@@ -409,7 +411,7 @@ canvas {
   color: #222;
   font-size: 1rem;
   cursor: pointer;
-  padding: 0.3rem 0.6rem;
+  padding: 0.3rem 0.2rem;
   transition: opacity 0.2s;
 }
 
