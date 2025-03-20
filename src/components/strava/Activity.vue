@@ -1,15 +1,9 @@
 <script setup lang="ts">
-  import { ref, onMounted, watch, defineProps, nextTick, onUnmounted } from "vue"
-  import axios from "axios"
+  import { ref, onMounted, watch, nextTick, onUnmounted } from "vue"
   import { format } from "date-fns"
   import polyline from "@mapbox/polyline"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
   import type { StravaActivity } from "@/shared/types/strava"
-
-  const props = defineProps<{
-    accessToken: string
-    perPage?: number
-  }>()
 
   const activities = ref<StravaActivity[]>([])
   const currentIndex = ref(0)
@@ -22,17 +16,10 @@
       loading.value = true
       error.value = null
 
-      const response = await axios.get("https://www.strava.com/api/v3/athlete/activities", {
-        headers: {
-          Authorization: `Bearer ${props.accessToken}`
-        },
-        params: {
-          per_page: props.perPage || 10
-        }
-      })
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/strava/activities`)
 
       // Filter out activities that have no summary_polyline
-      const allActivities = response.data as StravaActivity[]
+      const allActivities = (await response.json()) as StravaActivity[]
       const validActivities = allActivities.filter((act) => act.map && act.map.summary_polyline)
 
       activities.value = validActivities
@@ -276,11 +263,22 @@
         </div>
 
         <!-- Right Panel: Stats -->
-        <div class="activity-info">
+        <div class="activity-info select-none">
           <div class="activity-stats bg-gradient-to-r w-full from-white dark:from-black to-transparent to-50%">
-            <div class="activity-date">
-              {{ format(new Date(activities[currentIndex].start_date), "PPP") }}
+            <div class="activity-metadata sm:mb-6">
+              <div class="activity-date">
+                {{ format(new Date(activities[currentIndex].start_date), "PPP") }}
+              </div>
+              <div class="activity-link">
+                <a :href="`https://strava.com/activities/${activities[currentIndex].id}`" target="_blank" class="text-xs font-bold">
+                  <span>
+                    view activity on Strava
+                    <FontAwesomeIcon icon="fa-solid fa-arrow-left" class="-scale-x-100 size-2" />
+                  </span>
+                </a>
+              </div>
             </div>
+
             <div class="stats">
               <div class="stat">
                 <span class="label">Distance</span>
@@ -312,8 +310,6 @@
 
     <!-- If we have no valid activities left -->
     <div v-else class="no-activities">No activities found</div>
-
-    <p>(I'm also training for a marathon)</p>
   </div>
 </template>
 
@@ -373,7 +369,6 @@ canvas {
 .activity-date {
   font-size: 0.85rem;
   color: #666;
-  margin-bottom: 1.5rem;
 }
 
 .stats {
@@ -542,5 +537,13 @@ body.dark .error {
   background: #2c2c2c;
   color: #ddd;
   border: 1px solid #444;
+}
+
+body.dark .skeleton-line {
+  background-color: #333;
+}
+
+body.dark .skeleton-canvas {
+  background-color: #333;
 }
 </style>

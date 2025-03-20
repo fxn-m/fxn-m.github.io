@@ -13,7 +13,6 @@ configureMiddleware(app)
 // Configure routes
 configureRoutes(app)
 
-// Define a simple route
 app.get("/", (_, res) => {
   res.status(200).json({ message: "Hey... whatcha doin' there?" })
 })

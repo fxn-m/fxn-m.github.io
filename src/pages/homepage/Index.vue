@@ -29,7 +29,7 @@
 
     <p>Email me at <a href="mailto:fnewportmangell@gmail.com">fnewportmangell@gmail.com</a> or <RouterLink to="/contact"> get in touch</RouterLink> here.</p>
 
-    <Activity :access-token="stravaAccessToken" :per-page="50" />
+    <Activity />
 
     <footer>
       <CurrentTrack />
@@ -43,8 +43,6 @@
   import Activity from "@/components/strava/Activity.vue"
   import CurrentTrack from "@/components/spotify/CurrentTrack.vue"
   import { format } from "date-fns"
-
-  const stravaAccessToken = "8709eb737bafc071d200da8761a5aa8ecac1b5ed"
 
   // eslint-disable-next-line no-undef
   const buildDate = format(new Date(__BUILD_DATE__), "dd-MM-yyyy")

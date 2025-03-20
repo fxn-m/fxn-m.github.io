@@ -12,21 +12,7 @@ export const getStravaActivitiesController = async (_: Request, res: Response): 
       return
     }
 
-    res.status(200).json(
-      activities.map((activity) => ({
-        id: activity.id,
-        name: activity.name,
-        distance: activity.distance,
-        movingTime: activity.moving_time,
-        elapsedTime: activity.elapsed_time,
-        totalElevationGain: activity.total_elevation_gain,
-        startDate: activity.start_date,
-        map: activity.map.summary_polyline,
-        averageSpeed: activity.average_speed,
-        maxSpeed: activity.max_speed,
-        type: activity.type
-      }))
-    )
+    res.status(200).json(activities)
   } catch (error) {
     console.error("Strava API error:", error)
     res.status(500).json({ error: "Failed to fetch Strava activities" })
