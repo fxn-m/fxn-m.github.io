@@ -393,7 +393,6 @@ canvas {
 
 /* Right panel for stats */
 .activity-info {
-  padding: 1rem;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -449,7 +448,8 @@ canvas {
   color: #222;
   font-size: 1rem;
   cursor: pointer;
-  padding: 0.3rem 0.2rem;
+  padding: 0;
+  margin: 0;
   transition: opacity 0.2s;
 }
 
