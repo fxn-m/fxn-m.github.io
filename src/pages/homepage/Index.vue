@@ -32,8 +32,6 @@
     <Activity />
 
     <footer>
-      <CurrentTrack />
-
       <p>Last updated: {{ buildDate }}</p>
     </footer>
   </div>
@@ -41,7 +39,6 @@
 
 <script setup lang="ts">
   import Activity from "@/components/strava/Activity.vue"
-  import CurrentTrack from "@/components/spotify/CurrentTrack.vue"
   import { format } from "date-fns"
 
   // eslint-disable-next-line no-undef
