@@ -12,11 +12,13 @@ export const getReadingList = async () => {
     auth: NOTIONAPIKEY
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let readingList: any[] = []
   let hasNextPage = true
   let startCursor = undefined
 
   while (hasNextPage) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response: any = await notion.databases.query({
       database_id: NOTIONDATABASEID,
       filter: {

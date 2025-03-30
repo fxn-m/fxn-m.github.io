@@ -30,7 +30,7 @@ body {
 p {
   color: #555;
   transition: color 0.5s ease-in-out;
-  line-height: 1.5em;
+  /* line-height: 1.5em; */
 }
 
 ul {
@@ -94,12 +94,7 @@ body.dark #navigation a:hover {
   transition: color 0.5s ease-in-out;
 }
 
-h1 {
-  margin: 0;
-  flex: 0 0 auto;
-  text-decoration: none;
-  transition: color 0s ease-in-out;
-}
+
 
 h2 {
   flex: 0 0 auto;
@@ -129,6 +124,7 @@ pre {
   padding: 10px 10px;
   border-radius: 10px;
   transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+  font-size: small
 }
 
 p code {

@@ -57,6 +57,32 @@
     text-align: right;
 }
 
+h1 {
+  margin: 0;
+  flex: 0 0 auto;
+  text-decoration: none;
+  transition: color 0s ease-in-out;
+  font-size: x-large;
+  font-weight: 600;
+}
+
+.blog:deep(h1) {
+  margin: 0;
+  flex: 0 0 auto;
+  text-decoration: none;
+  transition: color 0s ease-in-out;
+  font-size: x-large;
+  font-weight: 600;
+}
+
+p {
+  margin: 1em 0;
+}
+
+.blog:deep(p) {
+  margin: 1em 0;
+}
+
 body.dark h3 {
     color: #b3b3b3;
 }
