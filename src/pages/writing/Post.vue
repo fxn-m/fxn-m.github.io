@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container mt-4 sm:mt-16">
     <div class="metadata">
       <h1>{{ $route.query.title }}</h1>
       <p>{{ $route.query.date }}</p>
@@ -33,7 +33,6 @@
 
 <style scoped>
   .container {
-    margin-top: 50px;
     width: 100%;
 }
 
@@ -62,7 +61,8 @@ h1 {
   flex: 0 0 auto;
   text-decoration: none;
   transition: color 0s ease-in-out;
-  font-size: x-large;
+  font-size: xx-large;
+
   font-weight: 600;
 }
 

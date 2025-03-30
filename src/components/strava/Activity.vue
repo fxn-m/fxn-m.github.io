@@ -95,7 +95,7 @@
     )
 
     // Calculate scale and center offsets
-    const padding = 20
+    const padding = 15
     const canvasWidth = rect.width
     const canvasHeight = rect.height
 
@@ -289,7 +289,7 @@
 
         <!-- Right Panel: Stats -->
         <div class="activity-info select-none">
-          <div class="activity-stats sm:relative w-full h-full">
+          <div class="activity-stats relative w-full h-full">
             <div
               class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent transition-opacity duration-500 sm:invisible"
               :class="{ 'opacity-0': isDark }"
@@ -300,7 +300,7 @@
               :class="{ 'opacity-0': !isDark }"
             ></div>
 
-            <div class="activity-metadata sm:mb-6 z-10 absolute top-0 right-0 text-right sm:static sm:text-left">
+            <div class="activity-metadata sm:mb-6 z-10 top-0 right-0">
               <div class="activity-date">
                 {{ format(new Date(activities[currentIndex].start_date), "PPP") }}
               </div>
@@ -517,6 +517,13 @@ canvas {
     height: 300px;
   }
   .activity-info {
+    position: static;
+  }
+  .activity-metadata {
+    position: absolute;
+    text-align: right;
+  }
+  .activity-stats {
     position: static;
   }
   .navigation {

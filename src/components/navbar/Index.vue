@@ -18,7 +18,7 @@
         to="/"
         @click="navigateToParent"
         style="white-space: nowrap; border: none; font-weight: bold; align-self: center"
-        >fxn-m.com{{ pageTitle }}
+        >fxn-m.com<span class="hidden sm:inline-block">{{ pageTitle }}</span>
       </RouterLink>
     </h2>
 
