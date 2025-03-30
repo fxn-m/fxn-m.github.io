@@ -289,18 +289,18 @@
 
         <!-- Right Panel: Stats -->
         <div class="activity-info select-none">
-          <div class="activity-stats relative w-full h-full">
+          <div class="activity-stats sm:relative w-full h-full">
             <div
-              class="absolute inset-0 bg-gradient-to-r from-white via-transparent to-transparent transition-opacity duration-500 sm:invisible"
+              class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent transition-opacity duration-500 sm:invisible"
               :class="{ 'opacity-0': isDark }"
             ></div>
 
             <div
-              class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent transition-opacity duration-500 sm:invisible"
+              class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent transition-opacity duration-500 sm:invisible"
               :class="{ 'opacity-0': !isDark }"
             ></div>
 
-            <div class="activity-metadata sm:mb-6 z-10">
+            <div class="activity-metadata sm:mb-6 z-10 absolute top-0 right-0 text-right sm:static sm:text-left">
               <div class="activity-date">
                 {{ format(new Date(activities[currentIndex].start_date), "PPP") }}
               </div>
@@ -315,7 +315,7 @@
               </div>
             </div>
 
-            <div class="stats z-10">
+            <div class="stats z-10 flex">
               <div class="stat">
                 <span class="label">Distance</span>
                 <span class="value">{{ formatDistance(activities[currentIndex].distance) }}</span>
@@ -336,7 +336,7 @@
           </div>
 
           <!-- Navigation arrows at bottom-right -->
-          <div class="navigation">
+          <div class="navigation flex gap-4">
             <button @click="previousActivity" :disabled="currentIndex === 0" class="nav-button">
               <FontAwesomeIcon icon="fa-solid fa-arrow-left" class="size-4" />
             </button>
@@ -519,15 +519,6 @@ canvas {
   .activity-info {
     position: static;
   }
-  .activity-stats {
-    position: absolute;
-    top: 0;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 1rem;
-  }
   .navigation {
     bottom: 0.5rem;
     right: 0.5rem;
@@ -537,7 +528,15 @@ canvas {
     margin-bottom: 0;
   }
   .stats {
-    row-gap: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    gap: 1rem;  /* Adjust spacing as needed */
+    margin: 0.5rem; /* Optional for extra padding from the edge */
   }
   .stat {
     gap: 0px;

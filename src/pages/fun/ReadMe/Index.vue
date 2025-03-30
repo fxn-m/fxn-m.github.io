@@ -23,8 +23,8 @@
         </div>
       </div>
 
-      <button @click="fetchReadingSuggestion">
-        <FontAwesomeIcon icon="fa-solid fa-arrows-rotate" size="lg" />
+      <button @click="fetchReadingSuggestion" class="text-gray-700 hover:cursor-pointer hover:text-gray-800 dark:text-gray-400 hover:dark:text-gray-300">
+        <FontAwesomeIcon icon="fa-solid fa-arrows-rotate" size="1x" />
       </button>
     </div>
   </div>
@@ -47,6 +47,7 @@
 
   const isLoading = ref(true)
   const loadingEllipses = ref("")
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const readingList = ref<any[]>([])
 
   const metadataDiv = ref<HTMLElement | null>(null)
@@ -175,16 +176,6 @@ button {
   border-radius: 100%;
   width: 36px;
   aspect-ratio: 1/1;
-}
-
-body.dark button {
-  background-color: inherit;
-  color: #cecece;
-  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
-  border: 1px solid #cecece;
-  &:hover {
-    border-color: transparent;
-  }
 }
 
 .reading-suggestion {

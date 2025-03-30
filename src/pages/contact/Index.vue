@@ -1,8 +1,11 @@
 <template>
-  <div class="max-w-2xl mx-auto px-4">
-    <p class="text-base mb-6 dark:text-gray-200">
+  <div>
+    <p class="text-sm my-6 dark:text-gray-200">
       Feel free to get in touch using the form below, or just send me an
-      <a href="mailto:fnewportmangell@gmail.com" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">e-mail</a>
+      <a href="mailto:fnewportmangell@gmail.com"
+        >e-mail
+        <FontAwesomeIcon icon="fa-envelope" size="xs" class="ml-0.5 !text-xs" />
+      </a>
     </p>
     <form @submit.prevent="sendEmail" class="flex flex-col gap-4 my-6">
       <div class="flex flex-col gap-4">
@@ -33,7 +36,10 @@
         @keydown.enter.prevent="submitFormOnEnter"
         class="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors resize-y min-h-[100px] text-sm font-sans"
       ></textarea>
-      <button type="submit" class="ml-auto min-w-[200px] px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors">
+      <button
+        type="submit"
+        class="ml-auto hover:cursor-pointer hover:bg-gray-800 min-w-[200px] px-4 py-2 font-medium rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+      >
         Send{{ sendingEllipses }}
       </button>
     </form>
@@ -57,6 +63,7 @@
   import { ref } from "vue"
   import axios from "axios"
   import { ToastProvider, ToastRoot, ToastTitle, ToastDescription, ToastViewport } from "radix-vue"
+  import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
@@ -68,7 +75,7 @@
   const toastOpen = ref(false)
   const toastSent = ref(false)
 
-  const sendEmail = () => {
+  const sendEmail = async () => {
     let counter = 0
     const ending = "ing"
     const sendingLoader = setInterval(() => {
@@ -92,6 +99,8 @@
         name.value = ""
       }
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 1000))
 
     axios
       .post(`${BACKEND_URL}/send-email`, {

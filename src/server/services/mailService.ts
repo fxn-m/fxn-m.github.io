@@ -3,7 +3,7 @@ import nodemailer from "nodemailer"
 import env from "../config/env"
 
 interface MailCallback {
-  (error: Error | null, data: any): void
+  (error: Error | null): void
 }
 
 export const sendMail = (name: string, email: string, message: string, cb: MailCallback): void => {
@@ -24,11 +24,11 @@ export const sendMail = (name: string, email: string, message: string, cb: MailC
     subject: "New Message from Contact Form"
   }
 
-  transporter.sendMail(mailOptions, (err: Error | null, data: any) => {
+  transporter.sendMail(mailOptions, (err: Error | null) => {
     if (err) {
-      cb(err, null)
+      cb(err)
     } else {
-      cb(null, data)
+      cb(null)
     }
   })
 }
