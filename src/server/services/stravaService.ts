@@ -8,8 +8,6 @@ import type { StravaActivity } from "@/shared"
  * @returns {Promise<string>} - The access token for the Strava API
  */
 export async function getStravaAccessToken(): Promise<string> {
-  await new Promise((resolve) => setTimeout(resolve, 10000))
-
   const response = await fetch(STRAVA_TOKEN_ENDPOINT, {
     method: "POST",
     headers: {
