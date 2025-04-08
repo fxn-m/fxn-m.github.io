@@ -3,15 +3,16 @@
     <div class="project-grid">
       <div class="project-card" v-for="project in projects" :key="project.id">
         <div class="project-info">
-          <h3 class="flex gap-1 items-center">
-            <a v-if="project.link.includes('https')" :href="project.link" target="_blank">{{ project.title }}</a>
-            <RouterLink v-else :to="project.link">{{ project.title }}</RouterLink>
-            <Link class="size-3" />
+          <h3 class="flex gap-1 items-center font-semibold">
+            <a v-if="project.link.includes('https')" :href="project.link" target="_blank" class="flex gap-1 items-center"
+              >{{ project.title }}<Link class="size-3"
+            /></a>
+            <RouterLink v-else :to="project.link" class="flex gap-1 items-center">{{ project.title }}<Link class="size-3" /></RouterLink>
           </h3>
-          <p>{{ project.subtitle }}</p>
+          <p class="font-light">{{ project.subtitle }}</p>
           <div class="my-2"></div>
           <p class="text-sm !text-gray-500">{{ project.description }}</p>
-          <p class="text-sm !text-gray-500">
+          <p class="text-xs !text-gray-400 my-2">
             <span v-if="project.date">{{ project.date }}</span>
           </p>
         </div>

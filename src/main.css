@@ -3,14 +3,17 @@
 body {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   width: 50%;
+  min-height: 100dvh;
   margin: 0 auto;
   transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+  display: flex;
+  flex-direction: column;
 }
 
 #app {
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
 } 
 
 #content {
@@ -313,7 +316,7 @@ body.dark header {
 
 @media (max-width: 1640px) {
   body {
-    margin: 0 auto 50px auto;
+    margin: 0 auto;
   }
 }
 
@@ -335,7 +338,7 @@ body.dark header {
 
 @media (max-width: 700px) {
   body {
-    margin: 0 auto 50px auto;
+    margin: 0 auto;
     padding: 0;
     width: 90%;
   }
@@ -345,7 +348,7 @@ body.dark header {
   }
 
   #content {
-    margin: 0.5em 0 0;
+    margin: 2em 0 0;
   }
 
   #content li {
