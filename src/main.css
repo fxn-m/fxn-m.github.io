@@ -30,7 +30,6 @@ body {
 p {
   color: #555;
   transition: color 0.5s ease-in-out;
-  /* line-height: 1.5em; */
 }
 
 ul {
@@ -93,8 +92,6 @@ body.dark #navigation a:hover {
   color: #cecece;
   transition: color 0.5s ease-in-out;
 }
-
-
 
 h2 {
   flex: 0 0 auto;
