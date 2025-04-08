@@ -10,7 +10,7 @@
     "build:markdown": "node ./scripts/convertMarkdown.js",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
-    "build": "npm run build:markdown && run-p type-check build-only",
+    "build": "pnpm build:markdown && run-p type-check build-only",
     "preview": "vite preview",
     "start": "node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server/index.ts --experimental-json-modules",
     "lint": "npx eslint --ext .ts,.js,.vue src"
@@ -30,6 +30,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "js-confetti": "^0.12.0",
+    "lucide-vue-next": "^0.487.0",
     "nodemailer": "^6.10.0",
     "nodemailer-mailgun-transport": "^2.1.5",
     "radix-vue": "^1.9.17",

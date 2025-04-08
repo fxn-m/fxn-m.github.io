@@ -3,6 +3,7 @@
   import { format } from "date-fns"
   import polyline from "@mapbox/polyline"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+  import { Loader2 } from "lucide-vue-next"
   import type { StravaActivity } from "@/shared/types/strava"
 
   const activities = ref<StravaActivity[]>([])
@@ -253,11 +254,12 @@
 <template>
   <div class="strava-activity-viewer mt-12">
     <!-- Loading / Error states -->
-    <div v-if="loading" class="activity-card loading-skeleton">
+    <div v-if="loading" class="activity-card loading-skeleton animate-pulse rounded-2xl">
       <div class="activity-content">
         <!-- Left skeleton: spinner for map area -->
-        <div class="polyline-container skeleton-canvas flex justify-center items-center">
-          <FontAwesomeIcon icon="fa-solid fa-spinner" class="fa-spin size-6 text-gray-400" />
+        <div class="polyline-container skeleton-canvas flex justify-center items-center rounded-2xl text-sm flex-col gap-2">
+          <!-- Fetching latest activities from Strava... -->
+          <Loader2 class="animate-spin text-gray-500 dark:text-gray-400 size-8" />
         </div>
         <!-- Right skeleton: greyed-out lines for stats -->
         <div class="activity-info skeleton-info">
@@ -561,6 +563,9 @@ canvas {
   .label {
     font-size: 0.5rem;
   }
+  .skeleton-info {
+  padding: 1rem 0rem;
+}
 }
 
 /* ------------------ DARK MODE OVERRIDES ------------------ */
