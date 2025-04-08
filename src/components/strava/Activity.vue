@@ -76,9 +76,6 @@
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     if (coordinates.length === 0) return
 
-    // Determine if dark mode is active
-    // const isDark = document.body.classList.contains("dark")
-
     // Find bounds
     const bounds = coordinates.reduce(
       (acc, [lat, lng]) => ({
@@ -252,7 +249,7 @@
 </script>
 
 <template>
-  <div class="strava-activity-viewer mt-12">
+  <div class="strava-activity-viewer mt-12 transition-all duration-1000">
     <!-- Loading / Error states -->
     <div v-if="loading" class="activity-card loading-skeleton animate-pulse rounded-2xl">
       <div class="activity-content">
@@ -287,7 +284,7 @@
         <!-- Top -->
         <div class="absolute inset-0 bg-gradient-to-b from-white to-transparent to-25% transition-opacity duration-1000" :class="{ 'opacity-0': isDark }"></div>
         <div
-          class="absolute w-1/2 inset-0 bg-gradient-to-b from-[#0a0a0a] to-transparent to-25% transition-opacity duration-1000"
+          class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-transparent to-25% transition-opacity duration-1000"
           :class="{ 'opacity-0': !isDark }"
         ></div>
 
@@ -399,6 +396,7 @@ canvas {
   width: 100%;
   height: 100%;
   display: block;
+  background-color: transparent;
 }
 
 /* Right panel for stats */
