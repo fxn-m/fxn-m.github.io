@@ -154,6 +154,7 @@ body.dark .mini-player {
     padding: 0.5rem;
     top: 0;
     right: 0;
+    margin: auto 0 1rem 0;
   }
 
   .mini-player a {

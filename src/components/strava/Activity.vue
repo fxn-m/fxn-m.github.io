@@ -284,9 +284,12 @@
         </div>
 
         <!-- Canvas gradient -->
-        <div class="absolute inset-0 bg-gradient-to-b from-white to-transparent to-25% transition-opacity duration-1000" :class="{ 'opacity-0': isDark }"></div>
         <div
-          class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-transparent to-25% transition-opacity duration-1000"
+          class="absolute w-1/2 inset-0 bg-gradient-to-b from-white to-transparent to-25% transition-opacity duration-1000"
+          :class="{ 'opacity-0': isDark }"
+        ></div>
+        <div
+          class="absolute w-1/2 inset-0 bg-gradient-to-b from-[#0a0a0a] to-transparent to-25% transition-opacity duration-1000"
           :class="{ 'opacity-0': !isDark }"
         ></div>
 
