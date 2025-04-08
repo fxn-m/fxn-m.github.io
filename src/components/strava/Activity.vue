@@ -279,6 +279,10 @@
           <canvas ref="canvasRef"></canvas>
         </div>
 
+        <!-- Canvas gradient -->
+        <div class="absolute inset-0 bg-gradient-to-b from-white to-transparent to-25% transition-opacity duration-500" :class="{ 'opacity-0': isDark }"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-black to-transparent to-25% transition-opacity duration-500" :class="{ 'opacity-0': !isDark }"></div>
+
         <div class="countdown flex gap-3 items-center text-xs absolute top-0 left-0 text-gray-400 z-10">
           <FontAwesomeIcon icon="fa-solid fa-flag-checkered" />
           <div>
