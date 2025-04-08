@@ -105,7 +105,6 @@ h2:hover {
 h3 {
   transition: color 0.5s ease-in-out;
   color: #303030;
-  margin: 20px 0px 10px 0px;
 }
 
 pre {

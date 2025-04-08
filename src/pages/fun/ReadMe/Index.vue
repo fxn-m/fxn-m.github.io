@@ -24,7 +24,7 @@
       </div>
 
       <button @click="fetchReadingSuggestion" class="text-gray-700 hover:cursor-pointer hover:text-gray-800 dark:text-gray-400 hover:dark:text-gray-300">
-        <FontAwesomeIcon icon="fa-solid fa-arrows-rotate" size="1x" />
+        <FontAwesomeIcon icon="fa-solid fa-arrows-rotate" class="rotate-icon" size="1x" />
       </button>
     </div>
   </div>
@@ -193,5 +193,14 @@ button {
 
 .suggestion-metadata > * {
     margin: 0 1rem 0 0;
+}
+
+.rotate-icon {
+  transition: transform 0.5s ease;
+  transform: rotate(0deg);
+}
+
+.rotate-icon:hover {
+  transform: rotate(180deg);
 }
 </style>

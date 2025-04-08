@@ -111,26 +111,6 @@ body.dark .tooltip {
   cursor: pointer;
 }
 
-#system-mode-icon {
-  color: #5a5a5a;
-  transition: 0.5s ease-in-out;
-}
-
-#system-mode-icon:hover {
-  color: #000001;
-  transition: 0.5s ease-in-out;
-}
-
-body.dark #system-mode-icon {
-  color: #949494;
-  transition: 0.5s ease-in-out;
-}
-
-body.dark #system-mode-icon:hover {
-    color: #ffffff;
-    transition: 0.5s ease-in-out;
-}
-
 #dark-mode-icon {
   filter: invert(69%) sepia(10%) saturate(17%) hue-rotate(318deg)
     brightness(84%) contrast(87%);
