@@ -1,17 +1,15 @@
 <template>
   <div class="container">
     <ul>
-      <li v-for="blog in blogs" :key="blog.id">
+      <li v-for="blog in allBlogs" :key="blog.id">
         <p>{{ blog.date }}</p>
         <router-link
           :to="{
             name: 'writingPost',
-            params: { post: blog.headerTitle },
-            query: { id: blog.id, title: blog.title, date: blog.date }
+            params: { slug: blog.slug }
           }"
+          >{{ blog.title }}</router-link
         >
-          {{ blog.title }}
-        </router-link>
       </li>
     </ul>
   </div>
@@ -19,39 +17,43 @@
 
 <script setup lang="ts">
   import { ref, onMounted } from "vue"
+  import { getSlugMap } from "@/server/utils/blogUtils"
+  import type { BlogPost } from "@/shared"
 
-  type Blog = {
-    id: number
-    title: string
-    headerTitle: string
-    date: string
-  }
-
-  const blogs = ref([] as Blog[])
-  const headerTitleIdMap: Record<string, string> = {}
+  const allBlogs = ref([] as BlogPost[])
+  const slugMap = ref()
 
   onMounted(async () => {
-    try {
-      const response = await fetch("/html/index.json")
-      if (!response.ok) {
-        throw new Error("Failed to load blog list")
-      }
-      const blogList: Blog[] = await response.json()
+    let allBlogsData: BlogPost[] = []
+    switch (import.meta.env.MODE) {
+      case "development":
+        try {
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/blog`)
+          allBlogsData = await response.json()
+        } catch (error) {
+          console.error("Error fetching blogs:", error)
+        }
+        break
 
-      blogList
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .map((blog: Blog) => {
-          blogs.value.push({
-            id: blog.id,
-            title: blog.title,
-            headerTitle: blog.headerTitle,
-            date: blog.date
-          })
+      case "production":
+        try {
+          const response = await fetch("/html/index.json")
+          allBlogsData = await response.json()
+        } catch (error) {
+          console.error("Error fetching blogs:", error)
+        }
+        break
+    }
 
-          headerTitleIdMap[blog.headerTitle] = blog.id.toString()
-        })
-    } catch (error) {
-      console.error("Failed to load blog list:", error)
+    allBlogs.value = allBlogsData.sort((a, b) => {
+      return new Date(b.date).getTime() - new Date(a.date).getTime()
+    })
+
+    const slugMapResponse = await getSlugMap(allBlogsData)
+    slugMap.value = slugMapResponse
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("slugMap", JSON.stringify(slugMapResponse))
     }
   })
 </script>

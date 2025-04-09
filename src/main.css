@@ -117,8 +117,7 @@ pre {
   white-space: -pre-wrap;
   white-space: -o-pre-wrap;
   word-wrap: break-word;
-  background-color: #e5e9eb93;
-  padding: 10px 10px;
+  background-color: #fafafa;
   border-radius: 10px;
   transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
   font-size: small
@@ -127,7 +126,7 @@ pre {
 p code {
   margin: 0px 4px;
   line-height: 2em;
-  background-color: #f0f0f0;
+  background-color: #fafafa;
   padding: 2px 5px;
   border-radius: 3px;
   transition: background-color 0.5s ease-in-out, color 0.1s ease-in-out;
@@ -246,7 +245,7 @@ body.dark h3 {
 
 body.dark pre,
 body.dark p code {
-  background-color: #212d4199;
+  background-color: #12161d;
   color: #c3e3f1;
   transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
   font-size: small;
