@@ -71,7 +71,7 @@
     if (currentRoute[currentRoute.length - 1] === "-") {
       return `${currentRoute}`.slice(0, -1).replace(":", "")
     }
-    if (currentRoute.split("/")[1] === "writing") {
+    if (currentRoute.split("/")[1] === "writing" || currentRoute.split("/")[1] === "blog") {
       return "/" + `${currentRoute}`.split("/")[1].replace(":", "")
     }
     return `${currentRoute}`.replace(":", "")

@@ -78,13 +78,6 @@ li {
     align-items: center;
 }
 
-#loader {
-    display: flex;
-    justify-content: space-between;
-    font-weight: 500;
-    margin: 16px 0px;
-}
-
 @media (max-width: 1200px) {
     .container {
         display: flex;

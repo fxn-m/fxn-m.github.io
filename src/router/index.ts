@@ -14,6 +14,16 @@ const router = createRouter({
       component: () => import("@/pages/writing/Index.vue")
     },
     {
+      path: "/blog",
+      name: "blog",
+      component: () => import("@/pages/blog/Index.vue")
+    },
+    {
+      path: "/blog/:slug",
+      name: "blogPost",
+      component: () => import("@/pages/blog/Post.vue")
+    },
+    {
       path: "/writing/:post",
       name: "writingPost",
       component: () => import("@/pages/writing/Post.vue"),
