@@ -10,11 +10,9 @@
 
 <script lang="ts" setup>
   import type { BlogMetadata } from "@/shared"
-  import showdown from "showdown"
   import { onMounted, ref } from "vue"
   import { useRoute } from "vue-router"
-  import he from "he"
-  import * as cheerio from "cheerio"
+  import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
 
   const route = useRoute()
   const blogContent = ref<string>("")
@@ -22,58 +20,17 @@
 
   const slugMap = localStorage.getItem("slugMap") && JSON.parse(localStorage.getItem("slugMap") as string)
 
-  const replaceVideoLinksWithIframes = (html: string): string => {
-    const $ = cheerio.load(html)
-
-    $("a").each((_, el) => {
-      const anchor = $(el)
-      const text = anchor.text().trim()
-      const href = anchor.attr("href") || ""
-      const parent = anchor.closest("p")
-
-      if (
-        parent.length &&
-        parent.contents().length === 1 &&
-        parent.children().length === 1 &&
-        parent.children("a").length === 1 &&
-        text &&
-        href.includes("youtube.com/watch")
-      ) {
-        const videoIdMatch = href.match(/v=([a-zA-Z0-9_-]{11})/)
-        if (!videoIdMatch) return
-
-        const videoId = videoIdMatch[1]
-        const iframe = `
-        <div class='YTContainer' title="${text}">
-          <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
-        </div>`
-
-        parent.replaceWith(iframe)
-      }
-    })
-
-    return $.html()
-  }
-
   // TODO: fetch from the bundle if in production
   const fetchContent = async (slug: string) => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/blogPost/${slugMap[slug ?? ""]}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/blog/${slugMap[slug ?? ""]}`, {
         method: "GET"
       })
       const markdown = await response.json()
-      const converter = new showdown.Converter({ metadata: true })
-      const html = converter.makeHtml(markdown)
-      blogContent.value = replaceVideoLinksWithIframes(html)
 
-      const rawMetadata = converter.getMetadata()
-      if (typeof rawMetadata !== "object") {
-        throw new Error("Invalid metadata format")
-      }
-      metadata.value = {
-        date: he.decode(rawMetadata.date).replace(/^"|"$/g, ""),
-        title: he.decode(rawMetadata.title).replace(/^"|"$/g, "")
-      }
+      const { content, meta } = convertMarkdownToHTML(markdown)
+      blogContent.value = content
+      metadata.value = meta
     } catch (error) {
       console.error("Failed to load blog content:", error)
     }

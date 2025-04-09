@@ -28,7 +28,6 @@
   }
 
   const blogs = ref([] as Blog[])
-
   const headerTitleIdMap: Record<string, string> = {}
 
   onMounted(async () => {

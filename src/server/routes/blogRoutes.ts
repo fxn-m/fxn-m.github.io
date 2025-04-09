@@ -4,6 +4,6 @@ import { fetchBlogController, fetchBlogPostController } from "../controllers/blo
 const router: Router = Router()
 
 router.get("/blog", fetchBlogController)
-router.get("/blogPost/:id", fetchBlogPostController)
+router.get("/blog/:id", fetchBlogPostController)
 
 export default router
