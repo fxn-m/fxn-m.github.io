@@ -28,18 +28,19 @@ fs.mkdirSync(outputDir, { recursive: true })
 // fetch the blog posts from the Notion database
 const fetchBlogPosts = async () => {
   const blogs = await fetch(`${process.env.BACKEND_URL}/blog`)
+  console.log("Fetched blogs:", blogs)
   return blogs.json()
 }
 
 // fetch the blog post by id
 const fetchBlogPostById = async (id: string) => {
   const blogPost = await fetch(`${process.env.BACKEND_URL}/blog/${id}`)
+  console.log("Fetched blog post:", blogPost)
   return blogPost.json()
 }
 
 const run = async () => {
   const blogs = await fetchBlogPosts()
-  console.log("Fetched blogs:", blogs)
   const indexPromises = blogs.map(async (blog: BlogPost) => {
     const { id, title, date, slug } = blog
     const markdown = await fetchBlogPostById(id)
