@@ -21,7 +21,6 @@ export const fetchBlogPostController = async (req: Request, res: Response): Prom
   const { id } = req.params
   try {
     const blogPost = await getBlogPostById(id)
-    console.log("Fetched blog post:", blogPost)
     res.status(200).json(blogPost)
   } catch (error) {
     console.error("Error fetching blog post:", error)
