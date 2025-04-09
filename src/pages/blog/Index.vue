@@ -23,23 +23,37 @@
   const allBlogs = ref([] as BlogPost[])
   const slugMap = ref()
 
-  // TODO: fetch from the bundle if in production
   onMounted(async () => {
-    try {
-      const allBlogsResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/blog`)
-      const allBlogsData = await allBlogsResponse.json()
-      allBlogs.value = allBlogsData.sort((a: BlogPost, b: BlogPost) => {
-        return new Date(b.date).getTime() - new Date(a.date).getTime()
-      })
+    let allBlogsData: BlogPost[] = []
+    switch (import.meta.env.MODE) {
+      case "development":
+        try {
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/blog`)
+          allBlogsData = await response.json()
+        } catch (error) {
+          console.error("Error fetching blogs:", error)
+        }
+        break
 
-      const slugMapResponse = await getSlugMap(allBlogsData as BlogPost[])
-      slugMap.value = slugMapResponse
+      case "production":
+        try {
+          const response = await fetch("/html/index.json")
+          allBlogsData = await response.json()
+        } catch (error) {
+          console.error("Error fetching blogs:", error)
+        }
+        break
+    }
 
-      if (typeof window !== "undefined") {
-        localStorage.setItem("slugMap", JSON.stringify(slugMapResponse))
-      }
-    } catch (error) {
-      console.error("Error fetching blogs:", error)
+    allBlogs.value = allBlogsData.sort((a, b) => {
+      return new Date(b.date).getTime() - new Date(a.date).getTime()
+    })
+
+    const slugMapResponse = await getSlugMap(allBlogsData)
+    slugMap.value = slugMapResponse
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("slugMap", JSON.stringify(slugMapResponse))
     }
   })
 </script>
