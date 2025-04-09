@@ -4,8 +4,8 @@ import { DefaultExporter } from "notion-to-md/plugins/exporter"
 import { MDXRenderer } from "notion-to-md/plugins/renderer"
 
 import env from "../config/env"
-import { ListBlockChildrenResponse } from "@notionhq/client/build/src/api-endpoints"
-import { NotionResponse } from "@/shared/types/notion"
+import type { ListBlockChildrenResponse } from "@notionhq/client/build/src/api-endpoints"
+import type { NotionResponse } from "@/shared/types/notion"
 
 export const getReadingList = async (): Promise<NotionResponse[]> => {
   const notion = new Client({

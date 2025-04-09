@@ -1,7 +1,7 @@
 import type { Request, Response } from "express"
 import { getBlogPosts, getBlogPostById } from "../services/notionService"
-import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints"
-import { BlogPost } from "@/shared/types"
+import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints"
+import type { BlogPost } from "@/shared/types"
 import slugify from "slugify"
 
 const parseBlogsFromNotionResponse = (response: PageObjectResponse[]): BlogPost[] =>

@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "vite",
     "server": "nodemon",
-    "build:markdown": "node ./scripts/convertMarkdown.js",
+    "build:markdown": "npx tsx ./scripts/buildBlog.ts",
     "build-only": "vite build",
     "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "build": "pnpm build:markdown && run-p type-check build-only",
