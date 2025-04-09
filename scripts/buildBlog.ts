@@ -39,6 +39,7 @@ const fetchBlogPostById = async (id: string) => {
 
 const run = async () => {
   const blogs = await fetchBlogPosts()
+  console.log("Fetched blogs:", blogs)
   const indexPromises = blogs.map(async (blog: BlogPost) => {
     const { id, title, date, slug } = blog
     const markdown = await fetchBlogPostById(id)
