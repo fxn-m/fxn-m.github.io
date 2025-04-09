@@ -1,18 +1,26 @@
 import { Client } from "@notionhq/client"
 import env from "../config/env"
+import {
+  ListBlockChildrenResponse,
+  PageObjectResponse,
+  PartialPageObjectResponse,
+  PartialDatabaseObjectResponse
+} from "@notionhq/client/build/src/api-endpoints"
 
-export const getReadingList = async (): Promise<any[]> => {
+type NotionResponse = PageObjectResponse | PartialPageObjectResponse | PartialDatabaseObjectResponse
+
+export const getReadingList = async (): Promise<NotionResponse[]> => {
   const notion = new Client({
     auth: env.notionApiKey
   })
 
-  let readingList: any[] = []
+  let readingList: NotionResponse[] = []
   let hasNextPage = true
   let startCursor = undefined
 
   while (hasNextPage) {
-    const response: any = await notion.databases.query({
-      database_id: env.notionDatabaseId,
+    const response = await notion.databases.query({
+      database_id: env.notionReadingListDatabaseId ?? "",
       filter: {
         or: [
           {
@@ -53,7 +61,7 @@ export const getReadingList = async (): Promise<any[]> => {
           }
         ]
       },
-      start_cursor: startCursor
+      start_cursor: startCursor ?? undefined
     })
 
     readingList = [...readingList, ...response.results]
@@ -62,4 +70,41 @@ export const getReadingList = async (): Promise<any[]> => {
   }
 
   return readingList
+}
+
+export const getBlogPostById = async (blockId: string): Promise<ListBlockChildrenResponse> => {
+  const notion = new Client({
+    auth: env.notionApiKey
+  })
+  const response = await notion.blocks.children.list({
+    block_id: blockId,
+    page_size: 50
+  })
+
+  return response
+}
+
+export const getBlogPosts = async (): Promise<NotionResponse[]> => {
+  const notion = new Client({
+    auth: env.notionApiKey
+  })
+
+  let blogPosts: NotionResponse[] = []
+  let hasNextPage = true
+  let startCursor = undefined
+
+  while (hasNextPage) {
+    const response = await notion.databases.query({
+      database_id: env.notionBlogDatabaseId ?? "",
+      start_cursor: startCursor ?? undefined
+    })
+
+    blogPosts = [...blogPosts, ...response.results]
+    startCursor = response.next_cursor
+    hasNextPage = response.has_more
+  }
+
+  console.log("Blog posts:", blogPosts)
+
+  return blogPosts
 }
