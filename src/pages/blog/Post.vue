@@ -9,7 +9,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type { BlogMetadata } from "@/shared"
+  import type { BlogMetadata, BlogPost } from "@/shared"
   import { onMounted, ref } from "vue"
   import { useRoute } from "vue-router"
   import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
@@ -20,24 +20,48 @@
 
   const slugMap = localStorage.getItem("slugMap") && JSON.parse(localStorage.getItem("slugMap") as string)
 
-  // TODO: fetch from the bundle if in production
-  const fetchContent = async (slug: string) => {
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/blog/${slugMap[slug ?? ""]}`, {
-        method: "GET"
-      })
-      const markdown = await response.json()
+  onMounted(async () => {
+    const slug = route.params.slug as string
+    let html: string = ""
+    let metaTemp = {} as BlogMetadata
 
-      const { content, meta } = convertMarkdownToHTML(markdown)
-      blogContent.value = content
-      metadata.value = meta
-    } catch (error) {
-      console.error("Failed to load blog content:", error)
+    switch (import.meta.env.MODE) {
+      case "development":
+        try {
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/blog/${slugMap[slug ?? ""]}`, {
+            method: "GET"
+          })
+          const markdown = await response.json()
+          const { content, meta } = convertMarkdownToHTML(markdown)
+
+          html = content
+          metaTemp = meta
+        } catch (error) {
+          console.error("Failed to load blog content:", error)
+        }
+
+        break
+      case "production":
+        try {
+          const response = await fetch(`/html/${slug}.html`, {
+            method: "GET"
+          })
+          html = await response.text()
+          const index = await fetch(`/html/index.json`, {
+            method: "GET"
+          })
+          const indexData = await index.json()
+          const meta = indexData.find((item: BlogPost) => item.slug === slug)
+          metaTemp = meta
+        } catch (error) {
+          console.error("Failed to load blog content:", error)
+        }
+
+        break
     }
-  }
 
-  onMounted(() => {
-    fetchContent(route.params.slug as string)
+    blogContent.value = html
+    metadata.value = metaTemp
   })
 </script>
 
