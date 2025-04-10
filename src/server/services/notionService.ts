@@ -32,7 +32,7 @@ const PagePropertiesSchema = z.object({
 const DatabaseResponseSchema = z.object({
   id: z.string(),
   properties: z.object({
-    Topic: z.object({
+    Categories: z.object({
       multi_select: z.object({
         options: z.array(
           z.object({
@@ -208,7 +208,7 @@ const extractCategoriesFromDatabase = async (databaseId: string) => {
   })
 
   const parsed = DatabaseResponseSchema.parse(response)
-  const categories = parsed.properties.Topic.multi_select.options.map((option) => option.name)
+  const categories = parsed.properties.Categories.multi_select.options.map((option) => option.name)
   return categories
 }
 
@@ -235,9 +235,56 @@ const enrich = async ({ props, categories }: { props: PagePropertiesSchema; cate
   return object
 }
 
+const updateNotionPage = async (pageId: string, enrichedItem: z.infer<typeof enrichedReadingListItemSchema>, created: string) => {
+  const notion = new Client({
+    auth: env.notionApiKey
+  })
+
+  await notion.pages.update({
+    page_id: pageId,
+    properties: {
+      Summary: {
+        rich_text: [
+          {
+            type: "text",
+            text: {
+              content: enrichedItem.summary
+            }
+          }
+        ]
+      },
+      Categories: {
+        multi_select: enrichedItem.categories.map((category) => ({
+          name: category
+        }))
+      },
+      Author: {
+        select: {
+          name: enrichedItem.author
+        }
+      },
+      "Read Time": {
+        number: parseInt(enrichedItem.readingTimeEstimate, 10)
+      },
+      Added: {
+        date: {
+          start: created
+        }
+      },
+      Status: {
+        select: {
+          name: "Shelved"
+        }
+      }
+    }
+  })
+}
+
 export const enrichReadingListItem = async (pageId: string, databaseId: string) => {
   const props = await getPagePropertiesById(pageId)
   const categories = await extractCategoriesFromDatabase(databaseId)
   const enrichedItem = await enrich({ props, categories })
   console.log("Enriched item:", enrichedItem)
+  await updateNotionPage(pageId, enrichedItem, props.created)
+  console.log("Updated Notion page with enriched item")
 }
