@@ -48,7 +48,7 @@ const enrichedReadingListItemSchema = z.object({
   summary: z.string(),
   categories: z.array(z.string()),
   author: z.string(),
-  readingTimeEstimate: z.string()
+  readingTimeEstimate: z.number()
 })
 
 export const getReadingList = async (): Promise<NotionResponse[]> => {
@@ -264,7 +264,7 @@ const updateNotionPage = async (pageId: string, enrichedItem: z.infer<typeof enr
         }
       },
       "Read Time": {
-        number: parseInt(enrichedItem.readingTimeEstimate, 10)
+        number: enrichedItem.readingTimeEstimate
       },
       Added: {
         date: {
