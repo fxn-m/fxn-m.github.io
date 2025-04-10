@@ -3,7 +3,7 @@ import { getReadingListController, markReadController } from "../controllers/rea
 
 const router: Router = Router()
 
-router.get("/get-reading-list", getReadingListController)
+router.get("/", getReadingListController)
 router.post("/mark-read/:id", markReadController)
 
 export default router

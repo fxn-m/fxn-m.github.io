@@ -122,7 +122,7 @@
 
   onMounted(async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/get-reading-list`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/readingList`, {
         method: "GET"
       })
       const data = await response.json()
@@ -134,7 +134,7 @@
       if (params.has("secret")) {
         const secret = params.get("secret")
         if (readingSuggestion.value && readingSuggestion.value && readingSuggestion.value.id) {
-          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/mark-read/${readingSuggestion.value.id}`, {
+          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/readingList/mark-read/${readingSuggestion.value.id}`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json"
