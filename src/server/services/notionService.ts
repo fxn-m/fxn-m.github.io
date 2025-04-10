@@ -66,36 +66,6 @@ export const getReadingList = async (): Promise<NotionResponse[]> => {
       filter: {
         or: [
           {
-            property: "Type",
-            select: {
-              equals: "Essay"
-            }
-          },
-          {
-            property: "Type",
-            select: {
-              equals: "Article"
-            }
-          },
-          {
-            property: "Type",
-            select: {
-              equals: "Paper"
-            }
-          },
-          {
-            property: "Type",
-            select: {
-              equals: "Blog Post"
-            }
-          },
-          {
-            property: "Type",
-            select: {
-              equals: "Report"
-            }
-          },
-          {
             property: "Status",
             select: {
               equals: "Shelved"
@@ -215,11 +185,15 @@ const extractCategoriesFromDatabase = async (databaseId: string) => {
 const enrich = async ({ props, categories }: { props: PagePropertiesSchema; categories: string[] }) => {
   const { text } = await generateText({
     model: openai.responses("gpt-4o"),
-    prompt: `Summarize the following article in 3 sentences or less, provide a list of categories, and best guesses for the author and reading time estimate: ${
+    prompt: `
+    Summarize the following article in 3 sentences or less, provide a list of categories, and best guesses for the author and reading time estimate: ${
       props.title
-    } ${props.url}. Return 1-3 categories, and they should be from the following list: ${categories.join(
-      ", "
-    )}. The author should be a single name, and the reading time estimate should be in minutes.`,
+    } ${props.url}. 
+    Return 1-3 categories, and they should be from the following list: ${categories.join(", ")}. 
+    Be as specific as you can about the categories, ideally there would only be 1 category if the other 2 are somewhat redundant. 
+    The author should be a single name, and the reading time estimate should be in minutes. 
+    If the author is unclear, use "Unknown". 
+    If the reading time estimate is unclear, use 0.`,
     tools: {
       web_search_preview: openai.tools.webSearchPreview()
     },
