@@ -32,7 +32,7 @@
         title: "ReadMe",
         subtitle: "A reading suggestion engine",
         description: "Picks an item from my Notion reading list at random, overcoming the paradox of choice.",
-        link: "/fun/:readme",
+        link: "/fun/:tab-overflow",
         date: "2023-10"
       },
       {
