@@ -1,125 +1,109 @@
 <template>
-  <div v-if="!isLoading" class="reading-suggestion">
-    <div class="flex justify-between items-center">
-      <div>
-        <a :href="readingSuggestion.url" target="_blank">
-          {{ readingSuggestion.title }}
+  <div v-if="!isLoading" class="reading-suggestion p-6 shadow-md border border-gray-300 rounded">
+    <div class="flex justify-between items-start">
+      <div class="flex-1">
+        <a :href="readingSuggestion.url" target="_blank" class="text-xl font-bold">
+          {{ readingSuggestion.name }}
         </a>
-
-        <div class="suggestion-metadata" ref="metadataDiv">
-          <p v-if="readingSuggestion.type" ref="suggestionTypeDiv">
-            {{ readingSuggestion.type }}
+        <p v-if="readingSuggestion.summary" class="mt-2 text-gray-700">
+          {{ readingSuggestion.summary }}
+        </p>
+        <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+          <p v-if="readingSuggestion.readingTime" class="text-sm text-gray-600">
+            <span class="font-semibold">Reading Time:</span>
+            {{ readingSuggestion.readingTime }} minutes
           </p>
-
-          <p v-if="(readingSuggestion.type && readingSuggestion.author) || (readingSuggestion.type && readingSuggestion.time)">|</p>
-
-          <p v-if="readingSuggestion.author" class="author">
-            {{ readingSuggestion.author }}
-          </p>
-
-          <p v-if="readingSuggestion.time && readingSuggestion.author && showSeparator">|</p>
-
-          <p class="reading-time" v-if="readingSuggestion.time">Estimated reading time: {{ readingSuggestion.time }} minutes</p>
+          <div v-if="readingSuggestion.categories && readingSuggestion.categories.length" class="flex flex-wrap gap-2 mt-2 sm:mt-0">
+            <span v-for="(category, index) in readingSuggestion.categories" :key="index" class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs">
+              {{ category }}
+            </span>
+          </div>
         </div>
       </div>
-
-      <button
-        @click="fetchReadingSuggestion"
-        class="text-gray-700 hover:cursor-pointer rotate-icon hover:text-gray-800 dark:text-gray-400 hover:dark:text-gray-300"
-      >
-        <FontAwesomeIcon icon="fa-solid fa-arrows-rotate" size="1x" />
+      <button @click="fetchReadingSuggestion" class="ml-4 text-gray-700 hover:text-gray-800 transition-transform transform hover:rotate-180">
+        <FontAwesomeIcon icon="fa-solid fa-arrows-rotate" size="lg" />
       </button>
     </div>
   </div>
-
-  <div v-else id="loader" class="reading-suggestion">Load{{ loadingEllipses }}</div>
+  <div v-else class="reading-suggestion p-4 border rounded">Loading...</div>
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted, watchEffect } from "vue"
+  import { ref, onMounted } from "vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
-  const readingSuggestion = ref({
+  // Define the type for the reading suggestion based on the new schema
+  interface ReadingSuggestion {
+    id: string
+    name: string // Guaranteed
+    url: string // Guaranteed
+    readingTime: number | null
+    categories: string[]
+    summary: string
+  }
+
+  // Reactive references
+  const readingSuggestion = ref<ReadingSuggestion>({
     id: "",
-    title: "",
-    author: "",
+    name: "",
     url: "",
-    time: 0,
-    type: ""
+    readingTime: null,
+    categories: [],
+    summary: ""
   })
 
+  type ReadingListItem = {
+    id: string
+    properties: {
+      Name?: { title: { plain_text: string }[] }
+      Link?: { url: string }
+      "Read Time"?: { number: number }
+      Categories?: { multi_select: { name: string }[] }
+      Summary?: { rich_text: { plain_text: string }[] }
+    }
+  }
+
   const isLoading = ref(true)
-  const loadingEllipses = ref("")
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const readingList = ref<any[]>([])
+  // The reading list will hold the entire response from the backend
+  const readingList = ref<ReadingListItem[]>([])
 
-  const metadataDiv = ref<HTMLElement | null>(null)
-  const suggestionTypeDiv = ref<HTMLDivElement | null>(null)
-  const showSeparator = ref(true)
-
-  let counter = 0
-  const ending = "ing"
-  const sendingLoader = setInterval(() => {
-    if (readingSuggestion.value.title !== "") {
-      clearInterval(sendingLoader)
-      loadingEllipses.value = ""
-    }
-    if (counter > 6) {
-      loadingEllipses.value = "ing."
-      counter = 3
-    } else if (counter > 2) {
-      loadingEllipses.value += "."
-    } else {
-      loadingEllipses.value += ending[counter]
-    }
-    counter++
-  }, 400)
-
+  // Fetch a random reading suggestion and map the new schema fields
   const fetchReadingSuggestion = async () => {
     if (readingList.value.length > 0) {
       try {
         const randomIndex = Math.floor(Math.random() * readingList.value.length)
         const item = readingList.value[randomIndex]
-        const id = item.id
-        const randomArticle = item.properties
-        let author = randomArticle["Author/Publisher"].select.name ?? ""
+        const props = item.properties || {}
 
-        if (["", "Unknown"].includes(author)) {
-          author = ""
-        }
+        // Extract fields with safe optional chaining
+        const name = props.Name?.title?.[0]?.plain_text || "Untitled"
+        const url = props.Link?.url || "#"
+        const readingTime = props["Read Time"]?.number || null
+        const categories = props.Categories?.multi_select ? props.Categories.multi_select.map((cat) => cat.name) : []
+        const summary = props.Summary?.rich_text ? props.Summary.rich_text.map((txt) => txt.plain_text).join(" ") : ""
 
         readingSuggestion.value = {
-          id,
-          title: randomArticle.Name.title[0].plain_text,
-          author: author,
-          url: randomArticle.Link.url,
-          time: randomArticle["Reading Time"].number,
-          type: randomArticle.Type.select.name
+          id: item.id,
+          name,
+          url,
+          readingTime,
+          categories,
+          summary
         }
 
-        if (!randomArticle.Link.url || randomArticle.Link.url.slice(0, 4) !== "http" || randomArticle.Link.url.includes("notion")) {
+        // If the suggestion lacks the guaranteed fields, try fetching another
+        if (!readingSuggestion.value.name || readingSuggestion.value.url === "#") {
           fetchReadingSuggestion()
         }
       } catch (error) {
-        console.error("Error reading file:", error)
+        console.error("Error processing reading suggestion:", error)
       }
     } else {
-      console.error("Reading list not found")
+      console.error("Reading list is empty or not loaded")
     }
   }
 
-  const checkWrap = () => {
-    if (metadataDiv.value && suggestionTypeDiv.value) {
-      const metadataDivHeight = metadataDiv.value.offsetHeight
-      const suggestionTypeDivHeight = suggestionTypeDiv.value.offsetHeight
-      if (metadataDivHeight > suggestionTypeDivHeight) {
-        showSeparator.value = false
-      } else {
-        showSeparator.value = true
-      }
-    }
-  }
-
+  // Fetch the reading list from the backend on mount
   onMounted(async () => {
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/readingList`, {
@@ -129,81 +113,20 @@
       readingList.value = data
       isLoading.value = false
       fetchReadingSuggestion()
-
-      const params = new URLSearchParams(window.location.search)
-      if (params.has("secret")) {
-        const secret = params.get("secret")
-        if (readingSuggestion.value && readingSuggestion.value && readingSuggestion.value.id) {
-          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/readingList/mark-read/${readingSuggestion.value.id}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ secret })
-          })
-
-          const json = await JSON.parse(await response.text())
-
-          console.log("Marked as read:", json.message)
-        } else {
-          console.error("readingSuggestion or readingSuggestion.value.id is not properly initialized")
-        }
-      }
-
-      window.addEventListener("resize", checkWrap)
     } catch (error) {
       console.error("Error fetching reading list:", error)
-    }
-  })
-
-  watchEffect(() => {
-    if (suggestionTypeDiv.value && metadataDiv.value) {
-      checkWrap()
     }
   })
 </script>
 
 <style scoped>
-  p {
-    color: #828282;
-    font-size: 0.85em;
-}
-
-body.dark p {
-    color: #afafaf;
+  .reading-suggestion {
+  line-height: 1.5;
 }
 
 button {
-  min-width: 0px;
-  padding: 0px;
-  border-radius: 100%;
-  width: 36px;
-  aspect-ratio: 1/1;
-}
-
-.reading-suggestion {
-    line-height: 2em;
-}
-
-.suggestion-metadata {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;  
-    justify-content: left;
-    font-size: 0.8rem;
-    line-height: 2em;
-}
-
-.suggestion-metadata > * {
-    margin: 0 1rem 0 0;
-}
-
-.rotate-icon {
-  transition: transform 0.5s ease;
-  transform: rotate(0deg);
-}
-
-.rotate-icon:hover {
-  transform: rotate(180deg);
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 </style>
