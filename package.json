@@ -13,7 +13,9 @@
     "build": "pnpm build:markdown && run-p type-check build-only",
     "preview": "vite preview",
     "start": "tsx src/server/index.ts",
-    "lint": "npx eslint --ext .ts,.js,.vue src"
+    "lint": "npx eslint --ext .ts,.js,.vue src",
+    "tunnel:server": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:3000",
+    "tunnel:client": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:5173"
   },
   "dependencies": {
     "@ai-sdk/openai": "^1.3.9",
