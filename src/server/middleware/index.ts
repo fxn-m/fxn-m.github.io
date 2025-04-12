@@ -11,4 +11,10 @@ export const configureMiddleware = (app: Express): void => {
       credentials: true
     })
   )
+
+  app.use((req, res, next) => {
+    setTimeout(() => {
+      next()
+    }, 10000)
+  })
 }

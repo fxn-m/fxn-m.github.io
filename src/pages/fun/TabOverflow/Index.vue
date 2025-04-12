@@ -1,54 +1,61 @@
 <template>
-  <div v-if="!isLoading" class="relative reading-suggestion gap-2 flex flex-col p-6 min-h-80 shadow-md border border-gray-200 dark:border-gray-900 rounded-lg">
-    <div class="absolute top-2 right-2 text-xs text-gray-500">{{ currentItemNumber }} / {{ readingListCount }}</div>
+  <div class="min-h-80 flex flex-col shadow-md border border-gray-200 dark:border-gray-900 rounded-lg transition-all duration-1000">
+    <div v-if="isLoading" class="flex flex-1 gap-2 flex-col items-center justify-center h-full text-gray-600 dark:text-gray-400 transition-color duration-1000">
+      <p class="text-sm">Loading...</p>
+      <!-- <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-200"></div> -->
+      <Loader2 class="animate-spin size-6" />
+    </div>
 
-    <p>
-      <a :href="readingSuggestion.url" target="_blank" class="text-xl font-bold">
-        {{ readingSuggestion.name }}
-        <ExternalLink class="inline-block size-3 align-super" />
-      </a>
-    </p>
-    <p v-if="readingSuggestion.summary" class="mt-2 text-gray-700 dark:!text-gray-500">
-      {{ readingSuggestion.summary }}
-    </p>
-    <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-      <p v-if="readingSuggestion.readingTime" class="text-sm text-gray-600">
-        <span class="font-semibold">Reading Time:</span>
-        {{ readingSuggestion.readingTime }} minutes
+    <div v-else class="relative reading-suggestion gap-2 flex flex-col p-6 flex-1">
+      <div class="absolute top-2 right-2 text-xs text-gray-500">{{ currentItemNumber }} / {{ readingListCount }}</div>
+
+      <p>
+        <a :href="readingSuggestion.url" target="_blank" class="text-xl font-bold">
+          {{ readingSuggestion.name }}
+          <ExternalLink class="inline-block size-3 align-super" />
+        </a>
       </p>
-      <div v-if="readingSuggestion.categories && readingSuggestion.categories.length" class="flex flex-wrap gap-2 mt-2 sm:mt-0">
-        <span
-          v-for="(category, index) in readingSuggestion.categories"
-          :key="index"
-          class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs dark:bg-gray-700 dark:text-gray-200"
+      <p v-if="readingSuggestion.summary" class="mt-2 text-gray-700 dark:!text-gray-500">
+        {{ readingSuggestion.summary }}
+      </p>
+      <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+        <p v-if="readingSuggestion.readingTime" class="text-sm text-gray-600">
+          <span class="font-semibold">Reading Time:</span>
+          {{ readingSuggestion.readingTime }} minutes
+        </p>
+        <div v-if="readingSuggestion.categories && readingSuggestion.categories.length" class="flex flex-wrap gap-2 mt-2 sm:mt-0">
+          <span
+            v-for="(category, index) in readingSuggestion.categories"
+            :key="index"
+            class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs dark:bg-gray-700 dark:text-gray-200 transition-colors duration-1000"
+          >
+            {{ category }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Navigation Arrows at the bottom -->
+      <div class="flex flex-1 w-full justify-between items-end">
+        <button
+          @click="prevSuggestion"
+          class="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-400"
+          :class="{ 'opacity-50 cursor-not-allowed': currentIndex === 0 }"
+          :disabled="currentIndex === 0"
         >
-          {{ category }}
-        </span>
+          <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="xl" />
+        </button>
+        <button @click="nextSuggestion" class="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:!text-gray-400">
+          <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="xl" class="rotate-180" />
+        </button>
       </div>
     </div>
-
-    <!-- Navigation Arrows at the bottom -->
-    <div class="flex flex-1 w-full justify-between items-end">
-      <button
-        @click="prevSuggestion"
-        class="!text-gray-700 hover:!text-gray-800 dark:!text-gray-200 dark:hover:!text-gray-300"
-        :class="{ 'opacity-50 !cursor-not-allowed': currentIndex === 0 }"
-        :disabled="currentIndex === 0"
-      >
-        <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="1x" />
-      </button>
-      <button @click="nextSuggestion" class="!text-gray-700 hover:!text-gray-800 dark:!text-gray-200 dark:hover:!text-gray-300">
-        <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="1x" class="rotate-180" />
-      </button>
-    </div>
   </div>
-  <div v-else class="reading-suggestion p-4 border rounded bg-gray-50">Loading...</div>
 </template>
 
 <script setup lang="ts">
   import { ref, onMounted, onUnmounted, computed } from "vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-  import { ExternalLink } from "lucide-vue-next"
+  import { ExternalLink, Loader2 } from "lucide-vue-next"
 
   // Define the type for the reading suggestion based on the new schema
   interface ReadingSuggestion {
