@@ -8,7 +8,7 @@
     <div v-else class="relative reading-suggestion gap-2 flex flex-col p-4 py-8 sm:p-6 flex-1">
       <div class="absolute top-2 right-2 text-xs text-gray-500">{{ currentItemNumber }} / {{ readingListCount }}</div>
 
-      <div class="card-content">
+      <div class="card-content space-y-4 sm:space-y-6">
         <p>
           <a :href="readingSuggestion.url" target="_blank" class="text-lg sm:text-xl font-bold inline-flex items-start gap-1 break-words">
             {{ readingSuggestion.name }}
@@ -204,17 +204,11 @@ button {
   touch-action: manipulation;
 }
 
-/* Increase touch target area */
 button {
   min-height: 44px;
   min-width: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* Card transition animation */
-.card-content {
-  will-change: transform;
 }
 </style>

@@ -6,9 +6,9 @@
           icon="fa-solid fa-caret-left"
           size="2xs"
           id="popup-arrow"
+          class="text-black dark:text-primary-dark"
           :style="{
-            visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden',
-            color: 'var(--arrow-color)'
+            visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden'
           }"
         />
       </div>
@@ -45,7 +45,6 @@
     position: absolute;
     left: -9px;
     transform: rotate(45deg);
-    color: inherit;
   }
 </style>
 
