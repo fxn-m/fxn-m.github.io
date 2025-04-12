@@ -53,6 +53,7 @@ const enrichedReadingListItemSchema = z.object({
 })
 
 export const getReadingList = async (): Promise<NotionResponse[]> => {
+  console.log("Fetching reading list from Notion...")
   const notion = new Client({
     auth: env.notionApiKey
   })
@@ -293,9 +294,15 @@ export const enrichAllReadingListItems = async () => {
 
         console.log(`Enriching ${pageName}...`)
 
-        const props = await getPagePropertiesById(item.id)
-        const enrichedItem = await enrich({ props, categories })
-        await updateNotionPage(item.id, enrichedItem, item.created_time)
+        try {
+          const props = await getPagePropertiesById(item.id)
+          const enrichedItem = await enrich({ props, categories })
+          await updateNotionPage(item.id, enrichedItem, item.created_time)
+        } catch (error) {
+          console.error(`Error enriching ${pageName}:`, error)
+        }
+
+        console.log(`Updated ${pageName} with enriched item`)
       })
     )
   )

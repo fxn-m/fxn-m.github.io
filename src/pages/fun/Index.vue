@@ -39,7 +39,7 @@
         id: 2,
         title: "Atmosphere.fm (discontinued)",
         subtitle: "Soundtracks shaped by skies",
-        description: "Intelligently curated spotify playlists based on the local weather and time of day.",
+        description: "Intelligently curated spotify playlists based on the local weather and time of day. My first project, built in 2023.",
         link: "/fun/:atmosphere-fm",
         date: "2024-01"
       },
