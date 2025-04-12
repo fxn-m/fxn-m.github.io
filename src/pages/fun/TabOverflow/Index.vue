@@ -5,17 +5,10 @@
       <Loader2 class="animate-spin size-6" />
     </div>
 
-    <div
-      v-else
-      ref="swipeContainer"
-      class="relative reading-suggestion gap-2 flex flex-col p-4 py-8 sm:p-6 flex-1"
-      @touchstart="handleTouchStart"
-      @touchmove="handleTouchMove"
-      @touchend="handleTouchEnd"
-    >
+    <div v-else class="relative reading-suggestion gap-2 flex flex-col p-4 py-8 sm:p-6 flex-1">
       <div class="absolute top-2 right-2 text-xs text-gray-500">{{ currentItemNumber }} / {{ readingListCount }}</div>
 
-      <div class="card-content" :style="swipeStyle">
+      <div class="card-content">
         <p>
           <a :href="readingSuggestion.url" target="_blank" class="text-lg sm:text-xl font-bold inline-flex items-start gap-1 break-words">
             {{ readingSuggestion.name }}
@@ -39,13 +32,6 @@
               {{ category }}
             </span>
           </div>
-        </div>
-      </div>
-
-      <!-- Swipe indicator -->
-      <div v-if="isSwiping" class="fixed inset-0 pointer-events-none z-50 flex items-center justify-start" :class="{ 'justify-end': touchDeltaX < 0 }">
-        <div class="bg-gray-800 bg-opacity-20 dark:bg-gray-200 dark:bg-opacity-20 h-16 w-16 rounded-full flex items-center justify-center mx-4">
-          <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="lg" class="text-white dark:text-gray-800" :class="{ 'rotate-180': touchDeltaX < 0 }" />
         </div>
       </div>
 
@@ -111,57 +97,6 @@
   // History for navigation (storing indices) and pointer
   const suggestionHistory = ref<number[]>([])
   const currentIndex = ref(-1)
-
-  // Touch swipe functionality
-  const touchStartX = ref(0)
-  const touchDeltaX = ref(0)
-  const isSwiping = ref(false)
-  const swipeThreshold = 75 // Minimum distance to trigger swipe
-  const swipeContainer = ref<HTMLElement | null>(null)
-
-  const swipeStyle = computed(() => {
-    if (isSwiping.value) {
-      return {
-        transform: `translateX(${touchDeltaX.value}px)`,
-        transition: "none"
-      }
-    }
-    return {
-      transform: "translateX(0)",
-      transition: "transform 0.3s ease"
-    }
-  })
-
-  const handleTouchStart = (e: TouchEvent) => {
-    touchStartX.value = e.touches[0].clientX
-    isSwiping.value = true
-  }
-
-  const handleTouchMove = (e: TouchEvent) => {
-    if (!isSwiping.value) return
-
-    const currentX = e.touches[0].clientX
-    touchDeltaX.value = currentX - touchStartX.value
-
-    // Limit movement for better feel
-    if ((currentIndex.value === 0 && touchDeltaX.value > 0) || (currentIndex.value === suggestionHistory.value.length - 1 && touchDeltaX.value < 0)) {
-      touchDeltaX.value = touchDeltaX.value / 3 // Reduce movement when at edges
-    }
-  }
-
-  const handleTouchEnd = () => {
-    if (Math.abs(touchDeltaX.value) > swipeThreshold) {
-      if (touchDeltaX.value > 0 && currentIndex.value > 0) {
-        prevSuggestion()
-      } else if (touchDeltaX.value < 0) {
-        nextSuggestion()
-      }
-    }
-
-    // Reset
-    touchDeltaX.value = 0
-    isSwiping.value = false
-  }
 
   const currentItemNumber = computed(() => {
     if (currentIndex.value >= 0 && suggestionHistory.value.length > 0) {
