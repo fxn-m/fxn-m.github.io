@@ -18,12 +18,12 @@
         <p v-if="readingSuggestion.summary" class="mt-2 text-sm sm:text-base text-gray-700 dark:text-gray-500 line-clamp-6 sm:line-clamp-none">
           {{ readingSuggestion.summary }}
         </p>
-        <div class="flex flex-col sm:flex-row sm:items-center mt-3">
+        <div class="flex flex-col sm:flex-row sm:items-center mt-3 sm:gap-2">
           <p v-if="readingSuggestion.readingTime" class="text-xs sm:text-sm text-gray-600">
             <span class="font-semibold">Reading Time:</span>
             {{ readingSuggestion.readingTime }} minutes
           </p>
-          <div v-if="readingSuggestion.categories && readingSuggestion.categories.length" class="flex flex-wrap gap-2 mt-2 sm:mt-0 sm:ml-4">
+          <div v-if="readingSuggestion.categories && readingSuggestion.categories.length" class="flex flex-wrap gap-2 mt-2 sm:mt-0">
             <span
               v-for="(category, index) in readingSuggestion.categories"
               :key="index"
