@@ -23,7 +23,6 @@
   let intervalId: number
 
   async function pollServer() {
-    console.log("Polling server...")
     try {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ping`, {
         method: "GET",
@@ -33,11 +32,9 @@
         }
       })
       if (response.ok) {
-        console.log("Server is ready")
         isWarmingUp.value = false
         clearInterval(intervalId)
       } else {
-        console.log("Server is warming up")
         isWarmingUp.value = true
       }
     } catch {
