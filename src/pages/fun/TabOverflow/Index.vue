@@ -1,51 +1,66 @@
 <template>
-  <div class="min-h-80 flex flex-col shadow-md border border-gray-200 dark:border-gray-900 rounded-lg transition-all duration-1000">
+  <div class="min-h-80 flex flex-col shadow-md border border-gray-200 dark:border-gray-900 rounded-lg transition-all duration-1000 overflow-hidden">
     <div v-if="isLoading" class="flex flex-1 gap-2 flex-col items-center justify-center h-full text-gray-600 dark:text-gray-400 transition-color duration-1000">
       <p class="text-sm">Loading...</p>
-      <!-- <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-200"></div> -->
       <Loader2 class="animate-spin size-6" />
     </div>
 
-    <div v-else class="relative reading-suggestion gap-2 flex flex-col p-6 flex-1">
+    <div
+      v-else
+      ref="swipeContainer"
+      class="relative reading-suggestion gap-2 flex flex-col p-4 py-8 sm:p-6 flex-1"
+      @touchstart="handleTouchStart"
+      @touchmove="handleTouchMove"
+      @touchend="handleTouchEnd"
+    >
       <div class="absolute top-2 right-2 text-xs text-gray-500">{{ currentItemNumber }} / {{ readingListCount }}</div>
 
-      <p>
-        <a :href="readingSuggestion.url" target="_blank" class="text-xl font-bold">
-          {{ readingSuggestion.name }}
-          <ExternalLink class="inline-block size-3 align-super" />
-        </a>
-      </p>
-      <p v-if="readingSuggestion.summary" class="mt-2 text-gray-700 dark:!text-gray-500">
-        {{ readingSuggestion.summary }}
-      </p>
-      <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-        <p v-if="readingSuggestion.readingTime" class="text-sm text-gray-600">
-          <span class="font-semibold">Reading Time:</span>
-          {{ readingSuggestion.readingTime }} minutes
+      <div class="card-content" :style="swipeStyle">
+        <p>
+          <a :href="readingSuggestion.url" target="_blank" class="text-lg sm:text-xl font-bold inline-flex items-start gap-1 break-words">
+            {{ readingSuggestion.name }}
+            <ExternalLink class="inline-block size-3 flex-shrink-0 mt-1" />
+          </a>
         </p>
-        <div v-if="readingSuggestion.categories && readingSuggestion.categories.length" class="flex flex-wrap gap-2 mt-2 sm:mt-0">
-          <span
-            v-for="(category, index) in readingSuggestion.categories"
-            :key="index"
-            class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs dark:bg-gray-700 dark:text-gray-200 transition-colors duration-1000"
-          >
-            {{ category }}
-          </span>
+        <p v-if="readingSuggestion.summary" class="mt-2 text-sm sm:text-base text-gray-700 dark:!text-gray-500 line-clamp-4 sm:line-clamp-none">
+          {{ readingSuggestion.summary }}
+        </p>
+        <div class="flex flex-col sm:flex-row sm:items-center mt-3">
+          <p v-if="readingSuggestion.readingTime" class="text-xs sm:text-sm text-gray-600">
+            <span class="font-semibold">Reading Time:</span>
+            {{ readingSuggestion.readingTime }} minutes
+          </p>
+          <div v-if="readingSuggestion.categories && readingSuggestion.categories.length" class="flex flex-wrap gap-2 mt-2 sm:mt-0 sm:ml-4">
+            <span
+              v-for="(category, index) in readingSuggestion.categories"
+              :key="index"
+              class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs dark:bg-gray-700 dark:text-gray-200 transition-colors duration-1000"
+            >
+              {{ category }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Swipe indicator -->
+      <div v-if="isSwiping" class="fixed inset-0 pointer-events-none z-50 flex items-center justify-start" :class="{ 'justify-end': touchDeltaX < 0 }">
+        <div class="bg-gray-800 bg-opacity-20 dark:bg-gray-200 dark:bg-opacity-20 h-16 w-16 rounded-full flex items-center justify-center mx-4">
+          <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="lg" class="text-white dark:text-gray-800" :class="{ 'rotate-180': touchDeltaX < 0 }" />
         </div>
       </div>
 
       <!-- Navigation Arrows at the bottom -->
-      <div class="flex flex-1 w-full justify-between items-end">
+      <div class="flex flex-1 w-full justify-between items-end mt-4">
         <button
           @click="prevSuggestion"
-          class="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-400"
+          class="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-400 p-2"
           :class="{ 'opacity-50 cursor-not-allowed': currentIndex === 0 }"
           :disabled="currentIndex === 0"
         >
-          <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="xl" />
+          <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="lg" />
         </button>
-        <button @click="nextSuggestion" class="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:!text-gray-400">
-          <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="xl" class="rotate-180" />
+        <button @click="nextSuggestion" class="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:!text-gray-400 p-2">
+          <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="lg" class="rotate-180" />
         </button>
       </div>
     </div>
@@ -96,6 +111,57 @@
   // History for navigation (storing indices) and pointer
   const suggestionHistory = ref<number[]>([])
   const currentIndex = ref(-1)
+
+  // Touch swipe functionality
+  const touchStartX = ref(0)
+  const touchDeltaX = ref(0)
+  const isSwiping = ref(false)
+  const swipeThreshold = 75 // Minimum distance to trigger swipe
+  const swipeContainer = ref<HTMLElement | null>(null)
+
+  const swipeStyle = computed(() => {
+    if (isSwiping.value) {
+      return {
+        transform: `translateX(${touchDeltaX.value}px)`,
+        transition: "none"
+      }
+    }
+    return {
+      transform: "translateX(0)",
+      transition: "transform 0.3s ease"
+    }
+  })
+
+  const handleTouchStart = (e: TouchEvent) => {
+    touchStartX.value = e.touches[0].clientX
+    isSwiping.value = true
+  }
+
+  const handleTouchMove = (e: TouchEvent) => {
+    if (!isSwiping.value) return
+
+    const currentX = e.touches[0].clientX
+    touchDeltaX.value = currentX - touchStartX.value
+
+    // Limit movement for better feel
+    if ((currentIndex.value === 0 && touchDeltaX.value > 0) || (currentIndex.value === suggestionHistory.value.length - 1 && touchDeltaX.value < 0)) {
+      touchDeltaX.value = touchDeltaX.value / 3 // Reduce movement when at edges
+    }
+  }
+
+  const handleTouchEnd = () => {
+    if (Math.abs(touchDeltaX.value) > swipeThreshold) {
+      if (touchDeltaX.value > 0 && currentIndex.value > 0) {
+        prevSuggestion()
+      } else if (touchDeltaX.value < 0) {
+        nextSuggestion()
+      }
+    }
+
+    // Reset
+    touchDeltaX.value = 0
+    isSwiping.value = false
+  }
 
   const currentItemNumber = computed(() => {
     if (currentIndex.value >= 0 && suggestionHistory.value.length > 0) {
@@ -200,5 +266,20 @@ button {
   background: none;
   border: none;
   cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* Increase touch target area */
+button {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Card transition animation */
+.card-content {
+  will-change: transform;
 }
 </style>
