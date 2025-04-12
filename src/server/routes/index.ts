@@ -6,8 +6,10 @@ import spotifyRoutes from "./spotifyRoutes"
 import stravaRoutes from "./stravaRoutes"
 import blogRoutes from "./blogRoutes"
 import notionRoutes from "./notionRoutes"
+import pingRoutes from "./pingRoutes"
 
 export const configureRoutes = (app: Express): void => {
+  app.use("/ping", pingRoutes)
   app.use("/mail", mailRoutes)
   app.use("/readingList", readingListRoutes)
   app.use("/blog", blogRoutes)
