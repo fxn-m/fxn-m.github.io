@@ -1,5 +1,5 @@
 <template>
-  <div v-if="track" class="mini-player" @mouseenter="isExpanded = true" @mouseleave="isExpanded = false">
+  <div v-if="track" class="mini-player hidden lg:flex" @mouseenter="isExpanded = true" @mouseleave="isExpanded = false">
     <a :href="track.externalUrl" target="_blank">
       <div class="artwork-container">
         <img :src="track.cover" :alt="track.name" class="artwork spinning" />
@@ -197,33 +197,6 @@
   @media (hover: hover) {
     .mini-player:hover {
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-  }
-
-  @media (max-width: 1024px) {
-    .mini-player {
-      position: relative;
-      display: flex;
-        width: fit-content;
-      padding: 0.5rem;
-      top: 0;
-      right: 0;
-      margin: auto 0 1rem 0;
-    }
-
-    .mini-player a {
-      gap: 0.5rem;
-      width: auto;
-    }
-
-    .info-container {
-      width: auto;
-      margin-left: 0;
-      max-width: 300px;
-    }
-
-    .info {
-      padding-right: 0.75rem;
     }
   }
 
