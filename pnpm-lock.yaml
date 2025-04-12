@@ -83,6 +83,9 @@ importers:
       notion-to-md:
         specifier: 4.0.0-alpha.4
         version: 4.0.0-alpha.4(@notionhq/client@2.3.0)
+      p-limit:
+        specifier: ^6.2.0
+        version: 6.2.0
       radix-vue:
         specifier: ^1.9.17
         version: 1.9.17(vue@3.5.13(typescript@5.8.3))
@@ -112,10 +115,10 @@ importers:
         specifier: ^9.22.0
         version: 9.24.0
       '@tailwindcss/postcss':
-        specifier: ^4.0.14
+        specifier: ^4.1.3
         version: 4.1.3
       '@tailwindcss/vite':
-        specifier: ^4.0.0
+        specifier: ^4.1.3
         version: 4.1.3(vite@6.2.5(@types/node@22.14.0)(jiti@2.4.2)(lightningcss@1.29.2)(tsx@4.19.3))
       '@tsconfig/node18':
         specifier: ^18.2.4
@@ -184,7 +187,7 @@ importers:
         specifier: ^1.1.6
         version: 1.1.6
       tailwindcss:
-        specifier: ^4.0.0
+        specifier: ^4.1.3
         version: 4.1.3
       tsx:
         specifier: ^4.19.3
@@ -2527,6 +2530,10 @@ packages:
     resolution: {integrity: sha512-TYOanM3wGwNGsZN2cVTYPArw454xnXj5qmWF1bEoAc4+cU/ol7GVh7odevjp1FNHduHc3KZMcFduxU5Xc6uJRQ==}
     engines: {node: '>=10'}
 
+  p-limit@6.2.0:
+    resolution: {integrity: sha512-kuUqqHNUqoIWp/c467RI4X6mmyuojY5jGutNU0wVTmEOOfcuwLqyMVoAi9MKi2Ak+5i9+nhmrK4ufZE8069kHA==}
+    engines: {node: '>=18'}
+
   p-locate@4.1.0:
     resolution: {integrity: sha512-R79ZZ/0wAxKGu3oYMlz8jy/kbhsNrS7SKZ7PxEHBgJ5+F2mtFW2fK2cOtBh1cHYkQsbzFV7I+EoRKe6Yt0oK7A==}
     engines: {node: '>=8'}
@@ -3172,6 +3179,10 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  yocto-queue@1.2.1:
+    resolution: {integrity: sha512-AyeEbWOu/TAXdxlV9wmGcR0+yh2j3vYPGOECcIj2S7MkrLyC7ne+oye2BKTItt0ii2PHk4cDy+95+LshzbXnGg==}
+    engines: {node: '>=12.20'}
 
   zod-to-json-schema@3.24.5:
     resolution: {integrity: sha512-/AuWwMP+YqiPbsJx5D6TfgRTc4kTLjsh5SOcd4bLsfUg2RcEXrFMJl1DGgdHy2aCfsIA/cr/1JM0xcB2GZji8g==}
@@ -5566,6 +5577,10 @@ snapshots:
     dependencies:
       yocto-queue: 0.1.0
 
+  p-limit@6.2.0:
+    dependencies:
+      yocto-queue: 1.2.1
+
   p-locate@4.1.0:
     dependencies:
       p-limit: 2.3.0
@@ -6254,6 +6269,8 @@ snapshots:
   yargs-parser@20.2.9: {}
 
   yocto-queue@0.1.0: {}
+
+  yocto-queue@1.2.1: {}
 
   zod-to-json-schema@3.24.5(zod@3.24.2):
     dependencies:

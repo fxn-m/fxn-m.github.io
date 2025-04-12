@@ -1,43 +1,43 @@
 <template>
-  <div v-if="!isLoading" class="relative reading-suggestion flex flex-col p-6 min-h-52 shadow-md border border-gray-200 dark:border-gray-900 rounded-lg">
+  <div v-if="!isLoading" class="relative reading-suggestion gap-2 flex flex-col p-6 min-h-80 shadow-md border border-gray-200 dark:border-gray-900 rounded-lg">
     <div class="absolute top-2 right-2 text-xs text-gray-500">{{ currentItemNumber }} / {{ readingListCount }}</div>
-    <div class="flex justify-between items-start">
-      <div class="flex-1">
-        <a :href="readingSuggestion.url" target="_blank" class="text-xl font-bold">
-          {{ readingSuggestion.name }}
-          <ExternalLink class="inline-block size-3 align-super" />
-        </a>
-        <p v-if="readingSuggestion.summary" class="mt-2 text-gray-700">
-          {{ readingSuggestion.summary }}
-        </p>
-        <div class="mt-2 flex flex-col sm:flex-row sm:items-center sm:space-x-4">
-          <p v-if="readingSuggestion.readingTime" class="text-sm text-gray-600">
-            <span class="font-semibold">Reading Time:</span>
-            {{ readingSuggestion.readingTime }} minutes
-          </p>
-          <div v-if="readingSuggestion.categories && readingSuggestion.categories.length" class="flex flex-wrap gap-2 mt-2 sm:mt-0">
-            <span
-              v-for="(category, index) in readingSuggestion.categories"
-              :key="index"
-              class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs dark:bg-gray-700 dark:text-gray-200"
-            >
-              {{ category }}
-            </span>
-          </div>
-        </div>
+
+    <p>
+      <a :href="readingSuggestion.url" target="_blank" class="text-xl font-bold">
+        {{ readingSuggestion.name }}
+        <ExternalLink class="inline-block size-3 align-super" />
+      </a>
+    </p>
+    <p v-if="readingSuggestion.summary" class="mt-2 text-gray-700 dark:!text-gray-500">
+      {{ readingSuggestion.summary }}
+    </p>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+      <p v-if="readingSuggestion.readingTime" class="text-sm text-gray-600">
+        <span class="font-semibold">Reading Time:</span>
+        {{ readingSuggestion.readingTime }} minutes
+      </p>
+      <div v-if="readingSuggestion.categories && readingSuggestion.categories.length" class="flex flex-wrap gap-2 mt-2 sm:mt-0">
+        <span
+          v-for="(category, index) in readingSuggestion.categories"
+          :key="index"
+          class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs dark:bg-gray-700 dark:text-gray-200"
+        >
+          {{ category }}
+        </span>
       </div>
     </div>
+
     <!-- Navigation Arrows at the bottom -->
-    <div class="mt-auto flex w-full justify-between items-center space-x-8">
+    <div class="flex flex-1 w-full justify-between items-end">
       <button
         @click="prevSuggestion"
-        class="text-gray-700 hover:text-gray-800 dark:text-gray-200 dark:hover:text-gray-300"
+        class="!text-gray-700 hover:!text-gray-800 dark:!text-gray-200 dark:hover:!text-gray-300"
         :class="{ 'opacity-50 !cursor-not-allowed': currentIndex === 0 }"
         :disabled="currentIndex === 0"
       >
         <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="1x" />
       </button>
-      <button @click="nextSuggestion" class="text-gray-700 hover:text-gray-800 dark:text-gray-200 dark:hover:text-gray-300">
+      <button @click="nextSuggestion" class="!text-gray-700 hover:!text-gray-800 dark:!text-gray-200 dark:hover:!text-gray-300">
         <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="1x" class="rotate-180" />
       </button>
     </div>

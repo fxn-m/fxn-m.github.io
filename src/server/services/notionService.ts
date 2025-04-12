@@ -7,8 +7,9 @@ import { generateObject, generateText } from "ai"
 
 import env from "../config/env"
 
-import type { NotionResponse } from "@/shared/types/notion"
+import { isPageObjectResponse, type NotionResponse } from "@/shared/types/notion"
 import { openai } from "@ai-sdk/openai"
+import pLimit from "p-limit"
 
 const PagePropertiesSchema = z.object({
   id: z.string(),
@@ -261,4 +262,41 @@ export const enrichReadingListItem = async (pageId: string, databaseId: string) 
   console.log("Enriched item:", enrichedItem)
   await updateNotionPage(pageId, enrichedItem, props.created)
   console.log("Updated Notion page with enriched item")
+}
+
+export const enrichAllReadingListItems = async () => {
+  const readingList = await getReadingList()
+  const filteredReadingList = readingList.filter((item) => isPageObjectResponse(item))
+
+  const categories = await extractCategoriesFromDatabase(env.notionReadingListDatabaseId ?? "")
+  // Set the concurrency limit (5 in this example)
+  const limit = pLimit(5)
+
+  await Promise.all(
+    filteredReadingList.map((item) =>
+      limit(async () => {
+        const pageName = item.properties.Name.type === "title" ? item.properties.Name.title[0].plain_text : ""
+        // Check if enriched properties already exist: if Summary.rich_text has any content, skip processing
+        if (
+          item.properties.Summary.type === "rich_text" &&
+          item.properties.Summary.rich_text &&
+          item.properties.Summary.rich_text.some((rt) => rt.plain_text && rt.plain_text.trim().length > 0)
+        ) {
+          console.log(`Skipping ${pageName} because it already has a summary.`)
+          return
+        }
+
+        if (item.properties.Status.type === "select" && item.properties.Status.select && item.properties.Status.select.name !== "Shelved") {
+          console.log(`Skipping ${pageName} because it is not shelved.`)
+          return
+        }
+
+        console.log(`Enriching ${pageName}...`)
+
+        const props = await getPagePropertiesById(item.id)
+        const enrichedItem = await enrich({ props, categories })
+        await updateNotionPage(item.id, enrichedItem, item.created_time)
+      })
+    )
+  )
 }

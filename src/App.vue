@@ -1,6 +1,6 @@
 <template>
   <Navbar />
-  <RouterView />
+  <RouterView class="text-primary-light dark:text-primary-dark" />
   <CurrentTrack />
 </template>
 

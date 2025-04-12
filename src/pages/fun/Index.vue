@@ -2,17 +2,16 @@
   <div id="content">
     <div class="project-grid">
       <div class="project-card" v-for="project in projects" :key="project.id">
-        <div class="project-info">
+        <div class="project-info space-y-2">
           <h3 class="flex gap-1 items-center font-semibold">
             <a v-if="project.link.includes('https')" :href="project.link" target="_blank" class="flex gap-1 items-center"
               >{{ project.title }}<Link class="size-3"
             /></a>
             <RouterLink v-else :to="project.link" class="flex gap-1 items-center">{{ project.title }}<Link class="size-3" /></RouterLink>
           </h3>
-          <p class="font-light">{{ project.subtitle }}</p>
-          <div class="my-2"></div>
-          <p class="text-sm !text-gray-500">{{ project.description }}</p>
-          <p class="text-xs !text-gray-400 my-2">
+          <p class="font-light text-sm text-primary-light dark:text-primary-dark">{{ project.subtitle }}</p>
+          <p v-html="project.description" class="text-sm text-gray-600"></p>
+          <p class="text-xs text-gray-400 my-2">
             <span v-if="project.date">{{ project.date }}</span>
           </p>
         </div>
@@ -29,11 +28,12 @@
     [
       {
         id: 1,
-        title: "ReadMe",
-        subtitle: "A reading suggestion engine",
-        description: "Picks an item from my Notion reading list at random, overcoming the paradox of choice.",
+        title: "TabOverflow",
+        subtitle: "Overcoming the paradox of choice",
+        description: `I come across tonnes of niche little articles on technical topics, general life advice and other bits and pieces. I use a chrome extension to save the links to a Notion database, but rarely get around to reading them. Just glancing at the <span class="font-mono">>400</span class="font-mono"> articles in there makes me shiver, so I got <span class="font-mono">gpt-4o</span> to summarise most of them, and built this front-end to bubble up one at random, with estimated reading time and a few tags.
+        The hardest thing about the abundance of information today is deciding <a href="https://jeremy.zawodny.com/blog/archives/008581.html" target="_blank">what to ignore</a>.`,
         link: "/fun/:tab-overflow",
-        date: "2023-10"
+        date: "2023-10 (updated 2025-04)"
       },
       {
         id: 2,
