@@ -1,7 +1,3 @@
-<!-- a component that is displayed when the server is warming up -->
-<!-- consists of a simple lucie Loading2 spinner with a "servers warming up" next to it, and a radix popover on hover explaining that I'm broke  -->
-<!-- determines if the server is warming up by polling the "/ping" GET route on the backend, if loading is true -->
-
 <template>
   <div class="absolute top-0 right-0 p-4">
     <div v-if="isWarmingUp" class="relative flex items-center gap-2 justify-between" @mouseenter="showPopover = true" @mouseleave="showPopover = false">
