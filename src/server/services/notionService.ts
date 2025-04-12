@@ -10,6 +10,7 @@ import env from "../config/env"
 import { isPageObjectResponse, type NotionResponse } from "@/shared/types/notion"
 import { openai } from "@ai-sdk/openai"
 import pLimit from "p-limit"
+import { writeReadingListToFile } from "../utils/fileUtils"
 
 const PagePropertiesSchema = z.object({
   id: z.string(),
@@ -263,6 +264,8 @@ export const enrichReadingListItem = async (pageId: string, databaseId: string) 
   console.log("Enriched item:", enrichedItem)
   await updateNotionPage(pageId, enrichedItem, props.created)
   console.log("Updated Notion page with enriched item")
+  await writeReadingListToFile()
+  console.log("Updated reading list file")
 }
 
 export const enrichAllReadingListItems = async () => {
