@@ -15,7 +15,7 @@
             <ExternalLink class="inline-block size-3 flex-shrink-0 mt-1" />
           </a>
         </p>
-        <p v-if="readingSuggestion.summary" class="mt-2 text-sm sm:text-base text-gray-700 dark:!text-gray-500 line-clamp-4 sm:line-clamp-none">
+        <p v-if="readingSuggestion.summary" class="mt-2 text-sm sm:text-base text-gray-700 dark:text-gray-500 line-clamp-6 sm:line-clamp-none">
           {{ readingSuggestion.summary }}
         </p>
         <div class="flex flex-col sm:flex-row sm:items-center mt-3">
@@ -45,7 +45,7 @@
         >
           <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="lg" />
         </button>
-        <button @click="nextSuggestion" class="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:!text-gray-400 p-2">
+        <button @click="nextSuggestion" class="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-400 p-2">
           <FontAwesomeIcon icon="fa-solid fa-arrow-left" size="lg" class="rotate-180" />
         </button>
       </div>
