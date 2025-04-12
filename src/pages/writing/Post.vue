@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-4 sm:mt-16">
     <div class="metadata">
-      <h1>{{ metadata.title }}</h1>
+      <h1 class="text-wrap">{{ metadata.title }}</h1>
       <p>{{ metadata.date }}</p>
     </div>
     <div class="blog" v-html="blogContent"></div>
@@ -141,11 +141,9 @@
 
 h1 {
   margin: 0;
-  flex: 0 0 auto;
   text-decoration: none;
   transition: color 0s ease-in-out;
   font-size: xx-large;
-
   font-weight: 600;
 }
 
