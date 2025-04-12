@@ -12,7 +12,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
   const numBars = 4
 
   const bars = Array.from({ length: numBars }).map(() => ({
