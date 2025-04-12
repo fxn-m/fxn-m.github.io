@@ -1,12 +1,16 @@
 <template>
-  <div class="min-h-80 flex flex-col shadow-md border border-gray-200 dark:border-gray-900 rounded-lg transition-all duration-1000">
+  <div
+    v-touch:swiperight="prevSuggestion"
+    v-touch:swipeleft="nextSuggestion"
+    class="min-h-80 flex flex-col shadow-md border border-gray-200 dark:border-gray-900 rounded-lg transition-all duration-1000 sm:rounded-2xl overflow-hidden"
+  >
     <div v-if="isLoading" class="flex flex-1 gap-2 flex-col items-center justify-center h-full text-gray-600 dark:text-gray-400 transition-color duration-1000">
       <p class="text-sm">Loading...</p>
       <!-- <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 dark:border-gray-200"></div> -->
       <Loader2 class="animate-spin size-6" />
     </div>
 
-    <div v-else class="relative reading-suggestion gap-2 flex flex-col p-6 flex-1">
+    <div v-else class="relative reading-suggestion gap-2 flex flex-col p-4 sm:p-6 flex-1">
       <div class="absolute top-2 right-2 text-xs text-gray-500">{{ currentItemNumber }} / {{ readingListCount }}</div>
 
       <p>
@@ -200,5 +204,11 @@ button {
   background: none;
   border: none;
   cursor: pointer;
+}
+
+@media (max-width: 640px) {
+  .reading-suggestion {
+    font-size: 0.9rem;
+  }
 }
 </style>
