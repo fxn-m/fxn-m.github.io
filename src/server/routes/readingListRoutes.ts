@@ -1,8 +1,9 @@
 import { Router } from "express"
-import { getReadingListController } from "../controllers/readingListController"
+import { enrichReadingListController, getReadingListController } from "../controllers/readingListController"
 
 const router: Router = Router()
 
 router.get("/", getReadingListController)
+router.post("/enrich", enrichReadingListController)
 
 export default router

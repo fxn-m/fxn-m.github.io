@@ -8,7 +8,7 @@ export const configureMiddleware = (app: Express): void => {
     cors({
       origin: "*",
       methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-      credentials: true // Allow cookies, if needed
+      credentials: true
     })
   )
 }

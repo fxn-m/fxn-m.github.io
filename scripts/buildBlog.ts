@@ -12,7 +12,7 @@ import { dirname } from "node:path"
 import dotenv from "dotenv"
 import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
 import type { BlogPost } from "@/shared"
-import { enrichAllReadingListItems } from "@/server/services/notionService"
+
 dotenv.config()
 
 const __filename = fileURLToPath(import.meta.url)
@@ -28,7 +28,9 @@ fs.mkdirSync(outputDir, { recursive: true })
 
 // process and update all blog posts in the Notion database
 const processBlogPosts = async () => {
-  await enrichAllReadingListItems()
+  await fetch(`${process.env.BACKEND_URL}/readingList/enrich`, {
+    method: "POST"
+  })
 }
 
 // fetch the blog posts from the Notion database
@@ -44,6 +46,8 @@ const fetchBlogPostById = async (id: string) => {
 }
 
 const run = async () => {
+  console.log("Building blog posts...")
+  console.log("Backend URL:", process.env.BACKEND_URL)
   await processBlogPosts()
   const blogs = await fetchBlogPosts()
   const indexPromises = blogs.map(async (blog: BlogPost) => {
