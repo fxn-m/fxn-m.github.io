@@ -6,7 +6,10 @@
     </div>
 
     <div v-else class="relative reading-suggestion gap-2 flex flex-col p-4 py-8 sm:p-6 flex-1">
-      <div class="absolute top-2 right-2 text-xs text-gray-500">{{ currentItemNumber }} / {{ readingListCount }}</div>
+      <div class="absolute top-2 right-2 text-xs text-gray-500">
+        {{ currentItemNumber }} / {{ readingListCount }} on
+        <a :href="`https://notion.so/fxn-m/${readingSuggestion.id.replace(/-/g, '')}`" target="_blank" class="!text-inherit">Notion</a>
+      </div>
 
       <div class="card-content space-y-4 sm:space-y-6">
         <p>
