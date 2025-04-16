@@ -38,6 +38,7 @@ export async function getSpotifyAccessToken(): Promise<string> {
   })
 
   if (!response.ok) {
+    console.error("Error refreshing Spotify access token:", await response.text())
     throw new Error("Failed to refresh Spotify access token")
   }
 
