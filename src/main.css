@@ -259,8 +259,9 @@ body.dark a:not([href]):not([class]):hover {
 }
 
 body.dark blockquote {
-  border-color: #1f2b44;
+  border-color: #2a3855;
   transition: all 0.5s ease-in-out;
+  color: #cecece;
 }
 
 body.dark ul li,

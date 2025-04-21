@@ -1,7 +1,7 @@
 <template>
   <div class="container mt-4 sm:mt-16">
     <div class="metadata">
-      <h1 class="text-wrap">{{ metadata.title }}</h1>
+      <h1 class="text-wrap text-black dark:text-white">{{ metadata.title }}</h1>
       <p>{{ metadata.date }}</p>
     </div>
     <div class="blog" v-html="blogContent"></div>
@@ -223,5 +223,13 @@ body.dark h3 {
 
 .blog:deep(code) {
   background-color: inherit;
+}
+
+.blog:deep(h1, h2, h3, h4, h5, h6) {
+  color: black
+}
+
+body.dark .blog:deep(h1, h2, h3, h4, h5, h6) {
+  color: white
 }
 </style>
