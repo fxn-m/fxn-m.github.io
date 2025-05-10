@@ -23,6 +23,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@mapbox/polyline": "^1.2.1",
     "@notionhq/client": "^3.0.1",
+    "@tanstack/vue-query": "^5.75.7",
     "@trpc/client": "^11.1.2",
     "@trpc/server": "^11.1.2",
     "axios": "^1.9.0",
