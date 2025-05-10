@@ -122,7 +122,7 @@
       class: "fa-github"
     },
     {
-      href: "https://x.com/fxn__m",
+      href: "https://x.com/0xf3l1x_",
       icon: "fa-brands fa-x-twitter",
       class: "fa-twitter"
     },
