@@ -17,7 +17,7 @@ export const writeReadingListToFile = async (): Promise<void> => {
   fs.writeFileSync(filePath, JSON.stringify(readingList, null, 2))
 }
 
-export const readReadingListFromFile = (): any => {
+export const readReadingListFromFile = () => {
   const filePath = getReadingListFilePath()
   return JSON.parse(fs.readFileSync(filePath, "utf8"))
 }

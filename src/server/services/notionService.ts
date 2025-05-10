@@ -1,17 +1,18 @@
 import { Client } from "@notionhq/client"
 import env from "../config/env"
 
-export const getReadingList = async (): Promise<any[]> => {
+export const getReadingList = async () => {
   const notion = new Client({
     auth: env.notionApiKey
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let readingList: any[] = []
   let hasNextPage = true
-  let startCursor = undefined
+  let startCursor: string | undefined | null = undefined
 
   while (hasNextPage) {
-    const response: any = await notion.databases.query({
+    const response = await notion.databases.query({
       database_id: env.notionDatabaseId,
       filter: {
         or: [
@@ -53,7 +54,7 @@ export const getReadingList = async (): Promise<any[]> => {
           }
         ]
       },
-      start_cursor: startCursor
+      start_cursor: startCursor ?? undefined
     })
 
     readingList = [...readingList, ...response.results]

@@ -18,11 +18,16 @@ export async function getSpotifyAccessToken(): Promise<string> {
     throw new Error("Failed to refresh Spotify access token")
   }
 
-  const data = (await response.json()) as any
-  return data.access_token
+  const data = await response.json()
+
+  if (!data || typeof data !== "object" || !("access_token" in data) || typeof data.access_token !== "string") {
+    throw new Error("Invalid response from Spotify token endpoint")
+  }
+
+  return data.access_token // Access token
 }
 
-export async function getCurrentPlayingTrack(token: string): Promise<any> {
+export async function getCurrentPlayingTrack(token: string) {
   const response = await fetch(SPOTIFY_CURRENT_TRACK_ENDPOINT, {
     headers: {
       Authorization: `Bearer ${token}`
@@ -33,6 +38,11 @@ export async function getCurrentPlayingTrack(token: string): Promise<any> {
     throw new Error("Failed to fetch current track")
   }
 
-  const data = (await response.json()) as any
+  const data = await response.json()
+
+  if (!data || typeof data !== "object" || !("item" in data)) {
+    throw new Error("Invalid response from Spotify current track endpoint")
+  }
+
   return data.item // Currently playing track
 }

@@ -23,6 +23,8 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@mapbox/polyline": "^1.2.1",
     "@notionhq/client": "^2.3.0",
+    "@trpc/client": "^11.1.2",
+    "@trpc/server": "^11.1.2",
     "axios": "^1.8.3",
     "chart.js": "^4.4.8",
     "cors": "^2.8.5",
