@@ -29,8 +29,6 @@
 
     <p>Email me at <a href="mailto:fnewportmangell@gmail.com">fnewportmangell@gmail.com</a> or <RouterLink to="/contact"> get in touch</RouterLink> here.</p>
 
-    <Activity />
-
     <footer>
       <p>Last updated: {{ buildDate }}</p>
     </footer>
@@ -38,7 +36,6 @@
 </template>
 
 <script setup lang="ts">
-  import Activity from "@/components/strava/Activity.vue"
   import { format } from "date-fns"
 
   // eslint-disable-next-line no-undef

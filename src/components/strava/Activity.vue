@@ -236,7 +236,7 @@
 </script>
 
 <template>
-  <div class="strava-activity-viewer mt-12 transition-all duration-1000">
+  <div class="strava-activity-viewer transition-all duration-1000">
     <!-- Loading / Error states -->
     <div v-if="isLoading" class="activity-card loading-skeleton">
       <div class="activity-content">
@@ -269,11 +269,8 @@
 
         <!-- Canvas gradient -->
         <!-- Top -->
-        <div class="absolute inset-0 bg-gradient-to-b from-white to-transparent to-25% transition-opacity duration-1000" :class="{ 'opacity-0': isDark }"></div>
-        <div
-          class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-transparent to-25% transition-opacity duration-1000"
-          :class="{ 'opacity-0': !isDark }"
-        ></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-white to-transparent to-25%" :class="{ 'opacity-0': isDark }"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-transparent to-25%" :class="{ 'opacity-0': !isDark }"></div>
 
         <!-- Bottom -->
         <div
