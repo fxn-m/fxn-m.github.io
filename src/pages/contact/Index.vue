@@ -103,7 +103,7 @@
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
     axios
-      .post(`${BACKEND_URL}/send-email`, {
+      .post(`${BACKEND_URL}/email/send`, {
         name: name.value,
         email: email.value,
         message: message.value

@@ -9,8 +9,10 @@ export default {
   mailgunApiKey: process.env.MAILGUN_API_KEY,
   mailgunDomain: process.env.MAILGUN_DOMAIN,
   notionApiKey: process.env.NOTIONAPIKEY,
-  notionDatabaseId: process.env.NOTIONDATABASEID || "",
+  notionReadingListDatabaseId: process.env.NOTIONREADINGLISTDATABASEID,
+  notionBlogDatabaseId: process.env.NOTIONBLOGDATABASEID,
   readmeSecret: process.env.README_SECRET,
   stravaClientSecret: process.env.STRAVA_CLIENT_SECRET,
-  stravaRefreshToken: process.env.STRAVA_REFRESH_TOKEN
-}
+  stravaRefreshToken: process.env.STRAVA_REFRESH_TOKEN,
+  openaiApiKey: process.env.OPENAI_API_KEY
+} as const

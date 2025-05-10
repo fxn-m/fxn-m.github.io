@@ -1,9 +1,0 @@
-{
-  "watch": ["src/server/**/*"],
-  "ext": "ts",
-  "ignore": ["src/**/*.test.ts"],
-  "exec": "node --experimental-specifier-resolution=node --loader ts-node/esm ./src/server/index.ts --experimental-json-modules",
-  "env": {
-    "TS_NODE_PROJECT": "./tsconfig.node.json"
-  }
-}

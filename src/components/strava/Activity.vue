@@ -3,6 +3,7 @@
   import { format } from "date-fns"
   import polyline from "@mapbox/polyline"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+  import { Loader2 } from "lucide-vue-next"
   import type { StravaActivity } from "@/shared/types/strava"
   import { useQuery } from "@tanstack/vue-query"
 
@@ -73,9 +74,6 @@
     const coordinates = polyline.decode(activity.map.summary_polyline)
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     if (coordinates.length === 0) return
-
-    // Determine if dark mode is active
-    // const isDark = document.body.classList.contains("dark")
 
     // Find bounds
     const bounds = coordinates.reduce(
@@ -238,12 +236,15 @@
 </script>
 
 <template>
-  <div class="strava-activity-viewer mt-12">
+  <div class="strava-activity-viewer mt-12 transition-all duration-1000">
     <!-- Loading / Error states -->
     <div v-if="isLoading" class="activity-card loading-skeleton">
       <div class="activity-content">
         <!-- Left skeleton: spinner for map area -->
-        <div class="polyline-container skeleton-canvas"></div>
+        <div class="polyline-container skeleton-canvas flex justify-center items-center rounded-2xl text-sm flex-col gap-2">
+          <!-- Fetching latest activities from Strava... -->
+          <Loader2 class="animate-spin text-gray-500 dark:text-gray-400 size-8" />
+        </div>
         <!-- Right skeleton: greyed-out lines for stats -->
         <div class="activity-info skeleton-info">
           <div class="skeleton-line short"></div>
@@ -262,9 +263,27 @@
     <div v-else-if="activities.length > 0" class="activity-card">
       <div class="activity-content relative">
         <!-- Left Panel: Route Canvas -->
-        <div class="polyline-container">
+        <div class="polyline-container transition-all duration-1000">
           <canvas ref="canvasRef"></canvas>
         </div>
+
+        <!-- Canvas gradient -->
+        <!-- Top -->
+        <div class="absolute inset-0 bg-gradient-to-b from-white to-transparent to-25% transition-opacity duration-1000" :class="{ 'opacity-0': isDark }"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-transparent to-25% transition-opacity duration-1000"
+          :class="{ 'opacity-0': !isDark }"
+        ></div>
+
+        <!-- Bottom -->
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-white to-25% to-transparent transition-opacity duration-1000 sm:invisible"
+          :class="{ 'opacity-0': isDark }"
+        ></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-25% to-transparent transition-opacity duration-1000 sm:invisible"
+          :class="{ 'opacity-0': !isDark }"
+        ></div>
 
         <div class="countdown flex gap-3 items-center text-xs absolute top-0 left-0 text-gray-400 z-10">
           <FontAwesomeIcon icon="fa-solid fa-flag-checkered" />
@@ -277,16 +296,6 @@
         <!-- Right Panel: Stats -->
         <div class="activity-info select-none">
           <div class="activity-stats relative w-full h-full">
-            <div
-              class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent transition-opacity duration-500 sm:invisible"
-              :class="{ 'opacity-0': isDark }"
-            ></div>
-
-            <div
-              class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent transition-opacity duration-500 sm:invisible"
-              :class="{ 'opacity-0': !isDark }"
-            ></div>
-
             <div class="activity-metadata sm:mb-6 z-10 top-0 right-0">
               <div class="activity-date">
                 {{ format(new Date(activities[currentIndex].start_date), "PPP") }}
@@ -344,7 +353,6 @@
   /* Base (light mode) styles */
 .strava-activity-viewer {
   width: 100%;
-
   font-family: sans-serif;
   color: #222;
 }
@@ -368,7 +376,6 @@
   width: 100%;
   height: 100%;
   position: relative;
-  background-color: inherit;
 }
 
 /* Fill canvas container */
@@ -376,6 +383,7 @@ canvas {
   width: 100%;
   height: 100%;
   display: block;
+  background-color: transparent;
 }
 
 /* Right panel for stats */
@@ -541,11 +549,18 @@ canvas {
   .label {
     font-size: 0.5rem;
   }
+  .skeleton-info {
+  padding: 1rem 0rem;
+}
 }
 
 /* ------------------ DARK MODE OVERRIDES ------------------ */
 body.dark .strava-activity-viewer {
   color: #ddd;
+}
+
+body.dark .activity-card {
+  background-color: #0a0a0a;
 }
 
 body.dark .activity-info {

@@ -9,6 +9,9 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  BACKEND_URL: https://fxn-m-github-io.onrender.com
+
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
   contents: read
@@ -30,17 +33,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: "npm"
-      - name: Install pnpm
-        run: corepack enable && corepack prepare pnpm@latest --activate
+          cache: "pnpm"
       - name: Install dependencies
         run: pnpm install
       - name: Build
-        run: pnpm run build
+        run: pnpm build
       - name: Setup Pages
         uses: actions/configure-pages@v4
       - name: Upload artifact

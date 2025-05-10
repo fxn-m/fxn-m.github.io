@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-  import ReadingSuggestion from "@/pages/fun/ReadMe/Index.vue"
+  import ReadingSuggestion from "@/pages/fun/TabOverflow/Index.vue"
   import AtmosphereFM from "@/pages/fun/Atmosphere.fm/Index.vue"
   import { useRoute } from "vue-router"
   import { ref, onMounted, type Component } from "vue"
@@ -22,7 +22,7 @@
     }
 
     switch (routeName) {
-      case "readme":
+      case "tab-overflow":
         selectedComponent.value = components.ReadingSuggestion
         break
       case "atmosphere-fm":

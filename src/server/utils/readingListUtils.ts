@@ -1,12 +1,11 @@
 import { Client } from "@notionhq/client"
-import dotenv from "dotenv"
-dotenv.config()
+import env from "@/server/config/env"
 
 export const getReadingList = async () => {
   console.log("Getting reading list...")
 
-  const NOTIONAPIKEY = process.env.NOTIONAPIKEY
-  const NOTIONDATABASEID = process.env.NOTIONDATABASEID ?? ""
+  const NOTIONAPIKEY = env.notionApiKey
+  const NOTIONREADINGLISTDATABASEID = env.notionReadingListDatabaseId
 
   const notion = new Client({
     auth: NOTIONAPIKEY
@@ -20,7 +19,7 @@ export const getReadingList = async () => {
   while (hasNextPage) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response: any = await notion.databases.query({
-      database_id: NOTIONDATABASEID,
+      database_id: NOTIONREADINGLISTDATABASEID ?? "",
       filter: {
         or: [
           {

@@ -1,31 +1,19 @@
 <template>
   <div id="content">
     <div class="project-grid">
-      <div v-for="project in projects" :key="project.id" class="project-card">
-        <div class="project-image">
-          <img :src="project.image" :alt="project.title" />
-
-          <a v-if="project.link.includes('https')" :href="project.link" target="_blank">
-            <div :class="project.whiteBg ? 'project-overlay white' : 'project-overlay'">
-              <h3>
-                <a v-if="project.link.includes('https')" :href="project.link" target="_blank">{{ project.title }}</a>
-              </h3>
-              <a v-if="project.aboutLink" :href="project.aboutLink" class="about-link">About</a>
-            </div>
-          </a>
-
-          <RouterLink v-else :to="project.link">
-            <div :class="project.whiteBg ? 'project-overlay-white' : 'project-overlay'">
-              <h3>
-                <RouterLink :to="project.link">{{ project.title }}</RouterLink>
-              </h3>
-              <a v-if="project.aboutLink" :href="project.aboutLink" class="about-link">About</a>
-            </div>
-          </RouterLink>
-        </div>
-
-        <div class="project-info">
-          <p>{{ project.description }}</p>
+      <div class="project-card" v-for="project in projects" :key="project.id">
+        <div class="project-info space-y-2">
+          <h3 class="flex gap-1 items-center font-semibold">
+            <a v-if="project.link.includes('https')" :href="project.link" target="_blank" class="flex gap-1 items-center"
+              >{{ project.title }}<Link class="size-3"
+            /></a>
+            <RouterLink v-else :to="project.link" class="flex gap-1 items-center">{{ project.title }}<Link class="size-3" /></RouterLink>
+          </h3>
+          <p class="font-light text-sm text-primary-light dark:text-primary-dark">{{ project.subtitle }}</p>
+          <p v-html="project.description" class="text-sm text-gray-600 dark:text-gray-500"></p>
+          <p class="text-xs text-gray-400 my-2">
+            <span v-if="project.date">{{ project.date }}</span>
+          </p>
         </div>
       </div>
     </div>
@@ -34,33 +22,35 @@
 
 <script setup lang="ts">
   import { ref } from "vue"
+  import { Link } from "lucide-vue-next"
 
   const projects = ref(
     [
       {
         id: 1,
-        title: "ReadMe",
-        description: "Find what you need to read",
-        image: "/images/image.webp",
-        link: "/fun/:readme",
-        aboutLink: ""
+        title: "Atmosphere.fm (discontinued)",
+        subtitle: "Soundtracks shaped by skies",
+        description: `Intelligently curated spotify playlists based on the local weather and time of day. My first "full-stack" project, built in 2023. Relied on Spotify's personalised mixes, which were removed from the API in 2024. I had to discontinue the project, but it was a great learning experience.`,
+        link: "/fun/:atmosphere-fm",
+        date: "2023-06"
       },
       {
         id: 2,
-        title: "Atmosphere.fm",
-        description: "Soundtracks shaped by skies",
-        image: "/images/sunset2.webp",
-        link: "/fun/:atmosphere-fm",
-        aboutLink: "#/fun/atmosphere-fm-about"
+        title: "TabOverflow",
+        subtitle: "Overcoming the paradox of choice",
+        description: `I come across tonnes of niche little articles on technical topics, general life advice and other bits and pieces. I use a chrome extension to save the links to a Notion database, but rarely get around to reading them. Just glancing at the <span class="font-mono">>400</span class="font-mono"> articles in there makes me shiver, so I got <span class="font-mono">gpt-4o</span> to summarise most of them, and built this front-end to bubble up one at random, with estimated reading time and a few tags.
+        The hardest thing about the abundance of information today is deciding <a href="https://jeremy.zawodny.com/blog/archives/008581.html" target="_blank">what to ignore</a>.`,
+        link: "/fun/:tab-overflow",
+        date: "2023-10 (updated 2025-04)"
       },
       {
         id: 3,
         title: "PGT",
-        description: "Paul Graham's Essays Translated",
-        image: "/images/pgt.svg",
+        subtitle: "Paul Graham's Essays, Translated",
+        description:
+          "I noticed that some of Paul Graham's essays had translations in other languages. Not all of them were translated, and some of the translations were incomplete or dead links altogether. I decided to create a website that hosted translations of all his essays, translated into 8 langugages, using 4 LLMs. I imagined that the people that would find this most useful were those that weren't aware of browser's in-built translation features, so I heavily optimised for SEO and performance in Next.js with SSG. Learned a lot about SEO and performance in the process. ",
         link: "https://paulgraham-translated.vercel.app",
-        aboutLink: "",
-        whiteBg: true
+        date: "2024-11"
       }
     ].reverse()
   )
@@ -68,135 +58,13 @@
 
 <style scoped>
   .project-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    margin: 3rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .project-card {
-    border-radius: 8px;
-    border: 1px solid #e3e3e3;
-    overflow: hidden;
-    transition: all 0.5s ease-in-out;
-}
-
-.project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-.project-image {
-    position: relative;
-    overflow: hidden;
-    aspect-ratio: 5/4;
-}
-
-.project-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.project-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 1rem;
-    background: rgba(0, 0, 0, 0.2);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    transition: opacity 0.3s ease-in-out;
-    opacity: 0;
-}
-
-.project-card:hover .project-overlay {
-    opacity: 1;
-}
-
-.project-overlay h3 {
-    margin: 0;
-}
-
-.project-overlay h3 a,
-body.dark .project-overlay.white h3 a {
-    color: #cecece;
-    text-decoration: none;
-    font-size: 1.5rem;
-    border: none;
-    padding: 0rem 1rem 1rem 0rem;
-
-    transition: color 0.3s ease-in-out;
-}
-
-.project-overlay.white {
-    background: rgba(255, 255, 255, 0.2);
-}
-
-.project-overlay.white h3 a {
-    color: #5e5e5e;
-}
-
-.project-overlay.white h3 a:hover {
-    color: #000000;
-}
-
-.project-overlay h3 a:hover,
-body.dark .project-overlay.white h3 a:hover {
-    color: #fff;
-}
-
-.about-link {
-    align-self: flex-end;
-    color: #cecece;
-    text-decoration: none;
-    padding: 0.5rem 1rem;
-    border: none;
-    transition: background-color 0.3s ease-in-out;
-    border-radius: 15px;
-}
-
-.about-link:hover {
-    color: #fff;
-}
-
-.project-info {
-    padding: 1rem;
-}
-
-.project-info p {
-    color: #3c3c3c;
-    margin: 0;
-    text-align: center;
-}
-
-body.dark .project-card {
-    border: none;
-    transition: all 0.5s ease-in-out;
-}
-
-body.dark .project-info p {
-    color: #ababab;
-}
-
-@media screen and (max-width: 1024px) {
-    .project-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 4rem;
-    }
-}
-
-@media screen and (max-width: 700px) {
-    .project-grid {
-        grid-template-columns: repeat(1, 1fr);
-        gap: 2rem;
-    }
-
-    .project-info {
-        display: none;
-    }
+  border-left: 1px solid #222;
+  padding-left: 1rem;
 }
 </style>

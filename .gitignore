@@ -34,3 +34,5 @@ desktop.ini
 *.code-workspace
 
 .vscode
+
+src/server/readingList.json

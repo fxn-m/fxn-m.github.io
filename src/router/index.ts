@@ -14,7 +14,7 @@ const router = createRouter({
       component: () => import("@/pages/writing/Index.vue")
     },
     {
-      path: "/writing/:post",
+      path: "/writing/:slug",
       name: "writingPost",
       component: () => import("@/pages/writing/Post.vue"),
       props: true

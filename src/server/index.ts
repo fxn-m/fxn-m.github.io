@@ -2,7 +2,8 @@ import express from "express"
 import env from "./config/env"
 import { configureMiddleware } from "./middleware"
 import { configureRoutes } from "./routes"
-import { ensureReadingListFileExists } from "./utils/fileUtils"
+import { ensureReadingListFileExists, getReadingListFilePath } from "./utils/fileUtils"
+import fs from "fs"
 
 const app = express()
 const port = env.port
@@ -27,4 +28,14 @@ app.listen(port, async () => {
   } catch (error) {
     console.error("Error ensuring reading list file exists:", error)
   }
+})
+
+// Cleanup only on SIGINT (CMD+C)
+process.on("SIGINT", () => {
+  const filePath = getReadingListFilePath()
+  if (fs.existsSync(filePath)) {
+    fs.unlinkSync(filePath)
+    console.log("\nDeleted readingList.json on exit (SIGINT)")
+  }
+  process.exit(0)
 })

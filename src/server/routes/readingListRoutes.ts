@@ -1,9 +1,9 @@
 import { Router } from "express"
-import { getReadingListController, markReadController } from "../controllers/readingListController"
+import { enrichReadingListController, getReadingListController } from "../controllers/readingListController"
 
-const router = Router()
+const router: Router = Router()
 
-router.get("/get-reading-list", getReadingListController)
-router.post("/mark-read/:id", markReadController)
+router.get("/", getReadingListController)
+router.post("/enrich", enrichReadingListController)
 
 export default router

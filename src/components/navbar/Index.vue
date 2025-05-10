@@ -6,9 +6,9 @@
           icon="fa-solid fa-caret-left"
           size="2xs"
           id="popup-arrow"
+          class="text-black dark:text-primary-dark"
           :style="{
-            visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden',
-            color: 'var(--arrow-color)'
+            visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden'
           }"
         />
       </div>
@@ -45,7 +45,6 @@
     position: absolute;
     left: -9px;
     transform: rotate(45deg);
-    color: inherit;
   }
 </style>
 
@@ -71,7 +70,7 @@
     if (currentRoute[currentRoute.length - 1] === "-") {
       return `${currentRoute}`.slice(0, -1).replace(":", "")
     }
-    if (currentRoute.split("/")[1] === "writing") {
+    if (currentRoute.split("/")[1] === "writing" || currentRoute.split("/")[1] === "blog") {
       return "/" + `${currentRoute}`.split("/")[1].replace(":", "")
     }
     return `${currentRoute}`.replace(":", "")
