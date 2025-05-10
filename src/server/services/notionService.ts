@@ -7,7 +7,10 @@ import { generateObject, generateText } from "ai"
 
 import env from "../config/env"
 
-import { isPageObjectResponse, type NotionResponse } from "@/shared/types/notion"
+import {
+  isPageObjectResponse,
+  type NotionResponse
+} from "@/shared/types/notion"
 import { openai } from "@ai-sdk/openai"
 import pLimit from "p-limit"
 import { writeReadingListToFile } from "../utils/fileUtils"
@@ -53,7 +56,9 @@ const enrichedReadingListItemSchema = z.object({
   readingTimeEstimate: z.number()
 })
 
-export const getReadingList = async (): Promise<NotionResponse[]> => {
+export const getReadingList = async (): Promise<
+  NotionResponse[]
+> => {
   console.log("Fetching reading list from Notion...")
   const notion = new Client({
     auth: env.notionApiKey
@@ -116,7 +121,9 @@ export const getBlogPostById = async (blockId: string) => {
   return blogPost
 }
 
-export const getBlogPosts = async (): Promise<NotionResponse[]> => {
+export const getBlogPosts = async (): Promise<
+  NotionResponse[]
+> => {
   const notion = new Client({
     auth: env.notionApiKey
   })
@@ -172,7 +179,9 @@ const getPagePropertiesById = async (pageId: string) => {
   return relevantProperties
 }
 
-const extractCategoriesFromDatabase = async (databaseId: string) => {
+const extractCategoriesFromDatabase = async (
+  databaseId: string
+) => {
   const notion = new Client({
     auth: env.notionApiKey
   })
@@ -181,11 +190,20 @@ const extractCategoriesFromDatabase = async (databaseId: string) => {
   })
 
   const parsed = DatabaseResponseSchema.parse(response)
-  const categories = parsed.properties.Categories.multi_select.options.map((option) => option.name)
+  const categories =
+    parsed.properties.Categories.multi_select.options.map(
+      (option) => option.name
+    )
   return categories
 }
 
-const enrich = async ({ props, categories }: { props: PagePropertiesSchema; categories: string[] }) => {
+const enrich = async ({
+  props,
+  categories
+}: {
+  props: PagePropertiesSchema
+  categories: string[]
+}) => {
   const { text } = await generateText({
     model: openai.responses("gpt-4o"),
     prompt: `
@@ -200,7 +218,10 @@ const enrich = async ({ props, categories }: { props: PagePropertiesSchema; cate
     tools: {
       web_search_preview: openai.tools.webSearchPreview()
     },
-    toolChoice: { type: "tool", toolName: "web_search_preview" }
+    toolChoice: {
+      type: "tool",
+      toolName: "web_search_preview"
+    }
   })
 
   const { object } = await generateObject({
@@ -212,7 +233,13 @@ const enrich = async ({ props, categories }: { props: PagePropertiesSchema; cate
   return object
 }
 
-const updateNotionPage = async (pageId: string, enrichedItem: z.infer<typeof enrichedReadingListItemSchema>, created: string) => {
+const updateNotionPage = async (
+  pageId: string,
+  enrichedItem: z.infer<
+    typeof enrichedReadingListItemSchema
+  >,
+  created: string
+) => {
   const notion = new Client({
     auth: env.notionApiKey
   })
@@ -231,9 +258,11 @@ const updateNotionPage = async (pageId: string, enrichedItem: z.infer<typeof enr
         ]
       },
       Categories: {
-        multi_select: enrichedItem.categories.map((category) => ({
-          name: category
-        }))
+        multi_select: enrichedItem.categories.map(
+          (category) => ({
+            name: category
+          })
+        )
       },
       Author: {
         select: {
@@ -257,12 +286,20 @@ const updateNotionPage = async (pageId: string, enrichedItem: z.infer<typeof enr
   })
 }
 
-export const enrichReadingListItem = async (pageId: string, databaseId: string) => {
+export const enrichReadingListItem = async (
+  pageId: string,
+  databaseId: string
+) => {
   const props = await getPagePropertiesById(pageId)
-  const categories = await extractCategoriesFromDatabase(databaseId)
+  const categories =
+    await extractCategoriesFromDatabase(databaseId)
   const enrichedItem = await enrich({ props, categories })
   console.log("Enriched item:", enrichedItem)
-  await updateNotionPage(pageId, enrichedItem, props.created)
+  await updateNotionPage(
+    pageId,
+    enrichedItem,
+    props.created
+  )
   console.log("Updated Notion page with enriched item")
   await writeReadingListToFile()
   console.log("Updated reading list file")
@@ -270,28 +307,47 @@ export const enrichReadingListItem = async (pageId: string, databaseId: string) 
 
 export const enrichAllReadingListItems = async () => {
   const readingList = await getReadingList()
-  const filteredReadingList = readingList.filter((item) => isPageObjectResponse(item))
+  const filteredReadingList = readingList.filter((item) =>
+    isPageObjectResponse(item)
+  )
 
-  const categories = await extractCategoriesFromDatabase(env.notionReadingListDatabaseId ?? "")
+  const categories = await extractCategoriesFromDatabase(
+    env.notionReadingListDatabaseId ?? ""
+  )
   // Set the concurrency limit (5 in this example)
   const limit = pLimit(5)
 
   await Promise.all(
     filteredReadingList.map((item) =>
       limit(async () => {
-        const pageName = item.properties.Name.type === "title" ? item.properties.Name.title[0].plain_text : ""
+        const pageName =
+          item.properties.Name.type === "title"
+            ? item.properties.Name.title[0].plain_text
+            : ""
         // Check if enriched properties already exist: if Summary.rich_text has any content, skip processing
         if (
           item.properties.Summary.type === "rich_text" &&
           item.properties.Summary.rich_text &&
-          item.properties.Summary.rich_text.some((rt) => rt.plain_text && rt.plain_text.trim().length > 0)
+          item.properties.Summary.rich_text.some(
+            (rt) =>
+              rt.plain_text &&
+              rt.plain_text.trim().length > 0
+          )
         ) {
-          console.log(`Skipping ${pageName} because it already has a summary.`)
+          console.log(
+            `Skipping ${pageName} because it already has a summary.`
+          )
           return
         }
 
-        if (item.properties.Status.type === "select" && item.properties.Status.select && item.properties.Status.select.name !== "Shelved") {
-          console.log(`Skipping ${pageName} because it is not shelved.`)
+        if (
+          item.properties.Status.type === "select" &&
+          item.properties.Status.select &&
+          item.properties.Status.select.name !== "Shelved"
+        ) {
+          console.log(
+            `Skipping ${pageName} because it is not shelved.`
+          )
           return
         }
 
@@ -299,13 +355,25 @@ export const enrichAllReadingListItems = async () => {
 
         try {
           const props = await getPagePropertiesById(item.id)
-          const enrichedItem = await enrich({ props, categories })
-          await updateNotionPage(item.id, enrichedItem, item.created_time)
+          const enrichedItem = await enrich({
+            props,
+            categories
+          })
+          await updateNotionPage(
+            item.id,
+            enrichedItem,
+            item.created_time
+          )
         } catch (error) {
-          console.error(`Error enriching ${pageName}:`, error)
+          console.error(
+            `Error enriching ${pageName}:`,
+            error
+          )
         }
 
-        console.log(`Updated ${pageName} with enriched item`)
+        console.log(
+          `Updated ${pageName} with enriched item`
+        )
       })
     )
   )

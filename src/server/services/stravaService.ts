@@ -1,5 +1,9 @@
 import env from "../config/env"
-import { STRAVA_CLIENT_ID, STRAVA_TOKEN_ENDPOINT, STRAVA_ACTIVITIES_ENDPOINT } from "../config/constants"
+import {
+  STRAVA_CLIENT_ID,
+  STRAVA_TOKEN_ENDPOINT,
+  STRAVA_ACTIVITIES_ENDPOINT
+} from "../config/constants"
 import type { StravaActivity } from "@/shared"
 
 /**
@@ -30,7 +34,9 @@ export async function getStravaAccessToken(): Promise<string> {
   return data.access_token
 }
 
-export async function getStravaActivities(accessToken: string): Promise<StravaActivity[]> {
+export async function getStravaActivities(
+  accessToken: string
+): Promise<StravaActivity[]> {
   console.log("Fetching Strava activities")
   const url = new URL(STRAVA_ACTIVITIES_ENDPOINT)
   url.searchParams.append("per_page", "50")

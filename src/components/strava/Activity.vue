@@ -1,5 +1,12 @@
 <script setup lang="ts">
-  import { ref, onMounted, watch, nextTick, onUnmounted, computed } from "vue"
+  import {
+    ref,
+    onMounted,
+    watch,
+    nextTick,
+    onUnmounted,
+    computed
+  } from "vue"
   import { format } from "date-fns"
   import polyline from "@mapbox/polyline"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
@@ -13,10 +20,15 @@
   const observer = ref<MutationObserver | null>(null)
 
   const fetchActivities = async () => {
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/strava/activities`)
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/strava/activities`
+    )
     // Filter out activities that have no summary_polyline
-    const allActivities = (await response.json()) as StravaActivity[]
-    const validActivities = allActivities.filter((act) => act.map && act.map.summary_polyline)
+    const allActivities =
+      (await response.json()) as StravaActivity[]
+    const validActivities = allActivities.filter(
+      (act) => act.map && act.map.summary_polyline
+    )
 
     return validActivities
   }
@@ -37,16 +49,26 @@
   // displays days, hours seconds, counts down every second
   const countdown = ref<string>("")
 
-  const countdownTo = new Date("2025-06-14T09:00:00Z").getTime()
+  const countdownTo = new Date(
+    "2025-06-14T09:00:00Z"
+  ).getTime()
 
   const updateCountdown = () => {
     const now = new Date().getTime()
     const distance = countdownTo - now
 
-    const days = Math.floor(distance / (1000 * 60 * 60 * 24))
-    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))
-    const seconds = Math.floor((distance % (1000 * 60)) / 1000)
+    const days = Math.floor(
+      distance / (1000 * 60 * 60 * 24)
+    )
+    const hours = Math.floor(
+      (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+    )
+    const minutes = Math.floor(
+      (distance % (1000 * 60 * 60)) / (1000 * 60)
+    )
+    const seconds = Math.floor(
+      (distance % (1000 * 60)) / 1000
+    )
 
     countdown.value = `${days}d ${hours}h ${minutes}m ${seconds}s`
   }
@@ -71,7 +93,9 @@
     canvas.style.height = `${rect.height}px`
 
     // Decode the polyline
-    const coordinates = polyline.decode(activity.map.summary_polyline)
+    const coordinates = polyline.decode(
+      activity.map.summary_polyline
+    )
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     if (coordinates.length === 0) return
 
@@ -101,7 +125,10 @@
 
     const drawWidth = canvasWidth - padding * 2
     const drawHeight = canvasHeight - padding * 2
-    const scale = Math.min(drawWidth / lngRange, drawHeight / latRange)
+    const scale = Math.min(
+      drawWidth / lngRange,
+      drawHeight / latRange
+    )
 
     const routeWidth = lngRange * scale
     const routeHeight = latRange * scale
@@ -118,7 +145,10 @@
 
     coordinates.forEach(([lat, lng], index) => {
       const x = offsetX + (lng - bounds.minLng) * scale
-      const y = offsetY + routeHeight - (lat - bounds.minLat) * scale
+      const y =
+        offsetY +
+        routeHeight -
+        (lat - bounds.minLat) * scale
 
       if (index === 0) {
         ctx.moveTo(x, y)
@@ -140,10 +170,15 @@
     return `${(meters / 1000).toFixed(2)} km`
   }
 
-  const formatSpeed = (mps: number, unit: "kmh" | "mkm" = "mkm"): string => {
+  const formatSpeed = (
+    mps: number,
+    unit: "kmh" | "mkm" = "mkm"
+  ): string => {
     const minutesPerKm = 60 / (mps * 3.6)
     const minutes = Math.floor(minutesPerKm)
-    const seconds = Math.round((minutesPerKm - minutes) * 60)
+    const seconds = Math.round(
+      (minutesPerKm - minutes) * 60
+    )
 
     switch (unit) {
       case "kmh":
@@ -177,7 +212,9 @@
     drawPolyline()
   })
 
-  let countdownInterval: ReturnType<typeof setInterval> | undefined
+  let countdownInterval:
+    | ReturnType<typeof setInterval>
+    | undefined
 
   onMounted(async () => {
     updateCountdown()
@@ -185,14 +222,20 @@
     isDark.value = document.body.classList.contains("dark")
 
     // Create a mutation observer that checks for attribute changes (i.e., class changes)
-    observer.value = new MutationObserver((mutationsList) => {
-      for (const mutation of mutationsList) {
-        if (mutation.type === "attributes" && mutation.attributeName === "class") {
-          // Update our isDark ref whenever the body class changes
-          isDark.value = document.body.classList.contains("dark")
+    observer.value = new MutationObserver(
+      (mutationsList) => {
+        for (const mutation of mutationsList) {
+          if (
+            mutation.type === "attributes" &&
+            mutation.attributeName === "class"
+          ) {
+            // Update our isDark ref whenever the body class changes
+            isDark.value =
+              document.body.classList.contains("dark")
+          }
         }
       }
-    })
+    )
 
     // Observe the body element for class attribute changes
     observer.value.observe(document.body, {
@@ -236,114 +279,224 @@
 </script>
 
 <template>
-  <div class="strava-activity-viewer transition-all duration-1000">
-    <!-- Loading / Error states -->
-    <div v-if="isLoading" class="activity-card loading-skeleton">
+
+  <div
+    class="strava-activity-viewer transition-all duration-1000"
+  >
+     <!-- Loading / Error states -->
+    <div
+      v-if="isLoading"
+      class="activity-card loading-skeleton"
+    >
+
       <div class="activity-content">
-        <!-- Left skeleton: spinner for map area -->
-        <div class="polyline-container skeleton-canvas flex justify-center items-center rounded-2xl text-sm flex-col gap-2">
-          <!-- Fetching latest activities from Strava... -->
-          <Loader2 class="animate-spin text-gray-500 dark:text-gray-400 size-8" />
+         <!-- Left skeleton: spinner for map area -->
+        <div
+          class="polyline-container skeleton-canvas flex justify-center items-center rounded-2xl text-sm flex-col gap-2"
+        >
+           <!-- Fetching latest activities from Strava... -->
+          <Loader2
+            class="animate-spin text-gray-500 dark:text-gray-400 size-8"
+          />
         </div>
-        <!-- Right skeleton: greyed-out lines for stats -->
+         <!-- Right skeleton: greyed-out lines for stats -->
+
         <div class="activity-info skeleton-info">
+
           <div class="skeleton-line short"></div>
+
           <div class="skeleton-line"></div>
+
           <div class="skeleton-line short"></div>
+
           <div class="skeleton-line"></div>
+
         </div>
+
       </div>
+
     </div>
 
-    <div v-else-if="error" class="error">
-      {{ error }}
-    </div>
+    <div v-else-if="error" class="error"> {{ error }} </div>
+     <!-- Main Content: Only show if we have valid activities -->
 
-    <!-- Main Content: Only show if we have valid activities -->
-    <div v-else-if="activities.length > 0" class="activity-card">
+    <div
+      v-else-if="activities.length > 0"
+      class="activity-card"
+    >
+
       <div class="activity-content relative">
-        <!-- Left Panel: Route Canvas -->
-        <div class="polyline-container transition-all duration-1000">
-          <canvas ref="canvasRef"></canvas>
+         <!-- Left Panel: Route Canvas -->
+        <div
+          class="polyline-container transition-all duration-1000"
+        >
+           <canvas ref="canvasRef"></canvas>
         </div>
+         <!-- Canvas gradient --> <!-- Top -->
+        <div
+          class="absolute inset-0 bg-gradient-to-b from-white to-transparent to-25%"
+          :class="{ 'opacity-0': isDark }"
+        ></div>
 
-        <!-- Canvas gradient -->
-        <!-- Top -->
-        <div class="absolute inset-0 bg-gradient-to-b from-white to-transparent to-25%" :class="{ 'opacity-0': isDark }"></div>
-        <div class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-transparent to-25%" :class="{ 'opacity-0': !isDark }"></div>
-
-        <!-- Bottom -->
+        <div
+          class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-transparent to-25%"
+          :class="{ 'opacity-0': !isDark }"
+        ></div>
+         <!-- Bottom -->
         <div
           class="absolute inset-0 bg-gradient-to-t from-white to-25% to-transparent transition-opacity duration-1000 sm:invisible"
           :class="{ 'opacity-0': isDark }"
         ></div>
+
         <div
           class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-25% to-transparent transition-opacity duration-1000 sm:invisible"
           :class="{ 'opacity-0': !isDark }"
         ></div>
 
-        <div class="countdown flex gap-3 items-center text-xs absolute top-0 left-0 text-gray-400 z-10">
-          <FontAwesomeIcon icon="fa-solid fa-flag-checkered" />
+        <div
+          class="countdown flex gap-3 items-center text-xs absolute top-0 left-0 text-gray-400 z-10"
+        >
+           <FontAwesomeIcon
+            icon="fa-solid fa-flag-checkered"
+          />
           <div>
-            <p class="my-0!">LGT Alpin Marathon</p>
-            <a href="https://worldsmarathons.com/marathon/lgt-alpin-marathon" target="_blank">{{ countdown }}</a>
-          </div>
-        </div>
 
-        <!-- Right Panel: Stats -->
+            <p class="my-0!">LGT Alpin Marathon</p>
+             <a
+              href="https://worldsmarathons.com/marathon/lgt-alpin-marathon"
+              target="_blank"
+              >{{ countdown }}</a
+            >
+          </div>
+
+        </div>
+         <!-- Right Panel: Stats -->
         <div class="activity-info select-none">
-          <div class="activity-stats relative w-full h-full">
-            <div class="activity-metadata sm:mb-6 z-10 top-0 right-0">
+
+          <div
+            class="activity-stats relative w-full h-full"
+          >
+
+            <div
+              class="activity-metadata sm:mb-6 z-10 top-0 right-0"
+            >
+
               <div class="activity-date">
-                {{ format(new Date(activities[currentIndex].start_date), "PPP") }}
+                 {{
+                  format(
+                    new Date(
+                      activities[currentIndex].start_date
+                    ),
+                    "PPP"
+                  )
+                }}
               </div>
+
               <div class="activity-link">
-                <a :href="`https://strava.com/activities/${activities[currentIndex].id}`" target="_blank" class="group text-xs font-bold">
-                  <span>
-                    <FontAwesomeIcon icon="fa-brands fa-strava" class="strava-icon opacity-80 text-[#fc4c02] group-hover:opacity-100 transition" />
-                    view activity on Strava
-                    <FontAwesomeIcon icon="fa-solid fa-arrow-left" class="-scale-x-100 size-2 -rotate-45" />
-                  </span>
-                </a>
+                 <a
+                  :href="`https://strava.com/activities/${activities[currentIndex].id}`"
+                  target="_blank"
+                  class="group text-xs font-bold"
+                  > <span
+                    > <FontAwesomeIcon
+                      icon="fa-brands fa-strava"
+                      class="strava-icon opacity-80 text-[#fc4c02] group-hover:opacity-100 transition"
+                    /> view activity on Strava
+                    <FontAwesomeIcon
+                      icon="fa-solid fa-arrow-left"
+                      class="-scale-x-100 size-2 -rotate-45"
+                    /> </span
+                  > </a
+                >
               </div>
+
             </div>
 
             <div class="stats z-10 flex">
+
               <div class="stat">
-                <span class="label">Distance</span>
-                <span class="value">{{ formatDistance(activities[currentIndex].distance) }}</span>
+                 <span class="label">Distance</span> <span
+                  class="value"
+                  >{{
+                    formatDistance(
+                      activities[currentIndex].distance
+                    )
+                  }}</span
+                >
               </div>
+
               <div class="stat">
-                <span class="label">Duration</span>
-                <span class="value">{{ formatDuration(activities[currentIndex].moving_time) }}</span>
+                 <span class="label">Duration</span> <span
+                  class="value"
+                  >{{
+                    formatDuration(
+                      activities[currentIndex].moving_time
+                    )
+                  }}</span
+                >
               </div>
+
               <div class="stat">
-                <span class="label">Avg Speed</span>
-                <span class="value">{{ formatSpeed(activities[currentIndex].average_speed) }}</span>
+                 <span class="label">Avg Speed</span> <span
+                  class="value"
+                  >{{
+                    formatSpeed(
+                      activities[currentIndex].average_speed
+                    )
+                  }}</span
+                >
               </div>
+
               <div class="stat">
-                <span class="label">Elevation</span>
-                <span class="value">{{ activities[currentIndex].total_elevation_gain }}m</span>
+                 <span class="label">Elevation</span> <span
+                  class="value"
+                  >{{
+                    activities[currentIndex]
+                      .total_elevation_gain
+                  }}m</span
+                >
               </div>
+
             </div>
+
+          </div>
+           <!-- Navigation arrows at bottom-right -->
+          <div class="navigation flex gap-4">
+             <button
+              @click="previousActivity"
+              :disabled="currentIndex === 0"
+              class="nav-button"
+            >
+               <FontAwesomeIcon
+                icon="fa-solid fa-arrow-left"
+                class="size-4"
+              /> </button
+            > <button
+              @click="nextActivity"
+              :disabled="
+                currentIndex === activities.length - 1
+              "
+              class="nav-button"
+            >
+               <FontAwesomeIcon
+                icon="fa-solid fa-arrow-left"
+                class="-scale-x-100 size-4"
+              /> </button
+            >
           </div>
 
-          <!-- Navigation arrows at bottom-right -->
-          <div class="navigation flex gap-4">
-            <button @click="previousActivity" :disabled="currentIndex === 0" class="nav-button">
-              <FontAwesomeIcon icon="fa-solid fa-arrow-left" class="size-4" />
-            </button>
-            <button @click="nextActivity" :disabled="currentIndex === activities.length - 1" class="nav-button">
-              <FontAwesomeIcon icon="fa-solid fa-arrow-left" class="-scale-x-100 size-4" />
-            </button>
-          </div>
         </div>
+
       </div>
+
+    </div>
+     <!-- If we have no valid activities left -->
+    <div v-else class="no-activities">
+       No activities found
     </div>
 
-    <!-- If we have no valid activities left -->
-    <div v-else class="no-activities">No activities found</div>
   </div>
+
 </template>
 
 <style>
@@ -592,3 +745,4 @@ body.dark .skeleton-canvas {
   background-color: #333;
 }
 </style>
+

@@ -1,45 +1,88 @@
 <template>
+
   <div id="content">
+
     <p style="font-size: 20px">Hey 👋</p>
+
     <p>My name's Felix.</p>
-    <p>I'm a full-stack engineer @ <a href="https://verdn.com" target="_blank">Verdn</a>, based in London.</p>
-
-    <br />
 
     <p>
-      I studied engineering design, but discovered that software development was my passion towards the end of my studies. In my final year I took a full-stack
-      course and built <a href="https://fxn-m.com/#/fun/:atmosphere-fm">atmosphere.fm</a>.
+       I'm a full-stack engineer @ <a
+        href="https://verdn.com"
+        target="_blank"
+        >Verdn</a
+      >, based in London.
     </p>
-
-    <p>After graduating in 2023, I nomad-ed around Asia until September 2024.</p>
+     <br />
+    <p>
+       I studied engineering design, but discovered that
+      software development was my passion towards the end of
+      my studies. In my final year I took a full-stack
+      course and built <a
+        href="https://fxn-m.com/#/fun/:atmosphere-fm"
+        >atmosphere.fm</a
+      >.
+    </p>
 
     <p>
-      Along the way, I worked with <a href="https://www.sanctuaryhealth.io/" target="_blank">Sanctuary Health</a>, implementing features and tools powered by
-      LLMs and learning Next.js.
+       After graduating in 2023, I nomad-ed around Asia
+      until September 2024.
     </p>
 
     <p>
-      I then worked with <a href="https://unplugged.rest" target="_blank">Unplugged</a>, where I built an LLM-powered cabin recommendation system with Python.
-      Try it out <a href="https://unplugged.rest/cabin-recommendation" target="_blank">here</a>!
+       Along the way, I worked with <a
+        href="https://www.sanctuaryhealth.io/"
+        target="_blank"
+        >Sanctuary Health</a
+      >, implementing features and tools powered by LLMs and
+      learning Next.js.
     </p>
 
-    <br />
+    <p>
+       I then worked with <a
+        href="https://unplugged.rest"
+        target="_blank"
+        >Unplugged</a
+      >, where I built an LLM-powered cabin recommendation
+      system with Python. Try it out <a
+        href="https://unplugged.rest/cabin-recommendation"
+        target="_blank"
+        >here</a
+      >!
+    </p>
+     <br />
+    <p>
+       I'm now at Verdn, helping non-profits supercharge
+      their donations and communicate their impact.
+    </p>
 
-    <p>I'm now at Verdn, helping non-profits supercharge their donations and communicate their impact.</p>
-
-    <p>Email me at <a href="mailto:fnewportmangell@gmail.com">fnewportmangell@gmail.com</a> or <RouterLink to="/contact"> get in touch</RouterLink> here.</p>
+    <p>
+       Email me at <a
+        href="mailto:fnewportmangell@gmail.com"
+        >fnewportmangell@gmail.com</a
+      > or <RouterLink to="/contact"
+        > get in touch</RouterLink
+      > here.
+    </p>
 
     <footer>
+
       <p>Last updated: {{ buildDate }}</p>
+
     </footer>
+
   </div>
+
 </template>
 
 <script setup lang="ts">
   import { format } from "date-fns"
 
   // eslint-disable-next-line no-undef
-  const buildDate = format(new Date(__BUILD_DATE__), "dd-MM-yyyy")
+  const buildDate = format(
+    new Date(__BUILD_DATE__),
+    "dd-MM-yyyy"
+  )
 </script>
 
 <style scoped>
@@ -172,3 +215,4 @@ body.dark .asterisk .popover a {
     }
 }
 </style>
+

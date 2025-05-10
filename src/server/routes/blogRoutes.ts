@@ -1,5 +1,8 @@
 import { Router } from "express"
-import { fetchBlogController, fetchBlogPostController } from "../controllers/blogController"
+import {
+  fetchBlogController,
+  fetchBlogPostController
+} from "../controllers/blogController"
 
 const router: Router = Router()
 

@@ -1,4 +1,6 @@
-import mailGun, { type Options } from "nodemailer-mailgun-transport"
+import mailGun, {
+  type Options
+} from "nodemailer-mailgun-transport"
 import nodemailer from "nodemailer"
 import env from "../config/env"
 
@@ -6,7 +8,12 @@ interface MailCallback {
   (error: Error | null): void
 }
 
-export const sendMail = (name: string, email: string, message: string, cb: MailCallback): void => {
+export const sendMail = (
+  name: string,
+  email: string,
+  message: string,
+  cb: MailCallback
+): void => {
   const auth = {
     auth: {
       api_key: env.mailgunApiKey,
@@ -14,7 +21,9 @@ export const sendMail = (name: string, email: string, message: string, cb: MailC
     }
   } as Options
 
-  const transporter = nodemailer.createTransport(mailGun(auth))
+  const transporter = nodemailer.createTransport(
+    mailGun(auth)
+  )
 
   const mailOptions = {
     sender: name,

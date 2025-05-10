@@ -1,5 +1,8 @@
 import env from "../config/env"
-import { SPOTIFY_TOKEN_ENDPOINT, SPOTIFY_CURRENT_TRACK_ENDPOINT } from "../config/constants"
+import {
+  SPOTIFY_TOKEN_ENDPOINT,
+  SPOTIFY_CURRENT_TRACK_ENDPOINT
+} from "../config/constants"
 import { z } from "zod"
 
 const currentTrackSchema = z.object({
@@ -38,33 +41,57 @@ export async function getSpotifyAccessToken(): Promise<string> {
   })
 
   if (!response.ok) {
-    console.error("Error refreshing Spotify access token:", await response.text())
-    throw new Error("Failed to refresh Spotify access token")
+    console.error(
+      "Error refreshing Spotify access token:",
+      await response.text()
+    )
+    throw new Error(
+      "Failed to refresh Spotify access token"
+    )
   }
 
   const data = await response.json()
 
-  if (!data || typeof data !== "object" || !("access_token" in data) || typeof data.access_token !== "string") {
-    throw new Error("Invalid response from Spotify token endpoint")
+  if (
+    !data ||
+    typeof data !== "object" ||
+    !("access_token" in data) ||
+    typeof data.access_token !== "string"
+  ) {
+    throw new Error(
+      "Invalid response from Spotify token endpoint"
+    )
   }
 
   return data.access_token // Access token
 }
 
-export async function getCurrentPlayingTrack(token: string): Promise<z.infer<typeof currentTrackSchema>["item"] | null> {
+export async function getCurrentPlayingTrack(
+  token: string
+): Promise<
+  z.infer<typeof currentTrackSchema>["item"] | null
+> {
   try {
-    const response = await fetch(SPOTIFY_CURRENT_TRACK_ENDPOINT, {
-      headers: {
-        Authorization: `Bearer ${token}`
+    const response = await fetch(
+      SPOTIFY_CURRENT_TRACK_ENDPOINT,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
       }
-    })
+    )
 
-    if (response.status === 204 || response.status === 202) {
+    if (
+      response.status === 204 ||
+      response.status === 202
+    ) {
       return null
     }
 
     if (!response.ok) {
-      throw new Error(`Spotify returned ${response.status}: ${await response.text()}`)
+      throw new Error(
+        `Spotify returned ${response.status}: ${await response.text()}`
+      )
     }
 
     const data = await response.json()

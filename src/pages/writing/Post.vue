@@ -1,16 +1,31 @@
 <template>
+
   <div class="container mt-4 sm:mt-16">
+
     <div class="metadata">
-      <h1 class="text-wrap text-black dark:text-white">{{ metadata.title }}</h1>
+
+      <h1 class="text-wrap text-black dark:text-white">
+         {{ metadata.title }}
+      </h1>
+
       <p>{{ metadata.date }}</p>
+
     </div>
+
     <div class="blog" v-html="blogContent"></div>
+
   </div>
+
 </template>
 
 <script lang="ts" setup>
   import type { BlogMetadata, BlogPost } from "@/shared"
-  import { nextTick, onMounted, onUnmounted, ref } from "vue"
+  import {
+    nextTick,
+    onMounted,
+    onUnmounted,
+    ref
+  } from "vue"
   import { useRoute } from "vue-router"
   import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
 
@@ -23,12 +38,23 @@
   hljs.registerLanguage("html", html)
 
   const currentThemeLink = ref<HTMLLinkElement | null>(null)
-  const darkThemeUrl = new URL("highlight.js/styles/atom-one-dark.min.css", import.meta.url).href
-  const lightThemeUrl = new URL("highlight.js/styles/atom-one-light.min.css", import.meta.url).href
+  const darkThemeUrl = new URL(
+    "highlight.js/styles/atom-one-dark.min.css",
+    import.meta.url
+  ).href
+  const lightThemeUrl = new URL(
+    "highlight.js/styles/atom-one-light.min.css",
+    import.meta.url
+  ).href
 
   function setHighlightTheme(isDark: boolean) {
-    if (currentThemeLink.value && currentThemeLink.value.parentNode) {
-      currentThemeLink.value.parentNode.removeChild(currentThemeLink.value)
+    if (
+      currentThemeLink.value &&
+      currentThemeLink.value.parentNode
+    ) {
+      currentThemeLink.value.parentNode.removeChild(
+        currentThemeLink.value
+      )
       currentThemeLink.value = null
     }
 
@@ -43,7 +69,9 @@
   const blogContent = ref<string>("")
   const metadata = ref({} as BlogMetadata)
 
-  const slugMap = localStorage.getItem("slugMap") && JSON.parse(localStorage.getItem("slugMap") as string)
+  const slugMap =
+    localStorage.getItem("slugMap") &&
+    JSON.parse(localStorage.getItem("slugMap") as string)
 
   onMounted(async () => {
     const slug = route.params.slug as string
@@ -53,25 +81,35 @@
     switch (import.meta.env.MODE) {
       case "development":
         try {
-          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/blog/${slugMap[slug ?? ""]}`, {
-            method: "GET"
-          })
+          const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/blog/${slugMap[slug ?? ""]}`,
+            {
+              method: "GET"
+            }
+          )
           const markdown = await response.json()
-          const { content, meta } = convertMarkdownToHTML(markdown)
+          const { content, meta } =
+            convertMarkdownToHTML(markdown)
 
           html = content
           metaTemp = meta
         } catch (error) {
-          console.error("Failed to load blog content:", error)
+          console.error(
+            "Failed to load blog content:",
+            error
+          )
         }
 
         break
 
       case "production":
         try {
-          const response = await fetch(`/html/${slug}.html`, {
-            method: "GET"
-          })
+          const response = await fetch(
+            `/html/${slug}.html`,
+            {
+              method: "GET"
+            }
+          )
           html = await response.text()
 
           const index = await fetch(`/html/index.json`, {
@@ -79,10 +117,15 @@
           })
           const indexData = await index.json()
 
-          const meta = indexData.find((item: BlogPost) => item.slug === slug)
+          const meta = indexData.find(
+            (item: BlogPost) => item.slug === slug
+          )
           metaTemp = meta
         } catch (error) {
-          console.error("Failed to load blog content:", error)
+          console.error(
+            "Failed to load blog content:",
+            error
+          )
         }
 
         break
@@ -93,21 +136,30 @@
 
     await nextTick()
 
-    document.querySelectorAll("pre code").forEach((block) => {
-      hljs.highlightElement(block as HTMLElement)
-    })
+    document
+      .querySelectorAll("pre code")
+      .forEach((block) => {
+        hljs.highlightElement(block as HTMLElement)
+      })
   })
 
-  setHighlightTheme(document.body.classList.contains("dark"))
+  setHighlightTheme(
+    document.body.classList.contains("dark")
+  )
 
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.attributeName === "class") {
-        setHighlightTheme(document.body.classList.contains("dark"))
+        setHighlightTheme(
+          document.body.classList.contains("dark")
+        )
       }
     })
   })
-  observer.observe(document.body, { attributes: true, attributeFilter: ["class"] })
+  observer.observe(document.body, {
+    attributes: true,
+    attributeFilter: ["class"]
+  })
 
   onUnmounted(() => {
     observer.disconnect()
@@ -233,3 +285,4 @@ body.dark .blog:deep(h1, h2, h3, h4, h5, h6) {
   color: white
 }
 </style>
+

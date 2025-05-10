@@ -9,7 +9,8 @@ export default {
   mailgunApiKey: process.env.MAILGUN_API_KEY,
   mailgunDomain: process.env.MAILGUN_DOMAIN,
   notionApiKey: process.env.NOTIONAPIKEY,
-  notionReadingListDatabaseId: process.env.NOTIONREADINGLISTDATABASEID,
+  notionReadingListDatabaseId:
+    process.env.NOTIONREADINGLISTDATABASEID,
   notionBlogDatabaseId: process.env.NOTIONBLOGDATABASEID,
   readmeSecret: process.env.README_SECRET,
   stravaClientSecret: process.env.STRAVA_CLIENT_SECRET,

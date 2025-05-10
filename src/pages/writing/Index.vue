@@ -1,9 +1,13 @@
 <template>
+
   <div class="container">
+
     <ul>
+
       <li v-for="blog in allBlogs" :key="blog.id">
+
         <p>{{ blog.date }}</p>
-        <router-link
+         <router-link
           :to="{
             name: 'writingPost',
             params: { slug: blog.slug }
@@ -11,8 +15,11 @@
           >{{ blog.title }}</router-link
         >
       </li>
+
     </ul>
+
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -28,7 +35,9 @@
     switch (import.meta.env.MODE) {
       case "development":
         try {
-          const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/blog`)
+          const response = await fetch(
+            `${import.meta.env.VITE_BACKEND_URL}/blog`
+          )
           allBlogsData = await response.json()
         } catch (error) {
           console.error("Error fetching blogs:", error)
@@ -46,14 +55,20 @@
     }
 
     allBlogs.value = allBlogsData.sort((a, b) => {
-      return new Date(b.date).getTime() - new Date(a.date).getTime()
+      return (
+        new Date(b.date).getTime() -
+        new Date(a.date).getTime()
+      )
     })
 
     const slugMapResponse = await getSlugMap(allBlogsData)
     slugMap.value = slugMapResponse
 
     if (typeof window !== "undefined") {
-      localStorage.setItem("slugMap", JSON.stringify(slugMapResponse))
+      localStorage.setItem(
+        "slugMap",
+        JSON.stringify(slugMapResponse)
+      )
     }
   })
 </script>
@@ -103,3 +118,4 @@ li {
     }
 }
 </style>
+

@@ -1,29 +1,57 @@
 <template>
-  <div v-if="track" class="mini-player hidden lg:flex" @mouseenter="isExpanded = true" @mouseleave="isExpanded = false">
-    <a :href="track.externalUrl" target="_blank">
+
+  <div
+    v-if="track"
+    class="mini-player hidden lg:flex"
+    @mouseenter="isExpanded = true"
+    @mouseleave="isExpanded = false"
+  >
+     <a :href="track.externalUrl" target="_blank"
+      >
       <div class="artwork-container">
-        <img :src="track.cover" :alt="track.name" class="artwork spinning" />
+         <img
+          :src="track.cover"
+          :alt="track.name"
+          class="artwork spinning"
+        />
       </div>
 
-      <div class="info-container" :class="{ expanded: isExpanded }">
+      <div
+        class="info-container"
+        :class="{ expanded: isExpanded }"
+      >
+
         <div class="info">
-          <p class="track-link">
-            {{ track.name }}
-            <small>{{ track.artist }}</small>
-          </p>
-        </div>
-      </div>
-    </a>
 
-    <div class="sub-info-wrapper">
-      <transition name="fade-slide">
-        <div v-if="delayedExpanded" class="sub-info-container flex gap-1 items-center text-gray-400 text-xs">
-          <p>Now playing on Spotify</p>
-          <WaveForm />
+          <p class="track-link">
+             {{ track.name }} <small>{{
+              track.artist
+            }}</small
+            >
+          </p>
+
         </div>
-      </transition>
+
+      </div>
+       </a
+    >
+    <div class="sub-info-wrapper">
+       <transition name="fade-slide"
+        >
+        <div
+          v-if="delayedExpanded"
+          class="sub-info-container flex gap-1 items-center text-gray-400 text-xs"
+        >
+
+          <p>Now playing on Spotify</p>
+           <WaveForm />
+        </div>
+         </transition
+      >
     </div>
+
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -51,16 +79,28 @@
 
   async function fetchCurrentTrack() {
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/spotify/current-track`)
-      if (!response.ok) throw new Error("Failed to fetch current track")
+      const response = await fetch(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/spotify/current-track`
+      )
+      if (!response.ok) {
+        throw new Error("Failed to fetch current track")
+      }
 
       const data = await response.json()
-      if (!data.name) throw new Error("No track data found")
+      if (!data.name) {
+        throw new Error("No track data found")
+      }
 
-      console.log(`Currently, I'm listening to ${data.name} by ${data.artist} 🎵`)
+      console.log(
+        `Currently, I'm listening to ${data.name} by ${data.artist} 🎵`
+      )
       track.value = data
     } catch {
-      console.log("Currently, I'm not listening to anything.")
+      console.log(
+        "Currently, I'm not listening to anything."
+      )
       track.value = null
     }
   }
@@ -206,3 +246,4 @@
     }
   }
 </style>
+

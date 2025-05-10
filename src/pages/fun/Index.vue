@@ -1,28 +1,67 @@
 <template>
+
   <div id="content" class="space-y-8">
+
     <div class="project-grid">
-      <div class="project-card" v-for="project in projects" :key="project.id">
+
+      <div
+        class="project-card"
+        v-for="project in projects"
+        :key="project.id"
+      >
+
         <div class="project-info space-y-2">
+
           <h3 class="flex gap-1 items-center font-semibold">
-            <a v-if="project.link.includes('https')" :href="project.link" target="_blank" class="flex gap-1 items-center"
-              >{{ project.title }}<Link class="size-3"
-            /></a>
-            <RouterLink v-else :to="project.link" class="flex gap-1 items-center">{{ project.title }}<Link class="size-3" /></RouterLink>
+             <a
+              v-if="project.link.includes('https')"
+              :href="project.link"
+              target="_blank"
+              class="flex gap-1 items-center"
+              >{{ project.title }}<Link class="size-3" /></a
+            > <RouterLink
+              v-else
+              :to="project.link"
+              class="flex gap-1 items-center"
+              >{{ project.title
+              }}<Link class="size-3" /></RouterLink
+            >
           </h3>
-          <p class="font-light text-sm text-primary-light dark:text-primary-dark">{{ project.subtitle }}</p>
-          <p v-html="project.description" class="text-sm text-gray-600 dark:text-gray-500"></p>
-          <p class="text-xs text-gray-400 my-2">
-            <span v-if="project.date">{{ project.date }}</span>
+
+          <p
+            class="font-light text-sm text-primary-light dark:text-primary-dark"
+          >
+             {{ project.subtitle }}
           </p>
+
+          <p
+            v-html="project.description"
+            class="text-sm text-gray-600 dark:text-gray-500"
+          ></p>
+
+          <p class="text-xs text-gray-400 my-2">
+             <span v-if="project.date">{{
+              project.date
+            }}</span
+            >
+          </p>
+
         </div>
+
       </div>
+
     </div>
 
-    <hr class="border-gray-200 dark:border-gray-700 transition-all duration-500" />
+    <hr
+      class="border-gray-200 dark:border-gray-700 transition-all duration-500"
+    />
 
-    <h2 class="text-xl font-semibold mt-8 mb-4">I'm also running a marathon</h2>
-    <Activity />
+    <h2 class="text-xl font-semibold mt-8 mb-4">
+       I'm also running a marathon
+    </h2>
+     <Activity />
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -74,3 +113,4 @@
   padding-left: 1rem;
 }
 </style>
+

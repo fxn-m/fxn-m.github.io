@@ -1,5 +1,7 @@
 <template>
+
   <div class="flex justify-center items-center gap-0.5 h-3">
+
     <div
       v-for="(bar, i) in bars"
       :key="i"
@@ -9,7 +11,9 @@
         animationDuration: `${bar.duration}s`
       }"
     />
+
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -37,3 +41,4 @@
   animation-timing-function: ease-in-out;
 }
 </style>
+

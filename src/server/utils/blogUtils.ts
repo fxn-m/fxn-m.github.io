@@ -4,7 +4,9 @@ import * as cheerio from "cheerio"
 import showdown from "showdown"
 import he from "he"
 
-export async function getSlugMap(blogPosts: BlogPost[]): Promise<SlugMap> {
+export async function getSlugMap(
+  blogPosts: BlogPost[]
+): Promise<SlugMap> {
   const map: SlugMap = {}
   for (const blog of blogPosts) {
     const slug = blog.slug
@@ -13,7 +15,9 @@ export async function getSlugMap(blogPosts: BlogPost[]): Promise<SlugMap> {
   return map
 }
 
-const replaceVideoLinksWithIframes = (html: string): string => {
+const replaceVideoLinksWithIframes = (
+  html: string
+): string => {
   const $ = cheerio.load(html)
 
   $("a").each((_, el) => {
@@ -30,7 +34,9 @@ const replaceVideoLinksWithIframes = (html: string): string => {
       text &&
       href.includes("youtube.com/watch")
     ) {
-      const videoIdMatch = href.match(/v=([a-zA-Z0-9_-]{11})/)
+      const videoIdMatch = href.match(
+        /v=([a-zA-Z0-9_-]{11})/
+      )
       if (!videoIdMatch) return
 
       const videoId = videoIdMatch[1]
@@ -57,7 +63,9 @@ export const convertMarkdownToHTML = (
   content: string
   meta: Metadata
 } => {
-  const converter = new showdown.Converter({ metadata: true })
+  const converter = new showdown.Converter({
+    metadata: true
+  })
   const html = converter.makeHtml(markdown)
 
   const rawMetadata = converter.getMetadata()
@@ -68,8 +76,12 @@ export const convertMarkdownToHTML = (
   return {
     content: replaceVideoLinksWithIframes(html),
     meta: {
-      date: he.decode(rawMetadata.date).replace(/^"|"$/g, ""),
-      title: he.decode(rawMetadata.title).replace(/^"|"$/g, "")
+      date: he
+        .decode(rawMetadata.date)
+        .replace(/^"|"$/g, ""),
+      title: he
+        .decode(rawMetadata.title)
+        .replace(/^"|"$/g, "")
     }
   }
 }

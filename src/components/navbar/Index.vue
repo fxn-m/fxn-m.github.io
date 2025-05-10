@@ -1,43 +1,73 @@
 <template>
+
   <header>
+
     <h2 class="flex font-bold text-2xl">
+
       <div style="position: relative">
-        <FontAwesomeIcon
+         <FontAwesomeIcon
           icon="fa-solid fa-caret-left"
           size="2xs"
           id="popup-arrow"
           class="text-black dark:text-primary-dark"
           :style="{
-            visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden'
+            visibility:
+              isHovering && route.path !== '/'
+                ? 'visible'
+                : 'hidden'
           }"
         />
       </div>
-      <RouterLink
+       <RouterLink
         @mouseover="isHovering = true"
         @mouseout="isHovering = false"
         to="/"
         @click="navigateToParent"
-        style="white-space: nowrap; border: none; font-weight: bold; align-self: center"
-        >fxn-m.com<span class="hidden sm:inline-block">{{ pageTitle }}</span>
-      </RouterLink>
+        style="
+          white-space: nowrap;
+          border: none;
+          font-weight: bold;
+          align-self: center;
+        "
+        >fxn-m.com<span class="hidden sm:inline-block">{{
+          pageTitle
+        }}</span
+        > </RouterLink
+      >
     </h2>
 
     <div id="restOfHeader">
+
       <ul id="navigation">
+
         <li v-for="route in routes" :key="route.path">
-          <RouterLink :to="route.path" :class="{ active: route.path === route.path }">{{ route.name }}</RouterLink>
+           <RouterLink
+            :to="route.path"
+            :class="{ active: route.path === route.path }"
+            >{{ route.name }}</RouterLink
+          >
         </li>
+
       </ul>
 
       <div id="icons">
-        <a v-for="link in links" :key="link.href" :href="link.href" target="_blank">
-          <FontAwesomeIcon :icon="link.icon" :size="'2xl'" :class="link.class" />
-        </a>
-
-        <ToggleTheme />
+         <a
+          v-for="link in links"
+          :key="link.href"
+          :href="link.href"
+          target="_blank"
+          > <FontAwesomeIcon
+            :icon="link.icon"
+            :size="'2xl'"
+            :class="link.class"
+          /> </a
+        > <ToggleTheme />
       </div>
+
     </div>
+
   </header>
+
 </template>
 
 <style scoped>
@@ -66,12 +96,19 @@
   ]
 
   const pageTitle = computed(() => {
-    const currentRoute = route.path !== "/" ? route.path : ""
+    const currentRoute =
+      route.path !== "/" ? route.path : ""
     if (currentRoute[currentRoute.length - 1] === "-") {
       return `${currentRoute}`.slice(0, -1).replace(":", "")
     }
-    if (currentRoute.split("/")[1] === "writing" || currentRoute.split("/")[1] === "blog") {
-      return "/" + `${currentRoute}`.split("/")[1].replace(":", "")
+    if (
+      currentRoute.split("/")[1] === "writing" ||
+      currentRoute.split("/")[1] === "blog"
+    ) {
+      return (
+        "/" +
+        `${currentRoute}`.split("/")[1].replace(":", "")
+      )
     }
     return `${currentRoute}`.replace(":", "")
   })
@@ -106,3 +143,4 @@
     }
   ]
 </script>
+

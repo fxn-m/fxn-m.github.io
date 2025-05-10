@@ -1,7 +1,12 @@
 <template>
+
   <div id="content">
-    <component :is="selectedComponent" v-if="selectedComponent" />
+     <component
+      :is="selectedComponent"
+      v-if="selectedComponent"
+    />
   </div>
+
 </template>
 
 <script setup lang="ts">
@@ -14,7 +19,10 @@
 
   const selectComponent = () => {
     const route = useRoute()
-    const routeName = (route.params.name as string).replace(":", "")
+    const routeName = (route.params.name as string).replace(
+      ":",
+      ""
+    )
 
     const components = {
       ReadingSuggestion,
@@ -23,7 +31,8 @@
 
     switch (routeName) {
       case "tab-overflow":
-        selectedComponent.value = components.ReadingSuggestion
+        selectedComponent.value =
+          components.ReadingSuggestion
         break
       case "atmosphere-fm":
         selectedComponent.value = components.AtmosphereFM
@@ -35,3 +44,4 @@
     selectComponent()
   })
 </script>
+
