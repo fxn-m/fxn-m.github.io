@@ -118,10 +118,12 @@
     ref,
     onMounted,
     onUnmounted,
-    computed
+    computed,
+    watch
   } from "vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
   import { ExternalLink, Loader2 } from "lucide-vue-next"
+  import { useQuery } from "@tanstack/vue-query"
 
   // Define the type for the reading suggestion based on the new schema
   interface ReadingSuggestion {
@@ -155,9 +157,30 @@
     summary: ""
   })
 
-  const isLoading = ref(true)
-  // The reading list will hold the entire response from the backend
-  const readingList = ref<ReadingListItem[]>([])
+  const fetchReadingList = async (): Promise<
+    ReadingListItem[]
+  > => {
+    const response = await fetch(
+      `${import.meta.env.VITE_BACKEND_URL}/readingList`,
+      {
+        method: "GET"
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error("Network response was not ok")
+    }
+
+    return (await response.json()) as ReadingListItem[]
+  }
+
+  const { data, isLoading } = useQuery({
+    queryKey: ["readingList"],
+    queryFn: fetchReadingList,
+    refetchOnWindowFocus: false
+  })
+
+  const readingList = computed(() => data.value ?? [])
 
   // History for navigation (storing indices) and pointer
   const suggestionHistory = ref<number[]>([])
@@ -266,22 +289,25 @@
 
   // Fetch the reading list from the backend on mount
   onMounted(async () => {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/readingList`,
-        {
-          method: "GET"
-        }
-      )
-      const data = await response.json()
-      readingList.value = data
-      isLoading.value = false
-      // Start with a random suggestion
-      nextSuggestion()
+    window.addEventListener("keydown", handleKeydown)
 
-      window.addEventListener("keydown", handleKeydown)
-    } catch (error) {
-      console.error("Error fetching reading list:", error)
+    // Load the first suggestion once the reading list is available
+    if (
+      readingList.value.length > 0 &&
+      currentIndex.value === -1
+    ) {
+      nextSuggestion()
+    } else {
+      // Wait until the query returns, then run exactly once
+      const stop = watch(readingList, (newList) => {
+        if (
+          newList.length > 0 &&
+          currentIndex.value === -1
+        ) {
+          nextSuggestion()
+          stop()
+        }
+      })
     }
   })
 
