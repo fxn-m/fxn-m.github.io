@@ -1,13 +1,9 @@
 <template>
-
   <div class="container">
-
     <ul>
-
       <li v-for="blog in allBlogs" :key="blog.id">
-
         <p>{{ blog.date }}</p>
-         <router-link
+        <router-link
           :to="{
             name: 'writingPost',
             params: { slug: blog.slug }
@@ -15,11 +11,8 @@
           >{{ blog.title }}</router-link
         >
       </li>
-
     </ul>
-
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -118,4 +111,3 @@ li {
     }
 }
 </style>
-

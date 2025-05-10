@@ -21,7 +21,9 @@
 
   const fetchActivities = async () => {
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/strava/activities`
+      `${
+        import.meta.env.VITE_BACKEND_URL
+      }/strava/activities`
     )
     // Filter out activities that have no summary_polyline
     const allActivities =
@@ -74,14 +76,20 @@
   }
 
   const drawPolyline = () => {
-    if (!canvasRef.value || !activities.value.length) return
+    if (!canvasRef.value || !activities.value.length) {
+      return
+    }
 
     const activity = activities.value[currentIndex.value]
-    if (!activity.map.summary_polyline) return
+    if (!activity.map.summary_polyline) {
+      return
+    }
 
     const canvas = canvasRef.value
     const ctx = canvas.getContext("2d")
-    if (!ctx) return
+    if (!ctx) {
+      return
+    }
 
     // High DPI rendering
     const dpr = window.devicePixelRatio || 1
@@ -97,7 +105,9 @@
       activity.map.summary_polyline
     )
     ctx.clearRect(0, 0, canvas.width, canvas.height)
-    if (coordinates.length === 0) return
+    if (coordinates.length === 0) {
+      return
+    }
 
     // Find bounds
     const bounds = coordinates.reduce(
@@ -203,7 +213,9 @@
   }
 
   const updateCanvasSize = () => {
-    if (!canvasRef.value) return
+    if (!canvasRef.value) {
+      return
+    }
     drawPolyline()
   }
 
@@ -260,9 +272,13 @@
 
   // Cleanup on unmount
   onUnmounted(() => {
-    if (countdownInterval) clearInterval(countdownInterval)
+    if (countdownInterval) {
+      clearInterval(countdownInterval)
+    }
 
-    if (observer.value) observer.value.disconnect()
+    if (observer.value) {
+      observer.value.disconnect()
+    }
 
     window.removeEventListener("resize", updateCanvasSize)
     window.removeEventListener("keydown", handleKeydown)
@@ -279,30 +295,27 @@
 </script>
 
 <template>
-
   <div
     class="strava-activity-viewer transition-all duration-1000"
   >
-     <!-- Loading / Error states -->
+    <!-- Loading / Error states -->
     <div
       v-if="isLoading"
       class="activity-card loading-skeleton"
     >
-
       <div class="activity-content">
-         <!-- Left skeleton: spinner for map area -->
+        <!-- Left skeleton: spinner for map area -->
         <div
           class="polyline-container skeleton-canvas flex justify-center items-center rounded-2xl text-sm flex-col gap-2"
         >
-           <!-- Fetching latest activities from Strava... -->
+          <!-- Fetching latest activities from Strava... -->
           <Loader2
             class="animate-spin text-gray-500 dark:text-gray-400 size-8"
           />
         </div>
-         <!-- Right skeleton: greyed-out lines for stats -->
+        <!-- Right skeleton: greyed-out lines for stats -->
 
         <div class="activity-info skeleton-info">
-
           <div class="skeleton-line short"></div>
 
           <div class="skeleton-line"></div>
@@ -310,29 +323,26 @@
           <div class="skeleton-line short"></div>
 
           <div class="skeleton-line"></div>
-
         </div>
-
       </div>
-
     </div>
 
-    <div v-else-if="error" class="error"> {{ error }} </div>
-     <!-- Main Content: Only show if we have valid activities -->
+    <div v-else-if="error" class="error">{{ error }}</div>
+    <!-- Main Content: Only show if we have valid activities -->
 
     <div
       v-else-if="activities.length > 0"
       class="activity-card"
     >
-
       <div class="activity-content relative">
-         <!-- Left Panel: Route Canvas -->
+        <!-- Left Panel: Route Canvas -->
         <div
           class="polyline-container transition-all duration-1000"
         >
-           <canvas ref="canvasRef"></canvas>
+          <canvas ref="canvasRef"></canvas>
         </div>
-         <!-- Canvas gradient --> <!-- Top -->
+        <!-- Canvas gradient -->
+        <!-- Top -->
         <div
           class="absolute inset-0 bg-gradient-to-b from-white to-transparent to-25%"
           :class="{ 'opacity-0': isDark }"
@@ -342,7 +352,7 @@
           class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-transparent to-25%"
           :class="{ 'opacity-0': !isDark }"
         ></div>
-         <!-- Bottom -->
+        <!-- Bottom -->
         <div
           class="absolute inset-0 bg-gradient-to-t from-white to-25% to-transparent transition-opacity duration-1000 sm:invisible"
           :class="{ 'opacity-0': isDark }"
@@ -356,33 +366,28 @@
         <div
           class="countdown flex gap-3 items-center text-xs absolute top-0 left-0 text-gray-400 z-10"
         >
-           <FontAwesomeIcon
+          <FontAwesomeIcon
             icon="fa-solid fa-flag-checkered"
           />
           <div>
-
             <p class="my-0!">LGT Alpin Marathon</p>
-             <a
+            <a
               href="https://worldsmarathons.com/marathon/lgt-alpin-marathon"
               target="_blank"
               >{{ countdown }}</a
             >
           </div>
-
         </div>
-         <!-- Right Panel: Stats -->
+        <!-- Right Panel: Stats -->
         <div class="activity-info select-none">
-
           <div
             class="activity-stats relative w-full h-full"
           >
-
             <div
               class="activity-metadata sm:mb-6 z-10 top-0 right-0"
             >
-
               <div class="activity-date">
-                 {{
+                {{
                   format(
                     new Date(
                       activities[currentIndex].start_date
@@ -393,110 +398,98 @@
               </div>
 
               <div class="activity-link">
-                 <a
+                <a
                   :href="`https://strava.com/activities/${activities[currentIndex].id}`"
                   target="_blank"
                   class="group text-xs font-bold"
-                  > <span
-                    > <FontAwesomeIcon
+                >
+                  <span>
+                    <FontAwesomeIcon
                       icon="fa-brands fa-strava"
                       class="strava-icon opacity-80 text-[#fc4c02] group-hover:opacity-100 transition"
-                    /> view activity on Strava
+                    />
+                    view activity on Strava
                     <FontAwesomeIcon
                       icon="fa-solid fa-arrow-left"
                       class="-scale-x-100 size-2 -rotate-45"
-                    /> </span
-                  > </a
-                >
+                    />
+                  </span>
+                </a>
               </div>
-
             </div>
 
             <div class="stats z-10 flex">
-
               <div class="stat">
-                 <span class="label">Distance</span> <span
-                  class="value"
-                  >{{
-                    formatDistance(
-                      activities[currentIndex].distance
-                    )
-                  }}</span
-                >
+                <span class="label">Distance</span>
+                <span class="value">{{
+                  formatDistance(
+                    activities[currentIndex].distance
+                  )
+                }}</span>
               </div>
 
               <div class="stat">
-                 <span class="label">Duration</span> <span
-                  class="value"
-                  >{{
-                    formatDuration(
-                      activities[currentIndex].moving_time
-                    )
-                  }}</span
-                >
+                <span class="label">Duration</span>
+                <span class="value">{{
+                  formatDuration(
+                    activities[currentIndex].moving_time
+                  )
+                }}</span>
               </div>
 
               <div class="stat">
-                 <span class="label">Avg Speed</span> <span
-                  class="value"
-                  >{{
-                    formatSpeed(
-                      activities[currentIndex].average_speed
-                    )
-                  }}</span
-                >
+                <span class="label">Avg Speed</span>
+                <span class="value">{{
+                  formatSpeed(
+                    activities[currentIndex].average_speed
+                  )
+                }}</span>
               </div>
 
               <div class="stat">
-                 <span class="label">Elevation</span> <span
-                  class="value"
+                <span class="label">Elevation</span>
+                <span class="value"
                   >{{
                     activities[currentIndex]
                       .total_elevation_gain
                   }}m</span
                 >
               </div>
-
             </div>
-
           </div>
-           <!-- Navigation arrows at bottom-right -->
+          <!-- Navigation arrows at bottom-right -->
           <div class="navigation flex gap-4">
-             <button
+            <button
               @click="previousActivity"
               :disabled="currentIndex === 0"
               class="nav-button"
             >
-               <FontAwesomeIcon
+              <FontAwesomeIcon
                 icon="fa-solid fa-arrow-left"
                 class="size-4"
-              /> </button
-            > <button
+              />
+            </button>
+            <button
               @click="nextActivity"
               :disabled="
                 currentIndex === activities.length - 1
               "
               class="nav-button"
             >
-               <FontAwesomeIcon
+              <FontAwesomeIcon
                 icon="fa-solid fa-arrow-left"
                 class="-scale-x-100 size-4"
-              /> </button
-            >
+              />
+            </button>
           </div>
-
         </div>
-
       </div>
-
     </div>
-     <!-- If we have no valid activities left -->
+    <!-- If we have no valid activities left -->
     <div v-else class="no-activities">
-       No activities found
+      No activities found
     </div>
-
   </div>
-
 </template>
 
 <style>
@@ -745,4 +738,3 @@ body.dark .skeleton-canvas {
   background-color: #333;
 }
 </style>
-

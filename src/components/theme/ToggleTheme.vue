@@ -1,7 +1,6 @@
 <template>
-
   <div class="theme-toggle-wrapper">
-     <button
+    <button
       class="size-full flex items-center justify-center"
       id="toggle-btn"
       @click="toggleTheme"
@@ -9,19 +8,18 @@
       @mouseenter="showTooltip = true"
       @mouseleave="showTooltip = false"
     >
-       <img
+      <img
         class="size-[28px]"
         v-if="iconSrc"
         :src="iconSrc"
         :id="iconId"
         :alt="tooltipText"
-      /> </button
-    > <span v-if="showTooltip" class="tooltip">{{
+      />
+    </button>
+    <span v-if="showTooltip" class="tooltip">{{
       tooltipText
-    }}</span
-    >
+    }}</span>
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -39,8 +37,8 @@
       theme.value === "system"
         ? "dark"
         : theme.value === "dark"
-          ? "light"
-          : "system"
+        ? "light"
+        : "system"
     sessionStorage.setItem("theme", theme.value)
     updateBodyClass()
   }
@@ -170,4 +168,3 @@ body.dark .tooltip {
     contrast(100%);
 }
 </style>
-

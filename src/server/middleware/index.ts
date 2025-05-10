@@ -1,6 +1,5 @@
-import express from "express"
+import express, { type Express } from "express"
 import cors from "cors"
-import type { Express } from "express"
 
 export const configureMiddleware = (app: Express): void => {
   app.use(express.json())

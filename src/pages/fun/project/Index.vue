@@ -1,12 +1,10 @@
 <template>
-
   <div id="content">
-     <component
+    <component
       :is="selectedComponent"
       v-if="selectedComponent"
     />
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -44,4 +42,3 @@
     selectComponent()
   })
 </script>
-

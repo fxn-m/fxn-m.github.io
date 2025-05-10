@@ -1,15 +1,13 @@
 <template>
-
   <div
     v-if="track"
     class="mini-player hidden lg:flex"
     @mouseenter="isExpanded = true"
     @mouseleave="isExpanded = false"
   >
-     <a :href="track.externalUrl" target="_blank"
-      >
+    <a :href="track.externalUrl" target="_blank">
       <div class="artwork-container">
-         <img
+        <img
           :src="track.cover"
           :alt="track.name"
           class="artwork spinning"
@@ -20,38 +18,26 @@
         class="info-container"
         :class="{ expanded: isExpanded }"
       >
-
         <div class="info">
-
           <p class="track-link">
-             {{ track.name }} <small>{{
-              track.artist
-            }}</small
-            >
+            {{ track.name }}
+            <small>{{ track.artist }}</small>
           </p>
-
         </div>
-
       </div>
-       </a
-    >
+    </a>
     <div class="sub-info-wrapper">
-       <transition name="fade-slide"
-        >
+      <transition name="fade-slide">
         <div
           v-if="delayedExpanded"
           class="sub-info-container flex gap-1 items-center text-gray-400 text-xs"
         >
-
           <p>Now playing on Spotify</p>
-           <WaveForm />
+          <WaveForm />
         </div>
-         </transition
-      >
+      </transition>
     </div>
-
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -246,4 +232,3 @@
     }
   }
 </style>
-

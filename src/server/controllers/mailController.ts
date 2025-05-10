@@ -7,17 +7,12 @@ export const sendEmailController = (
 ): void => {
   const { name, email, message } = req.body
 
-  sendMail(
-    name,
-    email,
-    message,
-    function (err: Error | null) {
-      if (err) {
-        console.log(err)
-        res.status(500).json({ message: "Internal Error" })
-      } else {
-        res.status(200).json({ message: "Email sent!!!" })
-      }
+  sendMail(name, email, message, (err: Error | null) => {
+    if (err) {
+      console.log(err)
+      res.status(500).json({ message: "Internal Error" })
+    } else {
+      res.status(200).json({ message: "Email sent!!!" })
     }
-  )
+  })
 }

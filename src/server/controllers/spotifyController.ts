@@ -11,8 +11,9 @@ export const getCurrentTrackController = async (
   console.log("Fetching current song...")
   try {
     const accessToken = await getSpotifyAccessToken()
-    const currentTrack =
-      await getCurrentPlayingTrack(accessToken)
+    const currentTrack = await getCurrentPlayingTrack(
+      accessToken
+    )
 
     if (!currentTrack) {
       res
@@ -24,9 +25,9 @@ export const getCurrentTrackController = async (
     res.status(200).json({
       externalUrl: currentTrack.external_urls.spotify,
       name: currentTrack.name,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       artist: currentTrack.artists
-        .map((a: any) => a.name)
+        .map((a) => a.name)
         .join(", "),
       album: currentTrack.album.name,
       cover: currentTrack.album.images[0]?.url

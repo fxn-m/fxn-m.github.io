@@ -1,21 +1,14 @@
 <template>
-
   <div class="container mt-4 sm:mt-16">
-
     <div class="metadata">
-
       <h1 class="text-wrap text-black dark:text-white">
-         {{ metadata.title }}
+        {{ metadata.title }}
       </h1>
-
       <p>{{ metadata.date }}</p>
-
     </div>
 
     <div class="blog" v-html="blogContent"></div>
-
   </div>
-
 </template>
 
 <script lang="ts" setup>
@@ -82,7 +75,9 @@
       case "development":
         try {
           const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/blog/${slugMap[slug ?? ""]}`,
+            `${import.meta.env.VITE_BACKEND_URL}/blog/${
+              slugMap[slug ?? ""]
+            }`,
             {
               method: "GET"
             }
@@ -285,4 +280,3 @@ body.dark .blog:deep(h1, h2, h3, h4, h5, h6) {
   color: white
 }
 </style>
-

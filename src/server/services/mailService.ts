@@ -5,7 +5,7 @@ import nodemailer from "nodemailer"
 import env from "../config/env"
 
 interface MailCallback {
-  (error: Error | null): void
+  (_error: Error | null): void
 }
 
 export const sendMail = (

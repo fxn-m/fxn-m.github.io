@@ -210,7 +210,9 @@ const enrich = async ({
     Summarize the following article in 3 sentences or less, provide a list of categories, and best guesses for the author and reading time estimate: ${
       props.title
     } ${props.url}. 
-    Return 1-3 categories, and they should be from the following list: ${categories.join(", ")}. 
+    Return 1-3 categories, and they should be from the following list: ${categories.join(
+      ", "
+    )}. 
     Be as specific as you can about the categories, ideally there would only be 1 category if the other 2 are somewhat redundant. 
     The author should be a single name, and the reading time estimate should be in minutes. 
     If the author is unclear, use "Unknown". 
@@ -291,8 +293,9 @@ export const enrichReadingListItem = async (
   databaseId: string
 ) => {
   const props = await getPagePropertiesById(pageId)
-  const categories =
-    await extractCategoriesFromDatabase(databaseId)
+  const categories = await extractCategoriesFromDatabase(
+    databaseId
+  )
   const enrichedItem = await enrich({ props, categories })
   console.log("Enriched item:", enrichedItem)
   await updateNotionPage(

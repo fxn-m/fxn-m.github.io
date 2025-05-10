@@ -37,7 +37,9 @@ const replaceVideoLinksWithIframes = (
       const videoIdMatch = href.match(
         /v=([a-zA-Z0-9_-]{11})/
       )
-      if (!videoIdMatch) return
+      if (!videoIdMatch) {
+        return
+      }
 
       const videoId = videoIdMatch[1]
       const iframe = `

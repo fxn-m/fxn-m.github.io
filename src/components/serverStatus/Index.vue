@@ -1,34 +1,27 @@
 <template>
-
   <div class="absolute top-0 right-0 sm:p-4 p-2">
-
     <div
       v-if="isWarmingUp"
       class="relative flex items-center gap-2 justify-between"
       @mouseenter="showPopover = true"
       @mouseleave="showPopover = false"
     >
-
       <p
         class="text-sm text-gray-500 underline decoration-dashed underline-offset-4 hover:cursor-pointer hidden sm:inline-block"
       >
-         Server is warming up...
+        Server is warming up...
       </p>
-       <Loader2 class="animate-spin size-4 text-gray-500" />
-      <transition name="fade"
-        >
+      <Loader2 class="animate-spin size-4 text-gray-500" />
+      <transition name="fade">
         <div
           v-if="showPopover"
           class="absolute top-full text-gray-600 text-xs text-center w-full rounded mt-2"
         >
-           (I'm broke)
+          (I'm broke)
         </div>
-         </transition
-      >
+      </transition>
     </div>
-
   </div>
-
 </template>
 
 <script setup lang="ts">
@@ -82,4 +75,3 @@
   opacity: 0;
 }
 </style>
-

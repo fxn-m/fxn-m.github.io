@@ -16,7 +16,7 @@ const parseBlogsFromNotionResponse = (
     const title =
       titleProp?.type === "title" &&
       titleProp.title.length > 0
-        ? (titleProp.title[0].plain_text ?? "Untitled")
+        ? titleProp.title[0].plain_text ?? "Untitled"
         : "Untitled"
     const dateProp = page.properties["date"]
     const date =

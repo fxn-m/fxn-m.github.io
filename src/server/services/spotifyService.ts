@@ -32,7 +32,9 @@ export async function getSpotifyAccessToken(): Promise<string> {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Basic ${Buffer.from(`${env.spotifyClientId}:${env.spotifyClientSecret}`).toString("base64")}`
+      Authorization: `Basic ${Buffer.from(
+        `${env.spotifyClientId}:${env.spotifyClientSecret}`
+      ).toString("base64")}`
     },
     body: new URLSearchParams({
       grant_type: "refresh_token",
@@ -90,7 +92,9 @@ export async function getCurrentPlayingTrack(
 
     if (!response.ok) {
       throw new Error(
-        `Spotify returned ${response.status}: ${await response.text()}`
+        `Spotify returned ${
+          response.status
+        }: ${await response.text()}`
       )
     }
 

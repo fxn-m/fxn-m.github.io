@@ -1,11 +1,8 @@
 <template>
-
   <header>
-
     <h2 class="flex font-bold text-2xl">
-
       <div style="position: relative">
-         <FontAwesomeIcon
+        <FontAwesomeIcon
           icon="fa-solid fa-caret-left"
           size="2xs"
           id="popup-arrow"
@@ -18,7 +15,7 @@
           }"
         />
       </div>
-       <RouterLink
+      <RouterLink
         @mouseover="isHovering = true"
         @mouseout="isHovering = false"
         to="/"
@@ -31,43 +28,38 @@
         "
         >fxn-m.com<span class="hidden sm:inline-block">{{
           pageTitle
-        }}</span
-        > </RouterLink
-      >
+        }}</span>
+      </RouterLink>
     </h2>
 
     <div id="restOfHeader">
-
       <ul id="navigation">
-
         <li v-for="route in routes" :key="route.path">
-           <RouterLink
+          <RouterLink
             :to="route.path"
             :class="{ active: route.path === route.path }"
             >{{ route.name }}</RouterLink
           >
         </li>
-
       </ul>
 
       <div id="icons">
-         <a
+        <a
           v-for="link in links"
           :key="link.href"
           :href="link.href"
           target="_blank"
-          > <FontAwesomeIcon
+        >
+          <FontAwesomeIcon
             :icon="link.icon"
             :size="'2xl'"
             :class="link.class"
-          /> </a
-        > <ToggleTheme />
+          />
+        </a>
+        <ToggleTheme />
       </div>
-
     </div>
-
   </header>
-
 </template>
 
 <style scoped>
@@ -79,11 +71,14 @@
 </style>
 
 <script setup lang="ts">
-  import { RouterLink } from "vue-router"
+  import {
+    RouterLink,
+    useRoute,
+    useRouter
+  } from "vue-router"
   import ToggleTheme from "@/components/theme/ToggleTheme.vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
   import { ref, computed } from "vue"
-  import { useRoute, useRouter } from "vue-router"
 
   const route = useRoute()
   const router = useRouter()
@@ -143,4 +138,3 @@
     }
   ]
 </script>
-
