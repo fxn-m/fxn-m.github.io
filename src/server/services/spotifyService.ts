@@ -38,6 +38,13 @@ export async function getCurrentPlayingTrack(token: string) {
     throw new Error("Failed to fetch current track")
   }
 
+  switch (response.status) {
+    case 204:
+      // No content, no track is currently playing
+      console.log("No track is currently playing")
+      return null
+  }
+
   const data = await response.json()
 
   if (!data || typeof data !== "object" || !("item" in data)) {
