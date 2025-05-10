@@ -13,13 +13,7 @@ import dotenv from "dotenv"
 import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
 import type { BlogPost } from "@/shared"
 
-// Load environment variables based on NODE_ENV or default to development
-dotenv.config({
-  path:
-    process.env.NODE_ENV === "production"
-      ? path.resolve(process.cwd(), ".env.production")
-      : path.resolve(process.cwd(), ".env.development")
-})
+dotenv.config()
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -32,32 +26,35 @@ if (fs.existsSync(outputDir)) {
 
 fs.mkdirSync(outputDir, { recursive: true })
 
-// Set default backend URL if environment variable is not set
-const BACKEND_URL =
-  process.env.VITE_BACKEND_URL || "http://localhost:3000"
-
 // process and update all blog posts in the Notion database
 const processBlogPosts = async () => {
-  await fetch(`${BACKEND_URL}/readingList/enrich`, {
-    method: "POST"
-  })
+  await fetch(
+    `${process.env.BACKEND_URL}/readingList/enrich`,
+    {
+      method: "POST"
+    }
+  )
 }
 
 // fetch the blog posts from the Notion database
 const fetchBlogPosts = async () => {
-  const blogs = await fetch(`${BACKEND_URL}/blog`)
+  const blogs = await fetch(
+    `${process.env.BACKEND_URL}/blog`
+  )
   return blogs.json()
 }
 
 // fetch the blog post by id
 const fetchBlogPostById = async (id: string) => {
-  const blogPost = await fetch(`${BACKEND_URL}/blog/${id}`)
+  const blogPost = await fetch(
+    `${process.env.BACKEND_URL}/blog/${id}`
+  )
   return blogPost.json()
 }
 
 const run = async () => {
   console.log("Building blog posts...")
-  console.log("Backend URL:", BACKEND_URL)
+  console.log("Backend URL:", process.env.BACKEND_URL)
   await processBlogPosts()
   const blogs = await fetchBlogPosts()
   const indexPromises = blogs.map(
