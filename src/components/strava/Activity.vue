@@ -1,37 +1,36 @@
 <script setup lang="ts">
-  import { ref, onMounted, watch, nextTick, onUnmounted } from "vue"
+  import { ref, onMounted, watch, nextTick, onUnmounted, computed } from "vue"
   import { format } from "date-fns"
   import polyline from "@mapbox/polyline"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
   import type { StravaActivity } from "@/shared/types/strava"
+  import { useQuery } from "@tanstack/vue-query"
 
-  const activities = ref<StravaActivity[]>([])
   const currentIndex = ref(0)
-  const loading = ref(true)
-  const error = ref<string | null>(null)
   const canvasRef = ref<HTMLCanvasElement | null>(null)
   const isDark = ref(false)
   const observer = ref<MutationObserver | null>(null)
 
   const fetchActivities = async () => {
-    try {
-      loading.value = true
-      error.value = null
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/strava/activities`)
+    // Filter out activities that have no summary_polyline
+    const allActivities = (await response.json()) as StravaActivity[]
+    const validActivities = allActivities.filter((act) => act.map && act.map.summary_polyline)
 
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/strava/activities`)
-
-      // Filter out activities that have no summary_polyline
-      const allActivities = (await response.json()) as StravaActivity[]
-      const validActivities = allActivities.filter((act) => act.map && act.map.summary_polyline)
-
-      activities.value = validActivities
-    } catch (e) {
-      error.value = "Failed to load activities."
-      console.error(e)
-    } finally {
-      loading.value = false
-    }
+    return validActivities
   }
+
+  // --- TanStack Query -------------------------------------------------------
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["activities"],
+    queryFn: fetchActivities,
+    // Disable refetches you don’t want; tweak as needed
+    refetchOnWindowFocus: false
+  })
+
+  // Keep a computed wrapper so the rest of the component can stay the same
+  const activities = computed(() => data.value ?? [])
+  // -------------------------------------------------------------------------
 
   // a countdown timer for the days remaining until the 14th of June 2025 09:00:00
   // displays days, hours seconds, counts down every second
@@ -203,14 +202,6 @@
       attributeFilter: ["class"] // Only watch the 'class' attribute
     })
 
-    await fetchActivities()
-
-    if (activities.value.length > 0) {
-      currentIndex.value = 0
-      await nextTick()
-      drawPolyline()
-    }
-
     countdownInterval = setInterval(updateCountdown, 1000)
 
     window.addEventListener("resize", updateCanvasSize)
@@ -237,23 +228,19 @@
   })
 
   // Re-draw whenever we get new activities
-  watch(
-    activities,
-    async () => {
-      if (activities.value.length > 0) {
-        currentIndex.value = 0
-        await nextTick()
-        drawPolyline()
-      }
-    },
-    { immediate: true }
-  )
+  watch(activities, async (newActivities) => {
+    if (newActivities.length > 0) {
+      currentIndex.value = 0
+      await nextTick()
+      drawPolyline()
+    }
+  })
 </script>
 
 <template>
   <div class="strava-activity-viewer mt-12">
     <!-- Loading / Error states -->
-    <div v-if="loading" class="activity-card loading-skeleton">
+    <div v-if="isLoading" class="activity-card loading-skeleton">
       <div class="activity-content">
         <!-- Left skeleton: spinner for map area -->
         <div class="polyline-container skeleton-canvas"></div>
