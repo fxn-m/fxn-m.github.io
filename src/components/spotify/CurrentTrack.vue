@@ -30,7 +30,7 @@
       <transition name="fade-slide">
         <div
           v-if="delayedExpanded"
-          class="sub-info-container flex gap-1 items-center text-gray-400 text-xs"
+          class="flex gap-1 items-center text-gray-400 text-xs"
         >
           <p>Now playing on Spotify</p>
           <WaveForm />
@@ -181,7 +181,7 @@
     white-space: nowrap; 
     width: auto; 
     max-width: none;
-    margin-top: 0.25rem;
+    margin-top: 0.5rem;
   }
 
   .fade-slide-enter-active,
@@ -222,7 +222,7 @@
 
   @media (hover: hover) {
     .mini-player:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
   }
 
