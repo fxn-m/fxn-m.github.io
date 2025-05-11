@@ -119,7 +119,7 @@
     onMounted,
     onUnmounted,
     computed,
-    watch
+    watchEffect
   } from "vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
   import { ExternalLink, Loader2 } from "lucide-vue-next"
@@ -287,28 +287,19 @@
     }
   }
 
-  // Fetch the reading list from the backend on mount
-  onMounted(async () => {
-    window.addEventListener("keydown", handleKeydown)
-
-    // Load the first suggestion once the reading list is available
+  // Kick off the first suggestion once data is ready
+  watchEffect(() => {
     if (
-      readingList.value.length > 0 &&
-      currentIndex.value === -1
+      !isLoading.value &&
+      currentIndex.value === -1 &&
+      readingListCount.value > 0
     ) {
       nextSuggestion()
-    } else {
-      // Wait until the query returns, then run exactly once
-      const stop = watch(readingList, (newList) => {
-        if (
-          newList.length > 0 &&
-          currentIndex.value === -1
-        ) {
-          nextSuggestion()
-          stop()
-        }
-      })
     }
+  })
+
+  onMounted(() => {
+    window.addEventListener("keydown", handleKeydown)
   })
 
   onUnmounted(() => {

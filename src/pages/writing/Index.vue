@@ -16,54 +16,80 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, onMounted } from "vue"
+  import { ref, watchEffect, onMounted } from "vue"
+  import { useQuery } from "@tanstack/vue-query"
   import { getSlugMap } from "@/server/utils/blogUtils"
-  import type { BlogPost } from "@/shared"
+  import type { BlogPost, SlugMap } from "@/shared"
 
-  const allBlogs = ref([] as BlogPost[])
-  const slugMap = ref()
+  const allBlogs = ref<BlogPost[]>([])
+  const slugMap = ref<SlugMap>()
 
-  onMounted(async () => {
-    let allBlogsData: BlogPost[] = []
-    switch (import.meta.env.MODE) {
-      case "development":
-        try {
-          const response = await fetch(
-            `${import.meta.env.VITE_BACKEND_URL}/blog`
-          )
-          allBlogsData = await response.json()
-        } catch (error) {
-          console.error("Error fetching blogs:", error)
-        }
-        break
+  const isDev = import.meta.env.DEV
 
-      case "production":
-        try {
-          const response = await fetch("/html/index.json")
-          allBlogsData = await response.json()
-        } catch (error) {
-          console.error("Error fetching blogs:", error)
-        }
-        break
+  if (isDev) {
+    // ─── Development: use TanStack Query ─────────────────────────────────────────
+    const fetchBlogs = async (): Promise<BlogPost[]> => {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/blog`
+      )
+      return response.json()
     }
 
-    allBlogs.value = allBlogsData.sort((a, b) => {
-      return (
-        new Date(b.date).getTime() -
-        new Date(a.date).getTime()
-      )
+    const { data: blogs } = useQuery<BlogPost[]>({
+      queryKey: ["blogs"],
+      queryFn: fetchBlogs,
+      // keep cache sorted so every consumer gets ordered data
+      select: (rows) =>
+        rows.sort(
+          (a, b) =>
+            new Date(b.date).getTime() -
+            new Date(a.date).getTime()
+        )
     })
 
-    const slugMapResponse = await getSlugMap(allBlogsData)
-    slugMap.value = slugMapResponse
+    watchEffect(async () => {
+      if (!blogs.value) {
+        return
+      }
+      allBlogs.value = blogs.value
 
-    if (typeof window !== "undefined") {
-      localStorage.setItem(
-        "slugMap",
-        JSON.stringify(slugMapResponse)
-      )
-    }
-  })
+      const slugMapResponse = await getSlugMap(blogs.value)
+      slugMap.value = slugMapResponse
+
+      if (typeof window !== "undefined") {
+        localStorage.setItem(
+          "slugMap",
+          JSON.stringify(slugMapResponse)
+        )
+      }
+    })
+  } else {
+    // ─── Production: plain fetch (kept simple & cached by the browser) ───────────
+    onMounted(async () => {
+      try {
+        const response = await fetch("/html/index.json")
+        const blogs = (await response.json()) as BlogPost[]
+
+        allBlogs.value = blogs.sort(
+          (a, b) =>
+            new Date(b.date).getTime() -
+            new Date(a.date).getTime()
+        )
+
+        const slugMapResponse = await getSlugMap(blogs)
+        slugMap.value = slugMapResponse
+
+        if (typeof window !== "undefined") {
+          localStorage.setItem(
+            "slugMap",
+            JSON.stringify(slugMapResponse)
+          )
+        }
+      } catch (error) {
+        console.error("Error fetching blogs:", error)
+      }
+    })
+  }
 </script>
 
 <style scoped>
