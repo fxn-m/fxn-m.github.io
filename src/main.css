@@ -350,6 +350,6 @@ body.dark header {
 }
 
 @theme {
-  --color-primary-light: #555;
+  --color-primary-light: #444;
   --color-primary-dark: #cecece;
 }

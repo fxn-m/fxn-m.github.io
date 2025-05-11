@@ -30,7 +30,9 @@
     // ─── Development: use TanStack Query ─────────────────────────────────────────
     const fetchBlogs = async (): Promise<BlogPost[]> => {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/blog`
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/blog?development=true`
       )
       return response.json()
     }

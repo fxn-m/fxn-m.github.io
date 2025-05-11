@@ -15,24 +15,7 @@ import { openai } from "@ai-sdk/openai"
 import pLimit from "p-limit"
 import { writeReadingListToFile } from "../utils/fileUtils"
 
-const PagePropertiesSchema = z.object({
-  id: z.string(),
-  created_time: z.string(),
-  properties: z.object({
-    Name: z.object({
-      title: z.array(
-        z.object({
-          text: z.object({
-            content: z.string()
-          })
-        })
-      )
-    }),
-    Link: z.object({
-      url: z.string()
-    })
-  })
-})
+// Blog -------------------------------------------------------
 
 const DatabaseResponseSchema = z.object({
   id: z.string(),
@@ -47,13 +30,6 @@ const DatabaseResponseSchema = z.object({
       })
     })
   })
-})
-
-const enrichedReadingListItemSchema = z.object({
-  summary: z.string(),
-  categories: z.array(z.string()),
-  author: z.string(),
-  readingTimeEstimate: z.number()
 })
 
 export const getReadingList = async (): Promise<
@@ -105,7 +81,7 @@ export const getBlogPostById = async (blockId: string) => {
 
   const renderer = new MDXRenderer({
     frontmatter: {
-      include: ["title", "date", "tags"]
+      include: ["Title", "Date", "Tags"]
     }
   })
 
@@ -121,9 +97,9 @@ export const getBlogPostById = async (blockId: string) => {
   return blogPost
 }
 
-export const getBlogPosts = async (): Promise<
-  NotionResponse[]
-> => {
+export const getBlogPosts = async (
+  isDevelopment: boolean
+): Promise<NotionResponse[]> => {
   const notion = new Client({
     auth: env.notionApiKey
   })
@@ -135,12 +111,29 @@ export const getBlogPosts = async (): Promise<
   while (hasNextPage) {
     const response = await notion.databases.query({
       database_id: env.notionBlogDatabaseId ?? "",
-      filter: {
-        property: "status",
-        status: {
-          equals: "Published"
-        }
-      },
+      filter: isDevelopment
+        ? {
+            or: [
+              {
+                property: "Status",
+                status: {
+                  equals: "Published"
+                }
+              },
+              {
+                property: "Status",
+                status: {
+                  equals: "Draft"
+                }
+              }
+            ]
+          }
+        : {
+            property: "Status",
+            status: {
+              equals: "Published"
+            }
+          },
       start_cursor: startCursor ?? undefined
     })
 
@@ -152,12 +145,40 @@ export const getBlogPosts = async (): Promise<
   return blogPosts
 }
 
-type PagePropertiesSchema = {
+// TabOverflow -------------------------------------------------------
+
+const enrichedReadingListItemSchema = z.object({
+  summary: z.string(),
+  categories: z.array(z.string()),
+  author: z.string(),
+  readingTimeEstimate: z.number()
+})
+
+type PageProperties = {
   id: string
   title: string
   created: string
   url: string
 }
+
+const PagePropertiesSchema = z.object({
+  id: z.string(),
+  created_time: z.string(),
+  properties: z.object({
+    Name: z.object({
+      title: z.array(
+        z.object({
+          text: z.object({
+            content: z.string()
+          })
+        })
+      )
+    }),
+    Link: z.object({
+      url: z.string()
+    })
+  })
+})
 
 const getPagePropertiesById = async (pageId: string) => {
   const notion = new Client({
@@ -201,7 +222,7 @@ const enrich = async ({
   props,
   categories
 }: {
-  props: PagePropertiesSchema
+  props: PageProperties
   categories: string[]
 }) => {
   const { text } = await generateText({

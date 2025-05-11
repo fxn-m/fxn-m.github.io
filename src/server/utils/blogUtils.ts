@@ -79,10 +79,10 @@ export const convertMarkdownToHTML = (
     content: replaceVideoLinksWithIframes(html),
     meta: {
       date: he
-        .decode(rawMetadata.date)
+        .decode(rawMetadata.Date)
         .replace(/^"|"$/g, ""),
       title: he
-        .decode(rawMetadata.title)
+        .decode(rawMetadata.Title)
         .replace(/^"|"$/g, "")
     }
   }

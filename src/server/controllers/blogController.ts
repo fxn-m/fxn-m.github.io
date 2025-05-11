@@ -12,13 +12,13 @@ const parseBlogsFromNotionResponse = (
 ): BlogPost[] =>
   response.map((page) => {
     const id = page.id
-    const titleProp = page.properties["title"]
+    const titleProp = page.properties["Title"]
     const title =
       titleProp?.type === "title" &&
       titleProp.title.length > 0
         ? titleProp.title[0].plain_text ?? "Untitled"
         : "Untitled"
-    const dateProp = page.properties["date"]
+    const dateProp = page.properties["Date"]
     const date =
       dateProp?.type === "date" && dateProp.date?.start
         ? dateProp.date.start
@@ -38,12 +38,16 @@ const parseBlogsFromNotionResponse = (
   })
 
 export const fetchBlogController = async (
-  _: Request,
+  req: Request,
   res: Response
 ): Promise<void> => {
+  const queryParams = req.query
+  const isDevelopment = queryParams.development === "true"
   try {
-    const notionBlogsResponse = await getBlogPosts()
-    // ! dangerously cast to PageObjectResponse[]
+    const notionBlogsResponse = await getBlogPosts(
+      isDevelopment
+    )
+    // cast to PageObjectResponse[]
     const blogs = parseBlogsFromNotionResponse(
       notionBlogsResponse as PageObjectResponse[]
     )
@@ -61,6 +65,7 @@ export const fetchBlogPostController = async (
   res: Response
 ): Promise<void> => {
   const { id } = req.params
+
   try {
     const blogPost = await getBlogPostById(id)
     res.status(200).json(blogPost)
