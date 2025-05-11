@@ -1,5 +1,6 @@
 import { Router } from "express"
 import {
+  buildBlogController,
   fetchBlogController,
   fetchBlogPostController
 } from "../controllers/blogController"
@@ -7,6 +8,7 @@ import {
 const router: Router = Router()
 
 router.get("/", fetchBlogController)
+router.get("/build", buildBlogController)
 router.get("/:id", fetchBlogPostController)
 
 export default router

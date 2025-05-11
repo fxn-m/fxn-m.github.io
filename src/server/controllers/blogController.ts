@@ -6,6 +6,7 @@ import {
 import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints"
 import type { BlogPost } from "@/shared/types"
 import slugify from "slugify"
+import { triggerRebuild } from "../services/githubService"
 
 const parseBlogsFromNotionResponse = (
   response: PageObjectResponse[]
@@ -74,5 +75,22 @@ export const fetchBlogPostController = async (
     res
       .status(500)
       .json({ message: "Failed to fetch blog post" })
+  }
+}
+
+export const buildBlogController = async (
+  _: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    await triggerRebuild()
+    res
+      .status(200)
+      .json({ message: "Blog build triggered" })
+  } catch (error) {
+    console.error("Error building blog:", error)
+    res
+      .status(500)
+      .json({ message: "Failed to trigger blog build" })
   }
 }

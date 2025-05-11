@@ -1,0 +1,60 @@
+# Rebuild blog from Notion on external trigger
+name: Rebuild Blog from Notion
+
+on:
+  # Custom event dispatched from your backend
+  repository_dispatch:
+    types: [rebuild_from_notion]
+
+env:
+  # Your backend URL is needed by build‑time scripts that fetch from Notion
+  BACKEND_URL: https://fxn-m-github-io.onrender.com
+
+# Grant the minimum permissions required to deploy to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Prevent overlapping rebuilds
+concurrency:
+  group: rebuild-blog
+  cancel-in-progress: true
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Install pnpm
+        run: npm install -g pnpm
+
+      - name: 🟢 Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'pnpm'
+
+      - name: 📦 Install dependencies
+        run: pnpm install
+
+      - name: 🛠️ Build site (fetch from Notion ➜ static HTML)
+        run: pnpm build
+
+      - name: ⚙️  Configure Pages
+        uses: actions/configure-pages@v4
+
+      - name: 🗄️  Upload static artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
