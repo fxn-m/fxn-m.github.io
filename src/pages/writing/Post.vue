@@ -376,7 +376,7 @@ body.dark .blog:deep(hr) {
 .blog:deep(div.img-caption) {
   position: relative;
   font-size: 0.8em;
-  text-align: left;
+  text-align: center;
   top: -1.5em;
   font-style: italic;
 }
