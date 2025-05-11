@@ -44,11 +44,6 @@ jobs:
           node-version: 20
           cache: 'pnpm'
 
-      - name: Setup pnpm            # optional quality-of-life
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: true
-
       - name: 📦 Install dependencies
         run: pnpm install
 
