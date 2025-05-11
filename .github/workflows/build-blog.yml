@@ -6,6 +6,8 @@ on:
   repository_dispatch:
     types: [rebuild_from_notion]
 
+  workflow_dispatch:
+
 env:
   # Your backend URL is needed by build‑time scripts that fetch from Notion
   BACKEND_URL: https://fxn-m-github-io.onrender.com

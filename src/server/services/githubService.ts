@@ -1,8 +1,9 @@
 import env from "@/server/config/env"
 
 export const triggerRebuild = async () => {
+  console.log("Triggering rebuild...")
   const ghResp = await fetch(
-    "https://api.github.com/repos/fxn-m/fxn-m.github.io/dispatches",
+    "https://api.github.com/repos/fxn-m/fxn-m.github.io/actions/workflows/build-blog.yml/dispatches",
     {
       method: "POST",
       headers: {
@@ -10,10 +11,19 @@ export const triggerRebuild = async () => {
         Accept: "application/vnd.github+json"
       },
       body: JSON.stringify({
-        event_type: "rebuild_from_notion"
+        ref: "main"
       })
     }
   )
+
+  if (!ghResp.ok) {
+    console.error(
+      "Failed to trigger rebuild:",
+      ghResp.statusText,
+      ghResp
+    )
+    throw new Error("Failed to trigger rebuild")
+  }
 
   return ghResp
 }
