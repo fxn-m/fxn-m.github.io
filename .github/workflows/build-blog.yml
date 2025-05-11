@@ -17,6 +17,7 @@ permissions:
   contents: read
   pages: write
   id-token: write
+  actions: read
 
 # Prevent overlapping rebuilds
 concurrency:
@@ -40,8 +41,13 @@ jobs:
       - name: 🟢 Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: 'pnpm'
+
+      - name: Setup pnpm            # optional quality-of-life
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: true
 
       - name: 📦 Install dependencies
         run: pnpm install
@@ -50,7 +56,7 @@ jobs:
         run: pnpm build:markdown
 
       - name: ⚙️  Configure Pages
-        uses: actions/configure-pages@v4
+        uses: actions/configure-pages@v5
 
       - name: 🗄️  Upload static artifact
         uses: actions/upload-pages-artifact@v3
