@@ -6,8 +6,9 @@
 
     <p>
       I'm a full-stack engineer @
-      <a href="https://verdn.com" target="_blank">Verdn</a>,
-      based in London.
+      <a href="https://kenobi.ai" target="_blank"
+        >Kenobi (YC W22)</a
+      >, based in London.
     </p>
     <br />
     <p>
@@ -47,11 +48,8 @@
         >here</a
       >!
     </p>
+
     <br />
-    <p>
-      I'm now at Verdn, helping non-profits supercharge
-      their donations and communicate their impact.
-    </p>
 
     <p>
       Email me at
