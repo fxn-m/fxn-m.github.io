@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 body {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: Roboto, serif;
   width: 50%;
   min-height: 100dvh;
   margin: 0 auto;
@@ -222,7 +222,7 @@ a > svg[class*="fa-"] {
 /* // dark mode styling */
 
 body.dark {
-  background-color: #0a0a0a;
+  background-color: #101017;
   transition: background-color 0.5s ease-in-out;
 }
 
@@ -238,7 +238,7 @@ body.dark p code {
 body.dark a,
 body.dark a.nav-link,
 body.dark a:not([href]):not([class]) {
-  color: #dbdbdb;
+  color: #cdcdcd;
   text-decoration: none;
 }
 
@@ -351,5 +351,5 @@ body.dark header {
 
 @theme {
   --color-primary-light: #444;
-  --color-primary-dark: #cecece;
+  --color-primary-dark: #bbb;
 }
