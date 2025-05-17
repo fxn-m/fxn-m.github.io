@@ -349,7 +349,7 @@
         ></div>
 
         <div
-          class="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-transparent to-25%"
+          class="absolute inset-0 bg-gradient-to-b from-[#101017] to-transparent to-25%"
           :class="{ 'opacity-0': !isDark }"
         ></div>
         <!-- Bottom -->
@@ -359,7 +359,7 @@
         ></div>
 
         <div
-          class="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] to-25% to-transparent transition-opacity duration-1000 sm:invisible"
+          class="absolute inset-0 bg-gradient-to-t from-[#101017] to-25% to-transparent transition-opacity duration-1000 sm:invisible"
           :class="{ 'opacity-0': !isDark }"
         ></div>
 
@@ -703,7 +703,7 @@ body.dark .strava-activity-viewer {
 }
 
 body.dark .activity-card {
-  background-color: #0a0a0a;
+  background-color: #101017;
 }
 
 body.dark .activity-info {
