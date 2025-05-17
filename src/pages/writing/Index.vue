@@ -106,7 +106,7 @@
 .container p {
     color: #868686;
     font-size: 0.95em;
-    margin: 0px 8px 0px 0px;
+    margin: 0px 0px 0px 0px;
     min-width: 100px;
 }
 
