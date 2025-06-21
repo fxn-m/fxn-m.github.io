@@ -42,22 +42,12 @@
         </div>
       </div>
     </div>
-
-    <hr
-      class="border-gray-200 dark:border-gray-700 transition-all duration-500"
-    />
-
-    <h2 class="text-xl font-semibold mt-8 mb-4">
-      I'm also running a marathon
-    </h2>
-    <Activity />
   </div>
 </template>
 
 <script setup lang="ts">
   import { ref } from "vue"
   import { Link } from "lucide-vue-next"
-  import Activity from "@/components/strava/Activity.vue"
 
   const projects = ref(
     [
