@@ -1,6 +1,6 @@
 <template>
   <div
-    class="min-h-80 flex flex-col transition-all duration-1000 overflow-hidden"
+    class="min-h-80 flex flex-col shadow-md border border-gray-200 dark:border-gray-900 rounded-lg transition-all duration-1000 overflow-hidden"
   >
     <div
       v-if="isLoading"
@@ -12,7 +12,7 @@
 
     <div
       v-else
-      class="relative reading-suggestion gap-2 flex flex-col px-1 py-8 flex-1"
+      class="relative reading-suggestion gap-2 flex flex-col p-4 py-8 sm:p-6 flex-1"
     >
       <div
         class="absolute top-2 right-2 text-xs text-gray-500"
@@ -34,7 +34,7 @@
           <a
             :href="readingSuggestion.url"
             target="_blank"
-            class="text-lg sm:text-lg font-bold inline-flex items-start gap-1 break-words"
+            class="text-lg sm:text-xl font-bold inline-flex items-start gap-1 break-words"
           >
             {{ readingSuggestion.name }}
             <ExternalLink
@@ -86,7 +86,7 @@
       >
         <button
           @click="prevSuggestion"
-          class="text-gray-800 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-400 p-2"
+          class="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-400 p-2"
           :class="{
             'opacity-50 cursor-not-allowed':
               currentIndex === 0
@@ -95,16 +95,16 @@
         >
           <FontAwesomeIcon
             icon="fa-solid fa-arrow-left"
-            size="sm"
+            size="lg"
           />
         </button>
         <button
           @click="nextSuggestion"
-          class="text-gray-800 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-400 p-2"
+          class="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-400 p-2"
         >
           <FontAwesomeIcon
             icon="fa-solid fa-arrow-left"
-            size="sm"
+            size="lg"
             class="rotate-180"
           />
         </button>

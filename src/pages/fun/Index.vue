@@ -13,14 +13,15 @@
               :href="project.link"
               target="_blank"
               class="flex gap-1 items-center"
-              >{{ project.title }}<Link class="size-3"
-            /></a>
+              >{{ project.title }}</a
+            >
+
             <RouterLink
               v-else
               :to="project.link"
               class="flex gap-1 items-center"
-              >{{ project.title }}<Link class="size-3"
-            /></RouterLink>
+              >{{ project.title }}</RouterLink
+            >
           </h3>
 
           <p
@@ -47,29 +48,20 @@
 
 <script setup lang="ts">
   import { ref } from "vue"
-  import { Link } from "lucide-vue-next"
 
   const projects = ref(
     [
       {
         id: 1,
-        title: "Atmosphere.fm (discontinued)",
-        subtitle: "Soundtracks shaped by skies",
-        description: `Intelligently curated spotify playlists based on the local weather and time of day. My first "full-stack" project, built in 2023. Relied on Spotify's personalised mixes, which were removed from the API in 2024. I had to discontinue the project, but it was a great learning experience.`,
-        link: "/fun/:atmosphere-fm",
-        date: "2023-06"
-      },
-      {
-        id: 2,
         title: "TabOverflow",
         subtitle: "Overcoming the paradox of choice",
         description: `I come across tonnes of niche little articles on technical topics, general life advice and other bits and pieces. I use a chrome extension to save the links to a Notion database, but rarely get around to reading them. Just glancing at the <span class="font-mono">>400</span class="font-mono"> articles in there makes me shiver, so I got <span class="font-mono">gpt-4o</span> to summarise most of them, and built this front-end to bubble up one at random, with estimated reading time and a few tags.
         The hardest thing about the abundance of information today is deciding <a href="https://jeremy.zawodny.com/blog/archives/008581.html" target="_blank">what to ignore</a>.`,
-        link: "/fun/:tab-overflow",
+        link: "/fun/tab-overflow",
         date: "2023-10 (updated 2025-04)"
       },
       {
-        id: 3,
+        id: 2,
         title: "PGT",
         subtitle: "Paul Graham's Essays, Translated",
         description:

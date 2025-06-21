@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <ul>
+  <div class="container" id="content">
+    <ul class="space-y-2">
       <li v-for="blog in allBlogs" :key="blog.id">
         <p>{{ blog.date }}</p>
         <router-link
