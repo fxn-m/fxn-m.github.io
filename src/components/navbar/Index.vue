@@ -1,6 +1,6 @@
 <template>
   <header>
-    <h2 class="flex font-bold text-2xl">
+    <h2 class="flex font-bold text-xl">
       <div style="position: relative">
         <FontAwesomeIcon
           icon="fa-solid fa-caret-left"
