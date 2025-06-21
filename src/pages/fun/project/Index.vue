@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-  import ReadingSuggestion from "@/pages/fun/TabOverflow/Index.vue"
+  import ReadingSuggestion from "@/pages/fun/tab-overflow/Index.vue"
 
   import { useRoute } from "vue-router"
   import { ref, onMounted, type Component } from "vue"

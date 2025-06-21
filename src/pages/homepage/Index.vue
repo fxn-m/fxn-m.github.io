@@ -2,9 +2,8 @@
   <div id="content">
     <p style="margin-top: 0">
       Founding Engineer @
-      <a href="https://kenobi.ai" target="_blank"
-        >Kenobi (YC W22)</a
-      >.
+      <a href="https://kenobi.ai" target="_blank">Kenobi</a>
+      (YC W22).
     </p>
 
     <p>Based in London.</p>

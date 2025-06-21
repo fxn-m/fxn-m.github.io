@@ -1,5 +1,5 @@
 <template>
-  <header>
+  <header class="sm:my-0 !mt-4">
     <h2 class="flex font-bold text-xl">
       <div style="position: relative">
         <FontAwesomeIcon
@@ -23,6 +23,7 @@
         style="
           white-space: nowrap;
           border: none;
+          text-decoration: none;
           font-weight: bold;
           align-self: center;
         "
@@ -85,9 +86,9 @@
   const isHovering = ref(false)
 
   const routes = [
-    { path: "/", name: "About" },
-    { path: "/writing", name: "Writing" },
-    { path: "/fun", name: "Fun" }
+    { path: "/", name: "/" },
+    { path: "/writing", name: "writing" },
+    { path: "/fun", name: "fun" }
   ]
 
   const pageTitle = computed(() => {

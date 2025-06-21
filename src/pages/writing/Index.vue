@@ -132,10 +132,4 @@ li {
         padding-left: 0px;
     }
 }
-
-@media (max-width: 675px) {
-    .container {
-        max-width: 350px;
-    }
-}
 </style>
