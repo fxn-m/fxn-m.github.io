@@ -1,11 +1,7 @@
 <template>
   <div id="content" class="space-y-8">
     <div class="project-grid">
-      <div
-        class="project-card"
-        v-for="project in projects"
-        :key="project.id"
-      >
+      <div v-for="project in projects" :key="project.id">
         <div class="project-info space-y-2">
           <h3 class="flex gap-1 items-center font-semibold">
             <a
@@ -42,11 +38,15 @@
           </p>
         </div>
       </div>
+
+      <!-- Strava activities -->
+      <Activity />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+  import Activity from "@/components/strava/Activity.vue"
   import { ref } from "vue"
 
   const projects = ref(
@@ -78,10 +78,5 @@
   display: flex;
   flex-direction: column;
   gap: 2rem;
-}
-
-.project-card {
-  border-left: 1px solid #222;
-  padding-left: 1rem;
 }
 </style>

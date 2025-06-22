@@ -52,7 +52,7 @@
   const countdown = ref<string>("")
 
   const countdownTo = new Date(
-    "2025-06-14T09:00:00Z"
+    "2025-07-27T09:00:00Z"
   ).getTime()
 
   const updateCountdown = () => {
@@ -370,12 +370,8 @@
             icon="fa-solid fa-flag-checkered"
           />
           <div>
-            <p class="my-0!">LGT Alpin Marathon</p>
-            <a
-              href="https://worldsmarathons.com/marathon/lgt-alpin-marathon"
-              target="_blank"
-              >{{ countdown }}</a
-            >
+            <p class="my-0!">5k &lt; 20m</p>
+            <p>{{ countdown }}</p>
           </div>
         </div>
         <!-- Right Panel: Stats -->
