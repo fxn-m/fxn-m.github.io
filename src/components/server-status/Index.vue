@@ -3,23 +3,8 @@
     <div
       v-if="isWarmingUp"
       class="relative flex items-center gap-2 justify-between"
-      @mouseenter="showPopover = true"
-      @mouseleave="showPopover = false"
     >
-      <p
-        class="text-sm text-gray-500 underline decoration-dashed underline-offset-4 hover:cursor-pointer hidden sm:inline-block"
-      >
-        Server is warming up...
-      </p>
       <Loader2 class="animate-spin size-4 text-gray-500" />
-      <transition name="fade">
-        <div
-          v-if="showPopover"
-          class="absolute top-full text-gray-600 text-xs text-center w-full rounded mt-2"
-        >
-          (I'm broke)
-        </div>
-      </transition>
     </div>
   </div>
 </template>
@@ -29,7 +14,6 @@
   import { ref, onMounted, onUnmounted } from "vue"
 
   const isWarmingUp = ref(true)
-  const showPopover = ref(false)
   let intervalId: number
 
   async function pollServer() {
