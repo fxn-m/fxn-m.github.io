@@ -1,5 +1,5 @@
 <template>
-  <div id="content" class="space-y-8">
+  <div id="content" class="space-y-8 sm:pb-0 pb-16">
     <div class="project-grid">
       <div v-for="project in projects" :key="project.id">
         <div class="project-info space-y-2">
