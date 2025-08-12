@@ -1,6 +1,6 @@
 <template>
-  <div class="container">
-    <ul>
+  <div class="container" id="content">
+    <ul class="space-y-2">
       <li v-for="blog in allBlogs" :key="blog.id">
         <p>{{ blog.date }}</p>
         <router-link
@@ -106,7 +106,7 @@
 .container p {
     color: #868686;
     font-size: 0.95em;
-    margin: 0px 16px 0px 0px;
+    margin: 0px 0px 0px 0px;
     min-width: 100px;
 }
 
@@ -130,12 +130,6 @@ li {
     #section-right {
         min-width: 100%;
         padding-left: 0px;
-    }
-}
-
-@media (max-width: 675px) {
-    .container {
-        max-width: 350px;
     }
 }
 </style>

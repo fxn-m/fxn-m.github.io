@@ -79,14 +79,8 @@
         throw new Error("No track data found")
       }
 
-      console.log(
-        `Currently, I'm listening to ${data.name} by ${data.artist} 🎵`
-      )
       track.value = data
     } catch {
-      console.log(
-        "Currently, I'm not listening to anything."
-      )
       track.value = null
     }
   }
@@ -117,11 +111,17 @@
     background: rgba(255, 255, 255, 0.01);
   }
 
+  .mini-player a,
+  .track-link,
+  .track-link * {
+    text-decoration: none !important;
+  }
+
   .mini-player a {
     display: flex;
     align-items: center;
-    text-decoration: none;
     border: none;
+    color: inherit;
   }
 
   .artwork-container {
@@ -166,6 +166,8 @@
     color: black;
     line-height: 1.2;
     margin: 0;
+    border: none;
+    outline: none;
   }
 
   .track-link small {
