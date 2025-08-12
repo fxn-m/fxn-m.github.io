@@ -52,7 +52,7 @@
   const countdown = ref<string>("")
 
   const countdownTo = new Date(
-    "2025-06-14T09:00:00Z"
+    "2025-08-11T09:00:00Z"
   ).getTime()
 
   const updateCountdown = () => {
