@@ -14,6 +14,9 @@
   import type { StravaActivity } from "@/shared/types/strava"
   import { useQuery } from "@tanstack/vue-query"
 
+  const IS_GOAL = true // Set to true if you want to show the goal countdown
+  const GOAL_TITLE = "Spartan Beast | Hvar" // Title for the goal countdown
+
   const currentIndex = ref(0)
   const canvasRef = ref<HTMLCanvasElement | null>(null)
   const isDark = ref(false)
@@ -52,7 +55,7 @@
   const countdown = ref<string>("")
 
   const countdownTo = new Date(
-    "2025-08-11T09:00:00Z"
+    "2025-10-12T09:00:00Z"
   ).getTime()
 
   const updateCountdown = () => {
@@ -362,15 +365,16 @@
           class="absolute inset-0 bg-gradient-to-t from-[#101017] to-25% to-transparent transition-opacity duration-1000 sm:invisible"
           :class="{ 'opacity-0': !isDark }"
         ></div>
-
+        <!-- Countdown Timer: Only show if IS_GOAL is true -->
         <div
+          v-if="IS_GOAL"
           class="countdown flex gap-3 items-center text-xs absolute top-0 left-0 text-gray-400 z-10"
         >
           <FontAwesomeIcon
             icon="fa-solid fa-flag-checkered"
           />
           <div>
-            <p class="my-0!">5k &lt; 20m</p>
+            <p class="my-0!">{{ GOAL_TITLE }}</p>
             <p>{{ countdown }}</p>
           </div>
         </div>
