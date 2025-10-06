@@ -7,7 +7,7 @@
 }
 
 body {
-  font-family: Roboto, serif;
+  font-family: Roboto, system-ui, -apple-system, "Hubot Sans", "Kanit", "Gantari", serif;
   width: 50%;
   min-height: 100dvh;
   margin: 0 auto;
