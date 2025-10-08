@@ -27,34 +27,34 @@
 <style scoped>
   span.date {
     font-weight: bold;
-}
+  }
 
-li {
+  li {
     margin-top: 1rem;
-}
+  }
 
-h3 {
+  h3 {
     font-size: 1.1rem;
-}
+  }
 
-p {
+  p {
     margin: 0.4em 0;
-}
+  }
 
-#experience {
+  #experience {
     font-weight: bold;
     margin-top: 2rem;
     width: 100%;
     border-bottom: 1px solid #eaeaea;
     padding-bottom: 2px;
     transition: all 0.5s ease-in-out;
-}
+  }
 
-body.dark #experience {
+  body.dark #experience {
     border-bottom: 1px solid #4f4f4f;
-}
+  }
 
-footer {
+  footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -67,15 +67,15 @@ footer {
     width: 100%;
     margin-top: auto;
     padding: 4rem 0 1rem 0;
-}
+  }
 
-footer p {
+  footer p {
     color: #b3b3b3;
     font-size: 0.8rem;
     margin-left: auto;
-}
+  }
 
-.asterisk {
+  .asterisk {
     display: inline-block;
     position: relative;
     text-align: center;
@@ -85,9 +85,9 @@ footer p {
     cursor: pointer;
     color: #d97757;
     font-size: larger;
-}
+  }
 
-.asterisk .popover {
+  .asterisk .popover {
     font-size: 14px;
     text-wrap: wrap;
     min-width: 500px;
@@ -103,54 +103,54 @@ footer p {
     padding: 5px 10px;
     border-radius: 4px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
+  }
 
-body.dark .asterisk .popover,
-body.dark .asterisk .popover a {
+  body.dark .asterisk .popover,
+  body.dark .asterisk .popover a {
     color: #333;
     background-color: #bbbbbb;
     border-color: #4f4f4f;
-}
+  }
 
-.popover .popover-close {
+  .popover .popover-close {
     display: none;
     color: #555555;
-}
+  }
 
-.popover .inner-asterisk {
+  .popover .inner-asterisk {
     display: none;
-}
+  }
 
-@media (max-width: 800px) {
+  @media (max-width: 800px) {
     .asterisk .popover {
-        position: fixed;
-        bottom: 2%;
-        left: 5vw;
-        max-width: none;
-        min-width: 10px;
-        width: calc(90vw - 40px);
-        padding: 20px;
-        transform: none;
-        border-radius: 0;
-        white-space: normal;
-        z-index: 1000;
-        border-radius: 15px;
+      position: fixed;
+      bottom: 2%;
+      left: 5vw;
+      max-width: none;
+      min-width: 10px;
+      width: calc(90vw - 40px);
+      padding: 20px;
+      transform: none;
+      border-radius: 0;
+      white-space: normal;
+      z-index: 1000;
+      border-radius: 15px;
     }
 
     .popover .popover-close {
-        display: block;
-        position: absolute;
-        top: 5px;
-        right: 9px;
-        cursor: pointer;
+      display: block;
+      position: absolute;
+      top: 5px;
+      right: 9px;
+      cursor: pointer;
     }
 
     .popover .inner-asterisk {
-        display: block;
-        position: absolute;
-        top: 15px;
-        left: 8px;
-        font-size: 1.5em !important;
+      display: block;
+      position: absolute;
+      top: 15px;
+      left: 8px;
+      font-size: 1.5em !important;
     }
-}
+  }
 </style>

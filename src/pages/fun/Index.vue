@@ -73,8 +73,8 @@
 
 <style scoped>
   .project-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
 </style>

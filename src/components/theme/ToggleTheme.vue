@@ -37,8 +37,8 @@
       theme.value === "system"
         ? "dark"
         : theme.value === "dark"
-        ? "light"
-        : "system"
+          ? "light"
+          : "system"
     sessionStorage.setItem("theme", theme.value)
     updateBodyClass()
   }
@@ -102,69 +102,69 @@
 
 <style scoped>
   button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  justify-content: center;
-}
+    background: none;
+    border: none;
+    cursor: pointer;
+    justify-content: center;
+  }
 
-.theme-toggle-wrapper {
-  position: relative;
-  display: flex;
-  justify-content: start;
-  align-items: center;
-}
+  .theme-toggle-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+  }
 
-.tooltip {
-  position: absolute;
-  transform: translateX(40px);
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 1000;
-  text-align: center;
-  color: #777
-}
+  .tooltip {
+    position: absolute;
+    transform: translateX(40px);
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    text-align: center;
+    color: #777;
+  }
 
-body.dark .tooltip {
-  color: #aaa;
-}
+  body.dark .tooltip {
+    color: #aaa;
+  }
 
-/* // dark mode toggle styling */
+  /* // dark mode toggle styling */
 
-#toggle-btn {
-  background-color: none;
-  border: none;
-  font-size: 1.3em;
-  padding: 0;
-  margin: 0;
-  min-width: 40px;
-}
+  #toggle-btn {
+    background-color: none;
+    border: none;
+    font-size: 1.3em;
+    padding: 0;
+    margin: 0;
+    min-width: 40px;
+  }
 
-#toggle-btn:hover {
-  cursor: pointer;
-}
+  #toggle-btn:hover {
+    cursor: pointer;
+  }
 
-#dark-mode-icon {
-  filter: invert(69%) sepia(10%) saturate(17%) hue-rotate(318deg)
-    brightness(84%) contrast(87%);
-  transform: scale(1.3);
-  transition: filter 0.5s ease-in-out;
-}
+  #dark-mode-icon {
+    filter: invert(69%) sepia(10%) saturate(17%)
+      hue-rotate(318deg) brightness(84%) contrast(87%);
+    transform: scale(1.3);
+    transition: filter 0.5s ease-in-out;
+  }
 
-#dark-mode-icon:hover {
-  filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%)
-    contrast(100%);
-}
+  #dark-mode-icon:hover {
+    filter: invert(100%) sepia(0%) saturate(0%)
+      hue-rotate(0deg) brightness(100%) contrast(100%);
+  }
 
-#light-mode-icon {
-  filter: invert(33%) sepia(0%) saturate(15%) hue-rotate(279deg)
-    brightness(102%) contrast(91%);
-  transition: filter 0.5s ease-in-out;
-}
+  #light-mode-icon {
+    filter: invert(33%) sepia(0%) saturate(15%)
+      hue-rotate(279deg) brightness(102%) contrast(91%);
+    transition: filter 0.5s ease-in-out;
+  }
 
-#light-mode-icon:hover {
-  filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%)
-    contrast(100%);
-}
+  #light-mode-icon:hover {
+    filter: invert(0%) sepia(0%) saturate(0%)
+      hue-rotate(0deg) brightness(100%) contrast(100%);
+  }
 </style>

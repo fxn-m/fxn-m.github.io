@@ -101,35 +101,35 @@
     flex-direction: row;
     justify-content: left;
     margin-top: 1em;
-}
+  }
 
-.container p {
+  .container p {
     color: #868686;
     font-size: 0.95em;
     margin: 0px 0px 0px 0px;
     min-width: 100px;
-}
+  }
 
-li {
+  li {
     display: flex;
     align-items: center;
-}
+  }
 
-@media (max-width: 1200px) {
+  @media (max-width: 1200px) {
     .container {
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: column;
+      display: flex;
+      flex-wrap: wrap;
+      flex-direction: column;
     }
 
     #section-left {
-        border-right: none;
-        padding-right: 0px;
+      border-right: none;
+      padding-right: 0px;
     }
 
     #section-right {
-        min-width: 100%;
-        padding-left: 0px;
+      min-width: 100%;
+      padding-left: 0px;
     }
-}
+  }
 </style>

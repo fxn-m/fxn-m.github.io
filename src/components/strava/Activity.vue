@@ -496,247 +496,246 @@
 
 <style>
   /* Base (light mode) styles */
-.strava-activity-viewer {
-  width: 100%;
-  font-family: sans-serif;
-  color: #222;
-}
-
-.activity-card {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-top: 1rem;
-}
-
-.activity-content {
-  display: grid;
-  grid-template-columns: 1fr 175px;
-  min-height: 400px;
-}
-
-
-/* Light mode canvas background */
-.polyline-container {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
-/* Fill canvas container */
-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-  background-color: transparent;
-}
-
-/* Right panel for stats */
-.activity-info {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  color: #222;
-  background-color: inherit;
-}
-
-.activity-stats {
-  margin-bottom: 2rem;
-  transition: all 0.5s ease-in-out;
-}
-
-.activity-date {
-  font-size: 0.85rem;
-  color: #666;
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: 1fr;
-  row-gap: 1rem;
-}
-
-.stat {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.label {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: #555;
-  letter-spacing: 0.5px;
-}
-
-.value {
-  font-size: 1.1rem;
-  font-weight: 500;
-}
-
-.navigation {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  display: flex;
-}
-
-.nav-button {
-  background: none;
-  border: none;
-  color: #222;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 0;
-  margin: 0;
-  transition: opacity 0.2s;
-}
-
-.nav-button:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.nav-button:not(:disabled):hover {
-  opacity: 0.7;
-}
-
-/* No activities or error states */
-.no-activities,
-.error {
-  text-align: center;
-  padding: 2rem;
-  background: #fefefe;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  margin-top: 1rem;
-}
-
-.error {
-  color: #dc2626;
-}
-
-/* Skeleton loading */
-.loading-skeleton {
-  margin-top: 1rem;
-}
-
-.skeleton-canvas {
-  background-color: #f8f8f8;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.skeleton-info {
-  padding: 1rem;
-}
-
-.skeleton-line {
-  width: 100%;
-  height: 16px;
-  background-color: #eee;
-  border-radius: 4px;
-  margin-bottom: 12px;
-}
-
-.skeleton-line.short {
-  width: 60%;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .activity-content {
-    grid-template-columns: 1fr;
-    min-height: 0px;
+  .strava-activity-viewer {
     width: 100%;
+    font-family: sans-serif;
+    color: #222;
+  }
+
+  .activity-card {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .activity-content {
+    display: grid;
+    grid-template-columns: 1fr 175px;
+    min-height: 400px;
+  }
+
+  /* Light mode canvas background */
+  .polyline-container {
+    width: 100%;
+    height: 100%;
     position: relative;
   }
-  .polyline-container {
-    height: 300px;
+
+  /* Fill canvas container */
+  canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    background-color: transparent;
   }
+
+  /* Right panel for stats */
   .activity-info {
-    position: static;
-  }
-  .activity-metadata {
-    position: absolute;
-    text-align: right;
-  }
-  .activity-stats {
-    position: static;
-  }
-  .navigation {
-    bottom: 0.5rem;
-    right: 0.5rem;
-  }
-  .activity-date {
-    font-size: 0.7rem;
-    margin-bottom: 0;
-  }
-  .stats {
+    position: relative;
     display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    color: #222;
+    background-color: inherit;
+  }
+
+  .activity-stats {
+    margin-bottom: 2rem;
+    transition: all 0.5s ease-in-out;
+  }
+
+  .activity-date {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr;
+    row-gap: 1rem;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: #555;
+    letter-spacing: 0.5px;
+  }
+
+  .value {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  .navigation {
     position: absolute;
     bottom: 0;
-    left: 0;
-    gap: 1rem;  /* Adjust spacing as needed */
-    margin: 0.5rem; /* Optional for extra padding from the edge */
+    right: 0;
+    display: flex;
   }
-  .stat {
-    gap: 0px;
+
+  .nav-button {
+    background: none;
+    border: none;
+    color: #222;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    transition: opacity 0.2s;
   }
-  .value {
-    font-size: 0.9rem;
+
+  .nav-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
   }
-  .label {
-    font-size: 0.5rem;
+
+  .nav-button:not(:disabled):hover {
+    opacity: 0.7;
   }
+
+  /* No activities or error states */
+  .no-activities,
+  .error {
+    text-align: center;
+    padding: 2rem;
+    background: #fefefe;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-top: 1rem;
+  }
+
+  .error {
+    color: #dc2626;
+  }
+
+  /* Skeleton loading */
+  .loading-skeleton {
+    margin-top: 1rem;
+  }
+
+  .skeleton-canvas {
+    background-color: #f8f8f8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .skeleton-info {
-  padding: 1rem 0rem;
-}
-}
+    padding: 1rem;
+  }
 
-/* ------------------ DARK MODE OVERRIDES ------------------ */
-body.dark .strava-activity-viewer {
-  color: #ddd;
-}
+  .skeleton-line {
+    width: 100%;
+    height: 16px;
+    background-color: #eee;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
 
-body.dark .activity-card {
-  background-color: #101017;
-}
+  .skeleton-line.short {
+    width: 60%;
+  }
 
-body.dark .activity-info {
-  background-color: inherit;
-  color: #ddd;
-}
+  /* Responsive */
+  @media (max-width: 768px) {
+    .activity-content {
+      grid-template-columns: 1fr;
+      min-height: 0px;
+      width: 100%;
+      position: relative;
+    }
+    .polyline-container {
+      height: 300px;
+    }
+    .activity-info {
+      position: static;
+    }
+    .activity-metadata {
+      position: absolute;
+      text-align: right;
+    }
+    .activity-stats {
+      position: static;
+    }
+    .navigation {
+      bottom: 0.5rem;
+      right: 0.5rem;
+    }
+    .activity-date {
+      font-size: 0.7rem;
+      margin-bottom: 0;
+    }
+    .stats {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-items: center;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      gap: 1rem; /* Adjust spacing as needed */
+      margin: 0.5rem; /* Optional for extra padding from the edge */
+    }
+    .stat {
+      gap: 0px;
+    }
+    .value {
+      font-size: 0.9rem;
+    }
+    .label {
+      font-size: 0.5rem;
+    }
+    .skeleton-info {
+      padding: 1rem 0rem;
+    }
+  }
 
-body.dark .activity-date {
-  color: #aaa;
-}
+  /* ------------------ DARK MODE OVERRIDES ------------------ */
+  body.dark .strava-activity-viewer {
+    color: #ddd;
+  }
 
-body.dark .label {
-  color: #bbb;
-}
+  body.dark .activity-card {
+    background-color: #101017;
+  }
 
-body.dark .nav-button {
-  color: #ddd;
-}
+  body.dark .activity-info {
+    background-color: inherit;
+    color: #ddd;
+  }
 
-body.dark .no-activities,
-body.dark .error {
-  background: #2c2c2c;
-  color: #ddd;
-  border: 1px solid #444;
-}
+  body.dark .activity-date {
+    color: #aaa;
+  }
 
-body.dark .skeleton-line {
-  background-color: #333;
-}
+  body.dark .label {
+    color: #bbb;
+  }
 
-body.dark .skeleton-canvas {
-  background-color: #333;
-}
+  body.dark .nav-button {
+    color: #ddd;
+  }
+
+  body.dark .no-activities,
+  body.dark .error {
+    background: #2c2c2c;
+    color: #ddd;
+    border: 1px solid #444;
+  }
+
+  body.dark .skeleton-line {
+    background-color: #333;
+  }
+
+  body.dark .skeleton-canvas {
+    background-color: #333;
+  }
 </style>

@@ -1,5 +1,4 @@
 {
-  "plugins": ["prettier-plugin-vue"],
   "vueIndentScriptAndStyle": true,
   "arrowParens": "always",
   "bracketSpacing": true,
@@ -14,11 +13,5 @@
   "singleQuote": false,
   "tabWidth": 2,
   "trailingComma": "none",
-  "useTabs": false,
-  "overrides": [
-    {
-      "files": "*.vue",
-      "options": { "parser": "vue" }
-    }
-  ]
+  "useTabs": false
 }

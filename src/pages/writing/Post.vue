@@ -224,9 +224,9 @@
 <style scoped>
   .container {
     width: 100%;
-}
+  }
 
-.metadata {
+  .metadata {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -235,153 +235,149 @@
     justify-content: space-between;
 
     margin: 0 auto 2em auto;
-}
+  }
 
-.metadata h3 {
+  .metadata h3 {
     color: #686868;
-}
+  }
 
-.metadata p {
+  .metadata p {
     color: #b3b3b3;
     font-size: 0.95em;
     flex-grow: 1;
     text-align: right;
-}
+  }
 
-h1 {
-  margin: 0;
-  text-decoration: none;
-  transition: color 0s ease-in-out;
-  font-size: xx-large;
-  font-weight: 600;
-}
+  h1 {
+    margin: 0;
+    text-decoration: none;
+    transition: color 0s ease-in-out;
+    font-size: xx-large;
+    font-weight: 600;
+  }
 
-.blog:deep(h1) {
-  margin: 1em 0 auto 0;
-  flex: 0 0 auto;
-  text-decoration: none;
-  transition: color 0s ease-in-out;
-  font-size: x-large;
-  font-weight: 600;
-}
+  .blog:deep(h1) {
+    margin: 1em 0 auto 0;
+    flex: 0 0 auto;
+    text-decoration: none;
+    transition: color 0s ease-in-out;
+    font-size: x-large;
+    font-weight: 600;
+  }
 
+  .blog:deep(p) {
+    margin: 1.5em 0;
+  }
 
-.blog:deep(p) {
-  margin: 1.5em 0;
-}
-
-body.dark h3 {
+  body.dark h3 {
     color: #b3b3b3;
-}
+  }
 
-.blog {
+  .blog {
     margin-top: 1em;
-}
+  }
 
-.blog:deep(ul li) {
+  .blog:deep(ul li) {
     list-style-type: disc;
     margin: 0.5em 0;
-}
+  }
 
-.blog:deep(ul) {
+  .blog:deep(ul) {
     margin: 1em 0em 1em 2em;
-}
+  }
 
-.blog:deep(ol) {
-  list-style-type: decimal;
-  margin: 1em 0em 1em 2em;
-}
+  .blog:deep(ol) {
+    list-style-type: decimal;
+    margin: 1em 0em 1em 2em;
+  }
 
-.blog:deep(ol p) {
-  margin: 0.5em 0;
-}
+  .blog:deep(ol p) {
+    margin: 0.5em 0;
+  }
 
-.blog:deep(ol ol) {
-  margin: 0em 0em 1em 2em;
-}
+  .blog:deep(ol ol) {
+    margin: 0em 0em 1em 2em;
+  }
 
-.blog:deep(ol li li) {
-  list-style-type: lower-alpha;
-  margin: 1em 0;
-}
+  .blog:deep(ol li li) {
+    list-style-type: lower-alpha;
+    margin: 1em 0;
+  }
 
-
-.blog:deep(img) {
+  .blog:deep(img) {
     max-width: 100%;
     margin: 2em auto;
     border-radius: 1em;
-}
+  }
 
-.blog:deep(em) {
+  .blog:deep(em) {
     overflow-x: auto;
     white-space: pre-wrap;
     white-space: -moz-pre-wrap;
     white-space: -pre-wrap;
     white-space: -o-pre-wrap;
     word-wrap: break-word;
-}
+  }
 
-.blog:deep(div.YTContainer) {
+  .blog:deep(div.YTContainer) {
     width: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     margin: 2em 0;
-}
+  }
 
-.blog:deep(div.YTContainer iframe) {
+  .blog:deep(div.YTContainer iframe) {
     width: 75%;
     aspect-ratio: 16 / 9;
     margin: 1em auto;
-}
+  }
 
-.blog:deep(div.YTContainer::after) {
+  .blog:deep(div.YTContainer::after) {
     content: attr(title);
     text-align: center;
     font-size: 0.8em;
     color: #b3b3b3;
-}
+  }
 
-.blog:deep(code) {
-  background-color: inherit;
-  font-size: 0.9em;
-  margin: 0;
-}
+  .blog:deep(code) {
+    background-color: inherit;
+    font-size: 0.9em;
+    margin: 0;
+  }
 
+  .blog:deep(h1, h2, h3, h4, h5, h6) {
+    color: black;
+  }
 
+  body.dark .blog:deep(h1, h2, h3, h4, h5, h6) {
+    color: white;
+  }
 
-.blog:deep(h1, h2, h3, h4, h5, h6) {
-  color: black
-}
+  .blog:deep(pre) {
+    padding: 1em;
+    margin: 1em 0;
+  }
 
-body.dark .blog:deep(h1, h2, h3, h4, h5, h6) {
-  color: white
-}
+  .blog:deep(hr) {
+    margin: 2em 0;
+    color: darkgrey;
+  }
 
-.blog:deep(pre) {
-  padding: 1em;
-  margin: 1em 0;
-}
+  body.dark .blog:deep(hr) {
+    color: #364153;
+  }
 
-.blog:deep(hr) {
-  margin: 2em 0;
-  color: darkgrey;
-}
+  .blog:deep(div.img-caption) {
+    position: relative;
+    font-size: 0.8em;
+    text-align: center;
+    top: -1.5em;
+    font-style: italic;
+  }
 
-body.dark .blog:deep(hr) {
-  color: #364153;
-}
-
-.blog:deep(div.img-caption) {
-  position: relative;
-  font-size: 0.8em;
-  text-align: center;
-  top: -1.5em;
-  font-style: italic;
-}
-
-.blog:deep(summary):hover {
-  cursor: pointer !important ;
-}
+  .blog:deep(summary):hover {
+    cursor: pointer !important ;
+  }
 </style>

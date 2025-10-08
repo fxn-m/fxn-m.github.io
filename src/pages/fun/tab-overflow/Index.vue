@@ -310,21 +310,21 @@
 
 <style scoped>
   .reading-suggestion {
-  line-height: 1.5;
-}
+    line-height: 1.5;
+  }
 
-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  touch-action: manipulation;
-}
+  button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
 
-button {
-  min-height: 44px;
-  min-width: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
+  button {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 </style>

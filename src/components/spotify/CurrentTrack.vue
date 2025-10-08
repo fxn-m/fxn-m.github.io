@@ -176,19 +176,21 @@
     margin-top: 1px;
   }
 
-  .sub-info-wrapper { 
-    position: absolute; 
-    right: 0; 
-    top: 100%; 
-    white-space: nowrap; 
-    width: auto; 
+  .sub-info-wrapper {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    white-space: nowrap;
+    width: auto;
     max-width: none;
     margin-top: 0.5rem;
   }
 
   .fade-slide-enter-active,
   .fade-slide-leave-active {
-    transition: opacity 0.5s ease, transform 0.5s ease;
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s ease;
   }
   .fade-slide-enter-from,
   .fade-slide-leave-to {

@@ -314,9 +314,8 @@ export const enrichReadingListItem = async (
   databaseId: string
 ) => {
   const props = await getPagePropertiesById(pageId)
-  const categories = await extractCategoriesFromDatabase(
-    databaseId
-  )
+  const categories =
+    await extractCategoriesFromDatabase(databaseId)
   const enrichedItem = await enrich({ props, categories })
   console.log("Enriched item:", enrichedItem)
   await updateNotionPage(

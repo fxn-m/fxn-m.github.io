@@ -23,17 +23,18 @@
 
 <style scoped>
   @keyframes wave {
-  0%, 100% {
-    height: 50%;
+    0%,
+    100% {
+      height: 50%;
+    }
+    50% {
+      height: 100%;
+    }
   }
-  50% {
-    height: 100%;
-  }
-}
 
-.animate-wave {
-  animation-name: wave;
-  animation-iteration-count: infinite;
-  animation-timing-function: ease-in-out;
-}
+  .animate-wave {
+    animation-name: wave;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+  }
 </style>
