@@ -16,9 +16,7 @@
         :alt="tooltipText"
       />
     </button>
-    <span v-if="showTooltip" class="tooltip">{{
-      tooltipText
-    }}</span>
+    <span v-if="showTooltip" class="tooltip">{{ tooltipText }}</span>
   </div>
 </template>
 
@@ -47,16 +45,11 @@
     const isDark =
       theme.value === "dark" ||
       (theme.value === "system" &&
-        window.matchMedia("(prefers-color-scheme: dark)")
-          .matches)
+        window.matchMedia("(prefers-color-scheme: dark)").matches)
     document.body.classList.toggle("dark", isDark)
 
-    currentIconSrc.value = isDark
-      ? "/dark-mode.svg"
-      : "/light-mode.svg"
-    currentIconId.value = isDark
-      ? "dark-mode-icon"
-      : "light-mode-icon"
+    currentIconSrc.value = isDark ? "/dark-mode.svg" : "/light-mode.svg"
+    currentIconId.value = isDark ? "dark-mode-icon" : "light-mode-icon"
   }
 
   const iconSrc = computed(() => currentIconSrc.value)
@@ -73,10 +66,7 @@
 
     updateBodyClass()
 
-    darkColorSchemeQuery.addEventListener(
-      "change",
-      updateBodyClass
-    )
+    darkColorSchemeQuery.addEventListener("change", updateBodyClass)
 
     const favicon = document.querySelector(
       "link[rel='icon']"
@@ -84,8 +74,7 @@
     const toggleFavicon = () => {
       const isDark =
         theme.value === "dark" ||
-        (theme.value === "system" &&
-          darkColorSchemeQuery.matches)
+        (theme.value === "system" && darkColorSchemeQuery.matches)
       favicon.setAttribute(
         "href",
         isDark ? "/favicon-dark.png" : "/favicon.png"
@@ -146,25 +135,25 @@
   }
 
   #dark-mode-icon {
-    filter: invert(69%) sepia(10%) saturate(17%)
-      hue-rotate(318deg) brightness(84%) contrast(87%);
+    filter: invert(69%) sepia(10%) saturate(17%) hue-rotate(318deg)
+      brightness(84%) contrast(87%);
     transform: scale(1.3);
     transition: filter 0.5s ease-in-out;
   }
 
   #dark-mode-icon:hover {
-    filter: invert(100%) sepia(0%) saturate(0%)
-      hue-rotate(0deg) brightness(100%) contrast(100%);
+    filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg)
+      brightness(100%) contrast(100%);
   }
 
   #light-mode-icon {
-    filter: invert(33%) sepia(0%) saturate(15%)
-      hue-rotate(279deg) brightness(102%) contrast(91%);
+    filter: invert(33%) sepia(0%) saturate(15%) hue-rotate(279deg)
+      brightness(102%) contrast(91%);
     transition: filter 0.5s ease-in-out;
   }
 
   #light-mode-icon:hover {
-    filter: invert(0%) sepia(0%) saturate(0%)
-      hue-rotate(0deg) brightness(100%) contrast(100%);
+    filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%)
+      contrast(100%);
   }
 </style>

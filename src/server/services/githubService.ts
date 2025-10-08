@@ -17,10 +17,7 @@ export const triggerRebuild = async () => {
   )
 
   if (!ghResp.ok) {
-    console.error(
-      "Failed to trigger rebuild:",
-      ghResp.statusText
-    )
+    console.error("Failed to trigger rebuild:", ghResp.statusText)
     throw new Error("Failed to trigger rebuild")
   }
 

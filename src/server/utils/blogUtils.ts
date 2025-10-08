@@ -5,9 +5,7 @@ import type { BlogPost, SlugMap } from "@/shared/types"
 import he from "he"
 import showdown from "showdown"
 
-export async function getSlugMap(
-  blogPosts: BlogPost[]
-): Promise<SlugMap> {
+export async function getSlugMap(blogPosts: BlogPost[]): Promise<SlugMap> {
   const map: SlugMap = {}
   for (const blog of blogPosts) {
     const slug = blog.slug
@@ -16,9 +14,7 @@ export async function getSlugMap(
   return map
 }
 
-const replaceVideoLinksWithIframes = (
-  html: string
-): string => {
+const replaceVideoLinksWithIframes = (html: string): string => {
   const $ = cheerio.load(html)
 
   $("a").each((_, el) => {
@@ -35,9 +31,7 @@ const replaceVideoLinksWithIframes = (
       text &&
       href.includes("youtube.com/watch")
     ) {
-      const videoIdMatch = href.match(
-        /v=([a-zA-Z0-9_-]{11})/
-      )
+      const videoIdMatch = href.match(/v=([a-zA-Z0-9_-]{11})/)
       if (!videoIdMatch) {
         return
       }
@@ -79,12 +73,8 @@ export const convertMarkdownToHTML = (
   return {
     content: replaceVideoLinksWithIframes(html),
     meta: {
-      date: he
-        .decode(rawMetadata.Date)
-        .replace(/^"|"$/g, ""),
-      title: he
-        .decode(rawMetadata.Title)
-        .replace(/^"|"$/g, "")
+      date: he.decode(rawMetadata.Date).replace(/^"|"$/g, ""),
+      title: he.decode(rawMetadata.Title).replace(/^"|"$/g, "")
     }
   }
 }

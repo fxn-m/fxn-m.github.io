@@ -13,9 +13,5 @@
     "src/shared/**/*.d.ts",
     "scripts/**/*.ts"
   ],
-  "exclude": [
-    "src/server/**/__tests__/**",
-    "dist",
-    "node_modules"
-  ]
+  "exclude": ["src/server/**/__tests__/**", "dist", "node_modules"]
 }

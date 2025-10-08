@@ -17,10 +17,7 @@ export default defineConfig({
   },
   server: {
     host: true,
-    allowedHosts: [
-      "dev.fxn-m.com",
-      "discrete-allegedly-eagle.ngrok-free.app"
-    ],
+    allowedHosts: ["dev.fxn-m.com", "discrete-allegedly-eagle.ngrok-free.app"],
     port: 5173
   }
 })

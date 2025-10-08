@@ -32,9 +32,7 @@ const DatabaseResponseSchema = z.object({
   })
 })
 
-export const getReadingList = async (): Promise<
-  NotionResponse[]
-> => {
+export const getReadingList = async (): Promise<NotionResponse[]> => {
   console.log("Fetching reading list from Notion...")
   const notion = new Client({
     auth: env.notionApiKey
@@ -200,9 +198,7 @@ const getPagePropertiesById = async (pageId: string) => {
   return relevantProperties
 }
 
-const extractCategoriesFromDatabase = async (
-  databaseId: string
-) => {
+const extractCategoriesFromDatabase = async (databaseId: string) => {
   const notion = new Client({
     auth: env.notionApiKey
   })
@@ -211,10 +207,9 @@ const extractCategoriesFromDatabase = async (
   })
 
   const parsed = DatabaseResponseSchema.parse(response)
-  const categories =
-    parsed.properties.Categories.multi_select.options.map(
-      (option) => option.name
-    )
+  const categories = parsed.properties.Categories.multi_select.options.map(
+    (option) => option.name
+  )
   return categories
 }
 
@@ -258,9 +253,7 @@ const enrich = async ({
 
 const updateNotionPage = async (
   pageId: string,
-  enrichedItem: z.infer<
-    typeof enrichedReadingListItemSchema
-  >,
+  enrichedItem: z.infer<typeof enrichedReadingListItemSchema>,
   created: string
 ) => {
   const notion = new Client({
@@ -281,11 +274,9 @@ const updateNotionPage = async (
         ]
       },
       Categories: {
-        multi_select: enrichedItem.categories.map(
-          (category) => ({
-            name: category
-          })
-        )
+        multi_select: enrichedItem.categories.map((category) => ({
+          name: category
+        }))
       },
       Author: {
         select: {
@@ -314,15 +305,10 @@ export const enrichReadingListItem = async (
   databaseId: string
 ) => {
   const props = await getPagePropertiesById(pageId)
-  const categories =
-    await extractCategoriesFromDatabase(databaseId)
+  const categories = await extractCategoriesFromDatabase(databaseId)
   const enrichedItem = await enrich({ props, categories })
   console.log("Enriched item:", enrichedItem)
-  await updateNotionPage(
-    pageId,
-    enrichedItem,
-    props.created
-  )
+  await updateNotionPage(pageId, enrichedItem, props.created)
   console.log("Updated Notion page with enriched item")
   await writeReadingListToFile()
   console.log("Updated reading list file")
@@ -352,14 +338,10 @@ export const enrichAllReadingListItems = async () => {
           item.properties.Summary.type === "rich_text" &&
           item.properties.Summary.rich_text &&
           item.properties.Summary.rich_text.some(
-            (rt) =>
-              rt.plain_text &&
-              rt.plain_text.trim().length > 0
+            (rt) => rt.plain_text && rt.plain_text.trim().length > 0
           )
         ) {
-          console.log(
-            `Skipping ${pageName} because it already has a summary.`
-          )
+          console.log(`Skipping ${pageName} because it already has a summary.`)
           return
         }
 
@@ -368,9 +350,7 @@ export const enrichAllReadingListItems = async () => {
           item.properties.Status.select &&
           item.properties.Status.select.name !== "Shelved"
         ) {
-          console.log(
-            `Skipping ${pageName} because it is not shelved.`
-          )
+          console.log(`Skipping ${pageName} because it is not shelved.`)
           return
         }
 
@@ -382,21 +362,12 @@ export const enrichAllReadingListItems = async () => {
             props,
             categories
           })
-          await updateNotionPage(
-            item.id,
-            enrichedItem,
-            item.created_time
-          )
+          await updateNotionPage(item.id, enrichedItem, item.created_time)
         } catch (error) {
-          console.error(
-            `Error enriching ${pageName}:`,
-            error
-          )
+          console.error(`Error enriching ${pageName}:`, error)
         }
 
-        console.log(
-          `Updated ${pageName} with enriched item`
-        )
+        console.log(`Updated ${pageName} with enriched item`)
       })
     )
   )

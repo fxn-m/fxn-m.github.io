@@ -1,9 +1,6 @@
 <template>
   <div class="container mt-4 sm:mt-16">
-    <div
-      v-if="isLoading"
-      class="flex flex-col justify-center items-center"
-    >
+    <div v-if="isLoading" class="flex flex-col justify-center items-center">
       <Loader2 class="size-6 animate-spin" />
     </div>
 
@@ -22,13 +19,7 @@
 
 <script lang="ts" setup>
   import type { BlogMetadata, BlogPost } from "@/shared"
-  import {
-    nextTick,
-    onMounted,
-    onUnmounted,
-    ref,
-    watchEffect
-  } from "vue"
+  import { nextTick, onMounted, onUnmounted, ref, watchEffect } from "vue"
   import { useRoute } from "vue-router"
   import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
   import { Loader2 } from "lucide-vue-next"
@@ -53,13 +44,8 @@
   ).href
 
   function setHighlightTheme(isDark: boolean) {
-    if (
-      currentThemeLink.value &&
-      currentThemeLink.value.parentNode
-    ) {
-      currentThemeLink.value.parentNode.removeChild(
-        currentThemeLink.value
-      )
+    if (currentThemeLink.value && currentThemeLink.value.parentNode) {
+      currentThemeLink.value.parentNode.removeChild(currentThemeLink.value)
       currentThemeLink.value = null
     }
 
@@ -87,16 +73,13 @@
     // ─── Development: use TanStack Query ─────────────────────────────────────────
     const fetchBlogContentAndParseMarkdown = async () => {
       const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/blog/${
-          slugMap[slug ?? ""]
-        }`,
+        `${import.meta.env.VITE_BACKEND_URL}/blog/${slugMap[slug ?? ""]}`,
         {
           method: "GET"
         }
       )
       const markdown = await response.json()
-      const { content, meta } =
-        convertMarkdownToHTML(markdown)
+      const { content, meta } = convertMarkdownToHTML(markdown)
 
       return {
         content,
@@ -129,12 +112,9 @@
     switch (import.meta.env.MODE) {
       case "production":
         try {
-          const response = await fetch(
-            `/html/${slug}.html`,
-            {
-              method: "GET"
-            }
-          )
+          const response = await fetch(`/html/${slug}.html`, {
+            method: "GET"
+          })
           html = await response.text()
 
           const index = await fetch(`/html/index.json`, {
@@ -142,15 +122,10 @@
           })
           const indexData = await index.json()
 
-          const meta = indexData.find(
-            (item: BlogPost) => item.slug === slug
-          )
+          const meta = indexData.find((item: BlogPost) => item.slug === slug)
           metaTemp = meta
         } catch (error) {
-          console.error(
-            "Failed to load blog content:",
-            error
-          )
+          console.error("Failed to load blog content:", error)
         }
 
         break
@@ -181,33 +156,25 @@
       })
 
       // Extrac the alt text from images within the blog class and append it as a caption
-      const imageElements =
-        document.querySelectorAll(".blog img")
+      const imageElements = document.querySelectorAll(".blog img")
       imageElements.forEach((image) => {
         const altText = image.getAttribute("alt")
         if (altText && altText !== "Image") {
           const caption = document.createElement("div")
           caption.setAttribute("class", "img-caption")
           caption.textContent = altText
-          image.parentNode?.insertBefore(
-            caption,
-            image.nextSibling
-          )
+          image.parentNode?.insertBefore(caption, image.nextSibling)
         }
       })
     }
   })
 
-  setHighlightTheme(
-    document.body.classList.contains("dark")
-  )
+  setHighlightTheme(document.body.classList.contains("dark"))
 
   const observer = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       if (mutation.attributeName === "class") {
-        setHighlightTheme(
-          document.body.classList.contains("dark")
-        )
+        setHighlightTheme(document.body.classList.contains("dark"))
       }
     })
   })

@@ -5,8 +5,7 @@ export const getReadingList = async () => {
   console.log("Getting reading list...")
 
   const NOTIONAPIKEY = env.notionApiKey
-  const NOTIONREADINGLISTDATABASEID =
-    env.notionReadingListDatabaseId
+  const NOTIONREADINGLISTDATABASEID = env.notionReadingListDatabaseId
 
   const notion = new Client({
     auth: NOTIONAPIKEY

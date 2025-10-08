@@ -98,8 +98,7 @@ header h2 {
   transition: color 0.5s ease-in-out;
 }
 
-#navigation
-  a.router-link-active.router-link-exact-active.active {
+#navigation a.router-link-active.router-link-exact-active.active {
   color: #000;
 }
 

@@ -37,22 +37,16 @@ const processBlogPosts = async () => {
   )
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to process blog posts: ${response.statusText}`
-    )
+    throw new Error(`Failed to process blog posts: ${response.statusText}`)
   }
 }
 
 // fetch the blog posts from the Notion database
 const fetchBlogPosts = async (): Promise<BlogPost[]> => {
-  const response = await fetch(
-    `${process.env.BACKEND_URL}/blog`
-  )
+  const response = await fetch(`${process.env.BACKEND_URL}/blog`)
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch blog posts: ${response.statusText}`
-    )
+    throw new Error(`Failed to fetch blog posts: ${response.statusText}`)
   }
 
   const json = await response.json()
@@ -61,17 +55,11 @@ const fetchBlogPosts = async (): Promise<BlogPost[]> => {
 }
 
 // fetch the blog post by id
-const fetchBlogPostById = async (
-  id: string
-): Promise<string> => {
-  const response = await fetch(
-    `${process.env.BACKEND_URL}/blog/${id}`
-  )
+const fetchBlogPostById = async (id: string): Promise<string> => {
+  const response = await fetch(`${process.env.BACKEND_URL}/blog/${id}`)
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to fetch blog post ${id}: ${response.statusText}`
-    )
+    throw new Error(`Failed to fetch blog post ${id}: ${response.statusText}`)
   }
 
   const json = await response.json()
@@ -83,28 +71,23 @@ const run = async () => {
   console.log("Backend URL:", process.env.BACKEND_URL)
   await processBlogPosts()
   const blogs = await fetchBlogPosts()
-  const indexPromises = blogs.map(
-    async (blog: BlogPost) => {
-      const { id, title, date, slug } = blog
-      const markdown = await fetchBlogPostById(id)
-      const { content } = convertMarkdownToHTML(markdown)
+  const indexPromises = blogs.map(async (blog: BlogPost) => {
+    const { id, title, date, slug } = blog
+    const markdown = await fetchBlogPostById(id)
+    const { content } = convertMarkdownToHTML(markdown)
 
-      // save the HTML file in public/html directory
-      const filePath = path.join(outputDir, `${slug}.html`)
-      fs.writeFileSync(filePath, content)
+    // save the HTML file in public/html directory
+    const filePath = path.join(outputDir, `${slug}.html`)
+    fs.writeFileSync(filePath, content)
 
-      return { id, title, date, slug }
-    }
-  )
+    return { id, title, date, slug }
+  })
 
   const index = await Promise.all(indexPromises)
 
   // update the index.json file with the latest blog posts
   const indexPath = path.join(outputDir, "index.json")
-  fs.writeFileSync(
-    indexPath,
-    JSON.stringify(index, null, 2)
-  )
+  fs.writeFileSync(indexPath, JSON.stringify(index, null, 2))
 }
 
 run()

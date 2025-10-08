@@ -9,10 +9,7 @@ import {
   faFlagCheckered,
   faLaptop
 } from "@fortawesome/free-solid-svg-icons"
-import {
-  faCircleXmark,
-  faCompass
-} from "@fortawesome/free-regular-svg-icons"
+import { faCircleXmark, faCompass } from "@fortawesome/free-regular-svg-icons"
 import {
   faGithub,
   faStrava,
@@ -24,10 +21,7 @@ import { library } from "@fortawesome/fontawesome-svg-core"
 import App from "./App.vue"
 import router from "./router"
 import { createApp } from "vue"
-import {
-  QueryClient,
-  VueQueryPlugin
-} from "@tanstack/vue-query"
+import { QueryClient, VueQueryPlugin } from "@tanstack/vue-query"
 
 const queryClient = new QueryClient()
 

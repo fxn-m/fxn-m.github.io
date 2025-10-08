@@ -1,8 +1,5 @@
 import type { Request, Response } from "express"
-import {
-  getBlogPostById,
-  getBlogPosts
-} from "../services/notionService"
+import { getBlogPostById, getBlogPosts } from "../services/notionService"
 
 import type { BlogPost } from "@/shared/types"
 import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints"
@@ -16,8 +13,7 @@ const parseBlogsFromNotionResponse = (
     const id = page.id
     const titleProp = page.properties["Title"]
     const title =
-      titleProp?.type === "title" &&
-      titleProp.title.length > 0
+      titleProp?.type === "title" && titleProp.title.length > 0
         ? (titleProp.title[0].plain_text ?? "Untitled")
         : "Untitled"
     const dateProp = page.properties["Date"]
@@ -46,8 +42,7 @@ export const fetchBlogController = async (
   const queryParams = req.query
   const isDevelopment = queryParams.development === "true"
   try {
-    const notionBlogsResponse =
-      await getBlogPosts(isDevelopment)
+    const notionBlogsResponse = await getBlogPosts(isDevelopment)
     // cast to PageObjectResponse[]
     const blogs = parseBlogsFromNotionResponse(
       notionBlogsResponse as PageObjectResponse[]
@@ -55,9 +50,7 @@ export const fetchBlogController = async (
     res.status(200).json(blogs)
   } catch (error) {
     console.error("Error fetching blog posts:", error)
-    res
-      .status(500)
-      .json({ message: "Failed to fetch blog posts" })
+    res.status(500).json({ message: "Failed to fetch blog posts" })
   }
 }
 
@@ -72,9 +65,7 @@ export const fetchBlogPostController = async (
     res.status(200).json(blogPost)
   } catch (error) {
     console.error("Error fetching blog post:", error)
-    res
-      .status(500)
-      .json({ message: "Failed to fetch blog post" })
+    res.status(500).json({ message: "Failed to fetch blog post" })
   }
 }
 
@@ -84,13 +75,9 @@ export const buildBlogController = async (
 ): Promise<void> => {
   try {
     await triggerRebuild()
-    res
-      .status(200)
-      .json({ message: "Blog build triggered" })
+    res.status(200).json({ message: "Blog build triggered" })
   } catch (error) {
     console.error("Error building blog:", error)
-    res
-      .status(500)
-      .json({ message: "Failed to trigger blog build" })
+    res.status(500).json({ message: "Failed to trigger blog build" })
   }
 }

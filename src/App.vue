@@ -1,9 +1,8 @@
 <template>
   <Navbar />
-  <RouterView
-    class="text-primary-light dark:text-primary-dark"
-  />
-  <CurrentTrack /> <ServerStatus />
+  <RouterView class="text-primary-light dark:text-primary-dark" />
+  <CurrentTrack />
+  <ServerStatus />
 </template>
 
 <script setup lang="ts">

@@ -1926,10 +1926,7 @@ packages:
       {
         integrity: sha512-FDToo4Wo82hIdgc1CQ+NQD0hEhmpPjrZ3hiUgwgOG6IuTdlpr8jdjyG24P6cNP1yJpTLzS5OcGgSw0xmDU1/Tw==
       }
-    engines:
-      {
-        node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7
-      }
+    engines: { node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7 }
     hasBin: true
 
   bytes@3.1.2:
@@ -3721,8 +3718,7 @@ packages:
       {
         integrity: sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==
       }
-    engines:
-      { node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1 }
+    engines: { node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1 }
     hasBin: true
 
   nanoid@5.1.5:

@@ -7,17 +7,10 @@
   >
     <a :href="track.externalUrl" target="_blank">
       <div class="artwork-container">
-        <img
-          :src="track.cover"
-          :alt="track.name"
-          class="artwork spinning"
-        />
+        <img :src="track.cover" :alt="track.name" class="artwork spinning" />
       </div>
 
-      <div
-        class="info-container"
-        :class="{ expanded: isExpanded }"
-      >
+      <div class="info-container" :class="{ expanded: isExpanded }">
         <div class="info">
           <p class="track-link">
             {{ track.name }}
@@ -66,9 +59,7 @@
   async function fetchCurrentTrack() {
     try {
       const response = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/spotify/current-track`
+        `${import.meta.env.VITE_BACKEND_URL}/spotify/current-track`
       )
       if (!response.ok) {
         throw new Error("Failed to fetch current track")

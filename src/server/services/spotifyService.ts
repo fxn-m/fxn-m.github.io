@@ -48,9 +48,7 @@ export async function getSpotifyAccessToken(): Promise<string> {
       "Error refreshing Spotify access token:",
       await response.text()
     )
-    throw new Error(
-      "Failed to refresh Spotify access token"
-    )
+    throw new Error("Failed to refresh Spotify access token")
   }
 
   const data = await response.json()
@@ -61,9 +59,7 @@ export async function getSpotifyAccessToken(): Promise<string> {
     !("access_token" in data) ||
     typeof data.access_token !== "string"
   ) {
-    throw new Error(
-      "Invalid response from Spotify token endpoint"
-    )
+    throw new Error("Invalid response from Spotify token endpoint")
   }
 
   return data.access_token // Access token
@@ -71,31 +67,21 @@ export async function getSpotifyAccessToken(): Promise<string> {
 
 export async function getCurrentPlayingTrack(
   token: string
-): Promise<
-  z.infer<typeof currentTrackSchema>["item"] | null
-> {
+): Promise<z.infer<typeof currentTrackSchema>["item"] | null> {
   try {
-    const response = await fetch(
-      SPOTIFY_CURRENT_TRACK_ENDPOINT,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
+    const response = await fetch(SPOTIFY_CURRENT_TRACK_ENDPOINT, {
+      headers: {
+        Authorization: `Bearer ${token}`
       }
-    )
+    })
 
-    if (
-      response.status === 204 ||
-      response.status === 202
-    ) {
+    if (response.status === 204 || response.status === 202) {
       return null
     }
 
     if (!response.ok) {
       throw new Error(
-        `Spotify returned ${
-          response.status
-        }: ${await response.text()}`
+        `Spotify returned ${response.status}: ${await response.text()}`
       )
     }
 

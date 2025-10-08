@@ -16,8 +16,6 @@ export const BlogMetadataSchema = z.object({
   date: z.string().min(1)
 })
 
-export type BlogMetadata = z.infer<
-  typeof BlogMetadataSchema
->
+export type BlogMetadata = z.infer<typeof BlogMetadataSchema>
 
 export type SlugMap = Record<string, string>

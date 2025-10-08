@@ -8,9 +8,6 @@ export const notionWebhookController = async (
 ): Promise<void> => {
   const { body } = req
   console.log("Webhook received:", body)
-  await enrichReadingListItem(
-    body.entity.id,
-    body.data.parent.id
-  )
+  await enrichReadingListItem(body.entity.id, body.data.parent.id)
   res.status(200).json({ message: "Webhook received" })
 }

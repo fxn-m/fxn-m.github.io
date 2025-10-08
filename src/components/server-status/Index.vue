@@ -18,16 +18,13 @@
 
   async function pollServer() {
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/ping`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Accept: "application/json"
-          }
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ping`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
         }
-      )
+      })
       if (response.ok) {
         isWarmingUp.value = false
         clearInterval(intervalId)

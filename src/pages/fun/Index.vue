@@ -31,9 +31,7 @@
           ></p>
 
           <p class="text-xs text-gray-400 my-2">
-            <span v-if="project.date">{{
-              project.date
-            }}</span>
+            <span v-if="project.date">{{ project.date }}</span>
           </p>
         </div>
       </div>

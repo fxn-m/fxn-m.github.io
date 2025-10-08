@@ -8,10 +8,7 @@
           id="popup-arrow"
           class="text-black dark:text-primary-dark"
           :style="{
-            visibility:
-              isHovering && route.path !== '/'
-                ? 'visible'
-                : 'hidden'
+            visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden'
           }"
         />
       </div>
@@ -27,9 +24,7 @@
           font-weight: bold;
           align-self: center;
         "
-        >fxn-m.com<span class="hidden sm:inline-block">{{
-          pageTitle
-        }}</span>
+        >fxn-m.com<span class="hidden sm:inline-block">{{ pageTitle }}</span>
       </RouterLink>
     </h2>
 
@@ -72,11 +67,7 @@
 </style>
 
 <script setup lang="ts">
-  import {
-    RouterLink,
-    useRoute,
-    useRouter
-  } from "vue-router"
+  import { RouterLink, useRoute, useRouter } from "vue-router"
   import ToggleTheme from "@/components/theme/ToggleTheme.vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
   import { ref, computed } from "vue"
@@ -92,8 +83,7 @@
   ]
 
   const pageTitle = computed(() => {
-    const currentRoute =
-      route.path !== "/" ? route.path : ""
+    const currentRoute = route.path !== "/" ? route.path : ""
     if (currentRoute[currentRoute.length - 1] === "-") {
       return `${currentRoute}`.slice(0, -1).replace(":", "")
     }
@@ -101,10 +91,7 @@
       currentRoute.split("/")[1] === "writing" ||
       currentRoute.split("/")[1] === "blog"
     ) {
-      return (
-        "/" +
-        `${currentRoute}`.split("/")[1].replace(":", "")
-      )
+      return "/" + `${currentRoute}`.split("/")[1].replace(":", "")
     }
     return `${currentRoute}`.replace(":", "")
   })

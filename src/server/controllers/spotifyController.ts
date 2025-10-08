@@ -11,13 +11,10 @@ export const getCurrentTrackController = async (
   console.log("Fetching current song...")
   try {
     const accessToken = await getSpotifyAccessToken()
-    const currentTrack =
-      await getCurrentPlayingTrack(accessToken)
+    const currentTrack = await getCurrentPlayingTrack(accessToken)
 
     if (!currentTrack) {
-      res
-        .status(200)
-        .json({ message: "No song currently playing" })
+      res.status(200).json({ message: "No song currently playing" })
       return
     }
 
@@ -25,16 +22,12 @@ export const getCurrentTrackController = async (
       externalUrl: currentTrack.external_urls.spotify,
       name: currentTrack.name,
 
-      artist: currentTrack.artists
-        .map((a) => a.name)
-        .join(", "),
+      artist: currentTrack.artists.map((a) => a.name).join(", "),
       album: currentTrack.album.name,
       cover: currentTrack.album.images[0]?.url
     })
   } catch (error: unknown) {
     console.error(error)
-    res
-      .status(500)
-      .json({ error: "Failed to fetch current song" })
+    res.status(500).json({ error: "Failed to fetch current song" })
   }
 }

@@ -19,9 +19,7 @@ configureMiddleware(app)
 configureRoutes(app)
 
 app.get("/", (_, res) => {
-  res
-    .status(200)
-    .json({ message: "Hey... whatcha doin' there?" })
+  res.status(200).json({ message: "Hey... whatcha doin' there?" })
 })
 
 // Start the server
@@ -32,10 +30,7 @@ app.listen(port, async () => {
     await ensureReadingListFileExists()
     console.log("Reading list file is ready")
   } catch (error) {
-    console.error(
-      "Error ensuring reading list file exists:",
-      error
-    )
+    console.error("Error ensuring reading list file exists:", error)
   }
 })
 
@@ -44,9 +39,7 @@ process.on("SIGINT", () => {
   const filePath = getReadingListFilePath()
   if (fs.existsSync(filePath)) {
     fs.unlinkSync(filePath)
-    console.log(
-      "\nDeleted readingList.json on exit (SIGINT)"
-    )
+    console.log("\nDeleted readingList.json on exit (SIGINT)")
   }
   process.exit(0)
 })

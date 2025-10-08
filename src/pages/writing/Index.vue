@@ -30,9 +30,7 @@
     // ─── Development: use TanStack Query ─────────────────────────────────────────
     const fetchBlogs = async (): Promise<BlogPost[]> => {
       const response = await fetch(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/blog?development=true`
+        `${import.meta.env.VITE_BACKEND_URL}/blog?development=true`
       )
       return response.json()
     }
@@ -43,9 +41,7 @@
       // keep cache sorted so every consumer gets ordered data
       select: (rows) =>
         rows.sort(
-          (a, b) =>
-            new Date(b.date).getTime() -
-            new Date(a.date).getTime()
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         )
     })
 
@@ -59,10 +55,7 @@
       slugMap.value = slugMapResponse
 
       if (typeof window !== "undefined") {
-        localStorage.setItem(
-          "slugMap",
-          JSON.stringify(slugMapResponse)
-        )
+        localStorage.setItem("slugMap", JSON.stringify(slugMapResponse))
       }
     })
   } else {
@@ -73,19 +66,14 @@
         const blogs = (await response.json()) as BlogPost[]
 
         allBlogs.value = blogs.sort(
-          (a, b) =>
-            new Date(b.date).getTime() -
-            new Date(a.date).getTime()
+          (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
         )
 
         const slugMapResponse = await getSlugMap(blogs)
         slugMap.value = slugMapResponse
 
         if (typeof window !== "undefined") {
-          localStorage.setItem(
-            "slugMap",
-            JSON.stringify(slugMapResponse)
-          )
+          localStorage.setItem("slugMap", JSON.stringify(slugMapResponse))
         }
       } catch (error) {
         console.error("Error fetching blogs:", error)
