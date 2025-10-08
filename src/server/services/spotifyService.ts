@@ -1,10 +1,10 @@
+import { z } from "zod"
+
 import {
   SPOTIFY_CURRENT_TRACK_ENDPOINT,
   SPOTIFY_TOKEN_ENDPOINT
 } from "../config/constants"
-
 import env from "../config/env"
-import { z } from "zod"
 
 const currentTrackSchema = z.object({
   item: z.object({

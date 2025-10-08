@@ -5,10 +5,10 @@
 </template>
 
 <script setup lang="ts">
-  import ReadingSuggestion from "@/pages/fun/tab-overflow/Index.vue"
-
+  import { type Component,onMounted, ref } from "vue"
   import { useRoute } from "vue-router"
-  import { ref, onMounted, type Component } from "vue"
+
+  import ReadingSuggestion from "@/pages/fun/tab-overflow/Index.vue"
 
   const selectedComponent = ref<Component>()
 

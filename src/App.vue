@@ -7,9 +7,11 @@
 
 <script setup lang="ts">
   import { RouterView } from "vue-router"
+
   import Navbar from "@/components/navbar/Index.vue"
-  import CurrentTrack from "@/components/spotify/CurrentTrack.vue"
   import ServerStatus from "@/components/server-status/Index.vue"
+  import CurrentTrack from "@/components/spotify/CurrentTrack.vue"
+
   console.log(`
    __                                                 
   / _|_  ___ __        _ __ ___    ___ ___  _ __ ___  

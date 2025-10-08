@@ -18,17 +18,18 @@
 </template>
 
 <script lang="ts" setup>
-  import type { BlogMetadata, BlogPost } from "@/shared"
   import { nextTick, onMounted, onUnmounted, ref, watchEffect } from "vue"
-  import { useRoute } from "vue-router"
-  import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
-  import { Loader2 } from "lucide-vue-next"
-
-  import hljs from "highlight.js/lib/core"
-  import javascript from "highlight.js/lib/languages/javascript"
-  import css from "highlight.js/lib/languages/css"
-  import html from "highlight.js/lib/languages/xml"
   import { useQuery } from "@tanstack/vue-query"
+  import hljs from "highlight.js/lib/core"
+  import css from "highlight.js/lib/languages/css"
+  import javascript from "highlight.js/lib/languages/javascript"
+  import html from "highlight.js/lib/languages/xml"
+  import { Loader2 } from "lucide-vue-next"
+  import { useRoute } from "vue-router"
+
+  import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
+  import type { BlogMetadata, BlogPost } from "@/shared"
+
   hljs.registerLanguage("javascript", javascript)
   hljs.registerLanguage("css", css)
   hljs.registerLanguage("html", html)

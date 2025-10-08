@@ -67,10 +67,11 @@
 </style>
 
 <script setup lang="ts">
-  import { RouterLink, useRoute, useRouter } from "vue-router"
-  import ToggleTheme from "@/components/theme/ToggleTheme.vue"
+  import { computed,ref } from "vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-  import { ref, computed } from "vue"
+  import { RouterLink, useRoute, useRouter } from "vue-router"
+
+  import ToggleTheme from "@/components/theme/ToggleTheme.vue"
 
   const route = useRoute()
   const router = useRouter()

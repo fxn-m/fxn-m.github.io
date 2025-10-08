@@ -1,11 +1,12 @@
 <script setup lang="ts">
-  import { ref, onMounted, watch, nextTick, onUnmounted, computed } from "vue"
-  import { format } from "date-fns"
-  import polyline from "@mapbox/polyline"
+  import { computed,nextTick, onMounted, onUnmounted, ref, watch } from "vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-  import { Loader2 } from "lucide-vue-next"
-  import type { StravaActivity } from "@/shared/types/strava"
+  import polyline from "@mapbox/polyline"
   import { useQuery } from "@tanstack/vue-query"
+  import { format } from "date-fns"
+  import { Loader2 } from "lucide-vue-next"
+
+  import type { StravaActivity } from "@/shared/types/strava"
 
   const IS_GOAL = true // Set to true if you want to show the goal countdown
   const GOAL_TITLE = "Spartan Beast | Hvar" // Title for the goal countdown

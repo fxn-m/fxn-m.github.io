@@ -16,8 +16,9 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, watchEffect, onMounted } from "vue"
+  import { onMounted,ref, watchEffect } from "vue"
   import { useQuery } from "@tanstack/vue-query"
+
   import { getSlugMap } from "@/server/utils/blogUtils"
   import type { BlogPost, SlugMap } from "@/shared"
 

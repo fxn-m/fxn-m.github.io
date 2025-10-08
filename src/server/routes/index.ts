@@ -1,4 +1,5 @@
 import type { Express } from "express"
+
 import blogRoutes from "./blog"
 import notionRoutes from "./notion"
 import pingRoutes from "./ping"

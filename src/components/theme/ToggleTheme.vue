@@ -21,7 +21,8 @@
 </template>
 
 <script setup lang="ts">
-  import { ref, computed, onMounted, watch } from "vue"
+  import { computed, onMounted, ref, watch } from "vue"
+
   import { theme } from "./themeState"
 
   const showTooltip = ref(false)

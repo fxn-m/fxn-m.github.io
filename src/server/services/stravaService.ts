@@ -1,10 +1,10 @@
+import type { StravaActivity } from "@/shared"
+
 import {
   STRAVA_ACTIVITIES_ENDPOINT,
   STRAVA_CLIENT_ID,
   STRAVA_TOKEN_ENDPOINT
 } from "../config/constants"
-
-import type { StravaActivity } from "@/shared"
 import env from "../config/env"
 
 /**

@@ -1,18 +1,18 @@
+import { openai } from "@ai-sdk/openai"
 import { Client } from "@notionhq/client"
+import { generateObject, generateText } from "ai"
 import { NotionConverter } from "notion-to-md"
 import { DefaultExporter } from "notion-to-md/plugins/exporter"
 import { MDXRenderer } from "notion-to-md/plugins/renderer"
+import pLimit from "p-limit"
 import { z } from "zod"
-import { generateObject, generateText } from "ai"
-
-import env from "../config/env"
 
 import {
   isPageObjectResponse,
   type NotionResponse
 } from "@/shared/types/notion"
-import { openai } from "@ai-sdk/openai"
-import pLimit from "p-limit"
+
+import env from "../config/env"
 import { writeReadingListToFile } from "../utils/fileUtils"
 
 // Blog -------------------------------------------------------

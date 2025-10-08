@@ -1,5 +1,11 @@
-import "./main.css"
-
+import { createApp } from "vue"
+import { library } from "@fortawesome/fontawesome-svg-core"
+import {
+  faGithub,
+  faStrava,
+  faXTwitter
+} from "@fortawesome/free-brands-svg-icons"
+import { faCircleXmark, faCompass } from "@fortawesome/free-regular-svg-icons"
 import {
   faArrowLeft,
   faArrowsRotate,
@@ -9,19 +15,13 @@ import {
   faFlagCheckered,
   faLaptop
 } from "@fortawesome/free-solid-svg-icons"
-import { faCircleXmark, faCompass } from "@fortawesome/free-regular-svg-icons"
-import {
-  faGithub,
-  faStrava,
-  faXTwitter
-} from "@fortawesome/free-brands-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-import { library } from "@fortawesome/fontawesome-svg-core"
+import { QueryClient, VueQueryPlugin } from "@tanstack/vue-query"
 
 import App from "./App.vue"
 import router from "./router"
-import { createApp } from "vue"
-import { QueryClient, VueQueryPlugin } from "@tanstack/vue-query"
+
+import "./main.css"
 
 const queryClient = new QueryClient()
 

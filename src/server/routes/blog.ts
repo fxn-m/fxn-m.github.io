@@ -1,10 +1,10 @@
+import { Router } from "express"
+
 import {
   buildBlogController,
   fetchBlogController,
   fetchBlogPostController
 } from "../controllers/blogController"
-
-import { Router } from "express"
 
 const router: Router = Router()
 

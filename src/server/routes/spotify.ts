@@ -1,4 +1,5 @@
 import { Router } from "express"
+
 import { getCurrentTrackController } from "../controllers/spotifyController"
 
 const router: Router = Router()

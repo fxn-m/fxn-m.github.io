@@ -1,9 +1,8 @@
 import * as cheerio from "cheerio"
-
-import type { BlogPost, SlugMap } from "@/shared/types"
-
 import he from "he"
 import showdown from "showdown"
+
+import type { BlogPost, SlugMap } from "@/shared/types"
 
 export async function getSlugMap(blogPosts: BlogPost[]): Promise<SlugMap> {
   const map: SlugMap = {}

@@ -1,4 +1,5 @@
 import { Client } from "@notionhq/client"
+
 import env from "@/server/config/env"
 
 export const getReadingList = async () => {
