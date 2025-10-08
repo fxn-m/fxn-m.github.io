@@ -8,8 +8,8 @@
 <script setup lang="ts">
   import { RouterView } from "vue-router"
 
-  import Navbar from "@/components/navbar/Index.vue"
-  import ServerStatus from "@/components/server-status/Index.vue"
+  import Navbar from "@/components/NavBar.vue"
+  import ServerStatus from "@/components/ServerStatus.vue"
   import CurrentTrack from "@/components/spotify/CurrentTrack.vue"
 
   console.log(`

@@ -70,7 +70,7 @@
   import { computed, ref } from "vue"
   import { RouterLink, useRoute, useRouter } from "vue-router"
 
-  import ToggleTheme from "@/components/theme/ToggleTheme.vue"
+  import ToggleTheme from "@/components/theme/ThemeToggle.vue"
 
   const route = useRoute()
   const router = useRouter()

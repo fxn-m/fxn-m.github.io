@@ -44,7 +44,7 @@
 <script setup lang="ts">
   import { ref } from "vue"
 
-  import Activity from "@/components/strava/Activity.vue"
+  import Activity from "@/components/StravaActivity.vue"
 
   const projects = ref(
     [

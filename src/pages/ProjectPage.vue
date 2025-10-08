@@ -8,7 +8,7 @@
   import { type Component, onMounted, ref } from "vue"
   import { useRoute } from "vue-router"
 
-  import ReadingSuggestion from "@/pages/fun/tab-overflow/Index.vue"
+  import ReadingSuggestion from "@/pages/TabOverflow.vue"
 
   const selectedComponent = ref<Component>()
 

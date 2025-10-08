@@ -6,33 +6,33 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: () => import("@/pages/homepage/Index.vue")
+      component: () => import("@/pages/HomePage.vue")
     },
     {
       path: "/writing",
       name: "writing",
-      component: () => import("@/pages/writing/Index.vue")
+      component: () => import("@/pages/WritingPage.vue")
     },
     {
       path: "/writing/:slug",
       name: "writingPost",
-      component: () => import("@/pages/writing/Post.vue"),
+      component: () => import("@/pages/WritingPost.vue"),
       props: true
     },
     {
       path: "/fun",
       name: "funList",
-      component: () => import("@/pages/fun/Index.vue")
+      component: () => import("@/pages/FunPage.vue")
     },
     {
       path: "/fun/:name",
       name: "funItem",
-      component: () => import("@/pages/fun/project/Index.vue")
+      component: () => import("@/pages/ProjectPage.vue")
     },
     {
       path: "/contact",
       name: "contact",
-      component: () => import("@/pages/contact/Index.vue")
+      component: () => import("@/pages/ContactPage.vue")
     },
     { path: "/:catchAll(.*)", redirect: "/" }
   ]
