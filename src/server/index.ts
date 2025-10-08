@@ -1,14 +1,13 @@
+import express from "express"
 import fs from "fs"
 
-import express from "express"
-
 import env from "./config/env"
+import { configureMiddleware } from "./middleware"
+import { configureRoutes } from "./routes"
 import {
   ensureReadingListFileExists,
   getReadingListFilePath
 } from "./utils/fileUtils"
-import { configureMiddleware } from "./middleware"
-import { configureRoutes } from "./routes"
 
 const app = express()
 const port = env.port

@@ -8,9 +8,8 @@ import pLimit from "p-limit"
 import { z } from "zod"
 
 import {
-  type NotionResponse,
-  isPageObjectResponse
-} from "@/shared/types/notion"
+  isPageObjectResponse,
+  type NotionResponse} from "@/shared/types/notion"
 
 import env from "../config/env"
 import { writeReadingListToFile } from "../utils/fileUtils"

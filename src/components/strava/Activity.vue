@@ -1,10 +1,10 @@
 <script setup lang="ts">
-  import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
   import polyline from "@mapbox/polyline"
   import { useQuery } from "@tanstack/vue-query"
   import { format } from "date-fns"
   import { Loader2 } from "lucide-vue-next"
+  import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue"
 
   import type { StravaActivity } from "@/shared/types/strava"
 

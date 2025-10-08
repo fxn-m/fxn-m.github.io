@@ -10,8 +10,8 @@
 </template>
 
 <script setup lang="ts">
-  import { onMounted, onUnmounted, ref } from "vue"
   import { Loader2 } from "lucide-vue-next"
+  import { onMounted, onUnmounted, ref } from "vue"
 
   const isWarmingUp = ref(true)
   let intervalId: number

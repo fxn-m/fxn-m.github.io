@@ -66,8 +66,8 @@
 </style>
 
 <script setup lang="ts">
-  import { computed, ref } from "vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+  import { computed, ref } from "vue"
   import { RouterLink, useRoute, useRouter } from "vue-router"
 
   import ToggleTheme from "@/components/theme/ToggleTheme.vue"

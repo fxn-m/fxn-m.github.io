@@ -102,10 +102,10 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted, onUnmounted, ref, watchEffect } from "vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
   import { useQuery } from "@tanstack/vue-query"
   import { ExternalLink, Loader2 } from "lucide-vue-next"
+  import { computed, onMounted, onUnmounted, ref, watchEffect } from "vue"
 
   // Define the type for the reading suggestion based on the new schema
   interface ReadingSuggestion {
