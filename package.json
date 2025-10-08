@@ -9,7 +9,6 @@
     "build:markdown": "npx tsx --tsconfig tsconfig.server.json ./scripts/buildBlog.ts",
     "build-only": "vite build",
     "preview": "vite preview",
-    "start": "tsx --tsconfig tsconfig.server.json src/server/index.ts",
     "dev": "vite",
     "dev:server": "tsx watch --tsconfig tsconfig.server.json src/server/index.ts",
     "lint": "npx eslint --ext .ts,.js,.vue src",
@@ -93,7 +92,7 @@
     "tailwindcss": "^4.1.7",
     "tsx": "^4.19.4",
     "typescript": "~5.8.3",
-    "typescript-eslint": "^8.32.1",
+    "typescript-eslint": "^8.46.0",
     "vite": "^6.3.5",
     "vue-tsc": "^2.2.10"
   },

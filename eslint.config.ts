@@ -4,6 +4,7 @@ import css from "@eslint/css"
 import js from "@eslint/js"
 import json from "@eslint/json"
 import markdown from "@eslint/markdown"
+import type { ESLint } from "eslint"
 import { defineConfig } from "eslint/config"
 import importPlugin from "eslint-plugin-import"
 import simpleImportSort from "eslint-plugin-simple-import-sort"
@@ -11,6 +12,10 @@ import unusedImports from "eslint-plugin-unused-imports"
 import pluginVue from "eslint-plugin-vue"
 import globals from "globals"
 import tseslint from "typescript-eslint"
+
+const jsonPlugin = json as unknown as ESLint.Plugin
+const markdownPlugin = markdown as unknown as ESLint.Plugin
+const cssPlugin = css as unknown as ESLint.Plugin
 
 export default defineConfig([
   // Base JS/TS/Vue
@@ -99,7 +104,7 @@ export default defineConfig([
   // JSON
   {
     files: ["**/*.json"],
-    plugins: { json },
+    plugins: { json: jsonPlugin },
     language: "json/json",
     extends: ["json/recommended"]
   },
@@ -107,7 +112,7 @@ export default defineConfig([
   // Markdown
   {
     files: ["**/*.md"],
-    plugins: { markdown },
+    plugins: { markdown: markdownPlugin },
     language: "markdown/gfm",
     extends: ["markdown/recommended"]
   },
@@ -115,7 +120,7 @@ export default defineConfig([
   // CSS
   {
     files: ["**/*.css"],
-    plugins: { css },
+    plugins: { css: cssPlugin },
     language: "css/css",
     extends: ["css/recommended"]
   }

@@ -1,17 +1,6 @@
 <template>
   <header class="sm:my-0 !mt-4">
     <h2 class="flex font-bold text-xl">
-      <div style="position: relative">
-        <FontAwesomeIcon
-          icon="fa-solid fa-caret-left"
-          size="2xs"
-          id="popup-arrow"
-          class="text-black dark:text-primary-dark"
-          :style="{
-            visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden'
-          }"
-        />
-      </div>
       <RouterLink
         @mouseover="isHovering = true"
         @mouseout="isHovering = false"
@@ -26,6 +15,18 @@
         "
         >fxn-m.com<span class="hidden sm:inline-block">{{ pageTitle }}</span>
       </RouterLink>
+
+      <div style="position: relative">
+        <FontAwesomeIcon
+          icon="fa-solid fa-caret-left"
+          size="2xs"
+          id="popup-arrow"
+          class="text-black dark:text-primary-dark"
+          :style="{
+            visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden'
+          }"
+        />
+      </div>
     </h2>
 
     <div id="restOfHeader">
@@ -67,7 +68,7 @@
 </style>
 
 <script setup lang="ts">
-  import { computed,ref } from "vue"
+  import { computed, ref } from "vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
   import { RouterLink, useRoute, useRouter } from "vue-router"
 

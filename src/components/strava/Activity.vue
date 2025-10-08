@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed,nextTick, onMounted, onUnmounted, ref, watch } from "vue"
+  import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue"
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
   import polyline from "@mapbox/polyline"
   import { useQuery } from "@tanstack/vue-query"
