@@ -1,8 +1,8 @@
-import fs from "fs"
-import path from "path"
-import { fileURLToPath } from "node:url"
 import { dirname } from "node:path"
+import { fileURLToPath } from "node:url"
+import fs from "fs"
 import { getReadingList } from "../services/notionService"
+import path from "path"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)

@@ -1,10 +1,11 @@
 import type { Request, Response } from "express"
 import {
-  getBlogPosts,
-  getBlogPostById
+  getBlogPostById,
+  getBlogPosts
 } from "../services/notionService"
-import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints"
+
 import type { BlogPost } from "@/shared/types"
+import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints"
 import slugify from "slugify"
 import { triggerRebuild } from "../services/githubService"
 

@@ -1,10 +1,11 @@
-import env from "../config/env"
 import {
+  STRAVA_ACTIVITIES_ENDPOINT,
   STRAVA_CLIENT_ID,
-  STRAVA_TOKEN_ENDPOINT,
-  STRAVA_ACTIVITIES_ENDPOINT
+  STRAVA_TOKEN_ENDPOINT
 } from "../config/constants"
+
 import type { StravaActivity } from "@/shared"
+import env from "../config/env"
 
 /**
  * Fetches a new access token for the Strava API

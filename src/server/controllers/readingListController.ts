@@ -1,6 +1,7 @@
 import type { Request, Response } from "express"
-import { readReadingListFromFile } from "../utils/fileUtils"
+
 import { enrichAllReadingListItems } from "../services/notionService"
+import { readReadingListFromFile } from "../utils/fileUtils"
 
 export const getReadingListController = (
   _: Request,

@@ -1,7 +1,7 @@
 import type { Request, Response } from "express"
 import {
-  getSpotifyAccessToken,
-  getCurrentPlayingTrack
+  getCurrentPlayingTrack,
+  getSpotifyAccessToken
 } from "../services/spotifyService"
 
 export const getCurrentTrackController = async (

@@ -1,11 +1,10 @@
 import type { Express } from "express"
-
+import blogRoutes from "./blog"
+import notionRoutes from "./notion"
 import pingRoutes from "./ping"
 import readingListRoutes from "./readingList"
-import blogRoutes from "./blog"
 import spotifyRoutes from "./spotify"
 import stravaRoutes from "./strava"
-import notionRoutes from "./notion"
 
 export const configureRoutes = (app: Express): void => {
   app.use("/ping", pingRoutes)

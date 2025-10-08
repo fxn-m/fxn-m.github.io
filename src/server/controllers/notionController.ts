@@ -1,4 +1,5 @@
 import type { Request, Response } from "express"
+
 import { enrichReadingListItem } from "../services/notionService"
 
 export const notionWebhookController = async (

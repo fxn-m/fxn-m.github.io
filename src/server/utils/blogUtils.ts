@@ -1,8 +1,9 @@
-import type { SlugMap, BlogPost } from "@/shared/types"
-
 import * as cheerio from "cheerio"
-import showdown from "showdown"
+
+import type { BlogPost, SlugMap } from "@/shared/types"
+
 import he from "he"
+import showdown from "showdown"
 
 export async function getSlugMap(
   blogPosts: BlogPost[]
