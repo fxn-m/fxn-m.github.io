@@ -1,10 +1,7 @@
 <template>
-  <Navbar />
-  <RouterView
+   <Navbar /> <RouterView
     class="text-primary-light dark:text-primary-dark"
-  />
-  <CurrentTrack />
-  <ServerStatus />
+  /> <CurrentTrack /> <ServerStatus />
 </template>
 
 <script setup lang="ts">
@@ -22,3 +19,4 @@
 `)
   console.info("yo 👋")
 </script>
+

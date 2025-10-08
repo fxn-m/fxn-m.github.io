@@ -11,8 +11,9 @@ export const getCurrentTrackController = async (
   console.log("Fetching current song...")
   try {
     const accessToken = await getSpotifyAccessToken()
-    const currentTrack =
-      await getCurrentPlayingTrack(accessToken)
+    const currentTrack = await getCurrentPlayingTrack(
+      accessToken
+    )
 
     if (!currentTrack) {
       res

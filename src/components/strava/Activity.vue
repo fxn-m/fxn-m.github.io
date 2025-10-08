@@ -366,6 +366,7 @@
           :class="{ 'opacity-0': !isDark }"
         ></div>
         <!-- Countdown Timer: Only show if IS_GOAL is true -->
+
         <div
           v-if="IS_GOAL"
           class="countdown flex gap-3 items-center text-xs absolute top-0 left-0 text-gray-400 z-10"
@@ -375,6 +376,7 @@
           />
           <div>
             <p class="my-0!">{{ GOAL_TITLE }}</p>
+
             <p>{{ countdown }}</p>
           </div>
         </div>

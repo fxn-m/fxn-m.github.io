@@ -11,7 +11,6 @@
               class="flex gap-1 items-center"
               >{{ project.title }}</a
             >
-
             <RouterLink
               v-else
               :to="project.link"
@@ -38,7 +37,6 @@
           </p>
         </div>
       </div>
-
       <!-- Strava activities -->
       <Activity />
     </div>

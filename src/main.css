@@ -1,4 +1,4 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -7,11 +7,13 @@
 }
 
 body {
-  font-family: Roboto, system-ui, -apple-system, "Hubot Sans", "Kanit", "Gantari", serif;
+  font-family: Roboto, system-ui, -apple-system,
+    "Hubot Sans", "Kanit", "Gantari", serif;
   width: 50%;
   min-height: 100dvh;
   margin: 0 auto;
-  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+  transition: background-color 0.5s ease-in-out,
+    color 0.5s ease-in-out;
   display: flex;
   flex-direction: column;
 }
@@ -20,7 +22,7 @@ body {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
-} 
+}
 
 #content {
   flex: 1;
@@ -89,8 +91,9 @@ header h2 {
   transition: color 0.5s ease-in-out;
 }
 
-#navigation a.router-link-active.router-link-exact-active.active {
-  color: #000; 
+#navigation
+  a.router-link-active.router-link-exact-active.active {
+  color: #000;
 }
 
 body.dark #navigation a:hover {
@@ -123,8 +126,9 @@ pre {
   word-wrap: break-word;
   background-color: #fafafa;
   border-radius: 10px;
-  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
-  font-size: small
+  transition: background-color 0.5s ease-in-out,
+    color 0.5s ease-in-out;
+  font-size: small;
 }
 
 p code {
@@ -133,7 +137,8 @@ p code {
   background-color: #fafafa;
   padding: 2px 5px;
   border-radius: 3px;
-  transition: background-color 0.5s ease-in-out, color 0.1s ease-in-out;
+  transition: background-color 0.5s ease-in-out,
+    color 0.1s ease-in-out;
 }
 
 blockquote {
@@ -156,7 +161,8 @@ a:visited {
   text-decoration-thickness: 1px;
   text-underline-offset: var(--text-underline-offset);
   font-weight: 500;
-  transition: text-decoration-color 0.3s ease-in-out, color 0.5s ease-in-out;
+  transition: text-decoration-color 0.3s ease-in-out,
+    color 0.5s ease-in-out;
 }
 
 a:hover,
@@ -168,7 +174,8 @@ a:not([href]):not([class]):hover {
   text-underline-offset: var(--text-underline-offset);
   font-weight: 500;
   cursor: pointer;
-  transition: text-decoration-color 0.3s ease-in-out, color 0.5s ease-in-out;
+  transition: text-decoration-color 0.3s ease-in-out,
+    color 0.5s ease-in-out;
 }
 
 /* // icons styling */
@@ -234,12 +241,12 @@ body.dark {
   transition: background-color 0.5s ease-in-out;
 }
 
-
 body.dark pre,
 body.dark p code {
   background-color: #12161d;
   color: #c3e3f1;
-  transition: background-color 0.5s ease-in-out, color 0.5s ease-in-out;
+  transition: background-color 0.5s ease-in-out,
+    color 0.5s ease-in-out;
   font-size: small;
 }
 
@@ -252,7 +259,8 @@ body.dark a:not([href]):not([class]) {
   text-decoration-thickness: 1px;
   text-underline-offset: var(--text-underline-offset);
   font-weight: 500;
-  transition: text-decoration-color 0.3s ease-in-out, color 0.5s ease-in-out;
+  transition: text-decoration-color 0.3s ease-in-out,
+    color 0.5s ease-in-out;
 }
 
 body.dark a:hover,
@@ -265,7 +273,8 @@ body.dark a:not([href]):not([class]):hover {
   text-underline-offset: var(--text-underline-offset);
   font-weight: 500;
   cursor: pointer;
-  transition: text-decoration-color 0.3s ease-in-out, color 0.5s ease-in-out;
+  transition: text-decoration-color 0.3s ease-in-out,
+    color 0.5s ease-in-out;
 }
 
 body.dark blockquote {
@@ -308,8 +317,11 @@ body.dark header #navigation a {
   text-decoration: none;
 }
 
-body.dark header #navigation a.router-link-active.router-link-exact-active.active {
-  color: #f8f8f8; 
+body.dark
+  header
+  #navigation
+  a.router-link-active.router-link-exact-active.active {
+  color: #f8f8f8;
 }
 
 body.dark header {
@@ -364,7 +376,6 @@ body.dark header {
   #icons {
     display: none;
   }
-
 }
 
 @theme {
