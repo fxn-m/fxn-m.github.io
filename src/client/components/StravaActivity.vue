@@ -279,47 +279,49 @@
         <!-- Right skeleton: greyed-out lines for stats -->
 
         <div class="activity-info skeleton-info">
-          <div class="skeleton-line short"></div>
+          <div class="skeleton-line short" />
 
-          <div class="skeleton-line"></div>
+          <div class="skeleton-line" />
 
-          <div class="skeleton-line short"></div>
+          <div class="skeleton-line short" />
 
-          <div class="skeleton-line"></div>
+          <div class="skeleton-line" />
         </div>
       </div>
     </div>
 
-    <div v-else-if="error" class="error">{{ error }}</div>
+    <div v-else-if="error" class="error">
+      {{ error }}
+    </div>
     <!-- Main Content: Only show if we have valid activities -->
 
     <div v-else-if="activities.length > 0" class="activity-card">
       <div class="activity-content relative">
         <!-- Left Panel: Route Canvas -->
         <div class="polyline-container transition-all duration-1000">
-          <canvas ref="canvasRef"></canvas>
+          <canvas ref="canvasRef" />
         </div>
         <!-- Canvas gradient -->
         <!-- Top -->
         <div
           class="absolute inset-0 bg-gradient-to-b from-white to-transparent to-25%"
           :class="{ 'opacity-0': isDark }"
-        ></div>
+        />
 
         <div
           class="absolute inset-0 bg-gradient-to-b from-[#101017] to-transparent to-25%"
           :class="{ 'opacity-0': !isDark }"
-        ></div>
+        />
         <!-- Bottom -->
         <div
           class="absolute inset-0 bg-gradient-to-t from-white to-25% to-transparent transition-opacity duration-1000 sm:invisible"
           :class="{ 'opacity-0': isDark }"
-        ></div>
+        />
 
         <div
           class="absolute inset-0 bg-gradient-to-t from-[#101017] to-25% to-transparent transition-opacity duration-1000 sm:invisible"
           :class="{ 'opacity-0': !isDark }"
-        ></div>
+        />
         <!-- Countdown Timer: Only show if IS_GOAL is true -->
 
         <div
@@ -328,7 +330,9 @@
         >
           <FontAwesomeIcon icon="fa-solid fa-flag-checkered" />
           <div>
-            <p class="my-0!">{{ GOAL_TITLE }}</p>
+            <p class="my-0!">
+              {{ GOAL_TITLE }}
+            </p>
 
             <p>{{ countdown }}</p>
           </div>
@@ -397,16 +401,16 @@
           <!-- Navigation arrows at bottom-right -->
           <div class="navigation flex gap-4">
             <button
-              @click="previousActivity"
               :disabled="currentIndex === 0"
               class="nav-button"
+              @click="previousActivity"
             >
               <FontAwesomeIcon icon="fa-solid fa-arrow-left" class="size-4" />
             </button>
             <button
-              @click="nextActivity"
               :disabled="currentIndex === activities.length - 1"
               class="nav-button"
+              @click="nextActivity"
             >
               <FontAwesomeIcon
                 icon="fa-solid fa-arrow-left"

@@ -1,5 +1,5 @@
 <template>
-  <Navbar />
+  <NavBar />
   <RouterView class="text-primary-light dark:text-primary-dark" />
   <CurrentTrack />
   <ServerStatus />
@@ -8,9 +8,9 @@
 <script setup lang="ts">
   import { RouterView } from "vue-router"
 
-  import Navbar from "@/components/NavBar.vue"
-  import ServerStatus from "@/components/ServerStatus.vue"
-  import CurrentTrack from "@/components/spotify/CurrentTrack.vue"
+  import NavBar from "@/client/components/NavBar.vue"
+  import ServerStatus from "@/client/components/ServerStatus.vue"
+  import CurrentTrack from "@/client/components/spotify/CurrentTrack.vue"
 
   console.log(`
    __                                                 

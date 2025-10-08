@@ -75,12 +75,12 @@
       <!-- Navigation Arrows at the bottom -->
       <div class="flex flex-1 w-full justify-between items-end mt-4">
         <button
-          @click="prevSuggestion"
           class="text-gray-800 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-400 p-2"
           :class="{
             'opacity-50 cursor-not-allowed': currentIndex === 0
           }"
           :disabled="currentIndex === 0"
+          @click="prevSuggestion"
         >
           <FontAwesomeIcon
             icon="fa-solid fa-arrow-left"
@@ -88,8 +88,8 @@
           />
         </button>
         <button
-          @click="nextSuggestion"
           class="text-gray-800 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-400 p-2"
+          @click="nextSuggestion"
         >
           <FontAwesomeIcon
             icon="fa-solid fa-arrow-left"

@@ -3,10 +3,7 @@
     <h2 class="flex font-bold text-xl">
       <RouterLink
         class="absolute"
-        @mouseover="isHovering = true"
-        @mouseout="isHovering = false"
         to="/"
-        @click="navigateToParent"
         style="
           white-space: nowrap;
           border: none;
@@ -14,11 +11,15 @@
           font-weight: bold;
           align-self: center;
         "
-        >fxn-m.com<span class="hidden sm:inline-block">{{ pageTitle }}</span>
+        @mouseover="isHovering = true"
+        @mouseout="isHovering = false"
+        @click="navigateToParent"
+      >
+        fxn-m.com<span class="hidden sm:inline-block">{{ pageTitle }}</span>
 
         <FontAwesomeIcon
-          icon="fa-solid fa-caret-left"
           id="popup-arrow"
+          icon="fa-solid fa-caret-left"
           class="text-black dark:text-primary-dark absolute -top-2 left-0 size-2"
           :style="{
             visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden'
@@ -33,8 +34,9 @@
           <RouterLink
             :to="route.path"
             :class="{ active: route.path === route.path }"
-            >{{ route.name }}</RouterLink
           >
+            {{ route.name }}
+          </RouterLink>
         </li>
       </ul>
 
@@ -51,26 +53,18 @@
             :class="link.class"
           />
         </a>
-        <ToggleTheme />
+        <ThemeToggle />
       </div>
     </div>
   </header>
 </template>
-
-<style scoped>
-  h2 #popup-arrow {
-    position: absolute;
-    left: -9px;
-    transform: rotate(45deg);
-  }
-</style>
 
 <script setup lang="ts">
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
   import { computed, ref } from "vue"
   import { RouterLink, useRoute, useRouter } from "vue-router"
 
-  import ToggleTheme from "@/components/theme/ThemeToggle.vue"
+  import ThemeToggle from "@/client/components/theme/ThemeToggle.vue"
 
   const route = useRoute()
   const router = useRouter()
@@ -126,3 +120,11 @@
     }
   ]
 </script>
+
+<style scoped>
+  h2 #popup-arrow {
+    position: absolute;
+    left: -9px;
+    transform: rotate(45deg);
+  }
+</style>

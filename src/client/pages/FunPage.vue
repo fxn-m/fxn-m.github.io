@@ -15,8 +15,9 @@
               v-else
               :to="project.link"
               class="flex gap-1 items-center"
-              >{{ project.title }}</RouterLink
             >
+              {{ project.title }}
+            </RouterLink>
           </h3>
 
           <p
@@ -26,9 +27,9 @@
           </p>
 
           <p
-            v-html="project.description"
             class="text-sm text-gray-600 dark:text-gray-500"
-          ></p>
+            v-html="project.description"
+          />
 
           <p class="text-xs text-gray-400 my-2">
             <span v-if="project.date">{{ project.date }}</span>
@@ -44,7 +45,7 @@
 <script setup lang="ts">
   import { ref } from "vue"
 
-  import Activity from "@/components/StravaActivity.vue"
+  import Activity from "@/client/components/StravaActivity.vue"
 
   const projects = ref(
     [

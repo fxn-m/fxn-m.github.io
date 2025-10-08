@@ -1,18 +1,18 @@
 <template>
   <div class="theme-toggle-wrapper">
     <button
-      class="size-full flex items-center justify-center"
       id="toggle-btn"
-      @click="toggleTheme"
+      class="size-full flex items-center justify-center"
       :title="tooltipText"
+      @click="toggleTheme"
       @mouseenter="showTooltip = true"
       @mouseleave="showTooltip = false"
     >
       <img
-        class="size-[28px]"
         v-if="iconSrc"
-        :src="iconSrc"
         :id="iconId"
+        class="size-[28px]"
+        :src="iconSrc"
         :alt="tooltipText"
       />
     </button>

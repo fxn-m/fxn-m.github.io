@@ -1,5 +1,5 @@
 <template>
-  <div class="container" id="content">
+  <div id="content" class="container">
     <ul class="space-y-2">
       <li v-for="blog in allBlogs" :key="blog.id">
         <p>{{ blog.date }}</p>
@@ -8,8 +8,9 @@
             name: 'writingPost',
             params: { slug: blog.slug }
           }"
-          >{{ blog.title }}</router-link
         >
+          {{ blog.title }}
+        </router-link>
       </li>
     </ul>
   </div>

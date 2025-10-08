@@ -12,7 +12,7 @@
         <p>{{ metadata.date }}</p>
       </div>
 
-      <div class="blog" v-html="blogContent"></div>
+      <div class="blog" v-html="blogContent" />
     </div>
   </div>
 </template>

@@ -3,14 +3,16 @@
  * The generated files are saved in public/html directory.
  */
 
-import { BlogPostsSchema, type BlogPost } from "@/shared"
-import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
 import { dirname } from "node:path"
-import dotenv from "dotenv"
 import { fileURLToPath } from "node:url"
+
+import dotenv from "dotenv"
 import fs from "fs"
 import path from "path"
 import { z } from "zod"
+
+import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
+import { type BlogPost, BlogPostsSchema } from "@/shared"
 
 dotenv.config()
 
