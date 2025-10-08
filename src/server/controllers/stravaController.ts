@@ -11,9 +11,8 @@ export const getStravaActivitiesController = async (
   console.log("Fetching Strava activities...")
   try {
     const accessToken = await getStravaAccessToken()
-    const activities = await getStravaActivities(
-      accessToken
-    )
+    const activities =
+      await getStravaActivities(accessToken)
 
     if (!activities) {
       res

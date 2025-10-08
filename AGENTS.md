@@ -3,6 +3,8 @@
 ## Project Structure & Module Organization
 Source lives under `src/`: route-level Vue SFCs in `src/pages`, shared UI in `src/components`, router setup in `src/router`, utilities in `src/shared`, and markdown inputs in `src/markdown`. The Express + tRPC server sits in `src/server` across `controllers/`, `services/`, `routes/`, and `utils/`. Static assets stay in `public/`, build output in `dist/`, and blog tooling lives in `scripts/buildBlog.ts`.
 
+TypeScript setup is split: `tsconfig.base.json` holds shared options, `tsconfig.app.json` targets the Vite client (DOM libs, Vue SFCs), and `tsconfig.server.json` covers the Express API plus scripts (Node libs, shared utilities). Keep shared types under `src/shared/` so both configs can reference them.
+
 ## Build, Test, and Development Commands
 Run `pnpm install` after cloning. Use `pnpm dev` for the Vite client and `pnpm dev:server` for the API watcher; `pnpm start` boots the compiled server. Ship-ready bundles come from `pnpm build` (markdown sync, type-check, Vite build) or `pnpm build-only` if content already exists. `pnpm preview` serves the production bundle locally. Lint with `pnpm lint` and enforce types via `pnpm type-check`.
 

@@ -1,14 +1,23 @@
 {
-  "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "scripts"],
-  "exclude": ["src/**/__tests__/*"],
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
-    "composite": true,
-    "noEmit": false,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "jsx": "preserve",
+    "types": ["vite/client"],
     "allowImportingTsExtensions": false,
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  }
+    "noEmit": true
+  },
+  "include": [
+    "env.d.ts",
+    "src/**/*.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue"
+  ],
+  "exclude": [
+    "src/server/**",
+    "scripts/**",
+    "dist",
+    "node_modules"
+  ]
 }

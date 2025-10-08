@@ -3,15 +3,14 @@
  * The generated files are saved in public/html directory.
  */
 
+import { BlogPostsSchema, type BlogPost } from "@/shared"
+import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
+import { dirname } from "node:path"
+import dotenv from "dotenv"
+import { fileURLToPath } from "node:url"
 import fs from "fs"
 import path from "path"
-
-import { fileURLToPath } from "node:url"
-import { dirname } from "node:path"
-
-import dotenv from "dotenv"
-import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
-import type { BlogPost } from "@/shared"
+import { z } from "zod"
 
 dotenv.config()
 
@@ -27,29 +26,56 @@ if (fs.existsSync(outputDir)) {
 fs.mkdirSync(outputDir, { recursive: true })
 
 // process and update all blog posts in the Notion database
+const MarkdownSchema = z.string()
+
 const processBlogPosts = async () => {
-  await fetch(
+  const response = await fetch(
     `${process.env.BACKEND_URL}/readingList/enrich`,
     {
       method: "POST"
     }
   )
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to process blog posts: ${response.statusText}`
+    )
+  }
 }
 
 // fetch the blog posts from the Notion database
-const fetchBlogPosts = async () => {
-  const blogs = await fetch(
+const fetchBlogPosts = async (): Promise<BlogPost[]> => {
+  const response = await fetch(
     `${process.env.BACKEND_URL}/blog`
   )
-  return blogs.json()
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch blog posts: ${response.statusText}`
+    )
+  }
+
+  const json = await response.json()
+  const parsed = BlogPostsSchema.parse(json)
+  return parsed
 }
 
 // fetch the blog post by id
-const fetchBlogPostById = async (id: string) => {
-  const blogPost = await fetch(
+const fetchBlogPostById = async (
+  id: string
+): Promise<string> => {
+  const response = await fetch(
     `${process.env.BACKEND_URL}/blog/${id}`
   )
-  return blogPost.json()
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch blog post ${id}: ${response.statusText}`
+    )
+  }
+
+  const json = await response.json()
+  return MarkdownSchema.parse(json)
 }
 
 const run = async () => {

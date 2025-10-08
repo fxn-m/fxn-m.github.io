@@ -18,7 +18,7 @@ const parseBlogsFromNotionResponse = (
     const title =
       titleProp?.type === "title" &&
       titleProp.title.length > 0
-        ? titleProp.title[0].plain_text ?? "Untitled"
+        ? (titleProp.title[0].plain_text ?? "Untitled")
         : "Untitled"
     const dateProp = page.properties["Date"]
     const date =
@@ -46,9 +46,8 @@ export const fetchBlogController = async (
   const queryParams = req.query
   const isDevelopment = queryParams.development === "true"
   try {
-    const notionBlogsResponse = await getBlogPosts(
-      isDevelopment
-    )
+    const notionBlogsResponse =
+      await getBlogPosts(isDevelopment)
     // cast to PageObjectResponse[]
     const blogs = parseBlogsFromNotionResponse(
       notionBlogsResponse as PageObjectResponse[]

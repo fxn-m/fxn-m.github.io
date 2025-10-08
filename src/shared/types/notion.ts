@@ -1,7 +1,7 @@
 import type {
   PageObjectResponse,
-  PartialPageObjectResponse,
-  PartialDatabaseObjectResponse
+  PartialDatabaseObjectResponse,
+  PartialPageObjectResponse
 } from "@notionhq/client/build/src/api-endpoints"
 
 export type NotionResponse =

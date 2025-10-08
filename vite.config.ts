@@ -14,5 +14,13 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src")
     }
+  },
+  server: {
+    host: true,
+    allowedHosts: [
+      "dev.fxn-m.com",
+      "discrete-allegedly-eagle.ngrok-free.app"
+    ],
+    port: 5173
   }
 })

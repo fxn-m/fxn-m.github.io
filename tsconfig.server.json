@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "types": ["node"],
+    "noEmit": true
+  },
+  "include": [
+    "src/server/**/*.ts",
+    "src/server/**/*.d.ts",
+    "src/server/**/*.mts",
+    "src/shared/**/*.ts",
+    "src/shared/**/*.d.ts",
+    "scripts/**/*.ts"
+  ],
+  "exclude": [
+    "src/server/**/__tests__/**",
+    "dist",
+    "node_modules"
+  ]
+}

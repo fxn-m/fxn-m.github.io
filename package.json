@@ -5,15 +5,22 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "dev:server": "tsx watch src/server/index.ts",
-    "build:markdown": "npx tsx ./scripts/buildBlog.ts",
-    "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "build": "pnpm build:markdown && run-p type-check build-only",
+    "build:markdown": "npx tsx --tsconfig tsconfig.server.json ./scripts/buildBlog.ts",
+    "build-only": "vite build",
     "preview": "vite preview",
-    "start": "tsx src/server/index.ts",
+    "start": "tsx --tsconfig tsconfig.server.json src/server/index.ts",
+
+    "dev": "vite",
+    "dev:server": "tsx watch --tsconfig tsconfig.server.json src/server/index.ts",
+
     "lint": "npx eslint --ext .ts,.js,.vue src",
+    "format": "prettier . --write", 
+
+    "type-check": "run-s type-check:app type-check:server",
+    "type-check:app": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
+    "type-check:server": "tsc --noEmit -p tsconfig.server.json",
+
     "tunnel:server": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:3000",
     "tunnel:client": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:5173"
   },
@@ -27,7 +34,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.8",
     "@highlightjs/vue-plugin": "^2.1.0",
     "@mapbox/polyline": "^1.2.1",
-    "@notionhq/client": "^2.0.0",
+    "@notionhq/client": "^3.1.3",
     "@tanstack/vue-query": "^5.76.0",
     "@trpc/client": "^11.1.2",
     "@trpc/server": "^11.1.2",
@@ -62,6 +69,7 @@
     "@types/express": "^5.0.1",
     "@types/he": "^1.2.3",
     "@types/mapbox__polyline": "^1.0.5",
+    "@types/node": "^18",
     "@types/showdown": "^2.0.6",
     "@vitejs/plugin-vue": "^5.2.4",
     "@vitejs/plugin-vue-jsx": "^4.1.2",
