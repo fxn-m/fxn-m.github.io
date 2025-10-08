@@ -2,6 +2,7 @@
   <header class="sm:my-0 !mt-4">
     <h2 class="flex font-bold text-xl">
       <RouterLink
+        class="absolute"
         @mouseover="isHovering = true"
         @mouseout="isHovering = false"
         to="/"
@@ -14,19 +15,16 @@
           align-self: center;
         "
         >fxn-m.com<span class="hidden sm:inline-block">{{ pageTitle }}</span>
-      </RouterLink>
 
-      <div style="position: relative">
         <FontAwesomeIcon
           icon="fa-solid fa-caret-left"
-          size="2xs"
           id="popup-arrow"
-          class="text-black dark:text-primary-dark"
+          class="text-black dark:text-primary-dark absolute -top-2 left-0 size-2"
           :style="{
             visibility: isHovering && route.path !== '/' ? 'visible' : 'hidden'
           }"
         />
-      </div>
+      </RouterLink>
     </h2>
 
     <div id="restOfHeader">
