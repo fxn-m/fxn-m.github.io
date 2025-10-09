@@ -1,7 +1,5 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 :root {
   --text-underline-offset: 5px;
 }
@@ -126,9 +124,6 @@ h3 {
 pre {
   overflow-x: auto;
   white-space: pre-wrap;
-  white-space: -moz-pre-wrap;
-  white-space: -pre-wrap;
-  white-space: -o-pre-wrap;
   word-wrap: break-word;
   background-color: #fafafa;
   border-radius: 10px;
@@ -391,6 +386,7 @@ body.dark header {
   }
 }
 
+/* eslint-disable-next-line */
 @theme {
   --color-primary-light: #444;
   --color-primary-dark: #bbb;

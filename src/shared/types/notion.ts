@@ -1,13 +1,15 @@
 import type {
+  DataSourceObjectResponse,
   PageObjectResponse,
-  PartialDatabaseObjectResponse,
+  PartialDataSourceObjectResponse,
   PartialPageObjectResponse
 } from "@notionhq/client/build/src/api-endpoints"
 
 export type NotionResponse =
   | PageObjectResponse
   | PartialPageObjectResponse
-  | PartialDatabaseObjectResponse
+  | PartialDataSourceObjectResponse
+  | DataSourceObjectResponse
 
 export const isPageObjectResponse = (
   item: NotionResponse

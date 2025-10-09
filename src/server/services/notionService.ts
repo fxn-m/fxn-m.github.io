@@ -9,7 +9,8 @@ import { z } from "zod"
 
 import {
   isPageObjectResponse,
-  type NotionResponse} from "@/shared/types/notion"
+  type NotionResponse
+} from "@/shared/types/notion"
 
 import env from "../config/env"
 import { writeReadingListToFile } from "../utils/fileUtils"
@@ -42,8 +43,8 @@ export const getReadingList = async (): Promise<NotionResponse[]> => {
   let startCursor: string | undefined | null = undefined
 
   while (hasNextPage) {
-    const response = await notion.databases.query({
-      database_id: env.notionReadingListDatabaseId ?? "",
+    const response = await notion.dataSources.query({
+      data_source_id: env.notionReadingListDataSourceId ?? "",
       filter: {
         or: [
           {
@@ -106,8 +107,8 @@ export const getBlogPosts = async (
   let startCursor = undefined
 
   while (hasNextPage) {
-    const response = await notion.databases.query({
-      database_id: env.notionBlogDatabaseId ?? "",
+    const response = await notion.dataSources.query({
+      data_source_id: env.notionBlogDataSourceId ?? "",
       filter: isDevelopment
         ? {
             or: [
@@ -241,13 +242,21 @@ const enrich = async ({
     }
   })
 
+  // ts-ignore
   const { object } = await generateObject({
     model: openai.responses("gpt-4o"),
     prompt: `Extract the summary, categories, author, and reading time estimate from the following text: ${text}`,
     schema: enrichedReadingListItemSchema
   })
 
-  return object
+  const { success, data, error } =
+    enrichedReadingListItemSchema.safeParse(object)
+
+  if (success === false) {
+    throw new Error(error.message, error)
+  }
+
+  return data
 }
 
 const updateNotionPage = async (
@@ -320,7 +329,7 @@ export const enrichAllReadingListItems = async () => {
   )
 
   const categories = await extractCategoriesFromDatabase(
-    env.notionReadingListDatabaseId ?? ""
+    env.notionReadingListDataSourceId ?? ""
   )
   // Set the concurrency limit (5 in this example)
   const limit = pLimit(5)

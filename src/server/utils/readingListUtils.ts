@@ -6,7 +6,7 @@ export const getReadingList = async () => {
   console.log("Getting reading list...")
 
   const NOTIONAPIKEY = env.notionApiKey
-  const NOTIONREADINGLISTDATABASEID = env.notionReadingListDatabaseId
+  const notionReadingListDataSourceId = env.notionReadingListDataSourceId
 
   const notion = new Client({
     auth: NOTIONAPIKEY
@@ -19,8 +19,8 @@ export const getReadingList = async () => {
 
   while (hasNextPage) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const response: any = await notion.databases.query({
-      database_id: NOTIONREADINGLISTDATABASEID ?? "",
+    const response: any = await notion.dataSources.query({
+      data_source_id: notionReadingListDataSourceId ?? "",
       filter: {
         or: [
           {
