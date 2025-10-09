@@ -20,7 +20,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { QueryClient, VueQueryPlugin } from "@tanstack/vue-query"
 import { createApp } from "vue"
 
-import App from "./App.vue"
+import App from "./client/App.vue"
 import router from "./client/router"
 
 const queryClient = new QueryClient()
