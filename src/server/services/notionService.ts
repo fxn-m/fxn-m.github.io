@@ -234,7 +234,7 @@ const enrich = async ({
     If the author is unclear, use "Unknown". 
     If the reading time estimate is unclear, use 0.`,
     tools: {
-      web_search_preview: openai.tools.webSearchPreview()
+      web_search_preview: openai.tools.webSearch()
     },
     toolChoice: {
       type: "tool",

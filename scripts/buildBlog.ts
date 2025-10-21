@@ -30,19 +30,6 @@ fs.mkdirSync(outputDir, { recursive: true })
 // process and update all blog posts in the Notion database
 const MarkdownSchema = z.string()
 
-const processBlogPosts = async () => {
-  const response = await fetch(
-    `${process.env.BACKEND_URL}/readingList/enrich`,
-    {
-      method: "POST"
-    }
-  )
-
-  if (!response.ok) {
-    throw new Error(`Failed to process blog posts: ${response.statusText}`)
-  }
-}
-
 // fetch the blog posts from the Notion database
 const fetchBlogPosts = async (): Promise<BlogPost[]> => {
   const response = await fetch(`${process.env.BACKEND_URL}/blog`)
@@ -71,8 +58,8 @@ const fetchBlogPostById = async (id: string): Promise<string> => {
 const run = async () => {
   console.log("Building blog posts...")
   console.log("Backend URL:", process.env.BACKEND_URL)
-  await processBlogPosts()
   const blogs = await fetchBlogPosts()
+  console.log("Blogs:", JSON.stringify(blogs, null, 2))
   const indexPromises = blogs.map(async (blog: BlogPost) => {
     const { id, title, date, slug } = blog
     const markdown = await fetchBlogPostById(id)
