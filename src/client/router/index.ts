@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router"
 
-import { usePostHog } from "@/shared/analytics/posthog"
+import { usePostHog } from "@/client/analytics/posthog"
 
 const router = createRouter({
   history: createWebHashHistory(),
