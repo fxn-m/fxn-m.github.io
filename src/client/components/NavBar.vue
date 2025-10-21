@@ -1,16 +1,9 @@
 <template>
-  <header class="sm:my-0 !mt-4">
-    <h2 class="flex font-bold text-xl">
+  <header class="py-2 mt-4">
+    <h2 class="flex font-semibold text-lg tracking-wide">
       <RouterLink
-        class="absolute"
+        class="absolute whitespace-nowrap border-none !no-underline font-bold self-center"
         to="/"
-        style="
-          white-space: nowrap;
-          border: none;
-          text-decoration: none;
-          font-weight: bold;
-          align-self: center;
-        "
         @mouseover="isHovering = true"
         @mouseout="isHovering = false"
         @click="navigateToParent"

@@ -1,5 +1,7 @@
 import { createRouter, createWebHashHistory } from "vue-router"
 
+import { usePostHog } from "@/shared/analytics/posthog"
+
 const router = createRouter({
   history: createWebHashHistory(),
   routes: [
@@ -37,5 +39,7 @@ const router = createRouter({
     { path: "/:catchAll(.*)", redirect: "/" }
   ]
 })
+
+export const { posthog } = usePostHog()
 
 export default router
