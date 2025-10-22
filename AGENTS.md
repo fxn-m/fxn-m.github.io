@@ -6,6 +6,10 @@ Source lives under `src/`: route-level Vue SFCs in `src/pages`, shared UI in `sr
 
 TypeScript setup is split: `tsconfig.base.json` holds shared options, `tsconfig.app.json` targets the Vite client (DOM libs, Vue SFCs), and `tsconfig.server.json` covers the Express API plus scripts (Node libs, shared utilities). Keep shared types under `src/shared/` so both configs can reference them.
 
+## Development Checklist
+
+After every significant change, once an implementation has finished being implemented, run `pnpm type-check` and `pnpm lint --fix` to ensure that you do not introduce any errors or linting rule violations. Do not address errors/linting rule violations that are completely unrelated to changes made.
+
 ## Build, Test, and Development Commands
 
 Run `pnpm install` after cloning. Use `pnpm dev` for the Vite client and `pnpm dev:server` for the API watcher; `pnpm start` boots the compiled server. Ship-ready bundles come from `pnpm build` (markdown sync, type-check, Vite build) or `pnpm build-only` if content already exists. `pnpm preview` serves the production bundle locally. Lint with `pnpm lint` and enforce types via `pnpm type-check`.

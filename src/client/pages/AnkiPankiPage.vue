@@ -1,11 +1,19 @@
 <script setup lang="ts">
   import { Motion } from "motion-v"
-  import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue"
+  import {
+    computed,
+    nextTick,
+    onBeforeUnmount,
+    onMounted,
+    ref,
+    watch
+  } from "vue"
 
   import AnkiApiKeyControl from "@/client/components/fun/AnkiApiKeyControl.vue"
   import AnkiCardEditor from "@/client/components/fun/AnkiCardEditor.vue"
   import AnkiCardSkeleton from "@/client/components/fun/AnkiCardSkeleton.vue"
   import AnkiTopicSeedForm from "@/client/components/fun/AnkiTopicSeedForm.vue"
+  import GenerateMoreChip from "@/client/components/fun/GenerateMoreChip.vue"
   import {
     Carousel,
     type CarouselApi,
@@ -32,6 +40,9 @@
   const isGenerating = ref(false)
   const generationError = ref<string | null>(null)
   const regeneratingCardId = ref<string | null>(null)
+  const isSeedFormOpen = ref(true)
+  const lastGeneratedTopic = ref<string | null>(null)
+  const hasDockedOnce = ref(false)
   let carouselEventTeardown: Array<() => void> = []
 
   type CarouselSlide =
@@ -104,6 +115,48 @@
       !cards.value.length && !skeletonKeys.value.length && !isGenerating.value
   )
 
+  const renderSeedForm = computed(
+    () => isSeedFormOpen.value || showEmptyState.value
+  )
+
+  const canCloseSeedForm = computed(() => cards.value.length > 0)
+
+  const lastTopic = computed(() => {
+    if (cards.value.length > 0) {
+      return cards.value[0]?.topic ?? null
+    }
+
+    return lastGeneratedTopic.value
+  })
+
+  const chipDisabled = computed(
+    () => isGenerating.value || skeletonKeys.value.length > 0
+  )
+
+  const formatTopic = (value: string) => {
+    if (value.length <= 40) {
+      return value
+    }
+
+    return `${value.slice(0, 37)}...`
+  }
+
+  const chipDescription = computed(() => {
+    if (lastTopic.value) {
+      return `Last: ${formatTopic(lastTopic.value)}`
+    }
+
+    return "Ready for a new topic"
+  })
+
+  const showGenerateChip = computed(
+    () => cards.value.length > 0 && !renderSeedForm.value
+  )
+
+  const chipLabel = computed(() =>
+    chipDisabled.value && isGenerating.value ? "Drafting..." : "Generate More"
+  )
+
   const shouldDockInput = computed(
     () =>
       isGenerating.value ||
@@ -111,15 +164,43 @@
       cards.value.length > 0
   )
 
+  const containerAnimate = computed(() => {
+    if (!shouldDockInput.value) {
+      return {
+        paddingTop: "112px",
+        marginBottom: "112px",
+        rowGap: "40px"
+      }
+    }
+
+    if (showGenerateChip.value) {
+      return {
+        paddingTop: "28px",
+        marginBottom: "24px",
+        rowGap: "8px"
+      }
+    }
+
+    return {
+      paddingTop: "36px",
+      marginBottom: "24px",
+      rowGap: "24px"
+    }
+  })
+
   const containerTransition = {
     duration: 0.45,
     ease: [0.16, 1, 0.3, 1] as [number, number, number, number]
   }
 
-  const containerAnimate = computed(() => ({
-    paddingTop: shouldDockInput.value ? "40px" : "128px",
-    marginBottom: shouldDockInput.value ? "16px" : "112px"
-  }))
+  const activeContainerTransition = computed(() =>
+    hasDockedOnce.value
+      ? {
+          duration: 0.001,
+          ease: [0, 1, 1, 1] as [number, number, number, number]
+        }
+      : containerTransition
+  )
 
   const wait = (ms: number) =>
     new Promise((resolve) => {
@@ -141,6 +222,53 @@
     revealTimers.forEach((timer) => clearTimeout(timer))
     skeletonTimers = []
     revealTimers = []
+  }
+
+  const openSeedForm = () => {
+    if (chipDisabled.value && cards.value.length > 0) {
+      return
+    }
+
+    isSeedFormOpen.value = true
+  }
+
+  const closeSeedForm = () => {
+    if (!cards.value.length) {
+      return
+    }
+
+    isSeedFormOpen.value = false
+  }
+
+  const handleSeedShortcut = (event: KeyboardEvent) => {
+    if (event.defaultPrevented) {
+      return
+    }
+
+    if (event.metaKey || event.ctrlKey || event.altKey) {
+      return
+    }
+
+    if (event.key.toLowerCase() !== "g") {
+      return
+    }
+
+    const target = event.target as HTMLElement | null
+
+    if (target) {
+      const tag = target.tagName
+      if (tag === "INPUT" || tag === "TEXTAREA" || target.isContentEditable) {
+        return
+      }
+    }
+
+    if (showEmptyState.value) {
+      isSeedFormOpen.value = true
+      return
+    }
+
+    event.preventDefault()
+    openSeedForm()
   }
 
   const detachCarouselEvents = () => {
@@ -187,6 +315,10 @@
 
     syncActiveFromApi(api)
   }
+
+  onMounted(() => {
+    window.addEventListener("keydown", handleSeedShortcut)
+  })
 
   const spawnSkeletons = () => {
     skeletonKeys.value = []
@@ -239,6 +371,10 @@
       return
     }
 
+    if (cards.value.length > 0) {
+      isSeedFormOpen.value = false
+    }
+
     activeSlideIndex.value = 0
 
     const api = carouselApi.value
@@ -246,6 +382,8 @@
     if (api) {
       api.scrollTo(0, true)
     }
+
+    const requestedTopic = seed
 
     const generationToken = uid()
     activeGenerationToken = generationToken
@@ -275,6 +413,8 @@
           activeGenerationToken = null
           return
         }
+
+        lastGeneratedTopic.value = deck[0]?.topic ?? requestedTopic
 
         deck.forEach((card, index) => {
           const timer = setTimeout(() => {
@@ -380,16 +520,49 @@
     }
   )
 
+  watch(
+    () => cards.value.length,
+    (nextLength, previousLength) => {
+      if (nextLength === 0) {
+        isSeedFormOpen.value = true
+        return
+      }
+
+      if (previousLength === 0 && nextLength > 0) {
+        isSeedFormOpen.value = false
+      }
+    }
+  )
+
+  watch(cards, (next) => {
+    if (next.length > 0) {
+      lastGeneratedTopic.value = next[0]?.topic ?? lastGeneratedTopic.value
+    }
+  })
+
   watch(slideCount, (count) => {
     if (count === 0) {
       activeSlideIndex.value = 0
     }
   })
 
+  watch(
+    shouldDockInput,
+    (next) => {
+      if (next && !hasDockedOnce.value) {
+        requestAnimationFrame(() => {
+          hasDockedOnce.value = true
+        })
+      }
+    },
+    { immediate: false }
+  )
+
   onBeforeUnmount(() => {
     clearScheduledWork()
     activeGenerationToken = null
     detachCarouselEvents()
+    window.removeEventListener("keydown", handleSeedShortcut)
   })
 </script>
 
@@ -398,8 +571,8 @@
     tag="div"
     :animate="containerAnimate"
     :initial="false"
-    :transition="containerTransition"
-    class="flex h-full w-full flex-1 flex-col gap-10 justify-start"
+    :transition="activeContainerTransition"
+    class="flex h-full w-full flex-1 flex-col justify-start"
   >
     <AnkiApiKeyControl
       v-if="!shouldDockInput"
@@ -407,14 +580,31 @@
       class="absolute right-4 md:bottom-4"
     />
 
-    <AnkiTopicSeedForm
-      v-model="topicSeed"
-      :is-generating="isGenerating"
-      :error="generationError"
-      :label-tone="labelTone"
-      :input-tone="inputTone"
-      @submit="handleGenerate"
-    />
+    <div class="relative">
+      <div v-if="renderSeedForm">
+        <AnkiTopicSeedForm
+          v-model="topicSeed"
+          :is-generating="isGenerating"
+          :error="generationError"
+          :label-tone="labelTone"
+          :input-tone="inputTone"
+          :show-close="canCloseSeedForm"
+          :auto-focus="isSeedFormOpen && cards.length > 0"
+          class="mb-2"
+          @submit="handleGenerate"
+          @close="closeSeedForm"
+        />
+      </div>
+      <div v-else-if="showGenerateChip" class="mb-1 flex justify-end">
+        <GenerateMoreChip
+          :label="chipLabel"
+          :description="chipDescription"
+          :disabled="chipDisabled"
+          :loading="isGenerating"
+          @click="openSeedForm"
+        />
+      </div>
+    </div>
 
     <div v-if="!showEmptyState" class="flex flex-col gap-6">
       <div class="flex justify-center">
