@@ -9,7 +9,7 @@
     "cssVariables": true,
     "prefix": ""
   },
-  "iconLibrary": "lucide",
+  "iconLibrary": "hero",
   "aliases": {
     "components": "@/client/components",
     "utils": "@/client/lib/utils",

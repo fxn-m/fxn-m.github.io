@@ -1,5 +1,4 @@
 <script setup lang="ts">
-  import { Motion } from "motion-v"
   import { computed, onBeforeUnmount, ref } from "vue"
 
   import AnkiApiKeyControl from "@/client/components/fun/AnkiApiKeyControl.vue"
@@ -35,12 +34,6 @@
   const SIMULATED_FETCH_DELAY_MS = 10000
   const CARD_REVEAL_STAGGER_MS = 220
 
-  const layoutTransition = {
-    layout: {
-      duration: 0.9,
-      ease: [0.16, 1, 0.3, 1]
-    }
-  } as const
   const skeletonKeys = ref<string[]>([])
 
   let skeletonTimers: ReturnType<typeof setTimeout>[] = []
@@ -232,16 +225,13 @@
 
 <template>
   <div
-    class="relative justify-center flex h-full w-full flex-1 flex-col gap-10 mb-16"
+    class="relative justify-center flex h-full w-full flex-1 flex-col gap-10"
   >
     <AnkiApiKeyControl
       :storage-key="API_KEY_STORAGE_KEY"
       class="absolute right-0 md:top-4"
     />
-    <Motion
-      tag="section"
-      layout
-      :transition="layoutTransition"
+    <section
       class="relative flex gap-3 border-b items-end border-neutral-200/70 bg-white/80 p-10 text-neutral-900 dark:border-neutral-800/70 dark:bg-inherit dark:text-neutral-100"
     >
       <div class="grid gap-3 flex-1">
@@ -273,7 +263,7 @@
       >
         {{ isGenerating ? "Drafting..." : "Generate 5 Cards" }}
       </Button>
-    </Motion>
+    </section>
 
     <div
       v-if="showEmptyState"
@@ -288,13 +278,7 @@
       </p>
     </div>
 
-    <Motion
-      v-else
-      layout
-      :transition="layoutTransition"
-      tag="div"
-      class="grid gap-8"
-    >
+    <div v-else class="grid gap-8">
       <AnkiCardEditor
         v-for="(card, index) in cards"
         :key="card.id"
@@ -313,6 +297,6 @@
         :key="`skeleton-${skeletonKey}`"
         :index="skeletonIndex"
       />
-    </Motion>
+    </div>
   </div>
 </template>
