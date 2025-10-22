@@ -1,14 +1,14 @@
 <script setup lang="ts">
-  import { computed } from "vue"
   import { ChevronDown } from "lucide-vue-next"
+  import { computed } from "vue"
 
-  import { Button } from "@/client/components/ui/button"
   import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger
   } from "@/client/components/ui/accordion"
+  import { Button } from "@/client/components/ui/button"
   import {
     Card,
     CardContent,
