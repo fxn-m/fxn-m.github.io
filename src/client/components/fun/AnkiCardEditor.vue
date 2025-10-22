@@ -14,6 +14,8 @@
   import { Textarea } from "@/client/components/ui/textarea"
   import type { Flashcard } from "@/shared/types"
 
+  import Spinner from "../ui/spinner/Spinner.vue"
+
   const props = defineProps<{
     card: Flashcard
     index: number
@@ -170,11 +172,11 @@
             :disabled="isRegenerating"
             @click="handleRegenerate"
           >
-            {{ isRegenerating ? "Re-spinning..." : "Re-generate" }}
+            <span v-if="isRegenerating" class="flex gap-2 items-center"
+              >Re-generating <Spinner />
+            </span>
+            <span v-else>Re-generate</span>
           </Button>
-          <span v-if="isRegenerating" :class="footnoteTone">
-            Refreshing card
-          </span>
         </div>
       </div>
     </CardContent>
