@@ -1,0 +1,75 @@
+<script setup lang="ts">
+  import { computed } from "vue"
+
+  import { Button } from "@/client/components/ui/button"
+  import { Input } from "@/client/components/ui/input"
+  import { Label } from "@/client/components/ui/label"
+
+  const props = withDefaults(
+    defineProps<{
+      modelValue: string
+      isGenerating?: boolean
+      error?: string | null
+      inputTone: string
+      labelTone: string
+    }>(),
+    {
+      isGenerating: false,
+      error: null
+    }
+  )
+
+  const emit = defineEmits(["update:modelValue", "submit"])
+
+  const topic = computed({
+    get: () => props.modelValue,
+    set: (value: string) => {
+      emit("update:modelValue", value)
+    }
+  })
+
+  const buttonLabel = computed(() =>
+    props.isGenerating ? "Drafting..." : "Generate 5 Cards"
+  )
+
+  const handleSubmit = () => {
+    if (props.isGenerating) {
+      return
+    }
+
+    emit("submit")
+  }
+</script>
+
+<template>
+  <section
+    class="relative flex items-end gap-3 bg-white/80 p-10 text-neutral-900 transition-all duration-500 ease-out dark:bg-inherit dark:text-neutral-100"
+  >
+    <div class="grid flex-1 gap-3">
+      <div class="flex justify-between">
+        <Label for="topic-seed" :class="labelTone">Input Topic</Label>
+        <p v-if="error" class="text-xs text-rose-500 dark:text-rose-400">
+          {{ error }}
+        </p>
+      </div>
+
+      <Input
+        id="topic-seed"
+        v-model="topic"
+        :disabled="isGenerating"
+        placeholder="e.g. Structured credit desk, counterparty XVA, liquidity risk"
+        :class="[inputTone, 'md:flex-1']"
+        @keydown.enter.prevent="handleSubmit"
+      />
+    </div>
+
+    <Button
+      variant="default"
+      :disabled="isGenerating"
+      type="button"
+      @click="handleSubmit"
+    >
+      {{ buttonLabel }}
+    </Button>
+  </section>
+</template>

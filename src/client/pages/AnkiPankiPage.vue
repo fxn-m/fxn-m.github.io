@@ -5,7 +5,7 @@
   import AnkiApiKeyControl from "@/client/components/fun/AnkiApiKeyControl.vue"
   import AnkiCardEditor from "@/client/components/fun/AnkiCardEditor.vue"
   import AnkiCardSkeleton from "@/client/components/fun/AnkiCardSkeleton.vue"
-  import { Button } from "@/client/components/ui/button"
+  import AnkiTopicSeedForm from "@/client/components/fun/AnkiTopicSeedForm.vue"
   import {
     Carousel,
     type CarouselApi,
@@ -14,8 +14,6 @@
     CarouselNext,
     CarouselPrevious
   } from "@/client/components/ui/carousel"
-  import { Input } from "@/client/components/ui/input"
-  import { Label } from "@/client/components/ui/label"
   import {
     RadioGroup,
     RadioGroupItem
@@ -409,38 +407,14 @@
       class="absolute right-4 md:bottom-4"
     />
 
-    <section
-      class="relative flex items-end gap-3 bg-white/80 p-10 text-neutral-900 transition-all duration-500 ease-out dark:bg-inherit dark:text-neutral-100"
-    >
-      <div class="grid flex-1 gap-3">
-        <div class="flex justify-between">
-          <Label for="topic-seed" :class="labelTone">Input Topic</Label>
-          <p
-            v-if="generationError"
-            class="text-xs text-rose-500 dark:text-rose-400"
-          >
-            {{ generationError }}
-          </p>
-        </div>
-
-        <Input
-          id="topic-seed"
-          v-model="topicSeed"
-          :disabled="isGenerating"
-          placeholder="e.g. Structured credit desk, counterparty XVA, liquidity risk"
-          :class="[inputTone, 'md:flex-1']"
-        />
-      </div>
-
-      <Button
-        variant="default"
-        :disabled="isGenerating"
-        type="button"
-        @click="handleGenerate"
-      >
-        {{ isGenerating ? "Drafting..." : "Generate 5 Cards" }}
-      </Button>
-    </section>
+    <AnkiTopicSeedForm
+      v-model="topicSeed"
+      :is-generating="isGenerating"
+      :error="generationError"
+      :label-tone="labelTone"
+      :input-tone="inputTone"
+      @submit="handleGenerate"
+    />
 
     <div v-if="!showEmptyState" class="flex flex-col gap-6">
       <div class="flex justify-center">
@@ -469,7 +443,7 @@
           <CarouselItem
             v-for="slide in slides"
             :key="slide.id"
-            :class="['md:basis-[80%] lg:basis-[65%] xl:basis-1/2']"
+            :class="['basis-10/12']"
           >
             <AnkiCardEditor
               v-if="slide.kind === 'card'"
