@@ -106,7 +106,7 @@
         <Textarea
           :id="`question-${card.id}`"
           :model-value="card.question"
-          :class="[inputTone, 'min-h-[140px]']"
+          :class="[inputTone, 'min-h-[50px]']"
           @update:model-value="handleQuestionInput"
         />
       </div>

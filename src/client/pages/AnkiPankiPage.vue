@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { Motion } from "motion-v"
   import { computed, onBeforeUnmount, ref } from "vue"
 
   import AnkiApiKeyControl from "@/client/components/fun/AnkiApiKeyControl.vue"
@@ -47,6 +48,16 @@
       skeletonKeys.value.length > 0 ||
       cards.value.length > 0
   )
+
+  const containerTransition = {
+    duration: 0.45,
+    ease: [0.16, 1, 0.3, 1] as [number, number, number, number]
+  }
+
+  const containerAnimate = computed(() => ({
+    paddingTop: shouldDockInput.value ? "40px" : "128px",
+    marginBottom: shouldDockInput.value ? "16px" : "112px"
+  }))
 
   const wait = (ms: number) =>
     new Promise((resolve) => {
@@ -227,19 +238,21 @@
 </script>
 
 <template>
-  <div
-    :class="[
-      'flex h-full w-full flex-1 flex-col gap-10 justify-start transition-all duration-500 ease-out',
-      shouldDockInput ? 'pt-6 md:pt-10 mb-4' : 'pt-32 md:pt-40 mb-28'
-    ]"
+  <Motion
+    tag="div"
+    :animate="containerAnimate"
+    :initial="false"
+    :transition="containerTransition"
+    class="flex h-full w-full flex-1 flex-col gap-10 justify-start"
   >
     <AnkiApiKeyControl
+      v-if="!shouldDockInput"
       :storage-key="API_KEY_STORAGE_KEY"
       class="absolute right-4 md:bottom-4"
     />
 
     <section
-      class="relative flex gap-3 items-end bg-white/80 p-10 text-neutral-900 dark:bg-inherit dark:text-neutral-100 transition-all duration-500 ease-out"
+      class="relative flex gap-3 items-end bg-white/80 p-2 text-neutral-900 dark:bg-inherit dark:text-neutral-100"
     >
       <div class="grid gap-3 flex-1">
         <div class="flex justify-between">
@@ -290,5 +303,5 @@
         :index="skeletonIndex"
       />
     </div>
-  </div>
+  </Motion>
 </template>
