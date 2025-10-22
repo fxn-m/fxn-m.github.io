@@ -6,7 +6,6 @@
     Card,
     CardContent,
     CardDescription,
-    CardFooter,
     CardHeader,
     CardTitle
   } from "@/client/components/ui/card"
@@ -30,17 +29,15 @@
   }>()
 
   const cardTone =
-    "overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 shadow-none transition-colors"
+    "overflow-hidden rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 shadow-none transition-colors"
   const cardHeaderTone =
-    "flex flex-col gap-2 border-b border-neutral-200 dark:border-neutral-800 bg-transparent py-5"
+    "flex flex-col gap-1.5 border-b border-neutral-200 dark:border-neutral-800 bg-transparent px-6 py-4"
   const cardContentTone =
-    "space-y-6 bg-transparent text-neutral-700 dark:text-neutral-300 py-6"
-  const cardFooterTone =
-    "flex flex-col gap-1 border-t border-neutral-200 dark:border-neutral-800 bg-transparent py-4 text-neutral-500 dark:text-neutral-400 text-[10px] uppercase tracking-[0.4em]"
+    "space-y-5 md:space-y-6 bg-transparent px-6 py-6 text-neutral-700 dark:text-neutral-300"
   const cardTitleTone =
-    "text-sm font-semibold uppercase tracking-[0.4em] text-neutral-900 dark:text-neutral-100"
+    "text-[13px] font-semibold uppercase tracking-[0.32em] text-neutral-900 dark:text-neutral-100"
   const cardDescriptionTone =
-    "text-xs uppercase tracking-[0.35em] text-neutral-500 dark:text-neutral-500"
+    "text-[11px] uppercase tracking-[0.28em] text-neutral-500 dark:text-neutral-500"
 
   const isRegenerating = computed(
     () => props.regeneratingCardId === props.card.id
@@ -99,19 +96,23 @@
       </CardDescription>
     </CardHeader>
     <CardContent :class="cardContentTone">
-      <div class="space-y-2">
+      <div class="flex flex-col gap-2">
         <Label :for="`question-${card.id}`" :class="labelTone">
           Question
         </Label>
         <Textarea
           :id="`question-${card.id}`"
           :model-value="card.question"
-          :class="[inputTone, 'min-h-[50px]']"
+          :class="[inputTone, 'min-h-[60px]']"
           @update:model-value="handleQuestionInput"
         />
       </div>
-      <div class="grid gap-4">
-        <div v-for="option in card.options" :key="option.id" class="space-y-2">
+      <div class="grid gap-4 md:grid-cols-2">
+        <div
+          v-for="option in card.options"
+          :key="option.id"
+          class="flex flex-col gap-2"
+        >
           <Label :for="`option-${card.id}-${option.id}`" :class="labelTone">
             Option {{ option.label }}
           </Label>
@@ -124,7 +125,7 @@
           />
         </div>
       </div>
-      <div class="grid gap-2">
+      <div class="flex flex-col gap-2">
         <Label :for="`answer-${card.id}`" :class="labelTone">
           Correct Option
         </Label>
@@ -137,29 +138,31 @@
           @update:model-value="handleAnswerInput"
         />
       </div>
-      <div class="space-y-2">
+      <div class="flex flex-col gap-2">
         <Label :for="`rationale-${card.id}`" :class="labelTone">
           Rationale
         </Label>
         <Textarea
           :id="`rationale-${card.id}`"
           :model-value="card.explanation"
-          :class="[inputTone, 'min-h-[120px]']"
+          :class="[inputTone, 'min-h-[96px]']"
           @update:model-value="handleExplanationInput"
         />
       </div>
-      <div class="grid gap-2">
-        <Label :for="`prompt-${card.id}`" :class="labelTone">
-          Re-spin prompt
-        </Label>
-        <Input
-          :id="`prompt-${card.id}`"
-          :model-value="card.regeneratePrompt"
-          placeholder="e.g. CCAR wholesale lending scenario"
-          :class="inputTone"
-          @update:model-value="handleRegeneratePromptInput"
-        />
-        <div class="flex items-center gap-3">
+      <div class="grid gap-3 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+        <div class="flex flex-col gap-2">
+          <Label :for="`prompt-${card.id}`" :class="labelTone">
+            Re-spin prompt
+          </Label>
+          <Input
+            :id="`prompt-${card.id}`"
+            :model-value="card.regeneratePrompt"
+            placeholder="e.g. CCAR wholesale lending scenario"
+            :class="inputTone"
+            @update:model-value="handleRegeneratePromptInput"
+          />
+        </div>
+        <div class="flex flex-col gap-1 md:items-end">
           <Button
             variant="outline"
             size="sm"
@@ -175,9 +178,5 @@
         </div>
       </div>
     </CardContent>
-    <CardFooter :class="cardFooterTone">
-      <span>Seed: {{ card.topic }}</span>
-      <span>Difficulty: {{ card.difficulty }}</span>
-    </CardFooter>
   </Card>
 </template>
