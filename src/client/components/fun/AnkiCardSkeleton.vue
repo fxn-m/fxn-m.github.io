@@ -14,9 +14,9 @@
   }>()
 
   const transition = computed(() => ({
-    duration: 5,
-    delay: 1 * props.index,
-    ease: [0.12, 1, 0.36, 1] as Easing
+    duration: 0.55,
+    delay: 0.12 * props.index,
+    ease: [0.16, 1, 0.3, 1] as Easing
   }))
 
   const cardTone =
@@ -32,7 +32,7 @@
 <template>
   <Motion
     class="block"
-    :initial="{ opacity: 0, y: 1000 }"
+    :initial="{ opacity: 0, y: 72 }"
     :animate="{ opacity: 1, y: 0 }"
     :transition="transition"
   >

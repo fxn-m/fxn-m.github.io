@@ -41,6 +41,13 @@
       !cards.value.length && !skeletonKeys.value.length && !isGenerating.value
   )
 
+  const shouldDockInput = computed(
+    () =>
+      isGenerating.value ||
+      skeletonKeys.value.length > 0 ||
+      cards.value.length > 0
+  )
+
   const wait = (ms: number) =>
     new Promise((resolve) => {
       setTimeout(resolve, ms)
@@ -220,14 +227,19 @@
 </script>
 
 <template>
-  <div class="justify-center flex h-full w-full flex-1 flex-col gap-10 mb-28">
+  <div
+    :class="[
+      'flex h-full w-full flex-1 flex-col gap-10 justify-start transition-all duration-500 ease-out',
+      shouldDockInput ? 'pt-6 md:pt-10 mb-4' : 'pt-32 md:pt-40 mb-28'
+    ]"
+  >
     <AnkiApiKeyControl
       :storage-key="API_KEY_STORAGE_KEY"
       class="absolute right-4 md:bottom-4"
     />
 
     <section
-      class="relative flex gap-3 items-end bg-white/80 p-10 text-neutral-900 dark:bg-inherit dark:text-neutral-100"
+      class="relative flex gap-3 items-end bg-white/80 p-10 text-neutral-900 dark:bg-inherit dark:text-neutral-100 transition-all duration-500 ease-out"
     >
       <div class="grid gap-3 flex-1">
         <div class="flex justify-between">
