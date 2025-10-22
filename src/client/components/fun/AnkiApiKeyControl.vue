@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { AlertCircle, Check, Key } from "lucide-vue-next"
+  import { Motion } from "motion-v"
   import { computed, nextTick, onMounted, ref, watch } from "vue"
   import { z } from "zod"
 
@@ -27,6 +28,11 @@
   const apiKeyValid = computed(
     () => apiKeySchema.safeParse(trimmedKey.value).success
   )
+  const motionAnimate = computed(() => ({
+    width: isExpanded.value ? "13rem" : "0rem",
+    opacity: isExpanded.value ? 1 : 0
+  }))
+  const motionTransition = { duration: 0.28, ease: "easeOut" as const }
 
   const focusInput = async () => {
     await nextTick()
@@ -87,18 +93,22 @@
     :class="['pointer-events-auto z-30 flex items-center gap-2', props.class]"
     data-api-key-zone
   >
-    <Input
-      ref="inputRef"
-      :id="props.storageKey"
-      v-model="apiKey"
-      autocomplete="off"
-      placeholder="sk-..."
-      :class="[
-        'api-input border-0 border-b rounded-none border-neutral-300 bg-transparent text-sm text-neutral-700 outline-none focus-visible:border-neutral-900 focus-visible:ring-0 dark:border-neutral-700 dark:text-neutral-200 dark:focus-visible:border-neutral-200',
-        isExpanded ? 'expanded' : 'collapsed'
-      ]"
-      @blur="handleBlur"
-    />
+    <Motion
+      tag="div"
+      class="overflow-hidden"
+      :animate="motionAnimate"
+      :transition="motionTransition"
+    >
+      <Input
+        ref="inputRef"
+        :id="props.storageKey"
+        v-model="apiKey"
+        autocomplete="off"
+        placeholder="sk-..."
+        class="w-full min-w-0 border-0 border-b rounded-none border-neutral-300 bg-transparent text-sm text-neutral-700 outline-none focus-visible:border-neutral-900 focus-visible:ring-0 dark:border-neutral-700 dark:text-neutral-200 dark:focus-visible:border-neutral-200"
+        @blur="handleBlur"
+      />
+    </Motion>
     <Button
       variant="ghost"
       :aria-expanded="isExpanded"
@@ -115,16 +125,4 @@
   </div>
 </template>
 
-<style scoped>
-  .api-input {
-    width: 6rem;
-    transition: width 0.25s ease;
-  }
-  .api-input.expanded {
-    width: 13rem;
-  }
-  .api-input.collapsed {
-    width: 0rem;
-    opacity: 0;
-  }
-</style>
+<style scoped></style>

@@ -238,7 +238,7 @@
 
 <template>
   <div
-    class="relative justify-center flex h-full w-full flex-1 flex-col gap-10 pb-24"
+    class="relative justify-center flex h-full w-full flex-1 flex-col gap-10"
   >
     <AnkiApiKeyControl
       :storage-key="API_KEY_STORAGE_KEY"
