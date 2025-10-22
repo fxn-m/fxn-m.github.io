@@ -2,6 +2,7 @@
   import { computed, ref } from "vue"
 
   import AnkiApiKeyControl from "@/client/components/fun/AnkiApiKeyControl.vue"
+  import AnkiCardEditor from "@/client/components/fun/AnkiCardEditor.vue"
   import { Button } from "@/client/components/ui/button"
   import { Input } from "@/client/components/ui/input"
   import { Label } from "@/client/components/ui/label"
@@ -181,15 +182,14 @@
     const seed = topicSeed.value.trim()
 
     if (!seed.length) {
-      generationError.value =
-        "Add a concept, regulation, or desk to seed the deck."
+      generationError.value = "Input must not be empty"
       return
     }
 
     isGenerating.value = true
 
     try {
-      await wait(700)
+      await wait(10000)
       cards.value = createDeck(seed)
     } catch (error) {
       generationError.value = "Could not sketch the deck. Try again."
@@ -245,35 +245,37 @@
       class="absolute right-0 md:top-4"
     />
     <section
-      class="relative flex flex-col gap-6 border-b border-neutral-200/70 bg-white/80 p-10 text-neutral-900 dark:border-neutral-800/70 dark:bg-inherit dark:text-neutral-100"
+      class="relative flex gap-3 border-b items-end border-neutral-200/70 bg-white/80 p-10 text-neutral-900 dark:border-neutral-800/70 dark:bg-inherit dark:text-neutral-100"
     >
-      <div class="grid gap-3">
-        <Label for="topic-seed" :class="labelTone">Input Topic</Label>
-        <div class="flex flex-col gap-3 md:flex-row md:items-center">
-          <Input
-            id="topic-seed"
-            v-model="topicSeed"
-            :disabled="isGenerating"
-            placeholder="e.g. Structured credit desk, counterparty XVA, liquidity risk"
-            :class="[inputTone, 'md:flex-1']"
-          />
-          <Button
-            variant="outline"
-            :class="[primaryButtonTone, 'md:w-fit']"
-            :disabled="isGenerating"
-            type="button"
-            @click="handleGenerate"
+      <div class="grid gap-3 flex-1">
+        <div class="flex justify-between">
+          <Label for="topic-seed" :class="labelTone">Input Topic</Label>
+          <p
+            v-if="generationError"
+            class="text-xs text-rose-500 dark:text-rose-400"
           >
-            {{ isGenerating ? "Drafting..." : "Generate 5 Cards" }}
-          </Button>
+            {{ generationError }}
+          </p>
         </div>
-        <p
-          v-if="generationError"
-          class="text-xs text-rose-500 dark:text-rose-400"
-        >
-          {{ generationError }}
-        </p>
+
+        <Input
+          id="topic-seed"
+          v-model="topicSeed"
+          :disabled="isGenerating"
+          placeholder="e.g. Structured credit desk, counterparty XVA, liquidity risk"
+          :class="[inputTone, 'md:flex-1']"
+        />
       </div>
+
+      <Button
+        variant="outline"
+        :class="[primaryButtonTone, 'md:w-fit']"
+        :disabled="isGenerating"
+        type="button"
+        @click="handleGenerate"
+      >
+        {{ isGenerating ? "Drafting..." : "Generate 5 Cards" }}
+      </Button>
     </section>
 
     <div

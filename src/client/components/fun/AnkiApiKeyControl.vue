@@ -1,7 +1,14 @@
 <script setup lang="ts">
   import { AlertCircle, Check, Key } from "lucide-vue-next"
   import { Motion } from "motion-v"
-  import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
+  import {
+    computed,
+    nextTick,
+    onBeforeUnmount,
+    onMounted,
+    ref,
+    watch
+  } from "vue"
   import { z } from "zod"
 
   import { Input } from "@/client/components/ui/input"
@@ -141,7 +148,7 @@
 
 <template>
   <div
-    :class="['pointer-events-auto z-30 flex items-center gap-2', props.class]"
+    :class="['pointer-events-auto z-30 flex items-center', props.class]"
     data-api-key-zone
   >
     <Motion
@@ -170,7 +177,7 @@
         variant="ghost"
         :aria-expanded="isExpanded"
         aria-label="Toggle OpenAI API key input"
-        class="flex size-9 items-center justify-center border border-neutral-200/70 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-0 dark:border-neutral-800/70 dark:text-neutral-300 dark:hover:bg-neutral-900/70 dark:hover:text-neutral-100"
+        class="flex size-9 items-center cursor-pointer justify-center border border-neutral-200/70 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-0 dark:border-neutral-800/70 dark:text-neutral-300 dark:hover:bg-neutral-900/70 dark:hover:text-neutral-100"
         @click="toggleField"
       >
         <Key class="size-4" />
