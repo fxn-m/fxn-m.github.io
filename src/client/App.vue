@@ -1,4 +1,4 @@
-<template>
+<template class="flex flex-col">
   <NavBar />
   <RouterView class="text-primary-light dark:text-primary-dark" />
 
