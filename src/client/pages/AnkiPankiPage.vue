@@ -3,35 +3,9 @@
 
   import AnkiApiKeyControl from "@/client/components/fun/AnkiApiKeyControl.vue"
   import { Button } from "@/client/components/ui/button"
-  import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle
-  } from "@/client/components/ui/card"
   import { Input } from "@/client/components/ui/input"
   import { Label } from "@/client/components/ui/label"
-  import { Textarea } from "@/client/components/ui/textarea"
-
-  interface MultipleChoiceOption {
-    id: string
-    label: string
-    text: string
-  }
-
-  interface Flashcard {
-    id: string
-    topic: string
-    headline: string
-    question: string
-    options: MultipleChoiceOption[]
-    answerId: string
-    explanation: string
-    difficulty: "Foundation" | "Core" | "Challenger"
-    regeneratePrompt: string
-  }
+  import type { Flashcard } from "@/shared/types"
 
   const API_KEY_STORAGE_KEY = "ankipanki:openai-api-key"
 
@@ -47,18 +21,6 @@
     "text-[10px] uppercase tracking-[0.4em] text-neutral-500 dark:text-neutral-500"
   const inputTone =
     "border border-neutral-200 dark:border-neutral-800 bg-white/90 dark:bg-neutral-950/70 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-500 dark:placeholder:text-neutral-500 focus-visible:border-neutral-400 dark:focus-visible:border-neutral-600 focus-visible:ring-0"
-  const cardTone =
-    "overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 shadow-none transition-colors"
-  const cardHeaderTone =
-    "flex flex-col gap-2 border-b border-neutral-200 dark:border-neutral-800 bg-transparent py-5"
-  const cardContentTone =
-    "space-y-6 bg-transparent text-neutral-700 dark:text-neutral-300 py-6"
-  const cardFooterTone =
-    "flex flex-col gap-1 border-t border-neutral-200 dark:border-neutral-800 bg-transparent py-4 text-neutral-500 dark:text-neutral-400 text-[10px] uppercase tracking-[0.4em]"
-  const cardTitleTone =
-    "text-sm font-semibold uppercase tracking-[0.4em] text-neutral-900 dark:text-neutral-100"
-  const cardDescriptionTone =
-    "text-xs uppercase tracking-[0.35em] text-neutral-500 dark:text-neutral-500"
   const primaryButtonTone =
     "border border-neutral-900/20 bg-neutral-900 text-neutral-50 hover:bg-neutral-800 dark:border-neutral-100/40 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
   const outlineButtonTone =
@@ -237,6 +199,12 @@
     }
   }
 
+  const handleCardUpdate = (nextCard: Flashcard) => {
+    cards.value = cards.value.map((card) =>
+      card.id === nextCard.id ? nextCard : card
+    )
+  }
+
   const handleRegenerateCard = async (cardId: string) => {
     const currentCard = cards.value.find((card) => card.id === cardId)
 
@@ -280,7 +248,7 @@
       class="relative flex flex-col gap-6 border-b border-neutral-200/70 bg-white/80 p-10 text-neutral-900 dark:border-neutral-800/70 dark:bg-inherit dark:text-neutral-100"
     >
       <div class="grid gap-3">
-        <Label for="topic-seed" :class="labelTone">Seed concept</Label>
+        <Label for="topic-seed" :class="labelTone">Input Topic</Label>
         <div class="flex flex-col gap-3 md:flex-row md:items-center">
           <Input
             id="topic-seed"
@@ -312,116 +280,30 @@
       v-if="showEmptyState"
       class="flex flex-col items-center gap-4 text-neutral-500 dark:text-neutral-400"
     >
-      <span class="text-[11px] uppercase tracking-[0.6em]"> No deck yet </span>
+      <span class="text-[11px] uppercase tracking-[0.6em]"> No cards yet </span>
       <p
         class="max-w-sm text-center text-xs text-neutral-500 dark:text-neutral-400"
       >
-        Seed the generator with a live risk topic to mint five multiple-choice
-        drills. You can tweak them inline and export them wherever you revise.
+        Input a topic to generate five multiple-choice flashcards. You can tweak
+        them and export them to anki.
       </p>
     </div>
 
     <div v-else class="grid gap-8">
       <transition-group name="card-fade" tag="div" class="grid gap-8">
-        <Card v-for="(card, index) in cards" :key="card.id" :class="cardTone">
-          <CardHeader :class="cardHeaderTone">
-            <CardTitle :class="cardTitleTone"> Card {{ index + 1 }} </CardTitle>
-            <CardDescription :class="cardDescriptionTone">
-              {{ card.headline }}
-            </CardDescription>
-          </CardHeader>
-          <CardContent :class="cardContentTone">
-            <div class="space-y-2">
-              <Label :for="`question-${card.id}`" :class="labelTone">
-                Question
-              </Label>
-              <Textarea
-                :id="`question-${card.id}`"
-                v-model="card.question"
-                :class="[inputTone, 'min-h-[140px]']"
-              />
-            </div>
-            <div class="grid gap-4">
-              <div
-                v-for="option in card.options"
-                :key="option.id"
-                class="space-y-2"
-              >
-                <Label
-                  :for="`option-${card.id}-${option.id}`"
-                  :class="labelTone"
-                >
-                  Option {{ option.label }}
-                </Label>
-                <Input
-                  :id="`option-${card.id}-${option.id}`"
-                  v-model="option.text"
-                  placeholder="Response text"
-                  :class="inputTone"
-                />
-              </div>
-            </div>
-            <div class="grid gap-2">
-              <Label :for="`answer-${card.id}`" :class="labelTone">
-                Correct Option
-              </Label>
-              <Input
-                :id="`answer-${card.id}`"
-                v-model="card.answerId"
-                maxlength="1"
-                placeholder="A"
-                :class="[inputTone, 'uppercase']"
-              />
-            </div>
-            <div class="space-y-2">
-              <Label :for="`rationale-${card.id}`" :class="labelTone">
-                Rationale
-              </Label>
-              <Textarea
-                :id="`rationale-${card.id}`"
-                v-model="card.explanation"
-                :class="[inputTone, 'min-h-[120px]']"
-              />
-            </div>
-            <div class="grid gap-2">
-              <Label :for="`prompt-${card.id}`" :class="labelTone">
-                Re-spin prompt
-              </Label>
-              <Input
-                :id="`prompt-${card.id}`"
-                v-model="card.regeneratePrompt"
-                placeholder="e.g. CCAR wholesale lending scenario"
-                :class="inputTone"
-              />
-              <div class="flex items-center gap-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  type="button"
-                  :disabled="regeneratingCardId === card.id"
-                  :class="outlineButtonTone"
-                  @click="handleRegenerateCard(card.id)"
-                >
-                  {{
-                    regeneratingCardId === card.id
-                      ? "Re-spinning..."
-                      : "Re-generate"
-                  }}
-                </Button>
-                <span
-                  v-if="regeneratingCardId === card.id"
-                  :class="footnoteTone"
-                >
-                  Refreshing card
-                </span>
-              </div>
-            </div>
-          </CardContent>
-          <CardFooter :class="cardFooterTone">
-            <span>Seed: {{ card.topic }}</span>
-            <span>Difficulty: {{ card.difficulty }}</span>
-          </CardFooter>
-        </Card>
+        <AnkiCardEditor
+          v-for="(card, index) in cards"
+          :key="card.id"
+          :card="card"
+          :index="index"
+          :label-tone="labelTone"
+          :input-tone="inputTone"
+          :outline-button-tone="outlineButtonTone"
+          :footnote-tone="footnoteTone"
+          :regenerating-card-id="regeneratingCardId"
+          @update:card="handleCardUpdate"
+          @regenerate="handleRegenerateCard"
+        />
       </transition-group>
     </div>
   </div>
