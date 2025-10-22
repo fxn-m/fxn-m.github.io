@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { AlertCircle, Check, Key } from "lucide-vue-next"
   import { Motion } from "motion-v"
-  import { computed, nextTick, onMounted, ref, watch } from "vue"
+  import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
   import { z } from "zod"
 
   import { Input } from "@/client/components/ui/input"
@@ -33,6 +33,27 @@
     opacity: isExpanded.value ? 1 : 0
   }))
   const motionTransition = { duration: 0.28, ease: "easeOut" as const }
+  const collapsedValid = computed(
+    () => !isExpanded.value && apiKeyValid.value && trimmedKey.value.length > 0
+  )
+  const buttonShifted = ref(false)
+  const tickState = ref<"rest" | "fading">("rest")
+  const buttonAnimate = computed(() => ({
+    x: buttonShifted.value ? "1.75rem" : "0rem"
+  }))
+  const badgeAnimate = computed(() => {
+    if (tickState.value === "fading") {
+      return { opacity: 0, x: "-0.75rem" }
+    }
+    return { opacity: apiKeyValid.value ? 1 : 0.3, x: "0rem" }
+  })
+  const badgeTransition = computed(() => ({
+    duration: tickState.value === "fading" ? 0.2 : 0.18,
+    ease: "easeOut" as const,
+    delay: tickState.value === "fading" ? 0.1 : 0
+  }))
+  let fadeTimeout: number | undefined
+  let shiftTimeout: number | undefined
 
   const focusInput = async () => {
     await nextTick()
@@ -56,6 +77,33 @@
     }
     isExpanded.value = false
   }
+
+  const clearSequence = () => {
+    if (fadeTimeout !== undefined) {
+      clearTimeout(fadeTimeout)
+      fadeTimeout = undefined
+    }
+    if (shiftTimeout !== undefined) {
+      clearTimeout(shiftTimeout)
+      shiftTimeout = undefined
+    }
+  }
+
+  watch(collapsedValid, (active) => {
+    clearSequence()
+    if (active) {
+      tickState.value = "rest"
+      fadeTimeout = window.setTimeout(() => {
+        tickState.value = "fading"
+        shiftTimeout = window.setTimeout(() => {
+          buttonShifted.value = true
+        }, 160)
+      }, 140)
+    } else {
+      tickState.value = "rest"
+      buttonShifted.value = false
+    }
+  })
 
   watch(apiKey, (value) => {
     if (typeof window === "undefined") {
@@ -83,8 +131,11 @@
     const stored = window.localStorage.getItem(props.storageKey)
     if (stored) {
       apiKey.value = stored.trim()
-      isExpanded.value = true
     }
+  })
+
+  onBeforeUnmount(() => {
+    clearSequence()
   })
 </script>
 
@@ -109,19 +160,31 @@
         @blur="handleBlur"
       />
     </Motion>
-    <Button
-      variant="ghost"
-      :aria-expanded="isExpanded"
-      aria-label="Toggle OpenAI API key input"
-      class="flex size-9 items-center justify-center border border-neutral-200/70 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-0 dark:border-neutral-800/70 dark:text-neutral-300 dark:hover:bg-neutral-900/70 dark:hover:text-neutral-100"
-      @click="toggleField"
+    <Motion
+      tag="div"
+      :animate="buttonAnimate"
+      :transition="{ duration: 0.2, ease: 'easeOut' }"
+      class="relative"
     >
-      <Key class="size-4" />
-    </Button>
-    <span class="flex items-center">
+      <Button
+        variant="ghost"
+        :aria-expanded="isExpanded"
+        aria-label="Toggle OpenAI API key input"
+        class="flex size-9 items-center justify-center border border-neutral-200/70 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-0 dark:border-neutral-800/70 dark:text-neutral-300 dark:hover:bg-neutral-900/70 dark:hover:text-neutral-100"
+        @click="toggleField"
+      >
+        <Key class="size-4" />
+      </Button>
+    </Motion>
+    <Motion
+      tag="span"
+      :animate="badgeAnimate"
+      :transition="badgeTransition"
+      class="flex items-center"
+    >
       <Check v-if="apiKeyValid" class="size-4 text-emerald-500" />
       <AlertCircle v-else class="size-4 text-neutral-400" />
-    </span>
+    </Motion>
   </div>
 </template>
 
