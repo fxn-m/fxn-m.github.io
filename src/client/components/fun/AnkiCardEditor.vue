@@ -20,7 +20,6 @@
     index: number
     labelTone: string
     inputTone: string
-    outlineButtonTone: string
     footnoteTone: string
     regeneratingCardId: string | null
   }>()
@@ -166,7 +165,6 @@
             size="sm"
             type="button"
             :disabled="isRegenerating"
-            :class="outlineButtonTone"
             @click="handleRegenerate"
           >
             {{ isRegenerating ? "Re-spinning..." : "Re-generate" }}

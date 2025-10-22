@@ -14,9 +14,9 @@
   }>()
 
   const transition = computed(() => ({
-    duration: 10,
+    duration: 5,
     delay: 1 * props.index,
-    ease: [0.22, 1, 0.36, 1] as Easing
+    ease: [0.12, 1, 0.36, 1] as Easing
   }))
 
   const cardTone =

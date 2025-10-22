@@ -24,10 +24,6 @@
     "text-[10px] uppercase tracking-[0.4em] text-neutral-500 dark:text-neutral-500"
   const inputTone =
     "border border-neutral-200 dark:border-neutral-800 bg-white/90 dark:bg-neutral-950/70 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-500 dark:placeholder:text-neutral-500 focus-visible:border-neutral-400 dark:focus-visible:border-neutral-600 focus-visible:ring-0"
-  const primaryButtonTone =
-    "border border-neutral-900/20 bg-neutral-900 text-neutral-50 hover:bg-neutral-800 dark:border-neutral-100/40 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
-  const outlineButtonTone =
-    "border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900/60"
 
   const CARD_COUNT = 5
   const SKELETON_STAGGER_MS = 120
@@ -224,15 +220,14 @@
 </script>
 
 <template>
-  <div
-    class="relative justify-center flex h-full w-full flex-1 flex-col gap-10 mb-16"
-  >
+  <div class="justify-center flex h-full w-full flex-1 flex-col gap-10 mb-28">
     <AnkiApiKeyControl
       :storage-key="API_KEY_STORAGE_KEY"
-      class="absolute right-0 md:top-4"
+      class="absolute right-4 md:bottom-4"
     />
+
     <section
-      class="relative flex gap-3 border-b items-end border-neutral-200/70 bg-white/80 p-10 text-neutral-900 dark:border-neutral-800/70 dark:bg-inherit dark:text-neutral-100"
+      class="relative flex gap-3 items-end bg-white/80 p-10 text-neutral-900 dark:bg-inherit dark:text-neutral-100"
     >
       <div class="grid gap-3 flex-1">
         <div class="flex justify-between">
@@ -255,8 +250,7 @@
       </div>
 
       <Button
-        variant="outline"
-        :class="[primaryButtonTone, 'md:w-fit']"
+        variant="default"
         :disabled="isGenerating"
         type="button"
         @click="handleGenerate"
@@ -265,20 +259,7 @@
       </Button>
     </section>
 
-    <div
-      v-if="showEmptyState"
-      class="flex flex-col items-center gap-4 text-neutral-500 dark:text-neutral-400"
-    >
-      <span class="text-[11px] uppercase tracking-[0.6em]"> No cards yet </span>
-      <p
-        class="max-w-sm text-center text-xs text-neutral-500 dark:text-neutral-400"
-      >
-        Input a topic to generate five multiple-choice flashcards. You can tweak
-        them and export them to anki.
-      </p>
-    </div>
-
-    <div v-else class="grid gap-8">
+    <div v-if="!showEmptyState" class="grid gap-8">
       <AnkiCardEditor
         v-for="(card, index) in cards"
         :key="card.id"
@@ -286,7 +267,6 @@
         :index="index"
         :label-tone="labelTone"
         :input-tone="inputTone"
-        :outline-button-tone="outlineButtonTone"
         :footnote-tone="footnoteTone"
         :regenerating-card-id="regeneratingCardId"
         @update:card="handleCardUpdate"

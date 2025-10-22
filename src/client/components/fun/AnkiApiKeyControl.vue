@@ -148,7 +148,7 @@
 
 <template>
   <div
-    :class="['pointer-events-auto z-30 flex items-center', props.class]"
+    :class="['pointer-events-auto z-30 flex gap-4 items-center', props.class]"
     data-api-key-zone
   >
     <Motion
@@ -177,7 +177,7 @@
         variant="ghost"
         :aria-expanded="isExpanded"
         aria-label="Toggle OpenAI API key input"
-        class="flex size-9 items-center cursor-pointer justify-center border border-neutral-200/70 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-0 dark:border-neutral-800/70 dark:text-neutral-300 dark:hover:bg-neutral-900/70 dark:hover:text-neutral-100"
+        class="size-9 z-20 cursor-pointer border border-neutral-200/70 text-neutral-500 transition hover:bg-neutral-100 hover:text-neutral-900 focus-visible:outline-none focus-visible:ring-0 dark:border-neutral-800/70 dark:text-neutral-300 dark:hover:bg-neutral-900/70 dark:hover:text-neutral-100"
         @click="toggleField"
       >
         <Key class="size-4" />
@@ -187,7 +187,7 @@
       tag="span"
       :animate="badgeAnimate"
       :transition="badgeTransition"
-      class="flex items-center"
+      class="flex items-center pointer-events-none"
     >
       <Check v-if="apiKeyValid" class="size-4 text-emerald-500" />
       <AlertCircle v-else class="size-4 text-neutral-400" />
