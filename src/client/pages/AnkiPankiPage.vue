@@ -1,11 +1,13 @@
 <script setup lang="ts">
-  import { computed, ref } from "vue"
+  import { computed, onBeforeUnmount, ref } from "vue"
 
   import AnkiApiKeyControl from "@/client/components/fun/AnkiApiKeyControl.vue"
   import AnkiCardEditor from "@/client/components/fun/AnkiCardEditor.vue"
+  import AnkiCardSkeleton from "@/client/components/fun/AnkiCardSkeleton.vue"
   import { Button } from "@/client/components/ui/button"
   import { Input } from "@/client/components/ui/input"
   import { Label } from "@/client/components/ui/label"
+  import { type Blueprint, BLUEPRINTS } from "@/client/lib/ankiBlueprints"
   import type { Flashcard } from "@/shared/types"
 
   const API_KEY_STORAGE_KEY = "ankipanki:openai-api-key"
@@ -27,8 +29,20 @@
   const outlineButtonTone =
     "border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-900/60"
 
+  const CARD_COUNT = 5
+  const SKELETON_STAGGER_MS = 120
+  const SIMULATED_FETCH_DELAY_MS = 10000
+  const CARD_REVEAL_STAGGER_MS = 220
+
+  const skeletonKeys = ref<string[]>([])
+
+  let skeletonTimers: ReturnType<typeof setTimeout>[] = []
+  let revealTimers: ReturnType<typeof setTimeout>[] = []
+  let activeGenerationToken: string | null = null
+
   const showEmptyState = computed(
-    () => !cards.value.length && !isGenerating.value
+    () =>
+      !cards.value.length && !skeletonKeys.value.length && !isGenerating.value
   )
 
   const wait = (ms: number) =>
@@ -46,107 +60,25 @@
     return Math.random().toString(36).slice(2)
   }
 
-  type Blueprint = {
-    headline: string
-    question: string
-    options: string[]
-    answerIndex: number
-    explanation: string
-    difficulty: Flashcard["difficulty"]
+  const clearScheduledWork = () => {
+    skeletonTimers.forEach((timer) => clearTimeout(timer))
+    revealTimers.forEach((timer) => clearTimeout(timer))
+    skeletonTimers = []
+    revealTimers = []
   }
 
-  const BLUEPRINTS: Blueprint[] = [
-    {
-      headline: "Value-at-Risk Fundamentals",
-      question:
-        "Which Value-at-Risk (VaR) methodology best captures non-linear payoffs for a portfolio concentrated in options on {{topic}}?",
-      options: [
-        "Variance-Covariance (Delta-Normal) VaR with delta approximation",
-        "Historical Simulation VaR using equally weighted scenarios",
-        "Monte Carlo Simulation VaR with full revaluation",
-        "Cornish-Fisher Expansion applied to standardized returns"
-      ],
-      answerIndex: 2,
-      explanation:
-        "Full revaluation via Monte Carlo simulation flexibly models path-dependent and non-linear payoffs, which dominate option-heavy exposures. Variance-covariance assumes normality, historical simulation may under-sample extreme states, and Cornish-Fisher still relies on polynomial adjustments.",
-      difficulty: "Core"
-    },
-    {
-      headline: "Stress Testing Discipline",
-      question:
-        "A risk manager preparing the {{topic}} desk for regulatory CCAR stress testing wants to prioritize scenarios that are both severe and plausible. What is the most defensible starting point?",
-      options: [
-        "Replay the worst historical drawdown suffered by the desk",
-        "Construct hypothetical shocks calibrated to supervisory narratives",
-        "Optimize a scenario that maximizes VaR breach probability",
-        "Blend multiple historical events into a hybrid mega-scenario"
-      ],
-      answerIndex: 1,
-      explanation:
-        "Supervisory-designed narratives anchor CCAR, so aligning with regulator-provided macroeconomic and market trajectories gives the most defensible baseline before layering internal overlays. Sole reliance on history, optimization, or hybrids risks misalignment with regulatory expectations.",
-      difficulty: "Foundation"
-    },
-    {
-      headline: "Liquidity Coverage Metrics",
-      question:
-        "For the {{topic}} trading unit, which cash flow adjustment is required when calculating the Liquidity Coverage Ratio (LCR)?",
-      options: [
-        "Apply a 100% run-off rate to all Level 1 High Quality Liquid Assets",
-        "Use a 0% inflow cap for secured lending maturing within 30 days",
-        "Limit total cash inflows to 75% of total cash outflows over 30 days",
-        "Exclude derivative-related collateral calls from projected outflows"
-      ],
-      answerIndex: 2,
-      explanation:
-        "The Basel III LCR restricts recognized inflows to 75% of outflows, ensuring banks maintain sufficient High Quality Liquid Assets to absorb residual net outflows. Other statements misstate regulatory treatment of Level 1 assets, secured lending inflows, or collateral requirements.",
-      difficulty: "Foundation"
-    },
-    {
-      headline: "Counterparty Credit Analytics",
-      question:
-        "When estimating Potential Future Exposure (PFE) for the {{topic}} swap book, which modelling enhancement most improves tail fidelity under wrong-way risk?",
-      options: [
-        "Increase the confidence interval from 95% to 99.9%",
-        "Incorporate joint simulations of market factors and counterparty credit quality",
-        "Extend the margin period of risk to capture settlement delays",
-        "Calibrate exposure profiles with a longer historical window"
-      ],
-      answerIndex: 1,
-      explanation:
-        "Jointly modelling market drivers with counterparty credit quality captures adverse co-movements emblematic of wrong-way risk. Simply widening confidence levels, lengthening margin periods, or extending history fails to address correlation under stress.",
-      difficulty: "Core"
-    },
-    {
-      headline: "Operational Loss Controls",
-      question:
-        "The {{topic}} operations team logged a spike in near-miss incidents involving manual reconciliations. Which control redesign best aligns with FRM operational risk expectations?",
-      options: [
-        "Transition to detective controls with post-trade reconciliations",
-        "Introduce automated matching with dual-authorization overrides",
-        "Create an incident response playbook emphasizing rapid escalation",
-        "Increase capital allocation to the operational risk buffer"
-      ],
-      answerIndex: 1,
-      explanation:
-        "Automated matching augmented with maker-checker overrides reduces human error at source, consistent with FRM guidance on preventive controls. Solely detective monitoring, reactive playbooks, or capital buffers do not mitigate the process breakdown.",
-      difficulty: "Challenger"
-    },
-    {
-      headline: "Model Risk Governance",
-      question:
-        "Which governance action most strengthens the {{topic}} unit's annual model validation refresh for pricing analytics?",
-      options: [
-        "Rotate validation ownership between front office quants",
-        "Expand backtesting coverage with challenger models and override tracking",
-        "Shorten the validation memo to focus on headline metrics",
-        "Escalate all model adjustments above $1M to the board"
-      ],
-      answerIndex: 1,
-      explanation:
-        "Enhancing backtesting with challenger models plus transparent override inventories gives senior oversight the evidence needed to assess residual model risk. Rotations, shorter memos, or indiscriminate escalations dilute governance effectiveness.",
-      difficulty: "Core"
+  const spawnSkeletons = () => {
+    skeletonKeys.value = []
+    for (let index = 0; index < CARD_COUNT; index += 1) {
+      const timer = setTimeout(() => {
+        skeletonKeys.value = [...skeletonKeys.value, uid()]
+      }, index * SKELETON_STAGGER_MS)
+      skeletonTimers.push(timer)
     }
-  ]
+  }
+
+  const replaceTopic = (value: string, topic: string) =>
+    value.replaceAll("{{topic}}", topic)
 
   const buildCard = (seed: string, blueprint: Blueprint): Flashcard => {
     const topic = seed.trim().length ? seed.trim() : "market risk"
@@ -154,22 +86,22 @@
     return {
       id: uid(),
       topic,
-      headline: blueprint.headline,
-      question: blueprint.question.replace("{{topic}}", topic),
-      options: blueprint.options.map((text, optionIndex) => ({
+      headline: replaceTopic(blueprint.headline, topic),
+      question: replaceTopic(blueprint.question, topic),
+      options: blueprint.options.map((option) => ({
         id: uid(),
-        label: String.fromCharCode(65 + optionIndex),
-        text
+        label: option.label,
+        text: replaceTopic(option.text, topic)
       })),
-      answerId: String.fromCharCode(65 + blueprint.answerIndex),
-      explanation: blueprint.explanation,
+      answerId: blueprint.answerId,
+      explanation: replaceTopic(blueprint.explanation, topic),
       difficulty: blueprint.difficulty,
       regeneratePrompt: ""
     }
   }
 
   const createDeck = (seed: string): Flashcard[] => {
-    return BLUEPRINTS.slice(0, 5).map((blueprint, index) => {
+    return Array.from({ length: CARD_COUNT }, (_, index) => {
       const rotation =
         (index + Math.floor(Math.random() * BLUEPRINTS.length)) %
         BLUEPRINTS.length
@@ -186,17 +118,67 @@
       return
     }
 
+    const generationToken = uid()
+    activeGenerationToken = generationToken
+
+    clearScheduledWork()
+    cards.value = []
+    skeletonKeys.value = []
+    regeneratingCardId.value = null
     isGenerating.value = true
 
-    try {
-      await wait(10000)
-      cards.value = createDeck(seed)
-    } catch (error) {
-      generationError.value = "Could not sketch the deck. Try again."
-      console.error(error)
-    } finally {
-      isGenerating.value = false
-    }
+    spawnSkeletons()
+
+    void (async () => {
+      try {
+        await wait(SIMULATED_FETCH_DELAY_MS)
+
+        if (activeGenerationToken !== generationToken) {
+          return
+        }
+
+        const deck = createDeck(seed)
+
+        if (!deck.length) {
+          clearScheduledWork()
+          isGenerating.value = false
+          skeletonKeys.value = []
+          activeGenerationToken = null
+          return
+        }
+
+        deck.forEach((card, index) => {
+          const timer = setTimeout(() => {
+            if (activeGenerationToken !== generationToken) {
+              return
+            }
+
+            cards.value = [...cards.value, card]
+            skeletonKeys.value = skeletonKeys.value.slice(1)
+
+            if (index === deck.length - 1) {
+              clearScheduledWork()
+              isGenerating.value = false
+              skeletonKeys.value = []
+              activeGenerationToken = null
+            }
+          }, index * CARD_REVEAL_STAGGER_MS)
+
+          revealTimers.push(timer)
+        })
+      } catch (error) {
+        if (activeGenerationToken !== generationToken) {
+          return
+        }
+
+        generationError.value = "Could not sketch the deck. Try again."
+        console.error(error)
+        clearScheduledWork()
+        isGenerating.value = false
+        skeletonKeys.value = []
+        activeGenerationToken = null
+      }
+    })()
   }
 
   const handleCardUpdate = (nextCard: Flashcard) => {
@@ -234,6 +216,11 @@
       regeneratingCardId.value = null
     }
   }
+
+  onBeforeUnmount(() => {
+    clearScheduledWork()
+    activeGenerationToken = null
+  })
 </script>
 
 <template>
@@ -292,45 +279,24 @@
     </div>
 
     <div v-else class="grid gap-8">
-      <transition-group name="card-fade" tag="div" class="grid gap-8">
-        <AnkiCardEditor
-          v-for="(card, index) in cards"
-          :key="card.id"
-          :card="card"
-          :index="index"
-          :label-tone="labelTone"
-          :input-tone="inputTone"
-          :outline-button-tone="outlineButtonTone"
-          :footnote-tone="footnoteTone"
-          :regenerating-card-id="regeneratingCardId"
-          @update:card="handleCardUpdate"
-          @regenerate="handleRegenerateCard"
-        />
-      </transition-group>
+      <AnkiCardEditor
+        v-for="(card, index) in cards"
+        :key="card.id"
+        :card="card"
+        :index="index"
+        :label-tone="labelTone"
+        :input-tone="inputTone"
+        :outline-button-tone="outlineButtonTone"
+        :footnote-tone="footnoteTone"
+        :regenerating-card-id="regeneratingCardId"
+        @update:card="handleCardUpdate"
+        @regenerate="handleRegenerateCard"
+      />
+      <AnkiCardSkeleton
+        v-for="(skeletonKey, skeletonIndex) in skeletonKeys"
+        :key="`skeleton-${skeletonKey}`"
+        :index="skeletonIndex"
+      />
     </div>
   </div>
 </template>
-
-<style scoped>
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity 0.25s ease;
-  }
-  .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
-  }
-
-  .card-fade-enter-active,
-  .card-fade-leave-active {
-    transition: all 0.35s ease;
-  }
-  .card-fade-enter-from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  .card-fade-leave-to {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
-</style>
