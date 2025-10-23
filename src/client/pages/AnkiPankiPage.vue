@@ -1,4 +1,5 @@
 <script setup lang="ts">
+  import { Download } from "lucide-vue-next"
   import { Motion } from "motion-v"
   import {
     computed,
@@ -14,6 +15,7 @@
   import AnkiCardSkeleton from "@/client/components/fun/AnkiCardSkeleton.vue"
   import AnkiTopicSeedForm from "@/client/components/fun/AnkiTopicSeedForm.vue"
   import GenerateMoreChip from "@/client/components/fun/GenerateMoreChip.vue"
+  import { Button } from "@/client/components/ui/button"
   import {
     Carousel,
     type CarouselApi,
@@ -26,6 +28,13 @@
     RadioGroup,
     RadioGroupItem
   } from "@/client/components/ui/radio-group"
+  import Spinner from "@/client/components/ui/spinner/Spinner.vue"
+  import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger
+  } from "@/client/components/ui/tooltip"
   import { type Blueprint, BLUEPRINTS } from "@/client/lib/ankiBlueprints"
   import type { Flashcard } from "@/shared/types"
 
@@ -34,13 +43,14 @@
   const MAX_CARD_COUNT = 10
   const DEFAULT_CARD_COUNT = 5
   const SKELETON_STAGGER_MS = 120
-  const SIMULATED_FETCH_DELAY_MS = 10000
+  const SIMULATED_FETCH_DELAY_MS = 1000
   const CARD_REVEAL_STAGGER_MS = 220
 
   const topicSeed = ref("")
   const cardCount = ref(DEFAULT_CARD_COUNT)
   const cards = ref<Flashcard[]>([])
   const isGenerating = ref(false)
+  const isExporting = ref(false)
   const generationError = ref<string | null>(null)
   const regeneratingCardId = ref<string | null>(null)
   const isSeedFormOpen = ref(true)
@@ -136,6 +146,10 @@
 
   const chipDisabled = computed(
     () => isGenerating.value || skeletonKeys.value.length > 0
+  )
+
+  const exportDisabled = computed(
+    () => isExporting.value || isGenerating.value || cards.value.length === 0
   )
 
   const formatTopic = (value: string) => {
@@ -357,6 +371,174 @@
       explanation: replaceTopic(blueprint.explanation, topic),
       difficulty: blueprint.difficulty,
       regeneratePrompt: ""
+    }
+  }
+
+  const slugify = (value: string) =>
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .replace(/-+/g, "-")
+      .slice(0, 80)
+
+  const sanitizeForTsv = (value: string | null | undefined) => {
+    if (!value) {
+      return ""
+    }
+
+    return value.replace(/\r?\n/g, "<br>").replace(/\t/g, " ").trim()
+  }
+
+  const formatOptionsList = (options: Flashcard["options"]) => {
+    if (!options?.length) {
+      return ""
+    }
+
+    return options
+      .map((option) => `${option.label}. ${option.text}`)
+      .join("<br>")
+  }
+
+  const buildFrontField = (card: Flashcard) => {
+    const segments: string[] = []
+
+    const headline = card.headline.trim()
+    if (headline.length) {
+      segments.push(headline)
+    }
+
+    const question = card.question.trim()
+    if (question.length) {
+      segments.push(question)
+    }
+
+    const optionsList = formatOptionsList(card.options)
+    if (optionsList.length) {
+      segments.push(optionsList)
+    }
+
+    return sanitizeForTsv(segments.join("<br><br>"))
+  }
+
+  const buildBackField = (card: Flashcard) => {
+    const segments: string[] = []
+    const answerOption = card.options.find(
+      (option) => option.id === card.answerId || option.label === card.answerId
+    )
+
+    if (answerOption) {
+      segments.push(
+        `Answer: ${answerOption.label}. ${answerOption.text}`.trim()
+      )
+    } else {
+      const fallbackAnswerId = card.answerId.trim()
+      if (fallbackAnswerId.length) {
+        segments.push(`Answer: ${fallbackAnswerId}`)
+      }
+    }
+
+    const explanation = card.explanation.trim()
+    if (explanation.length) {
+      segments.push(explanation)
+    }
+
+    return sanitizeForTsv(segments.join("<br><br>"))
+  }
+
+  const buildExtraField = (card: Flashcard) => {
+    const segments: string[] = []
+
+    const topic = card.topic.trim()
+    if (topic.length) {
+      segments.push(`Topic: ${topic}`)
+    }
+
+    if (card.difficulty) {
+      segments.push(`Difficulty: ${card.difficulty}`)
+    }
+
+    return sanitizeForTsv(segments.join("<br>"))
+  }
+
+  const buildTagField = (card: Flashcard) => {
+    const tags: string[] = []
+    const topicTag = slugify(card.topic.trim())
+
+    if (topicTag.length) {
+      tags.push(topicTag)
+    }
+
+    if (card.difficulty) {
+      tags.push(card.difficulty.toLowerCase())
+    }
+
+    return tags.join(" ")
+  }
+
+  const buildTsvDeck = (deck: Flashcard[]) =>
+    deck
+      .map((card) =>
+        [
+          buildFrontField(card),
+          buildBackField(card),
+          buildExtraField(card),
+          sanitizeForTsv(buildTagField(card))
+        ].join("\t")
+      )
+      .join("\n")
+
+  const buildExportFilename = () => {
+    const base = lastTopic.value?.trim() || "anki-panki"
+    const topicSlug = slugify(base) || "anki-panki"
+    const count = cards.value.length || DEFAULT_CARD_COUNT
+    const dateStamp = new Date().toISOString().slice(0, 10)
+    return `${topicSlug}-${count}-cards-${dateStamp}.tsv`
+  }
+
+  const handleExportTsv = () => {
+    if (exportDisabled.value) {
+      return
+    }
+
+    isExporting.value = true
+
+    let objectUrl: string | null = null
+    let anchor: HTMLAnchorElement | null = null
+
+    try {
+      if (typeof window === "undefined") {
+        return
+      }
+
+      const tsvPayload = buildTsvDeck(cards.value)
+
+      if (!tsvPayload.trim().length) {
+        return
+      }
+
+      const blob = new Blob([tsvPayload], {
+        type: "text/tab-separated-values;charset=utf-8"
+      })
+      objectUrl = URL.createObjectURL(blob)
+      anchor = document.createElement("a")
+      anchor.href = objectUrl
+      anchor.download = buildExportFilename()
+      anchor.style.display = "none"
+      document.body.appendChild(anchor)
+      anchor.click()
+      document.body.removeChild(anchor)
+      anchor = null
+    } finally {
+      if (anchor && anchor.parentNode) {
+        anchor.parentNode.removeChild(anchor)
+      }
+
+      if (objectUrl) {
+        URL.revokeObjectURL(objectUrl)
+      }
+
+      isExporting.value = false
     }
   }
 
@@ -605,14 +787,32 @@
           @close="closeSeedForm"
         />
       </div>
-      <div v-else-if="showGenerateChip" class="mb-1 flex justify-end">
-        <GenerateMoreChip
-          :label="chipLabel"
-          :description="chipDescription"
-          :disabled="chipDisabled"
-          :loading="isGenerating"
-          @click="openSeedForm"
-        />
+      <div v-else-if="showGenerateChip" class="mb-1 flex justify-end gap-2">
+        <TooltipProvider :delay-duration="150">
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <Button
+                variant="outline"
+                type="button"
+                :disabled="exportDisabled"
+                @click="handleExportTsv"
+              >
+                <Spinner v-if="isExporting" class="size-4" />
+                <Download v-else class="size-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Export</p>
+            </TooltipContent>
+          </Tooltip>
+          <GenerateMoreChip
+            :label="chipLabel"
+            :description="chipDescription"
+            :disabled="chipDisabled"
+            :loading="isGenerating"
+            @click="openSeedForm"
+          />
+        </TooltipProvider>
       </div>
     </div>
 

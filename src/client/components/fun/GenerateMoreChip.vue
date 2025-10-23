@@ -3,12 +3,7 @@
   import { computed } from "vue"
 
   import Button from "../ui/button/Button.vue"
-  import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger
-  } from "../ui/tooltip"
+  import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip"
 
   const props = withDefaults(
     defineProps<{
@@ -42,26 +37,15 @@
 </script>
 
 <template>
-  <TooltipProvider :delay-duration="150">
-    <Tooltip>
-      <TooltipTrigger as-child>
-        <Button :disabled="isDisabled" variant="outline" @click="handleClick">
-          <RefreshCcw v-if="!loading" class="size-4" />
-          <Loader2 v-else class="size-4 animate-spin" />
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>Create more</p>
-      </TooltipContent>
-    </Tooltip>
-
-    <Tooltip>
-      <TooltipTrigger as-child>
-        <Button variant="outline" disabled> Export </Button>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>Export</p>
-      </TooltipContent>
-    </Tooltip>
-  </TooltipProvider>
+  <Tooltip>
+    <TooltipTrigger as-child>
+      <Button :disabled="isDisabled" variant="outline" @click="handleClick">
+        <RefreshCcw v-if="!loading" class="size-4" />
+        <Loader2 v-else class="size-4 animate-spin" />
+      </Button>
+    </TooltipTrigger>
+    <TooltipContent>
+      <p>Create more</p>
+    </TooltipContent>
+  </Tooltip>
 </template>

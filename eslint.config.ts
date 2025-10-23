@@ -42,5 +42,11 @@ export default defineConfig([
     plugins: { css },
     language: "css/css",
     extends: ["css/recommended"]
+  },
+  {
+    files: ["src/client/components/ui/**/*.{vue,ts,js}"],
+    rules: {
+      "vue/multi-word-component-names": "off"
+    }
   }
 ])
