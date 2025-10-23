@@ -34,7 +34,35 @@
     scrollPrev
   })
 
+  // Skip carousel shortcuts when focus is inside editable controls.
+  function shouldIgnoreKeydown(event: KeyboardEvent) {
+    if (event.defaultPrevented)
+      return true
+
+    const target = event.target
+
+    if (!(target instanceof HTMLElement))
+      return false
+
+    if (target === event.currentTarget)
+      return false
+
+    if (target.isContentEditable)
+      return true
+
+    const interactiveSelector =
+      'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]'
+
+    return (
+      target.matches(interactiveSelector) ||
+      target.closest(interactiveSelector) !== null
+    )
+  }
+
   function onKeyDown(event: KeyboardEvent) {
+    if (shouldIgnoreKeydown(event))
+      return
+
     const prevKey = props.orientation === "vertical" ? "ArrowUp" : "ArrowLeft"
     const nextKey =
       props.orientation === "vertical" ? "ArrowDown" : "ArrowRight"
