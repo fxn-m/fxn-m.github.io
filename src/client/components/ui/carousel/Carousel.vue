@@ -56,7 +56,12 @@
 <template>
   <div
     data-slot="carousel"
-    :class="cn('relative', props.class)"
+    :class="
+      cn(
+        'relative outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0',
+        props.class
+      )
+    "
     role="region"
     aria-roledescription="carousel"
     tabindex="0"
