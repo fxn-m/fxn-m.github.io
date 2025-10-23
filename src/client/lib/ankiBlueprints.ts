@@ -1,8 +1,6 @@
 import type { Flashcard } from "@/shared/types"
 
-export type Blueprint = Flashcard
-
-export const BLUEPRINTS: Blueprint[] = [
+export const BLUEPRINTS: Flashcard[] = [
   {
     id: "blueprint-var-fundamentals",
     topic: "{{topic}}",
@@ -13,8 +11,7 @@ export const BLUEPRINTS: Blueprint[] = [
       {
         id: "blueprint-var-fundamentals-option-a",
         label: "A",
-        text:
-          "Variance-Covariance (Delta-Normal) VaR with delta approximation"
+        text: "Variance-Covariance (Delta-Normal) VaR with delta approximation"
       },
       {
         id: "blueprint-var-fundamentals-option-b",
@@ -53,20 +50,17 @@ export const BLUEPRINTS: Blueprint[] = [
       {
         id: "blueprint-stress-testing-discipline-option-b",
         label: "B",
-        text:
-          "Construct hypothetical shocks calibrated to supervisory narratives"
+        text: "Construct hypothetical shocks calibrated to supervisory narratives"
       },
       {
         id: "blueprint-stress-testing-discipline-option-c",
         label: "C",
-        text:
-          "Optimize a scenario that maximizes VaR breach probability"
+        text: "Optimize a scenario that maximizes VaR breach probability"
       },
       {
         id: "blueprint-stress-testing-discipline-option-d",
         label: "D",
-        text:
-          "Blend multiple historical events into a hybrid mega-scenario"
+        text: "Blend multiple historical events into a hybrid mega-scenario"
       }
     ],
     answerId: "B",
@@ -85,26 +79,22 @@ export const BLUEPRINTS: Blueprint[] = [
       {
         id: "blueprint-liquidity-coverage-metrics-option-a",
         label: "A",
-        text:
-          "Apply a 100% run-off rate to all Level 1 High Quality Liquid Assets"
+        text: "Apply a 100% run-off rate to all Level 1 High Quality Liquid Assets"
       },
       {
         id: "blueprint-liquidity-coverage-metrics-option-b",
         label: "B",
-        text:
-          "Use a 0% inflow cap for secured lending maturing within 30 days"
+        text: "Use a 0% inflow cap for secured lending maturing within 30 days"
       },
       {
         id: "blueprint-liquidity-coverage-metrics-option-c",
         label: "C",
-        text:
-          "Limit total cash inflows to 75% of total cash outflows over 30 days"
+        text: "Limit total cash inflows to 75% of total cash outflows over 30 days"
       },
       {
         id: "blueprint-liquidity-coverage-metrics-option-d",
         label: "D",
-        text:
-          "Exclude derivative-related collateral calls from projected outflows"
+        text: "Exclude derivative-related collateral calls from projected outflows"
       }
     ],
     answerId: "C",
@@ -128,8 +118,7 @@ export const BLUEPRINTS: Blueprint[] = [
       {
         id: "blueprint-counterparty-credit-analytics-option-b",
         label: "B",
-        text:
-          "Incorporate joint simulations of market factors and counterparty credit quality"
+        text: "Incorporate joint simulations of market factors and counterparty credit quality"
       },
       {
         id: "blueprint-counterparty-credit-analytics-option-c",
@@ -163,20 +152,17 @@ export const BLUEPRINTS: Blueprint[] = [
       {
         id: "blueprint-operational-loss-controls-option-b",
         label: "B",
-        text:
-          "Introduce automated matching with dual-authorization overrides"
+        text: "Introduce automated matching with dual-authorization overrides"
       },
       {
         id: "blueprint-operational-loss-controls-option-c",
         label: "C",
-        text:
-          "Create an incident response playbook emphasizing rapid escalation"
+        text: "Create an incident response playbook emphasizing rapid escalation"
       },
       {
         id: "blueprint-operational-loss-controls-option-d",
         label: "D",
-        text:
-          "Increase capital allocation to the operational risk buffer"
+        text: "Increase capital allocation to the operational risk buffer"
       }
     ],
     answerId: "B",
@@ -200,20 +186,17 @@ export const BLUEPRINTS: Blueprint[] = [
       {
         id: "blueprint-model-risk-governance-option-b",
         label: "B",
-        text:
-          "Expand backtesting coverage with challenger models and override tracking"
+        text: "Expand backtesting coverage with challenger models and override tracking"
       },
       {
         id: "blueprint-model-risk-governance-option-c",
         label: "C",
-        text:
-          "Shorten the validation memo to focus on headline metrics"
+        text: "Shorten the validation memo to focus on headline metrics"
       },
       {
         id: "blueprint-model-risk-governance-option-d",
         label: "D",
-        text:
-          "Escalate all model adjustments above $1M to the board"
+        text: "Escalate all model adjustments above $1M to the board"
       }
     ],
     answerId: "B",

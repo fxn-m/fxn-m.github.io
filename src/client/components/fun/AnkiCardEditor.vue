@@ -11,6 +11,10 @@
   } from "@/client/components/ui/card"
   import { Input } from "@/client/components/ui/input"
   import { Label } from "@/client/components/ui/label"
+  import {
+    RadioGroup,
+    RadioGroupItem
+  } from "@/client/components/ui/radio-group"
   import { Textarea } from "@/client/components/ui/textarea"
   import type { Flashcard } from "@/shared/types"
 
@@ -80,8 +84,12 @@
     updateCardField("regeneratePrompt", String(value))
   }
 
-  const handleAnswerInput = (value: string | number) => {
-    updateCardField("answerId", String(value).toUpperCase())
+  const handleAnswerChange = (value: string | null) => {
+    if (!value) {
+      return
+    }
+
+    updateCardField("answerId", value.toUpperCase())
   }
 
   const handleRegenerate = () => {
@@ -90,7 +98,7 @@
 </script>
 
 <template>
-  <Card :class="cardTone">
+  <Card :class="[cardTone, isRegenerating ? 'card-outline-pulse' : '']">
     <CardHeader :class="cardHeaderTone">
       <CardTitle :class="cardTitleTone"> Card {{ index + 1 }} </CardTitle>
       <CardDescription :class="cardDescriptionTone">
@@ -131,14 +139,32 @@
         <Label :for="`answer-${card.id}`" :class="labelTone">
           Correct Option
         </Label>
-        <Input
+        <RadioGroup
           :id="`answer-${card.id}`"
           :model-value="card.answerId"
-          maxlength="1"
-          placeholder="A"
-          :class="[inputTone, 'uppercase']"
-          @update:model-value="handleAnswerInput"
-        />
+          class="grid w-full max-w-[180px] grid-cols-4 gap-2"
+          @update:model-value="handleAnswerChange"
+        >
+          <div v-for="option in card.options" :key="option.id" class="contents">
+            <RadioGroupItem
+              :id="`answer-${card.id}-${option.id}`"
+              :value="option.label"
+              :aria-label="`Option ${option.label}`"
+              class="peer sr-only"
+            />
+            <Label
+              :for="`answer-${card.id}-${option.id}`"
+              class="flex aspect-square items-center justify-center rounded-xl border font-semibold uppercase transition-all duration-200 ease-out peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-neutral-800 dark:peer-focus-visible:ring-neutral-200"
+              :class="
+                card.answerId === option.label
+                  ? 'bg-neutral-900 text-neutral-50 dark:bg-neutral-50 dark:text-neutral-900 border-neutral-900 dark:border-neutral-50 shadow-[0_0_0_4px_rgba(59,130,246,0.2)]'
+                  : 'bg-white text-neutral-500 dark:bg-neutral-950 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600'
+              "
+            >
+              {{ option.label }}
+            </Label>
+          </div>
+        </RadioGroup>
       </div>
       <div class="flex flex-col gap-2">
         <Label :for="`rationale-${card.id}`" :class="labelTone">
@@ -182,3 +208,26 @@
     </CardContent>
   </Card>
 </template>
+
+<style scoped>
+  .card-outline-pulse {
+    animation: card-outline-pulse 1.3s ease-in-out infinite;
+    box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.35);
+  }
+
+  @keyframes card-outline-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.35);
+    }
+    50% {
+      box-shadow: 0 0 0 6px rgba(79, 70, 229, 0.18);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-outline-pulse {
+      animation: none;
+    }
+  }
+</style>
