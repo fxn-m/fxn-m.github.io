@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { X } from "lucide-vue-next"
+  import { Minus, Plus, X } from "lucide-vue-next"
   import { computed } from "vue"
 
   import { Button } from "@/client/components/ui/button"
@@ -10,6 +10,9 @@
     defineProps<{
       modelValue: string
       isGenerating?: boolean
+      cardCount?: number
+      minCount?: number
+      maxCount?: number
       error?: string | null
       inputTone: string
       labelTone: string
@@ -18,13 +21,21 @@
     }>(),
     {
       isGenerating: false,
+      cardCount: 5,
+      minCount: 1,
+      maxCount: 10,
       error: null,
       showClose: false,
       autoFocus: false
     }
   )
 
-  const emit = defineEmits(["update:modelValue", "submit", "close"])
+  const emit = defineEmits<{
+    (e: "update:modelValue", payload: string): void
+    (e: "update:cardCount", payload: number): void
+    (e: "submit"): void
+    (e: "close"): void
+  }>()
 
   const topic = computed({
     get: () => props.modelValue,
@@ -33,9 +44,48 @@
     }
   })
 
-  const buttonLabel = computed(() =>
-    props.isGenerating ? "Drafting..." : "Generate 5 Cards"
+  const clampCount = (value: number) =>
+    Math.min(Math.max(value, props.minCount), props.maxCount)
+
+  const count = computed(() => clampCount(props.cardCount))
+
+  const isDecrementDisabled = computed(
+    () => props.isGenerating || count.value <= props.minCount
   )
+
+  const isIncrementDisabled = computed(
+    () => props.isGenerating || count.value >= props.maxCount
+  )
+
+  const buttonLabel = computed(() => {
+    if (props.isGenerating) {
+      return "Drafting..."
+    }
+
+    const total = count.value
+    const suffix = total === 1 ? "Card" : "Cards"
+    return `Generate ${total} ${suffix}`
+  })
+
+  const emitCount = (value: number) => {
+    emit("update:cardCount", clampCount(value))
+  }
+
+  const handleIncrement = () => {
+    if (isIncrementDisabled.value) {
+      return
+    }
+
+    emitCount(count.value + 1)
+  }
+
+  const handleDecrement = () => {
+    if (isDecrementDisabled.value) {
+      return
+    }
+
+    emitCount(count.value - 1)
+  }
 
   const handleSubmit = () => {
     if (props.isGenerating) {
@@ -56,7 +106,7 @@
 
 <template>
   <section
-    class="relative flex items-end gap-3 bg-white/80 p-10 text-neutral-900 transition-all duration-500 ease-out dark:bg-inherit dark:text-neutral-100"
+    class="relative flex flex-wrap items-center gap-4 bg-white/80 p-10 text-neutral-900 transition-all duration-500 ease-out dark:bg-inherit dark:text-neutral-100 md:flex-nowrap md:items-end"
     @keydown.esc.prevent.stop="handleClose"
   >
     <Button
@@ -70,7 +120,7 @@
       <X class="size-4" />
       <span class="sr-only">Close topic input</span>
     </Button>
-    <div class="grid flex-1 gap-3">
+    <div class="grid flex-1 gap-3 min-w-[240px]">
       <div class="flex justify-between">
         <Label for="topic-seed" :class="labelTone">Input Topic</Label>
         <p v-if="error" class="text-xs text-rose-500 dark:text-rose-400">
@@ -90,13 +140,37 @@
       />
     </div>
 
-    <Button
-      variant="default"
-      :disabled="isGenerating"
-      type="button"
-      @click="handleSubmit"
-    >
-      {{ buttonLabel }}
-    </Button>
+    <div class="flex items-center gap-2 md:self-end">
+      <Button
+        variant="default"
+        :disabled="isGenerating"
+        type="button"
+        @click="handleSubmit"
+      >
+        {{ buttonLabel }}
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        type="button"
+        class="size-9"
+        :disabled="isDecrementDisabled"
+        @click="handleDecrement"
+      >
+        <Minus class="size-4" />
+        <span class="sr-only">Decrease card total</span>
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        type="button"
+        class="size-9"
+        :disabled="isIncrementDisabled"
+        @click="handleIncrement"
+      >
+        <Plus class="size-4" />
+        <span class="sr-only">Increase card total</span>
+      </Button>
+    </div>
   </section>
 </template>

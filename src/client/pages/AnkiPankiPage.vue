@@ -30,12 +30,15 @@
   import type { Flashcard } from "@/shared/types"
 
   const API_KEY_STORAGE_KEY = "ankipanki:openai-api-key"
-  const CARD_COUNT = 5
+  const MIN_CARD_COUNT = 1
+  const MAX_CARD_COUNT = 10
+  const DEFAULT_CARD_COUNT = 5
   const SKELETON_STAGGER_MS = 120
   const SIMULATED_FETCH_DELAY_MS = 10000
   const CARD_REVEAL_STAGGER_MS = 220
 
   const topicSeed = ref("")
+  const cardCount = ref(DEFAULT_CARD_COUNT)
   const cards = ref<Flashcard[]>([])
   const isGenerating = ref(false)
   const generationError = ref<string | null>(null)
@@ -67,7 +70,9 @@
   })
 
   const slideCount = computed(() => slides.value.length)
-  const totalDotCount = CARD_COUNT
+  const totalDotCount = computed(() =>
+    Math.max(cardCount.value, slideCount.value || cardCount.value)
+  )
 
   const activeSlideValue = computed<string>({
     get: () => activeSlideIndex.value.toString(),
@@ -322,7 +327,9 @@
 
   const spawnSkeletons = () => {
     skeletonKeys.value = []
-    for (let index = 0; index < CARD_COUNT; index += 1) {
+    const targetCount = Math.max(cardCount.value, MIN_CARD_COUNT)
+
+    for (let index = 0; index < targetCount; index += 1) {
       const timer = setTimeout(() => {
         skeletonKeys.value = [...skeletonKeys.value, uid()]
       }, index * SKELETON_STAGGER_MS)
@@ -354,7 +361,7 @@
   }
 
   const createDeck = (seed: string): Flashcard[] => {
-    return Array.from({ length: CARD_COUNT }, (_, index) => {
+    return Array.from({ length: cardCount.value }, (_, index) => {
       const rotation =
         (index + Math.floor(Math.random() * BLUEPRINTS.length)) %
         BLUEPRINTS.length
@@ -584,10 +591,13 @@
       <div v-if="renderSeedForm">
         <AnkiTopicSeedForm
           v-model="topicSeed"
+          v-model:card-count="cardCount"
           :is-generating="isGenerating"
           :error="generationError"
           :label-tone="labelTone"
           :input-tone="inputTone"
+          :min-count="MIN_CARD_COUNT"
+          :max-count="MAX_CARD_COUNT"
           :show-close="canCloseSeedForm"
           :auto-focus="isSeedFormOpen && cards.length > 0"
           class="mb-2"
