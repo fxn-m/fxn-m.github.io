@@ -1,0 +1,34 @@
+{
+  "name": "fxn-m-api",
+  "main": "src/server/worker.ts",
+  "compatibility_date": "2025-10-25",
+  "compatibility_flags": ["nodejs_compat"],
+  "kv_namespaces": [
+    {
+      "binding": "READING_LIST_KV",
+      "id": "TODO_READING_LIST_KV_PROD",
+      "preview_id": "TODO_READING_LIST_KV_DEV"
+    }
+  ],
+  "queues": {
+    "producers": [
+      {
+        "binding": "READING_LIST_QUEUE",
+        "queue": "reading-list-queue"
+      }
+    ],
+    "consumers": [
+      {
+        "queue": "reading-list-queue",
+        "script_name": "fxn-m-api"
+      }
+    ]
+  },
+  "triggers": {
+    "crons": ["0 * * * *"]
+  },
+  "env": {
+    "production": {},
+    "staging": {}
+  }
+}

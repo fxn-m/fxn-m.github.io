@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai"
+import { createOpenAI } from "@ai-sdk/openai"
 import { Client } from "@notionhq/client"
 import { generateObject, generateText } from "ai"
 import { NotionConverter } from "notion-to-md"
@@ -12,10 +12,19 @@ import {
   type NotionResponse
 } from "@/shared/types/notion"
 
-import env from "../config/env"
-import { writeReadingListToFile } from "../utils/fileUtils"
+import type { AppConfig } from "../config/appConfig"
+import type { KVNamespace } from "../types/cloudflare"
+import { writeReadingListToCache } from "../utils/readingListStore"
 
-// Blog -------------------------------------------------------
+const createNotionClient = (config: AppConfig) =>
+  new Client({
+    auth: config.notionApiKey
+  })
+
+const createOpenAIProvider = (config: AppConfig) =>
+  createOpenAI({
+    apiKey: config.openaiApiKey
+  })
 
 const DatabaseResponseSchema = z.object({
   id: z.string(),
@@ -32,11 +41,11 @@ const DatabaseResponseSchema = z.object({
   })
 })
 
-export const getReadingList = async (): Promise<NotionResponse[]> => {
+export const getReadingList = async (
+  config: AppConfig
+): Promise<NotionResponse[]> => {
   console.log("Fetching reading list from Notion...")
-  const notion = new Client({
-    auth: env.notionApiKey
-  })
+  const notion = createNotionClient(config)
 
   let readingList: NotionResponse[] = []
   let hasNextPage = true
@@ -44,7 +53,7 @@ export const getReadingList = async (): Promise<NotionResponse[]> => {
 
   while (hasNextPage) {
     const response = await notion.dataSources.query({
-      data_source_id: env.notionReadingListDataSourceId ?? "",
+      data_source_id: config.notionReadingListDataSourceId,
       filter: {
         or: [
           {
@@ -66,10 +75,17 @@ export const getReadingList = async (): Promise<NotionResponse[]> => {
   return readingList
 }
 
-export const getBlogPostById = async (blockId: string) => {
-  const notion = new Client({
-    auth: env.notionApiKey
-  })
+export const refreshReadingListCache = async (
+  config: AppConfig,
+  kv: KVNamespace
+): Promise<NotionResponse[]> => {
+  const readingList = await getReadingList(config)
+  await writeReadingListToCache(kv, readingList)
+  return readingList
+}
+
+export const getBlogPostById = async (config: AppConfig, blockId: string) => {
+  const notion = createNotionClient(config)
 
   const buffer: Record<string, string> = {}
   const bufferExporter = new DefaultExporter({
@@ -96,11 +112,10 @@ export const getBlogPostById = async (blockId: string) => {
 }
 
 export const getBlogPosts = async (
+  config: AppConfig,
   isDevelopment: boolean
 ): Promise<NotionResponse[]> => {
-  const notion = new Client({
-    auth: env.notionApiKey
-  })
+  const notion = createNotionClient(config)
 
   let blogPosts: NotionResponse[] = []
   let hasNextPage = true
@@ -108,7 +123,7 @@ export const getBlogPosts = async (
 
   while (hasNextPage) {
     const response = await notion.dataSources.query({
-      data_source_id: env.notionBlogDataSourceId ?? "",
+      data_source_id: config.notionBlogDataSourceId,
       filter: isDevelopment
         ? {
             or: [
@@ -143,8 +158,6 @@ export const getBlogPosts = async (
   return blogPosts
 }
 
-// TabOverflow -------------------------------------------------------
-
 const enrichedReadingListItemSchema = z.object({
   summary: z.string(),
   categories: z.array(z.string()),
@@ -178,10 +191,8 @@ const PagePropertiesSchema = z.object({
   })
 })
 
-const getPagePropertiesById = async (pageId: string) => {
-  const notion = new Client({
-    auth: env.notionApiKey
-  })
+const getPagePropertiesById = async (config: AppConfig, pageId: string) => {
+  const notion = createNotionClient(config)
 
   const response = await notion.pages.retrieve({
     page_id: pageId
@@ -198,10 +209,11 @@ const getPagePropertiesById = async (pageId: string) => {
   return relevantProperties
 }
 
-const extractCategoriesFromDatabase = async (databaseId: string) => {
-  const notion = new Client({
-    auth: env.notionApiKey
-  })
+const extractCategoriesFromDatabase = async (
+  config: AppConfig,
+  databaseId: string
+) => {
+  const notion = createNotionClient(config)
   const response = await notion.databases.retrieve({
     database_id: databaseId
   })
@@ -213,13 +225,13 @@ const extractCategoriesFromDatabase = async (databaseId: string) => {
   return categories
 }
 
-const enrich = async ({
-  props,
-  categories
-}: {
+type EnrichInput = {
   props: PageProperties
   categories: string[]
-}) => {
+  openai: ReturnType<typeof createOpenAIProvider>
+}
+
+const enrich = async ({ props, categories, openai }: EnrichInput) => {
   const { text } = await generateText({
     model: openai.responses("gpt-4o"),
     prompt: `
@@ -242,7 +254,6 @@ const enrich = async ({
     }
   })
 
-  // ts-ignore
   const { object } = await generateObject({
     model: openai.responses("gpt-4o"),
     prompt: `Extract the summary, categories, author, and reading time estimate from the following text: ${text}`,
@@ -260,13 +271,12 @@ const enrich = async ({
 }
 
 const updateNotionPage = async (
+  config: AppConfig,
   pageId: string,
   enrichedItem: z.infer<typeof enrichedReadingListItemSchema>,
   created: string
 ) => {
-  const notion = new Client({
-    auth: env.notionApiKey
-  })
+  const notion = createNotionClient(config)
 
   await notion.pages.update({
     page_id: pageId,
@@ -309,39 +319,50 @@ const updateNotionPage = async (
 }
 
 export const enrichReadingListItem = async (
+  config: AppConfig,
+  kv: KVNamespace,
   pageId: string,
   databaseId: string
 ) => {
-  const props = await getPagePropertiesById(pageId)
-  const categories = await extractCategoriesFromDatabase(databaseId)
-  const enrichedItem = await enrich({ props, categories })
+  const openai = createOpenAIProvider(config)
+  const props = await getPagePropertiesById(config, pageId)
+  const categories = await extractCategoriesFromDatabase(config, databaseId)
+  const enrichedItem = await enrich({
+    props,
+    categories,
+    openai
+  })
   console.log("Enriched item:", enrichedItem)
-  await updateNotionPage(pageId, enrichedItem, props.created)
+  await updateNotionPage(config, pageId, enrichedItem, props.created)
   console.log("Updated Notion page with enriched item")
-  await writeReadingListToFile()
-  console.log("Updated reading list file")
+  await refreshReadingListCache(config, kv)
+  console.log("Updated reading list cache")
 }
 
-export const enrichAllReadingListItems = async () => {
-  const readingList = await getReadingList()
+export const enrichAllReadingListItems = async (
+  config: AppConfig,
+  kv: KVNamespace
+) => {
+  const readingList = await getReadingList(config)
   const filteredReadingList = readingList.filter((item) =>
     isPageObjectResponse(item)
   )
 
   const categories = await extractCategoriesFromDatabase(
-    env.notionReadingListDataSourceId ?? ""
+    config,
+    config.notionReadingListDataSourceId
   )
-  // Set the concurrency limit (5 in this example)
+  const openai = createOpenAIProvider(config)
   const limit = pLimit(5)
 
   await Promise.all(
     filteredReadingList.map((item) =>
       limit(async () => {
         const pageName =
-          item.properties.Name.type === "title"
+          item.properties.Name.type === "title" &&
+          item.properties.Name.title.length > 0
             ? item.properties.Name.title[0].plain_text
             : ""
-        // Check if enriched properties already exist: if Summary.rich_text has any content, skip processing
         if (
           item.properties.Summary.type === "rich_text" &&
           item.properties.Summary.rich_text &&
@@ -365,12 +386,18 @@ export const enrichAllReadingListItems = async () => {
         console.log(`Enriching ${pageName}...`)
 
         try {
-          const props = await getPagePropertiesById(item.id)
+          const props = await getPagePropertiesById(config, item.id)
           const enrichedItem = await enrich({
             props,
-            categories
+            categories,
+            openai
           })
-          await updateNotionPage(item.id, enrichedItem, item.created_time)
+          await updateNotionPage(
+            config,
+            item.id,
+            enrichedItem,
+            item.created_time
+          )
         } catch (error) {
           console.error(`Error enriching ${pageName}:`, error)
         }
@@ -379,4 +406,6 @@ export const enrichAllReadingListItems = async () => {
       })
     )
   )
+
+  await refreshReadingListCache(config, kv)
 }

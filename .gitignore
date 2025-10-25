@@ -36,3 +36,5 @@ desktop.ini
 .vscode
 
 src/server/readingList.json
+
+.wrangler

@@ -1,13 +1,13 @@
-import env from "@/server/config/env"
+import type { AppConfig } from "../config/appConfig"
 
-export const triggerRebuild = async () => {
+export const triggerRebuild = async (config: AppConfig) => {
   console.log("Triggering rebuild...")
   const ghResp = await fetch(
     "https://api.github.com/repos/fxn-m/fxn-m.github.io/actions/workflows/build-blog.yml/dispatches",
     {
       method: "POST",
       headers: {
-        Authorization: `token ${env.githubRepoDispatchToken}`,
+        Authorization: `token ${config.githubRepoDispatchToken}`,
         Accept: "application/vnd.github+json"
       },
       body: JSON.stringify({
