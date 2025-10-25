@@ -16,14 +16,20 @@ import type { AppConfig } from "../config/appConfig"
 import type { KVNamespace } from "../types/cloudflare"
 import { writeReadingListToCache } from "../utils/readingListStore"
 
+const boundFetch: typeof fetch = (...args) => {
+  return globalThis.fetch(...args)
+}
+
 const createNotionClient = (config: AppConfig) =>
   new Client({
-    auth: config.notionApiKey
+    auth: config.notionApiKey,
+    fetch: boundFetch
   })
 
 const createOpenAIProvider = (config: AppConfig) =>
   createOpenAI({
-    apiKey: config.openaiApiKey
+    apiKey: config.openaiApiKey,
+    fetch: boundFetch
   })
 
 const DatabaseResponseSchema = z.object({
