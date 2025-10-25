@@ -19,8 +19,7 @@
     ],
     "consumers": [
       {
-        "queue": "reading-list-queue",
-        "script_name": "fxn-m-api"
+        "queue": "reading-list-queue"
       }
     ]
   },
