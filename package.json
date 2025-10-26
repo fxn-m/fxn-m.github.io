@@ -17,7 +17,8 @@
     "type-check:app": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "type-check:server": "tsc --noEmit -p tsconfig.server.json",
     "tunnel:server": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:3000",
-    "tunnel:client": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:5173"
+    "tunnel:client": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:5173",
+    "start": "tsx --tsconfig tsconfig.server.json src/server/index.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.53",
