@@ -37,8 +37,9 @@ export type AppConfig = {
   spotifyRefreshToken: string
   mailgunApiKey?: string
   mailgunDomain?: string
-  notionApiKey: string
+  notionTabOverflowToken: string
   notionTabOverflowDataSourceId: string
+  notionBlogToken: string
   notionBlogDataSourceId: string
   readmeSecret?: string
   stravaClientSecret: string
@@ -63,18 +64,19 @@ export const createAppConfig = (source: ConfigSource): AppConfig => ({
   ]),
   mailgunApiKey: firstDefined(source, ["MAILGUN_API_KEY"]),
   mailgunDomain: firstDefined(source, ["MAILGUN_DOMAIN"]),
-  notionApiKey: requireValue(source, "NOTION_API_KEY", [
-    "NOTION_API_KEY",
-    "NOTIONAPIKEY"
+  notionTabOverflowToken: requireValue(source, "NOTION_TAB_OVERFLOW_TOKEN", [
+    "NOTION_TAB_OVERFLOW_TOKEN"
   ]),
   notionTabOverflowDataSourceId: requireValue(
     source,
     "NOTION_TAB_OVERFLOW_DATA_SOURCE_ID",
-    ["NOTION_TAB_OVERFLOW_DATA_SOURCE_ID", "NOTIONTABOVERFLOWDATASOURCEID"]
+    ["NOTION_TAB_OVERFLOW_DATA_SOURCE_ID"]
   ),
+  notionBlogToken: requireValue(source, "NOTION_BLOG_TOKEN", [
+    "NOTION_BLOG_TOKEN"
+  ]),
   notionBlogDataSourceId: requireValue(source, "NOTION_BLOG_DATA_SOURCE_ID", [
-    "NOTION_BLOG_DATA_SOURCE_ID",
-    "NOTIONBLOGDATASOURCEID"
+    "NOTION_BLOG_DATA_SOURCE_ID"
   ]),
   stravaClientSecret: requireValue(source, "STRAVA_CLIENT_SECRET", [
     "STRAVA_CLIENT_SECRET"

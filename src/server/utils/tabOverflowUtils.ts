@@ -5,11 +5,11 @@ import env from "@/server/config/env"
 export const getTabOverflow = async () => {
   console.log("Getting tab overflow...")
 
-  const NOTION_API_KEY = env.notionApiKey
+  const NOTION_TAB_OVERFLOW_TOKEN = env.notionTabOverflowToken
   const NOTION_TAB_OVERFLOW_DATA_SOURCE_ID = env.notionTabOverflowDataSourceId
 
   const notion = new Client({
-    auth: NOTION_API_KEY
+    auth: NOTION_TAB_OVERFLOW_TOKEN
   })
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

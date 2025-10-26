@@ -20,9 +20,9 @@ const boundFetch: typeof fetch = (...args) => {
   return globalThis.fetch(...args)
 }
 
-const createNotionClient = (config: AppConfig) =>
+const createNotionClient = (token: string) =>
   new Client({
-    auth: config.notionApiKey,
+    auth: token,
     fetch: boundFetch
   })
 
@@ -51,7 +51,7 @@ export const getTabOverflowItems = async (
   config: AppConfig
 ): Promise<NotionResponse[]> => {
   console.log("Fetching tab overflow from Notion...")
-  const notion = createNotionClient(config)
+  const notion = createNotionClient(config.notionTabOverflowToken)
 
   let tabOverflowItems: NotionResponse[] = []
   let hasNextPage = true
@@ -91,7 +91,7 @@ export const refreshTabOverflowCache = async (
 }
 
 export const getBlogPostById = async (config: AppConfig, blockId: string) => {
-  const notion = createNotionClient(config)
+  const notion = createNotionClient(config.notionBlogToken)
 
   const buffer: Record<string, string> = {}
   const bufferExporter = new DefaultExporter({
@@ -121,7 +121,7 @@ export const getBlogPosts = async (
   config: AppConfig,
   isDevelopment: boolean
 ): Promise<NotionResponse[]> => {
-  const notion = createNotionClient(config)
+  const notion = createNotionClient(config.notionBlogToken)
 
   let blogPosts: NotionResponse[] = []
   let hasNextPage = true
@@ -198,7 +198,7 @@ const PagePropertiesSchema = z.object({
 })
 
 const getPagePropertiesById = async (config: AppConfig, pageId: string) => {
-  const notion = createNotionClient(config)
+  const notion = createNotionClient(config.notionTabOverflowToken)
 
   const response = await notion.pages.retrieve({
     page_id: pageId
@@ -219,7 +219,7 @@ const extractCategoriesFromDatabase = async (
   config: AppConfig,
   databaseId: string
 ) => {
-  const notion = createNotionClient(config)
+  const notion = createNotionClient(config.notionTabOverflowToken)
   const response = await notion.databases.retrieve({
     database_id: databaseId
   })
@@ -246,7 +246,7 @@ const hasDuplicateLink = async (
     return false
   }
 
-  const notion = createNotionClient(config)
+  const notion = createNotionClient(config.notionTabOverflowToken)
   const response = await notion.dataSources.query({
     data_source_id: config.notionTabOverflowDataSourceId,
     filter: {
@@ -308,7 +308,7 @@ const updateNotionPage = async (
   created: string,
   isDuplicate: boolean
 ) => {
-  const notion = createNotionClient(config)
+  const notion = createNotionClient(config.notionTabOverflowToken)
 
   await notion.pages.update({
     page_id: pageId,
@@ -371,7 +371,13 @@ export const enrichTabOverflowItem = async (
     openai
   })
   console.log("Enriched item:", enrichedItem)
-  await updateNotionPage(config, pageId, enrichedItem, props.created, isDuplicate)
+  await updateNotionPage(
+    config,
+    pageId,
+    enrichedItem,
+    props.created,
+    isDuplicate
+  )
   console.log(
     `Updated Notion page with enriched item (duplicate: ${isDuplicate})`
   )
