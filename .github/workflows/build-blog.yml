@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
 
 env:
-  # Your backend URL is needed by build‑time scripts that fetch from Notion
-  BACKEND_URL: https://fxn-m-github-io.onrender.com
+  # Backend URL is needed by build‑time scripts that fetch from Notion
+  BACKEND_URL: https://api.fxn-m.workers.dev
 
 # Grant the minimum permissions required to deploy to GitHub Pages
 permissions:

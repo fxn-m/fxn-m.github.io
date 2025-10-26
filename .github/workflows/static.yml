@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 env:
-  BACKEND_URL: https://fxn-m-github-io.onrender.com
+  BACKEND_URL: https://api.fxn-m.workers.dev
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:

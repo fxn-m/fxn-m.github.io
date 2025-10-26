@@ -1,4 +1,4 @@
-import { openai } from "@ai-sdk/openai"
+import { createOpenAI } from "@ai-sdk/openai"
 import { Client } from "@notionhq/client"
 import { generateObject, generateText } from "ai"
 import { NotionConverter } from "notion-to-md"
@@ -12,10 +12,25 @@ import {
   type NotionResponse
 } from "@/shared/types/notion"
 
-import env from "../config/env"
-import { writeReadingListToFile } from "../utils/fileUtils"
+import type { AppConfig } from "../config/appConfig"
+import type { KVNamespace } from "../types/cloudflare"
+import { writeTabOverflowToCache } from "../utils/tabOverflowStore"
 
-// Blog -------------------------------------------------------
+const boundFetch: typeof fetch = (...args) => {
+  return globalThis.fetch(...args)
+}
+
+const createNotionClient = (token: string) =>
+  new Client({
+    auth: token,
+    fetch: boundFetch
+  })
+
+const createOpenAIProvider = (config: AppConfig) =>
+  createOpenAI({
+    apiKey: config.openaiApiKey,
+    fetch: boundFetch
+  })
 
 const DatabaseResponseSchema = z.object({
   id: z.string(),
@@ -32,19 +47,19 @@ const DatabaseResponseSchema = z.object({
   })
 })
 
-export const getReadingList = async (): Promise<NotionResponse[]> => {
-  console.log("Fetching reading list from Notion...")
-  const notion = new Client({
-    auth: env.notionApiKey
-  })
+export const getTabOverflowItems = async (
+  config: AppConfig
+): Promise<NotionResponse[]> => {
+  console.log("Fetching tab overflow from Notion...")
+  const notion = createNotionClient(config.notionTabOverflowToken)
 
-  let readingList: NotionResponse[] = []
+  let tabOverflowItems: NotionResponse[] = []
   let hasNextPage = true
   let startCursor: string | undefined | null = undefined
 
   while (hasNextPage) {
     const response = await notion.dataSources.query({
-      data_source_id: env.notionReadingListDataSourceId ?? "",
+      data_source_id: config.notionTabOverflowDataSourceId,
       filter: {
         or: [
           {
@@ -58,18 +73,25 @@ export const getReadingList = async (): Promise<NotionResponse[]> => {
       start_cursor: startCursor ?? undefined
     })
 
-    readingList = [...readingList, ...response.results]
+    tabOverflowItems = [...tabOverflowItems, ...response.results]
     startCursor = response.next_cursor
     hasNextPage = response.has_more
   }
 
-  return readingList
+  return tabOverflowItems
 }
 
-export const getBlogPostById = async (blockId: string) => {
-  const notion = new Client({
-    auth: env.notionApiKey
-  })
+export const refreshTabOverflowCache = async (
+  config: AppConfig,
+  kv: KVNamespace
+): Promise<NotionResponse[]> => {
+  const tabOverflowItems = await getTabOverflowItems(config)
+  await writeTabOverflowToCache(kv, tabOverflowItems)
+  return tabOverflowItems
+}
+
+export const getBlogPostById = async (config: AppConfig, blockId: string) => {
+  const notion = createNotionClient(config.notionBlogToken)
 
   const buffer: Record<string, string> = {}
   const bufferExporter = new DefaultExporter({
@@ -96,11 +118,10 @@ export const getBlogPostById = async (blockId: string) => {
 }
 
 export const getBlogPosts = async (
+  config: AppConfig,
   isDevelopment: boolean
 ): Promise<NotionResponse[]> => {
-  const notion = new Client({
-    auth: env.notionApiKey
-  })
+  const notion = createNotionClient(config.notionBlogToken)
 
   let blogPosts: NotionResponse[] = []
   let hasNextPage = true
@@ -108,7 +129,7 @@ export const getBlogPosts = async (
 
   while (hasNextPage) {
     const response = await notion.dataSources.query({
-      data_source_id: env.notionBlogDataSourceId ?? "",
+      data_source_id: config.notionBlogDataSourceId,
       filter: isDevelopment
         ? {
             or: [
@@ -143,9 +164,7 @@ export const getBlogPosts = async (
   return blogPosts
 }
 
-// TabOverflow -------------------------------------------------------
-
-const enrichedReadingListItemSchema = z.object({
+const enrichedTabOverflowItemSchema = z.object({
   summary: z.string(),
   categories: z.array(z.string()),
   author: z.string(),
@@ -178,10 +197,8 @@ const PagePropertiesSchema = z.object({
   })
 })
 
-const getPagePropertiesById = async (pageId: string) => {
-  const notion = new Client({
-    auth: env.notionApiKey
-  })
+const getPagePropertiesById = async (config: AppConfig, pageId: string) => {
+  const notion = createNotionClient(config.notionTabOverflowToken)
 
   const response = await notion.pages.retrieve({
     page_id: pageId
@@ -198,10 +215,11 @@ const getPagePropertiesById = async (pageId: string) => {
   return relevantProperties
 }
 
-const extractCategoriesFromDatabase = async (databaseId: string) => {
-  const notion = new Client({
-    auth: env.notionApiKey
-  })
+const extractCategoriesFromDatabase = async (
+  config: AppConfig,
+  databaseId: string
+) => {
+  const notion = createNotionClient(config.notionTabOverflowToken)
   const response = await notion.databases.retrieve({
     database_id: databaseId
   })
@@ -213,13 +231,38 @@ const extractCategoriesFromDatabase = async (databaseId: string) => {
   return categories
 }
 
-const enrich = async ({
-  props,
-  categories
-}: {
+type EnrichInput = {
   props: PageProperties
   categories: string[]
-}) => {
+  openai: ReturnType<typeof createOpenAIProvider>
+}
+
+const hasDuplicateLink = async (
+  config: AppConfig,
+  pageId: string,
+  url: string
+): Promise<boolean> => {
+  if (!url || url.trim().length === 0) {
+    return false
+  }
+
+  const notion = createNotionClient(config.notionTabOverflowToken)
+  const response = await notion.dataSources.query({
+    data_source_id: config.notionTabOverflowDataSourceId,
+    filter: {
+      property: "Link",
+      url: {
+        equals: url
+      }
+    }
+  })
+
+  return response.results.some(
+    (result) => isPageObjectResponse(result) && result.id !== pageId
+  )
+}
+
+const enrich = async ({ props, categories, openai }: EnrichInput) => {
   const { text } = await generateText({
     model: openai.responses("gpt-4o"),
     prompt: `
@@ -242,15 +285,14 @@ const enrich = async ({
     }
   })
 
-  // ts-ignore
   const { object } = await generateObject({
     model: openai.responses("gpt-4o"),
     prompt: `Extract the summary, categories, author, and reading time estimate from the following text: ${text}`,
-    schema: enrichedReadingListItemSchema
+    schema: enrichedTabOverflowItemSchema
   })
 
   const { success, data, error } =
-    enrichedReadingListItemSchema.safeParse(object)
+    enrichedTabOverflowItemSchema.safeParse(object)
 
   if (success === false) {
     throw new Error(error.message, error)
@@ -260,13 +302,13 @@ const enrich = async ({
 }
 
 const updateNotionPage = async (
+  config: AppConfig,
   pageId: string,
-  enrichedItem: z.infer<typeof enrichedReadingListItemSchema>,
-  created: string
+  enrichedItem: z.infer<typeof enrichedTabOverflowItemSchema>,
+  created: string,
+  isDuplicate: boolean
 ) => {
-  const notion = new Client({
-    auth: env.notionApiKey
-  })
+  const notion = createNotionClient(config.notionTabOverflowToken)
 
   await notion.pages.update({
     page_id: pageId,
@@ -291,6 +333,11 @@ const updateNotionPage = async (
           name: enrichedItem.author
         }
       },
+      Duplicate: {
+        select: {
+          name: isDuplicate ? "True" : "False"
+        }
+      },
       "Read Time": {
         number: enrichedItem.readingTimeEstimate
       },
@@ -308,40 +355,60 @@ const updateNotionPage = async (
   })
 }
 
-export const enrichReadingListItem = async (
+export const enrichTabOverflowItem = async (
+  config: AppConfig,
+  kv: KVNamespace,
   pageId: string,
   databaseId: string
 ) => {
-  const props = await getPagePropertiesById(pageId)
-  const categories = await extractCategoriesFromDatabase(databaseId)
-  const enrichedItem = await enrich({ props, categories })
+  const openai = createOpenAIProvider(config)
+  const props = await getPagePropertiesById(config, pageId)
+  const categories = await extractCategoriesFromDatabase(config, databaseId)
+  const isDuplicate = await hasDuplicateLink(config, pageId, props.url)
+  const enrichedItem = await enrich({
+    props,
+    categories,
+    openai
+  })
   console.log("Enriched item:", enrichedItem)
-  await updateNotionPage(pageId, enrichedItem, props.created)
-  console.log("Updated Notion page with enriched item")
-  await writeReadingListToFile()
-  console.log("Updated reading list file")
+  await updateNotionPage(
+    config,
+    pageId,
+    enrichedItem,
+    props.created,
+    isDuplicate
+  )
+  console.log(
+    `Updated Notion page with enriched item (duplicate: ${isDuplicate})`
+  )
+  await refreshTabOverflowCache(config, kv)
+  console.log("Updated tab overflow cache")
 }
 
-export const enrichAllReadingListItems = async () => {
-  const readingList = await getReadingList()
-  const filteredReadingList = readingList.filter((item) =>
+export const enrichAllTabOverflowItems = async (
+  config: AppConfig,
+  kv: KVNamespace
+) => {
+  const tabOverflowItems = await getTabOverflowItems(config)
+  const filteredTabOverflowItems = tabOverflowItems.filter((item) =>
     isPageObjectResponse(item)
   )
 
   const categories = await extractCategoriesFromDatabase(
-    env.notionReadingListDataSourceId ?? ""
+    config,
+    config.notionTabOverflowDataSourceId
   )
-  // Set the concurrency limit (5 in this example)
+  const openai = createOpenAIProvider(config)
   const limit = pLimit(5)
 
   await Promise.all(
-    filteredReadingList.map((item) =>
+    filteredTabOverflowItems.map((item) =>
       limit(async () => {
         const pageName =
-          item.properties.Name.type === "title"
+          item.properties.Name.type === "title" &&
+          item.properties.Name.title.length > 0
             ? item.properties.Name.title[0].plain_text
             : ""
-        // Check if enriched properties already exist: if Summary.rich_text has any content, skip processing
         if (
           item.properties.Summary.type === "rich_text" &&
           item.properties.Summary.rich_text &&
@@ -365,12 +432,20 @@ export const enrichAllReadingListItems = async () => {
         console.log(`Enriching ${pageName}...`)
 
         try {
-          const props = await getPagePropertiesById(item.id)
+          const props = await getPagePropertiesById(config, item.id)
+          const isDuplicate = await hasDuplicateLink(config, item.id, props.url)
           const enrichedItem = await enrich({
             props,
-            categories
+            categories,
+            openai
           })
-          await updateNotionPage(item.id, enrichedItem, item.created_time)
+          await updateNotionPage(
+            config,
+            item.id,
+            enrichedItem,
+            item.created_time,
+            isDuplicate
+          )
         } catch (error) {
           console.error(`Error enriching ${pageName}:`, error)
         }
@@ -379,4 +454,6 @@ export const enrichAllReadingListItems = async () => {
       })
     )
   )
+
+  await refreshTabOverflowCache(config, kv)
 }
