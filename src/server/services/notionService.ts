@@ -237,6 +237,31 @@ type EnrichInput = {
   openai: ReturnType<typeof createOpenAIProvider>
 }
 
+const hasDuplicateLink = async (
+  config: AppConfig,
+  pageId: string,
+  url: string
+): Promise<boolean> => {
+  if (!url || url.trim().length === 0) {
+    return false
+  }
+
+  const notion = createNotionClient(config)
+  const response = await notion.dataSources.query({
+    data_source_id: config.notionTabOverflowDataSourceId,
+    filter: {
+      property: "Link",
+      url: {
+        equals: url
+      }
+    }
+  })
+
+  return response.results.some(
+    (result) => isPageObjectResponse(result) && result.id !== pageId
+  )
+}
+
 const enrich = async ({ props, categories, openai }: EnrichInput) => {
   const { text } = await generateText({
     model: openai.responses("gpt-4o"),
@@ -280,7 +305,8 @@ const updateNotionPage = async (
   config: AppConfig,
   pageId: string,
   enrichedItem: z.infer<typeof enrichedTabOverflowItemSchema>,
-  created: string
+  created: string,
+  isDuplicate: boolean
 ) => {
   const notion = createNotionClient(config)
 
@@ -305,6 +331,11 @@ const updateNotionPage = async (
       Author: {
         select: {
           name: enrichedItem.author
+        }
+      },
+      Duplicate: {
+        select: {
+          name: isDuplicate ? "True" : "False"
         }
       },
       "Read Time": {
@@ -333,14 +364,17 @@ export const enrichTabOverflowItem = async (
   const openai = createOpenAIProvider(config)
   const props = await getPagePropertiesById(config, pageId)
   const categories = await extractCategoriesFromDatabase(config, databaseId)
+  const isDuplicate = await hasDuplicateLink(config, pageId, props.url)
   const enrichedItem = await enrich({
     props,
     categories,
     openai
   })
   console.log("Enriched item:", enrichedItem)
-  await updateNotionPage(config, pageId, enrichedItem, props.created)
-  console.log("Updated Notion page with enriched item")
+  await updateNotionPage(config, pageId, enrichedItem, props.created, isDuplicate)
+  console.log(
+    `Updated Notion page with enriched item (duplicate: ${isDuplicate})`
+  )
   await refreshTabOverflowCache(config, kv)
   console.log("Updated tab overflow cache")
 }
@@ -393,6 +427,7 @@ export const enrichAllTabOverflowItems = async (
 
         try {
           const props = await getPagePropertiesById(config, item.id)
+          const isDuplicate = await hasDuplicateLink(config, item.id, props.url)
           const enrichedItem = await enrich({
             props,
             categories,
@@ -402,7 +437,8 @@ export const enrichAllTabOverflowItems = async (
             config,
             item.id,
             enrichedItem,
-            item.created_time
+            item.created_time,
+            isDuplicate
           )
         } catch (error) {
           console.error(`Error enriching ${pageName}:`, error)
