@@ -1,5 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai"
-import { Client } from "@notionhq/client"
+import { APIErrorCode, APIResponseError, Client } from "@notionhq/client"
 import { generateObject, generateText } from "ai"
 import { NotionConverter } from "notion-to-md"
 import { DefaultExporter } from "notion-to-md/plugins/exporter"
@@ -32,20 +32,51 @@ const createOpenAIProvider = (config: AppConfig) =>
     fetch: boundFetch
   })
 
-const DatabaseResponseSchema = z.object({
-  id: z.string(),
-  properties: z.object({
-    Categories: z.object({
-      multi_select: z.object({
-        options: z.array(
-          z.object({
-            name: z.string()
-          })
-        )
-      })
+const CategoryOptionSchema = z.object({
+  name: z.string()
+})
+
+const CategoriesPropertySchema = z
+  .object({
+    multi_select: z.object({
+      options: z.array(CategoryOptionSchema)
     })
   })
-})
+  .loose()
+
+const CategoriesPropertiesSchema = z
+  .object({
+    Categories: CategoriesPropertySchema
+  })
+  .loose()
+
+const parseCategoriesProperty = (properties: unknown): string[] | null => {
+  const result = CategoriesPropertiesSchema.safeParse(properties)
+  if (!result.success) {
+    return null
+  }
+
+  return result.data.Categories.multi_select.options.map(
+    (option) => option.name
+  )
+}
+
+const extractPropertyConfig = (
+  response: unknown
+): Record<string, unknown> | null => {
+  if (
+    typeof response === "object" &&
+    response !== null &&
+    "properties" in response
+  ) {
+    const candidate = (response as { properties: unknown }).properties
+    if (candidate && typeof candidate === "object") {
+      return candidate as Record<string, unknown>
+    }
+  }
+
+  return null
+}
 
 export const getTabOverflowItems = async (
   config: AppConfig
@@ -217,17 +248,101 @@ const getPagePropertiesById = async (config: AppConfig, pageId: string) => {
 
 const extractCategoriesFromDatabase = async (
   config: AppConfig,
-  databaseId: string
+  parentId: string
 ) => {
   const notion = createNotionClient(config.notionTabOverflowToken)
-  const response = await notion.databases.retrieve({
-    database_id: databaseId
-  })
 
-  const parsed = DatabaseResponseSchema.parse(response)
-  const categories = parsed.properties.Categories.multi_select.options.map(
-    (option) => option.name
-  )
+  const getCategoriesFromDatabaseId = async (
+    databaseId: string
+  ): Promise<string[] | null> => {
+    try {
+      const response = await notion.databases.retrieve({
+        database_id: databaseId
+      })
+      const properties = extractPropertyConfig(response)
+      if (!properties) {
+        return null
+      }
+      return parseCategoriesProperty(properties)
+    } catch (error) {
+      if (
+        APIResponseError.isAPIResponseError(error) &&
+        (error.code === APIErrorCode.ObjectNotFound ||
+          error.code === APIErrorCode.ValidationError)
+      ) {
+        console.warn(
+          `Unable to retrieve database ${databaseId} for categories: ${error.message}`
+        )
+        return null
+      }
+      throw error
+    }
+  }
+
+  const getCategoriesFromDataSourceId = async (
+    dataSourceId: string
+  ): Promise<string[] | null> => {
+    try {
+      const response = await notion.dataSources.retrieve({
+        data_source_id: dataSourceId
+      })
+      const properties = extractPropertyConfig(response)
+      const categories = properties ? parseCategoriesProperty(properties) : null
+      if (categories && categories.length > 0) {
+        return categories
+      }
+
+      if (
+        typeof response === "object" &&
+        response !== null &&
+        "parent" in response
+      ) {
+        const parent = (
+          response as {
+            parent:
+              | { type: "database_id"; database_id: string }
+              | { type: "data_source_id"; data_source_id: string }
+          }
+        ).parent
+
+        if (parent.type === "database_id") {
+          return getCategoriesFromDatabaseId(parent.database_id)
+        }
+
+        if (
+          parent.type === "data_source_id" &&
+          parent.data_source_id !== dataSourceId
+        ) {
+          return getCategoriesFromDataSourceId(parent.data_source_id)
+        }
+      }
+
+      return categories
+    } catch (error) {
+      if (
+        APIResponseError.isAPIResponseError(error) &&
+        (error.code === APIErrorCode.ObjectNotFound ||
+          error.code === APIErrorCode.ValidationError)
+      ) {
+        console.warn(
+          `Unable to retrieve data source ${dataSourceId} for categories: ${error.message}`
+        )
+        return null
+      }
+      throw error
+    }
+  }
+
+  const categories =
+    (await getCategoriesFromDatabaseId(parentId)) ??
+    (await getCategoriesFromDataSourceId(parentId))
+
+  if (!categories || categories.length === 0) {
+    throw new Error(
+      `Unable to resolve Categories property for Tab Overflow source ${parentId}`
+    )
+  }
+
   return categories
 }
 
