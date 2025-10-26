@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.8.0",
   "scripts": {
     "build": "pnpm build:markdown && run-p type-check build-only",
     "build:markdown": "npx tsx --tsconfig tsconfig.server.json ./scripts/buildBlog.ts",
@@ -85,6 +86,5 @@
     "vite": "^6.3.6",
     "vue-tsc": "^3.1.1",
     "wrangler": "^4.0.0"
-  },
-  "packageManager": "pnpm@10.8.0+sha512.0e82714d1b5b43c74610193cb20734897c1d00de89d0e18420aebc5977fa13d780a9cb05734624e81ebd81cc876cd464794850641c48b9544326b5622ca29971"
+  }
 }
