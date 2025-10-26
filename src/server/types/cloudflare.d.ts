@@ -1,9 +1,9 @@
-interface ExecutionContext {
+export interface ExecutionContext {
   waitUntil(promise: Promise<unknown>): void
   passThroughOnException(): void
 }
 
-interface ScheduledController {
+export interface ScheduledController {
   scheduledTime: number
   cron: string
 }

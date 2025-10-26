@@ -1,4 +1,4 @@
-import type { KVNamespace, Queue } from "../types/cloudflare"
+import type { KVNamespace } from "../types/cloudflare"
 
 type ConfigSource = Record<string, string | undefined>
 
@@ -38,7 +38,7 @@ export type AppConfig = {
   mailgunApiKey?: string
   mailgunDomain?: string
   notionApiKey: string
-  notionReadingListDataSourceId: string
+  notionTabOverflowDataSourceId: string
   notionBlogDataSourceId: string
   readmeSecret?: string
   stravaClientSecret: string
@@ -48,8 +48,7 @@ export type AppConfig = {
 }
 
 export type WorkerBindings = {
-  READING_LIST_KV: KVNamespace
-  READING_LIST_QUEUE: Queue
+  TAB_OVERFLOW_KV: KVNamespace
 } & Record<string, string | undefined>
 
 export const createAppConfig = (source: ConfigSource): AppConfig => ({
@@ -68,16 +67,15 @@ export const createAppConfig = (source: ConfigSource): AppConfig => ({
     "NOTION_API_KEY",
     "NOTIONAPIKEY"
   ]),
-  notionReadingListDataSourceId: requireValue(
+  notionTabOverflowDataSourceId: requireValue(
     source,
-    "NOTION_READING_LIST_DATA_SOURCE_ID",
-    ["NOTION_READING_LIST_DATA_SOURCE_ID", "NOTIONREADINGLISTDATASOURCEID"]
+    "NOTION_TAB_OVERFLOW_DATA_SOURCE_ID",
+    ["NOTION_TAB_OVERFLOW_DATA_SOURCE_ID", "NOTIONTABOVERFLOWDATASOURCEID"]
   ),
   notionBlogDataSourceId: requireValue(source, "NOTION_BLOG_DATA_SOURCE_ID", [
     "NOTION_BLOG_DATA_SOURCE_ID",
     "NOTIONBLOGDATASOURCEID"
   ]),
-  readmeSecret: firstDefined(source, ["README_SECRET"]),
   stravaClientSecret: requireValue(source, "STRAVA_CLIENT_SECRET", [
     "STRAVA_CLIENT_SECRET"
   ]),
@@ -91,10 +89,6 @@ export const createAppConfig = (source: ConfigSource): AppConfig => ({
 })
 
 export const createConfigFromBindings = (env: WorkerBindings): AppConfig => {
-  const {
-    READING_LIST_KV: _kv,
-    READING_LIST_QUEUE: _queue,
-    ...stringBindings
-  } = env
+  const { TAB_OVERFLOW_KV: _kv, ...stringBindings } = env
   return createAppConfig(stringBindings)
 }

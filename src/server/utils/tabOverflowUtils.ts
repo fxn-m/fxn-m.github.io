@@ -2,25 +2,25 @@ import { Client } from "@notionhq/client"
 
 import env from "@/server/config/env"
 
-export const getReadingList = async () => {
-  console.log("Getting reading list...")
+export const getTabOverflow = async () => {
+  console.log("Getting tab overflow...")
 
-  const NOTIONAPIKEY = env.notionApiKey
-  const notionReadingListDataSourceId = env.notionReadingListDataSourceId
+  const NOTION_API_KEY = env.notionApiKey
+  const NOTION_TAB_OVERFLOW_DATA_SOURCE_ID = env.notionTabOverflowDataSourceId
 
   const notion = new Client({
-    auth: NOTIONAPIKEY
+    auth: NOTION_API_KEY
   })
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let readingList: any[] = []
+  let tabOverflow: any[] = []
   let hasNextPage = true
   let startCursor = undefined
 
   while (hasNextPage) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response: any = await notion.dataSources.query({
-      data_source_id: notionReadingListDataSourceId ?? "",
+      data_source_id: NOTION_TAB_OVERFLOW_DATA_SOURCE_ID ?? "",
       filter: {
         or: [
           {
@@ -64,10 +64,10 @@ export const getReadingList = async () => {
       start_cursor: startCursor
     })
 
-    readingList = [...readingList, ...response.results]
+    tabOverflow = [...tabOverflow, ...response.results]
     startCursor = response.next_cursor
     hasNextPage = response.has_more
   }
 
-  return readingList
+  return tabOverflow
 }

@@ -14,7 +14,7 @@ import {
 
 import type { AppConfig } from "../config/appConfig"
 import type { KVNamespace } from "../types/cloudflare"
-import { writeReadingListToCache } from "../utils/readingListStore"
+import { writeTabOverflowToCache } from "../utils/tabOverflowStore"
 
 const boundFetch: typeof fetch = (...args) => {
   return globalThis.fetch(...args)
@@ -47,19 +47,19 @@ const DatabaseResponseSchema = z.object({
   })
 })
 
-export const getReadingList = async (
+export const getTabOverflowItems = async (
   config: AppConfig
 ): Promise<NotionResponse[]> => {
-  console.log("Fetching reading list from Notion...")
+  console.log("Fetching tab overflow from Notion...")
   const notion = createNotionClient(config)
 
-  let readingList: NotionResponse[] = []
+  let tabOverflowItems: NotionResponse[] = []
   let hasNextPage = true
   let startCursor: string | undefined | null = undefined
 
   while (hasNextPage) {
     const response = await notion.dataSources.query({
-      data_source_id: config.notionReadingListDataSourceId,
+      data_source_id: config.notionTabOverflowDataSourceId,
       filter: {
         or: [
           {
@@ -73,21 +73,21 @@ export const getReadingList = async (
       start_cursor: startCursor ?? undefined
     })
 
-    readingList = [...readingList, ...response.results]
+    tabOverflowItems = [...tabOverflowItems, ...response.results]
     startCursor = response.next_cursor
     hasNextPage = response.has_more
   }
 
-  return readingList
+  return tabOverflowItems
 }
 
-export const refreshReadingListCache = async (
+export const refreshTabOverflowCache = async (
   config: AppConfig,
   kv: KVNamespace
 ): Promise<NotionResponse[]> => {
-  const readingList = await getReadingList(config)
-  await writeReadingListToCache(kv, readingList)
-  return readingList
+  const tabOverflowItems = await getTabOverflowItems(config)
+  await writeTabOverflowToCache(kv, tabOverflowItems)
+  return tabOverflowItems
 }
 
 export const getBlogPostById = async (config: AppConfig, blockId: string) => {
@@ -164,7 +164,7 @@ export const getBlogPosts = async (
   return blogPosts
 }
 
-const enrichedReadingListItemSchema = z.object({
+const enrichedTabOverflowItemSchema = z.object({
   summary: z.string(),
   categories: z.array(z.string()),
   author: z.string(),
@@ -263,11 +263,11 @@ const enrich = async ({ props, categories, openai }: EnrichInput) => {
   const { object } = await generateObject({
     model: openai.responses("gpt-4o"),
     prompt: `Extract the summary, categories, author, and reading time estimate from the following text: ${text}`,
-    schema: enrichedReadingListItemSchema
+    schema: enrichedTabOverflowItemSchema
   })
 
   const { success, data, error } =
-    enrichedReadingListItemSchema.safeParse(object)
+    enrichedTabOverflowItemSchema.safeParse(object)
 
   if (success === false) {
     throw new Error(error.message, error)
@@ -279,7 +279,7 @@ const enrich = async ({ props, categories, openai }: EnrichInput) => {
 const updateNotionPage = async (
   config: AppConfig,
   pageId: string,
-  enrichedItem: z.infer<typeof enrichedReadingListItemSchema>,
+  enrichedItem: z.infer<typeof enrichedTabOverflowItemSchema>,
   created: string
 ) => {
   const notion = createNotionClient(config)
@@ -324,7 +324,7 @@ const updateNotionPage = async (
   })
 }
 
-export const enrichReadingListItem = async (
+export const enrichTabOverflowItem = async (
   config: AppConfig,
   kv: KVNamespace,
   pageId: string,
@@ -341,28 +341,28 @@ export const enrichReadingListItem = async (
   console.log("Enriched item:", enrichedItem)
   await updateNotionPage(config, pageId, enrichedItem, props.created)
   console.log("Updated Notion page with enriched item")
-  await refreshReadingListCache(config, kv)
-  console.log("Updated reading list cache")
+  await refreshTabOverflowCache(config, kv)
+  console.log("Updated tab overflow cache")
 }
 
-export const enrichAllReadingListItems = async (
+export const enrichAllTabOverflowItems = async (
   config: AppConfig,
   kv: KVNamespace
 ) => {
-  const readingList = await getReadingList(config)
-  const filteredReadingList = readingList.filter((item) =>
+  const tabOverflowItems = await getTabOverflowItems(config)
+  const filteredTabOverflowItems = tabOverflowItems.filter((item) =>
     isPageObjectResponse(item)
   )
 
   const categories = await extractCategoriesFromDatabase(
     config,
-    config.notionReadingListDataSourceId
+    config.notionTabOverflowDataSourceId
   )
   const openai = createOpenAIProvider(config)
   const limit = pLimit(5)
 
   await Promise.all(
-    filteredReadingList.map((item) =>
+    filteredTabOverflowItems.map((item) =>
       limit(async () => {
         const pageName =
           item.properties.Name.type === "title" &&
@@ -413,5 +413,5 @@ export const enrichAllReadingListItems = async (
     )
   )
 
-  await refreshReadingListCache(config, kv)
+  await refreshTabOverflowCache(config, kv)
 }
