@@ -7,9 +7,6 @@ compatibility_flags = ["nodejs_compat"]
 binding = "TAB_OVERFLOW_KV"
 id = "ba2c9eb2462342939acc6135b9c80a2f"
 
-[triggers]
-crons = ["0 * * * *"]
-
 [env.production]
 
 [observability.logs]
