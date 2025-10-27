@@ -185,11 +185,6 @@ const worker: WorkerEntrypoint<WorkerBindings> = {
       console.error("Fetch handler error:", error)
       return errorResponse("Internal Server Error", 500)
     }
-  },
-
-  async scheduled(controller, env, ctx) {
-    const config = createConfigFromBindings(env)
-    ctx.waitUntil(enrichAllTabOverflowItems(config, env.TAB_OVERFLOW_KV))
   }
 }
 
