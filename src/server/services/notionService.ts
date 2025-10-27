@@ -480,6 +480,15 @@ const hasDuplicateLink = async (
       }
 
       const normalizedCandidate = normalizeUrlForComparison(linkProperty.url)
+
+      // if domain is news.ycombinator.com, skip
+      if (
+        normalizedCandidate &&
+        normalizedCandidate.hostname === "news.ycombinator.com"
+      ) {
+        continue
+      }
+
       if (
         normalizedCandidate &&
         normalizedCandidate.normalized === normalizedTarget.normalized
