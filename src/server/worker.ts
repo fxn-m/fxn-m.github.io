@@ -1,0 +1,196 @@
+import {
+  fetchBlogPostMarkdownApi,
+  fetchBlogPostsApi,
+  triggerBlogBuildApi
+} from "./api/blog"
+import { getCurrentTrackApi } from "./api/spotify"
+import { getStravaActivitiesApi } from "./api/strava"
+import { getTabOverflowApi } from "./api/tabOverflow"
+import {
+  type AppConfig,
+  createConfigFromBindings,
+  type WorkerBindings
+} from "./config/appConfig"
+import {
+  enrichAllTabOverflowItems,
+  enrichTabOverflowItem
+} from "./services/notionService"
+import type { ExecutionContext, WorkerEntrypoint } from "./types/cloudflare"
+import {
+  errorResponse,
+  jsonResponse,
+  noContentResponse
+} from "./utils/responses"
+
+const normalizeIdFromPath = (
+  pathname: string,
+  prefix: string
+): string | null => {
+  if (!pathname.startsWith(prefix)) {
+    return null
+  }
+  const id = pathname.slice(prefix.length)
+  if (!id) {
+    return null
+  }
+  return decodeURIComponent(id)
+}
+
+const handleRoot = () =>
+  jsonResponse({
+    message: "Hey... whatcha doin' there?"
+  })
+
+const handlePing = () => jsonResponse({ message: "pong" })
+
+const handleTabOverflow = async (config: AppConfig, env: WorkerBindings) => {
+  const tabOverflow = await getTabOverflowApi(config, env.TAB_OVERFLOW_KV)
+  return jsonResponse(tabOverflow)
+}
+
+const enqueueTabOverflowEnrichment = async (
+  config: AppConfig,
+  env: WorkerBindings,
+  ctx: ExecutionContext
+) => {
+  ctx.waitUntil(enrichAllTabOverflowItems(config, env.TAB_OVERFLOW_KV))
+  return jsonResponse({ message: "Tab Overflow enrichment started" }, 202)
+}
+
+const handleBlogIndex = async (config: AppConfig, url: URL) => {
+  const isDevelopment = url.searchParams.get("development") === "true"
+  const blogs = await fetchBlogPostsApi(config, isDevelopment)
+  return jsonResponse(blogs)
+}
+
+const handleBlogPost = async (config: AppConfig, pathname: string) => {
+  const postId = normalizeIdFromPath(pathname, "/blog/")
+  if (!postId) {
+    return errorResponse("Blog post id is required", 400)
+  }
+  const markdown = await fetchBlogPostMarkdownApi(config, postId)
+  return jsonResponse(markdown)
+}
+
+const handleBlogBuild = async (config: AppConfig) => {
+  await triggerBlogBuildApi(config)
+  return jsonResponse({ message: "Blog build triggered" })
+}
+
+const handleSpotifyCurrentTrack = async (config: AppConfig) => {
+  const currentTrack = await getCurrentTrackApi(config)
+
+  if (!currentTrack) {
+    return jsonResponse({ message: "No song currently playing" })
+  }
+
+  return jsonResponse(currentTrack)
+}
+
+const handleStravaActivities = async (config: AppConfig) => {
+  const activities = await getStravaActivitiesApi(config)
+  if (!activities) {
+    return jsonResponse({ message: "No activities found" })
+  }
+  return jsonResponse(activities)
+}
+
+const handleNotionWebhook = async (
+  request: Request,
+  env: WorkerBindings,
+  config: AppConfig,
+  ctx: ExecutionContext
+) => {
+  const body = await request.json().catch(() => null)
+
+  console.log("Notion webhook body:", body)
+
+  const pageId = body?.entity?.id as string | undefined
+  const databaseId = body?.data?.parent?.id as string | undefined
+
+  if (!pageId || !databaseId) {
+    return errorResponse("Invalid webhook payload", 400)
+  }
+
+  ctx.waitUntil(
+    enrichTabOverflowItem(config, env.TAB_OVERFLOW_KV, pageId, databaseId)
+  )
+
+  return jsonResponse({ message: "Webhook received" }, 202)
+}
+
+const routeRequest = async (
+  request: Request,
+  env: WorkerBindings,
+  config: AppConfig,
+  ctx: ExecutionContext
+): Promise<Response> => {
+  const url = new URL(request.url)
+  const { pathname } = url
+  const method = request.method.toUpperCase()
+
+  if (method === "OPTIONS") {
+    return noContentResponse()
+  }
+
+  if (method === "GET" && pathname === "/") {
+    return handleRoot()
+  }
+
+  if (method === "GET" && pathname === "/ping") {
+    return handlePing()
+  }
+
+  if (pathname === "/tab-overflow" && method === "GET") {
+    return handleTabOverflow(config, env)
+  }
+
+  if (pathname === "/tab-overflow/enrich" && method === "POST") {
+    return enqueueTabOverflowEnrichment(config, env, ctx)
+  }
+
+  if (pathname === "/blog" && method === "GET") {
+    return handleBlogIndex(config, url)
+  }
+
+  if (pathname.startsWith("/blog/") && method === "GET") {
+    return handleBlogPost(config, pathname)
+  }
+
+  if (pathname === "/blog/build" && method === "GET") {
+    return handleBlogBuild(config)
+  }
+
+  if (pathname === "/spotify/current-track" && method === "GET") {
+    return handleSpotifyCurrentTrack(config)
+  }
+
+  if (pathname === "/strava/activities" && method === "GET") {
+    return handleStravaActivities(config)
+  }
+
+  if (pathname === "/notion/webhooks" && method === "POST") {
+    return handleNotionWebhook(request, env, config, ctx)
+  }
+
+  return errorResponse("Not Found", 404)
+}
+
+const worker: WorkerEntrypoint<WorkerBindings> = {
+  async fetch(request, env, ctx) {
+    try {
+      const config = createConfigFromBindings(env)
+      return await routeRequest(request, env, config, ctx)
+    } catch (error) {
+      console.error("Fetch handler error:", error)
+      return errorResponse("Internal Server Error", 500)
+    }
+  },
+
+  async scheduled(controller, env, ctx) {
+    const config = createConfigFromBindings(env)
+    ctx.waitUntil(enrichAllTabOverflowItems(config, env.TAB_OVERFLOW_KV))
+  }
+}
+
+export default worker

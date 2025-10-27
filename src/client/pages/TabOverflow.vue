@@ -12,12 +12,12 @@
 
     <div
       v-else
-      class="relative reading-suggestion gap-2 flex flex-col px-1 py-8 flex-1"
+      class="relative tab-overflow-suggestion gap-2 flex flex-col px-1 py-8 flex-1"
     >
       <div class="absolute top-2 right-2 text-xs text-gray-500">
-        {{ currentItemNumber }} / {{ readingListCount }} on
+        {{ currentItemNumber }} / {{ tabOverflowCount }} on
         <a
-          :href="`https://notion.so/fxn-m/${readingSuggestion.id.replace(
+          :href="`https://notion.so/fxn-m/${tabOverflowSuggestion.id.replace(
             /-/g,
             ''
           )}`"
@@ -30,40 +30,40 @@
       <div class="space-y-4 sm:space-y-6 sm:min-h-60 min-h-72">
         <p>
           <a
-            :href="readingSuggestion.url"
+            :href="tabOverflowSuggestion.url"
             target="_blank"
             class="text-lg font-bold inline-flex items-start gap-1 break-words"
           >
-            {{ readingSuggestion.name }}
+            {{ tabOverflowSuggestion.name }}
             <ExternalLink class="inline-block size-3 flex-shrink-0 mt-1" />
           </a>
         </p>
 
         <p
-          v-if="readingSuggestion.summary"
+          v-if="tabOverflowSuggestion.summary"
           class="mt-2 text-sm sm:text-base text-gray-700 dark:text-gray-500 line-clamp-6 sm:line-clamp-none"
         >
-          {{ readingSuggestion.summary }}
+          {{ tabOverflowSuggestion.summary }}
         </p>
 
         <div class="flex flex-col sm:flex-row sm:items-center mt-3 sm:gap-2">
           <p
-            v-if="readingSuggestion.readingTime"
+            v-if="tabOverflowSuggestion.readingTime"
             class="text-xs sm:text-sm text-gray-600"
           >
             <span class="font-semibold">Reading Time:</span>
-            {{ readingSuggestion.readingTime }} minutes
+            {{ tabOverflowSuggestion.readingTime }} minutes
           </p>
 
           <div
             v-if="
-              readingSuggestion.categories &&
-              readingSuggestion.categories.length
+              tabOverflowSuggestion.categories &&
+              tabOverflowSuggestion.categories.length
             "
             class="flex flex-wrap gap-2 mt-2 sm:mt-0"
           >
             <span
-              v-for="(category, index) in readingSuggestion.categories"
+              v-for="(category, index) in tabOverflowSuggestion.categories"
               :key="index"
               class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs dark:bg-gray-700 dark:text-gray-200 transition-colors duration-1000"
             >
@@ -107,8 +107,8 @@
   import { ExternalLink, Loader2 } from "lucide-vue-next"
   import { computed, onMounted, onUnmounted, ref, watchEffect } from "vue"
 
-  // Define the type for the reading suggestion based on the new schema
-  interface ReadingSuggestion {
+  // Define the type for the tab overflow suggestion based on the new schema
+  interface TabOverflowSuggestion {
     id: string
     name: string // Guaranteed
     url: string // Guaranteed
@@ -117,8 +117,8 @@
     summary: string
   }
 
-  // Define type for a reading list item
-  interface ReadingListItem {
+  // Define type for a tab overflow item
+  interface TabOverflowItem {
     id: string
     properties: {
       Name?: { title: { plain_text: string }[] }
@@ -130,7 +130,7 @@
   }
 
   // Reactive references
-  const readingSuggestion = ref<ReadingSuggestion>({
+  const tabOverflowSuggestion = ref<TabOverflowSuggestion>({
     id: "",
     name: "",
     url: "",
@@ -139,9 +139,9 @@
     summary: ""
   })
 
-  const fetchReadingList = async (): Promise<ReadingListItem[]> => {
+  const fetchTabOverflow = async (): Promise<TabOverflowItem[]> => {
     const response = await fetch(
-      `${import.meta.env.VITE_BACKEND_URL}/readingList`,
+      `${import.meta.env.VITE_BACKEND_URL}/tab-overflow`,
       {
         method: "GET"
       }
@@ -151,16 +151,16 @@
       throw new Error("Network response was not ok")
     }
 
-    return (await response.json()) as ReadingListItem[]
+    return (await response.json()) as TabOverflowItem[]
   }
 
   const { data, isLoading } = useQuery({
-    queryKey: ["readingList"],
-    queryFn: fetchReadingList,
+    queryKey: ["tab-overflow"],
+    queryFn: fetchTabOverflow,
     refetchOnWindowFocus: false
   })
 
-  const readingList = computed(() => data.value ?? [])
+  const tabOverflowItems = computed(() => data.value ?? [])
 
   // History for navigation (storing indices) and pointer
   const suggestionHistory = ref<number[]>([])
@@ -173,11 +173,11 @@
     return 0
   })
 
-  const readingListCount = computed(() => readingList.value.length)
+  const tabOverflowCount = computed(() => tabOverflowItems.value.length)
 
   // Helper: Apply a suggestion from a given index
   const applySuggestionFromIndex = (index: number) => {
-    const item = readingList.value[index]
+    const item = tabOverflowItems.value[index]
     const props = item.properties || {}
     const name = props.Name?.title?.[0]?.plain_text || "Untitled"
     const url = props.Link?.url || "#"
@@ -189,7 +189,7 @@
       ? props.Summary.rich_text.map((txt) => txt.plain_text).join(" ")
       : ""
 
-    readingSuggestion.value = {
+    tabOverflowSuggestion.value = {
       id: item.id,
       name,
       url,
@@ -199,9 +199,9 @@
     }
   }
 
-  // Choose a random index from the reading list
+  // Choose a random index from the tab overflow items
   const chooseRandomIndex = (): number => {
-    return Math.floor(Math.random() * readingList.value.length)
+    return Math.floor(Math.random() * tabOverflowItems.value.length)
   }
 
   // Navigate to the next suggestion
@@ -213,7 +213,7 @@
     } else {
       let randomIndex = chooseRandomIndex()
       // Avoid duplicate if possible
-      if (suggestionHistory.value.length > 0 && readingList.value.length > 1) {
+      if (suggestionHistory.value.length > 0 && tabOverflowItems.value.length > 1) {
         while (
           randomIndex ===
           suggestionHistory.value[suggestionHistory.value.length - 1]
@@ -249,7 +249,7 @@
     if (
       !isLoading.value &&
       currentIndex.value === -1 &&
-      readingListCount.value > 0
+      tabOverflowCount.value > 0
     ) {
       nextSuggestion()
     }
@@ -265,7 +265,7 @@
 </script>
 
 <style scoped>
-  .reading-suggestion {
+  .tab-overflow-suggestion {
     line-height: 1.5;
   }
 

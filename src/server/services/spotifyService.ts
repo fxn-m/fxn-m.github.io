@@ -1,10 +1,10 @@
 import { z } from "zod"
 
+import type { AppConfig } from "../config/appConfig"
 import {
   SPOTIFY_CURRENT_TRACK_ENDPOINT,
   SPOTIFY_TOKEN_ENDPOINT
 } from "../config/constants"
-import env from "../config/env"
 
 const currentTrackSchema = z.object({
   item: z.object({
@@ -28,18 +28,30 @@ const currentTrackSchema = z.object({
   })
 })
 
-export async function getSpotifyAccessToken(): Promise<string> {
+const encodeBasicAuth = (clientId: string, clientSecret: string): string => {
+  const credentials = `${clientId}:${clientSecret}`
+  if (typeof btoa === "function") {
+    return btoa(credentials)
+  }
+
+  return Buffer.from(credentials).toString("base64")
+}
+
+export async function getSpotifyAccessToken(
+  config: AppConfig
+): Promise<string> {
   const response = await fetch(SPOTIFY_TOKEN_ENDPOINT, {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Basic ${Buffer.from(
-        `${env.spotifyClientId}:${env.spotifyClientSecret}`
-      ).toString("base64")}`
+      Authorization: `Basic ${encodeBasicAuth(
+        config.spotifyClientId,
+        config.spotifyClientSecret
+      )}`
     },
     body: new URLSearchParams({
       grant_type: "refresh_token",
-      refresh_token: env.spotifyRefreshToken!
+      refresh_token: config.spotifyRefreshToken
     })
   })
 

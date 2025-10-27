@@ -37,4 +37,6 @@ desktop.ini
 
 src/server/readingList.json
 
+.wrangler
+
 src/client/components/fun/frm.json

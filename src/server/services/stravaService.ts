@@ -1,18 +1,18 @@
-import type { StravaActivity } from "@/shared"
+import type { StravaActivity } from "@/shared/types/strava"
 
+import type { AppConfig } from "../config/appConfig"
 import {
   STRAVA_ACTIVITIES_ENDPOINT,
   STRAVA_CLIENT_ID,
   STRAVA_TOKEN_ENDPOINT
 } from "../config/constants"
-import env from "../config/env"
 
 /**
  * Fetches a new access token for the Strava API
  *
  * @returns {Promise<string>} - The access token for the Strava API
  */
-export async function getStravaAccessToken(): Promise<string> {
+export async function getStravaAccessToken(config: AppConfig): Promise<string> {
   const response = await fetch(STRAVA_TOKEN_ENDPOINT, {
     method: "POST",
     headers: {
@@ -20,8 +20,8 @@ export async function getStravaAccessToken(): Promise<string> {
     },
     body: new URLSearchParams({
       client_id: STRAVA_CLIENT_ID,
-      client_secret: env.stravaClientSecret!,
-      refresh_token: env.stravaRefreshToken!,
+      client_secret: config.stravaClientSecret,
+      refresh_token: config.stravaRefreshToken,
       grant_type: "refresh_token"
     })
   })
@@ -38,7 +38,6 @@ export async function getStravaAccessToken(): Promise<string> {
 export async function getStravaActivities(
   accessToken: string
 ): Promise<StravaActivity[]> {
-  console.log("Fetching Strava activities")
   const url = new URL(STRAVA_ACTIVITIES_ENDPOINT)
   url.searchParams.append("per_page", "50")
 

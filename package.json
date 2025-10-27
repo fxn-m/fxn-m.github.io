@@ -4,20 +4,22 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.8.0",
   "scripts": {
     "build": "pnpm build:markdown && run-p type-check build-only",
     "build:markdown": "npx tsx --tsconfig tsconfig.server.json ./scripts/buildBlog.ts",
     "build-only": "vite build",
     "preview": "vite preview",
     "dev": "vite",
-    "dev:server": "tsx watch --tsconfig tsconfig.server.json src/server/index.ts",
+    "dev:server": "wrangler dev",
     "lint": "npx eslint --ext .ts,.js,.vue src",
     "format": "prettier . --write",
     "type-check": "run-s type-check:app type-check:server",
     "type-check:app": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "type-check:server": "tsc --noEmit -p tsconfig.server.json",
-    "tunnel:server": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:3000",
-    "tunnel:client": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:5173"
+    "tunnel:server": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:8787",
+    "tunnel:client": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:5173",
+    "start": "tsx --tsconfig tsconfig.server.json src/server/index.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.53",
@@ -40,11 +42,9 @@
     "cheerio": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "dotenv": "^16.6.1",
     "embla-carousel-vue": "^8.6.0",
-    "express": "^5.1.0",
     "he": "^1.2.0",
     "highlight.js": "^11.11.1",
     "lucide-vue-next": "^0.511.0",
@@ -71,8 +71,6 @@
     "@tailwindcss/postcss": "^4.1.14",
     "@tailwindcss/vite": "^4.1.14",
     "@tsconfig/node18": "^18.2.4",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
     "@types/he": "^1.2.3",
     "@types/mapbox__polyline": "^1.0.5",
     "@types/node": "^18.19.129",
@@ -94,7 +92,7 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.46.0",
     "vite": "^6.3.6",
-    "vue-tsc": "^3.1.1"
-  },
-  "packageManager": "pnpm@10.8.0+sha512.0e82714d1b5b43c74610193cb20734897c1d00de89d0e18420aebc5977fa13d780a9cb05734624e81ebd81cc876cd464794850641c48b9544326b5622ca29971"
+    "vue-tsc": "^3.1.1",
+    "wrangler": "^4.0.0"
+  }
 }
