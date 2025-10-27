@@ -256,7 +256,7 @@
 
 <template>
   <form
-    class="relative flex flex-wrap items-center gap-4 bg-white/80 text-neutral-900 transition-all duration-500 ease-out dark:bg-inherit dark:text-neutral-100 md:flex-nowrap md:items-end"
+    class="relative flex flex-col gap-6 bg-white/80 text-neutral-900 transition-all duration-500 ease-out dark:bg-inherit dark:text-neutral-100"
     @submit.prevent="form.handleSubmit()"
     @keydown.esc.prevent.stop="handleClose"
   >
@@ -272,168 +272,158 @@
       <span class="sr-only">Close topic input</span>
     </Button>
 
-    <div class="grid flex-1 gap-4 min-w-[240px]">
-      <form.Field name="topicName">
-        <template #default="{ field, state }">
-          <div class="grid gap-1.5">
-            <Label for="topic-name" :class="labelTone">Topic</Label>
-            <Select
-              :model-value="state.value ?? topicNameOptions[0]"
-              :disabled="isBusy"
-              @update:modelValue="
-                (value) => {
-                  const nextValue = ensureTopicOption(String(value))
-                  field.handleChange(nextValue)
-                  emit('update:modelValue', {
-                    topicName: nextValue,
-                    subtopic: subtopicValue.value ?? '',
-                    cardFormat: ensureCardFormat(cardFormatValue.value)
-                  })
-                }
-              "
-            >
-              <SelectTrigger
-                id="topic-name"
-                :class="[inputTone, 'min-w-0 w-full justify-between']"
-                :aria-invalid="state.meta.errors?.length ? 'true' : undefined"
-                @blur="field.handleBlur"
-              >
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent class="min-w-[240px]">
-                <SelectItem
-                  v-for="option in topicNameOptions"
-                  :key="option"
-                  :value="option"
-                >
-                  {{ option }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-            <p
-              v-if="state.meta.errors?.[0]"
-              class="text-xs text-rose-500 dark:text-rose-400"
-            >
-              {{ state.meta.errors[0] }}
-            </p>
-          </div>
-        </template>
-      </form.Field>
-
-      <form.Field name="cardFormat">
-        <template #default="{ field, state }">
-          <div class="grid gap-1.5">
-            <Label for="card-format" :class="labelTone">Format</Label>
-            <ToggleGroup
-              id="card-format"
-              type="single"
-              :model-value="state.value ?? cardFormatOptions[0]"
-              :disabled="isBusy"
-              class="flex w-full flex-wrap gap-2"
+    <form.Field name="topicName">
+      <template #default="{ field, state }">
+        <div class="grid gap-1.5">
+          <Label for="topic-name" :class="labelTone">Topic</Label>
+          <Select
+            :model-value="state.value ?? topicNameOptions[0]"
+            :disabled="isBusy"
+            @update:modelValue="
+              (value) => {
+                const nextValue = ensureTopicOption(String(value))
+                field.handleChange(nextValue)
+                emit('update:modelValue', {
+                  topicName: nextValue,
+                  subtopic: subtopicValue.value ?? '',
+                  cardFormat: ensureCardFormat(cardFormatValue.value)
+                })
+              }
+            "
+          >
+            <SelectTrigger
+              id="topic-name"
+              :class="[inputTone, 'min-w-0 w-full justify-between']"
               :aria-invalid="state.meta.errors?.length ? 'true' : undefined"
-              @update:modelValue="
-                (value) => {
-                  const nextValue = ensureCardFormat(
-                    typeof value === 'string' ? value : undefined
-                  )
-                  field.handleChange(nextValue)
-                  emit('update:modelValue', {
-                    topicName: ensureTopicOption(topicNameValue.value),
-                    subtopic: subtopicValue.value ?? '',
-                    cardFormat: nextValue
-                  })
-                }
-              "
-              @focusout="field.handleBlur"
+              @blur="field.handleBlur"
             >
-              <ToggleGroupItem
-                v-for="option in cardFormatOptions"
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent class="min-w-[240px]">
+              <SelectItem
+                v-for="option in topicNameOptions"
                 :key="option"
                 :value="option"
-                :disabled="isBusy"
-                class="flex-1 justify-start text-left"
               >
-                <div class="flex flex-col text-left">
-                  <span class="text-sm font-medium">
-                    {{ cardFormatDisplay[option].label }}
-                  </span>
-                  <span
-                    class="text-[11px] text-neutral-600 dark:text-neutral-400"
-                  >
-                    {{ cardFormatDisplay[option].description }}
-                  </span>
-                </div>
-              </ToggleGroupItem>
-            </ToggleGroup>
+                {{ option }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <p
+            v-if="state.meta.errors?.[0]"
+            class="text-xs text-rose-500 dark:text-rose-400"
+          >
+            {{ state.meta.errors[0] }}
+          </p>
+        </div>
+      </template>
+    </form.Field>
+
+    <form.Field name="subtopic">
+      <template #default="{ field, state }">
+        <div class="grid gap-3">
+          <div class="flex justify-between">
+            <Label for="topic-subtopic" :class="labelTone">
+              Subtopic (optional)
+            </Label>
             <p
               v-if="state.meta.errors?.[0]"
               class="text-xs text-rose-500 dark:text-rose-400"
             >
               {{ state.meta.errors[0] }}
             </p>
+            <p
+              v-else-if="error"
+              class="text-xs text-rose-500 dark:text-rose-400"
+            >
+              {{ error }}
+            </p>
           </div>
-        </template>
-      </form.Field>
 
-      <form.Field name="subtopic">
-        <template #default="{ field, state }">
-          <div class="grid gap-3">
-            <div class="flex justify-between">
-              <Label for="topic-subtopic" :class="labelTone">
-                Subtopic (optional)
-              </Label>
-              <p
-                v-if="state.meta.errors?.[0]"
-                class="text-xs text-rose-500 dark:text-rose-400"
-              >
-                {{ state.meta.errors[0] }}
-              </p>
-              <p
-                v-else-if="error"
-                class="text-xs text-rose-500 dark:text-rose-400"
-              >
-                {{ error }}
-              </p>
-            </div>
+          <Input
+            id="topic-subtopic"
+            :model-value="state.value ?? ''"
+            :disabled="isBusy"
+            placeholder="e.g. Liquidity stress for insurers"
+            :class="[inputTone, 'md:flex-1']"
+            :aria-invalid="state.meta.errors?.length ? 'true' : undefined"
+            :autofocus="autoFocus"
+            @update:modelValue="
+              (value) => {
+                const nextValue =
+                  typeof value === 'string' ? value : String(value ?? '')
+                field.handleChange(nextValue)
+                emit('update:modelValue', {
+                  topicName: ensureTopicOption(topicNameValue.value),
+                  subtopic: nextValue,
+                  cardFormat: ensureCardFormat(cardFormatValue.value)
+                })
+              }
+            "
+            @blur="field.handleBlur"
+            @keydown.enter.prevent="form.handleSubmit()"
+            @keydown.esc.prevent="handleClose"
+          />
+        </div>
+      </template>
+    </form.Field>
 
-            <Input
-              id="topic-subtopic"
-              :model-value="state.value ?? ''"
+    <form.Field name="cardFormat">
+      <template #default="{ field, state }">
+        <div class="grid gap-1.5">
+          <Label for="card-format" :class="labelTone">Format</Label>
+          <ToggleGroup
+            id="card-format"
+            type="single"
+            :model-value="state.value ?? cardFormatOptions[0]"
+            :disabled="isBusy"
+            class="flex w-full flex-wrap gap-2"
+            :aria-invalid="state.meta.errors?.length ? 'true' : undefined"
+            @update:modelValue="
+              (value) => {
+                const nextValue = ensureCardFormat(
+                  typeof value === 'string' ? value : undefined
+                )
+                field.handleChange(nextValue)
+                emit('update:modelValue', {
+                  topicName: ensureTopicOption(topicNameValue.value),
+                  subtopic: subtopicValue.value ?? '',
+                  cardFormat: nextValue
+                })
+              }
+            "
+            @focusout="field.handleBlur"
+          >
+            <ToggleGroupItem
+              v-for="option in cardFormatOptions"
+              :key="option"
+              :value="option"
               :disabled="isBusy"
-              placeholder="e.g. Liquidity stress for insurers"
-              :class="[inputTone, 'md:flex-1']"
-              :aria-invalid="state.meta.errors?.length ? 'true' : undefined"
-              :autofocus="autoFocus"
-              @update:modelValue="
-                (value) => {
-                  const nextValue =
-                    typeof value === 'string' ? value : String(value ?? '')
-                  field.handleChange(nextValue)
-                  emit('update:modelValue', {
-                    topicName: ensureTopicOption(topicNameValue.value),
-                    subtopic: nextValue,
-                    cardFormat: ensureCardFormat(cardFormatValue.value)
-                  })
-                }
-              "
-              @blur="field.handleBlur"
-              @keydown.enter.prevent="form.handleSubmit()"
-              @keydown.esc.prevent="handleClose"
-            />
-          </div>
-        </template>
-      </form.Field>
-    </div>
+              class="flex-1 justify-start text-left"
+            >
+              <div class="flex flex-col text-left">
+                <span class="text-sm font-medium">
+                  {{ cardFormatDisplay[option].label }}
+                </span>
+                <span
+                  class="text-[11px] text-neutral-600 dark:text-neutral-400"
+                >
+                  {{ cardFormatDisplay[option].description }}
+                </span>
+              </div>
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <p
+            v-if="state.meta.errors?.[0]"
+            class="text-xs text-rose-500 dark:text-rose-400"
+          >
+            {{ state.meta.errors[0] }}
+          </p>
+        </div>
+      </template>
+    </form.Field>
 
-    <div class="flex items-center gap-2 md:self-end">
-      <Button
-        variant="default"
-        type="submit"
-        class="cursor-pointer"
-        :disabled="isBusy"
-      >
-        {{ buttonLabel }}
-      </Button>
+    <div class="flex items-center gap-4">
       <Button
         variant="outline"
         size="icon"
@@ -445,6 +435,7 @@
         <Minus class="size-4" />
         <span class="sr-only">Decrease card total</span>
       </Button>
+
       <Button
         variant="outline"
         size="icon"
@@ -455,6 +446,15 @@
       >
         <Plus class="size-4" />
         <span class="sr-only">Increase card total</span>
+      </Button>
+
+      <Button
+        variant="default"
+        type="submit"
+        class="cursor-pointer flex-1"
+        :disabled="isBusy"
+      >
+        {{ buttonLabel }}
       </Button>
     </div>
   </form>
