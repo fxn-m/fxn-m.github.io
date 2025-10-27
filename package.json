@@ -18,8 +18,7 @@
     "type-check:app": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "type-check:server": "tsc --noEmit -p tsconfig.server.json",
     "tunnel:server": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:8787",
-    "tunnel:client": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:5173",
-    "start": "tsx --tsconfig tsconfig.server.json src/server/index.ts"
+    "tunnel:client": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:5173"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.53",
@@ -34,6 +33,8 @@
     "@highlightjs/vue-plugin": "^2.1.0",
     "@mapbox/polyline": "^1.2.1",
     "@notionhq/client": "^5.1.0",
+    "@tanstack/form-core": "^1.24.4",
+    "@tanstack/vue-form": "^1.23.8",
     "@tanstack/vue-query": "^5.90.2",
     "@trpc/client": "^11.6.0",
     "@trpc/server": "^11.6.0",

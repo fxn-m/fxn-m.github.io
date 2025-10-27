@@ -39,7 +39,12 @@
 <template>
   <Tooltip>
     <TooltipTrigger as-child>
-      <Button :disabled="isDisabled" variant="outline" @click="handleClick">
+      <Button
+        :disabled="isDisabled"
+        variant="outline"
+        class="cursor-pointer"
+        @click="handleClick"
+      >
         <RefreshCcw v-if="!loading" class="size-4" />
         <Loader2 v-else class="size-4 animate-spin" />
       </Button>

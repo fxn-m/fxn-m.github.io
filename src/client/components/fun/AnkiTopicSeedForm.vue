@@ -1,14 +1,21 @@
 <script setup lang="ts">
+  import { useForm } from "@tanstack/vue-form"
   import { Minus, Plus, X } from "lucide-vue-next"
-  import { computed } from "vue"
+  import { computed, watch } from "vue"
+  import { z } from "zod"
 
   import { Button } from "@/client/components/ui/button"
   import { Input } from "@/client/components/ui/input"
   import { Label } from "@/client/components/ui/label"
+  import {
+    type AnkiTopicSelection,
+    type GenerateAnkiDeckRequest,
+    TopicNames
+  } from "@/shared/types/anki"
 
   const props = withDefaults(
     defineProps<{
-      modelValue: string
+      modelValue: AnkiTopicSelection
       isGenerating?: boolean
       cardCount?: number
       minCount?: number
@@ -31,35 +38,105 @@
   )
 
   const emit = defineEmits<{
-    (e: "update:modelValue", payload: string): void
-    (e: "update:cardCount", payload: number): void
-    (e: "submit"): void
-    (e: "close"): void
+    "update:modelValue": [AnkiTopicSelection]
+    "update:cardCount": [number]
+    submit: [GenerateAnkiDeckRequest]
+    close: []
   }>()
 
-  const topic = computed({
-    get: () => props.modelValue,
-    set: (value: string) => {
-      emit("update:modelValue", value)
-    }
+  const topicNameOptions = [...TopicNames]
+  type TopicNameOption = (typeof TopicNames)[number]
+
+  const ensureTopicOption = (value: string | undefined): TopicNameOption =>
+    topicNameOptions.includes(value as TopicNameOption)
+      ? (value as TopicNameOption)
+      : topicNameOptions[0]
+
+  const formSchema = z.object({
+    topicName: z.enum(
+      topicNameOptions as [TopicNameOption, ...TopicNameOption[]]
+    ),
+    subtopic: z
+      .string()
+      .max(280, "Subtopic must be 280 characters or fewer")
+      .optional()
+      .or(z.literal(""))
   })
+
+  type TopicSeedFormValues = z.infer<typeof formSchema>
 
   const clampCount = (value: number) =>
     Math.min(Math.max(value, props.minCount), props.maxCount)
 
+  const selectionDefaults = (): TopicSeedFormValues => ({
+    topicName: ensureTopicOption(props.modelValue?.topicName),
+    subtopic: props.modelValue?.subtopic ?? ""
+  })
+
+  const form = useForm({
+    defaultValues: selectionDefaults(),
+    validators: {
+      onSubmit: formSchema
+    },
+    onSubmit: ({ value, formApi }) => {
+      if (props.isGenerating) {
+        return
+      }
+
+      const trimmedSubtopic = value.subtopic?.trim?.() ?? ""
+
+      if (trimmedSubtopic !== (value.subtopic ?? "")) {
+        formApi.setFieldValue("subtopic", trimmedSubtopic, {
+          dontUpdateMeta: true,
+          dontRunListeners: true,
+          dontValidate: true
+        })
+      }
+
+      const selection: AnkiTopicSelection = {
+        topicName: ensureTopicOption(value.topicName),
+        subtopic: trimmedSubtopic
+      }
+
+      emit("update:modelValue", selection)
+
+      const payload: GenerateAnkiDeckRequest = {
+        topicName: selection.topicName,
+        subtopic: trimmedSubtopic.length > 0 ? trimmedSubtopic : null,
+        cardCount: count.value
+      }
+
+      emit("submit", payload)
+    },
+    onSubmitInvalid: () => {
+      // errors surface via field meta
+    }
+  })
+
+  const topicNameValue = form.useStore(
+    (state) => state.values.topicName ?? topicNameOptions[0]
+  )
+  const subtopicValue = form.useStore((state) => state.values.subtopic ?? "")
+  const isSubmitting = form.useStore((state) => state.isSubmitting)
+
   const count = computed(() => clampCount(props.cardCount))
+  const isBusy = computed(() => props.isGenerating || isSubmitting.value)
 
   const isDecrementDisabled = computed(
-    () => props.isGenerating || count.value <= props.minCount
+    () => isBusy.value || count.value <= props.minCount
   )
 
   const isIncrementDisabled = computed(
-    () => props.isGenerating || count.value >= props.maxCount
+    () => isBusy.value || count.value >= props.maxCount
   )
 
   const buttonLabel = computed(() => {
     if (props.isGenerating) {
       return "Drafting..."
+    }
+
+    if (isSubmitting.value) {
+      return "Validating..."
     }
 
     const total = count.value
@@ -87,14 +164,6 @@
     emitCount(count.value - 1)
   }
 
-  const handleSubmit = () => {
-    if (props.isGenerating) {
-      return
-    }
-
-    emit("submit")
-  }
-
   const handleClose = () => {
     if (!props.showClose) {
       return
@@ -102,16 +171,41 @@
 
     emit("close")
   }
+
+  watch(
+    () => props.modelValue,
+    (next) => {
+      const nextTopic = ensureTopicOption(next?.topicName)
+      if (topicNameValue.value !== nextTopic) {
+        form.setFieldValue("topicName", nextTopic, {
+          dontUpdateMeta: true,
+          dontRunListeners: true,
+          dontValidate: true
+        })
+      }
+
+      const nextSubtopic = next?.subtopic ?? ""
+      if (subtopicValue.value !== nextSubtopic) {
+        form.setFieldValue("subtopic", nextSubtopic, {
+          dontUpdateMeta: true,
+          dontRunListeners: true,
+          dontValidate: true
+        })
+      }
+    },
+    { immediate: true, deep: true }
+  )
 </script>
 
 <template>
-  <section
+  <form
     class="relative flex flex-wrap items-center gap-4 bg-white/80 p-10 text-neutral-900 transition-all duration-500 ease-out dark:bg-inherit dark:text-neutral-100 md:flex-nowrap md:items-end"
+    @submit.prevent="form.handleSubmit()"
     @keydown.esc.prevent.stop="handleClose"
   >
     <Button
       v-if="showClose"
-      class="absolute right-4 top-4 size-8"
+      class="absolute right-4 top-4 size-8 cursor-pointer"
       variant="ghost"
       size="icon"
       type="button"
@@ -120,32 +214,106 @@
       <X class="size-4" />
       <span class="sr-only">Close topic input</span>
     </Button>
-    <div class="grid flex-1 gap-3 min-w-[240px]">
-      <div class="flex justify-between">
-        <Label for="topic-seed" :class="labelTone">Input Topic</Label>
-        <p v-if="error" class="text-xs text-rose-500 dark:text-rose-400">
-          {{ error }}
-        </p>
-      </div>
 
-      <Input
-        id="topic-seed"
-        v-model="topic"
-        :disabled="isGenerating"
-        placeholder="e.g. Structured credit desk, counterparty XVA, liquidity risk"
-        :class="[inputTone, 'md:flex-1']"
-        :autofocus="autoFocus"
-        @keydown.enter.prevent="handleSubmit"
-        @keydown.esc.prevent="handleClose"
-      />
+    <div class="grid flex-1 gap-4 min-w-[240px]">
+      <form.Field name="topicName">
+        <template #default="{ field, state }">
+          <div class="grid gap-1.5">
+            <Label for="topic-name" :class="labelTone">Topic</Label>
+            <select
+              id="topic-name"
+              :value="state.value ?? topicNameOptions[0]"
+              :disabled="isBusy"
+              :class="[
+                inputTone,
+                'min-w-0 rounded-md border border-input bg-white/80 px-3 py-2 text-sm text-neutral-900 shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] dark:bg-neutral-900/30 dark:text-neutral-100'
+              ]"
+              :aria-invalid="state.meta.errors?.length ? 'true' : undefined"
+              @change="
+                (event) => {
+                  const value = (event.target as HTMLSelectElement).value
+                  field.handleChange(value)
+                  emit('update:modelValue', {
+                    topicName: ensureTopicOption(value),
+                    subtopic: subtopicValue.value ?? ''
+                  })
+                }
+              "
+              @blur="field.handleBlur"
+            >
+              <option
+                v-for="option in topicNameOptions"
+                :key="option"
+                :value="option"
+              >
+                {{ option }}
+              </option>
+            </select>
+            <p
+              v-if="state.meta.errors?.[0]"
+              class="text-xs text-rose-500 dark:text-rose-400"
+            >
+              {{ state.meta.errors[0] }}
+            </p>
+          </div>
+        </template>
+      </form.Field>
+
+      <form.Field name="subtopic">
+        <template #default="{ field, state }">
+          <div class="grid gap-3">
+            <div class="flex justify-between">
+              <Label for="topic-subtopic" :class="labelTone">
+                Subtopic (optional)
+              </Label>
+              <p
+                v-if="state.meta.errors?.[0]"
+                class="text-xs text-rose-500 dark:text-rose-400"
+              >
+                {{ state.meta.errors[0] }}
+              </p>
+              <p
+                v-else-if="error"
+                class="text-xs text-rose-500 dark:text-rose-400"
+              >
+                {{ error }}
+              </p>
+            </div>
+
+            <Input
+              id="topic-subtopic"
+              :model-value="state.value ?? ''"
+              :disabled="isBusy"
+              placeholder="e.g. Liquidity stress for insurers"
+              :class="[inputTone, 'md:flex-1']"
+              :aria-invalid="state.meta.errors?.length ? 'true' : undefined"
+              :autofocus="autoFocus"
+              @update:modelValue="
+                (value) => {
+                  const nextValue =
+                    typeof value === 'string' ? value : String(value ?? '')
+                  field.handleChange(nextValue)
+                  emit('update:modelValue', {
+                    topicName: ensureTopicOption(topicNameValue.value),
+                    subtopic: nextValue
+                  })
+                }
+              "
+              @blur="field.handleBlur"
+              @keydown.enter.prevent="form.handleSubmit()"
+              @keydown.esc.prevent="handleClose"
+            />
+          </div>
+        </template>
+      </form.Field>
     </div>
 
     <div class="flex items-center gap-2 md:self-end">
       <Button
         variant="default"
-        :disabled="isGenerating"
-        type="button"
-        @click="handleSubmit"
+        type="submit"
+        class="cursor-pointer"
+        :disabled="isBusy"
       >
         {{ buttonLabel }}
       </Button>
@@ -153,7 +321,7 @@
         variant="outline"
         size="icon"
         type="button"
-        class="size-9"
+        class="size-9 cursor-pointer"
         :disabled="isDecrementDisabled"
         @click="handleDecrement"
       >
@@ -164,7 +332,7 @@
         variant="outline"
         size="icon"
         type="button"
-        class="size-9"
+        class="size-9 cursor-pointer"
         :disabled="isIncrementDisabled"
         @click="handleIncrement"
       >
@@ -172,5 +340,5 @@
         <span class="sr-only">Increase card total</span>
       </Button>
     </div>
-  </section>
+  </form>
 </template>

@@ -11,6 +11,7 @@ import {
   createConfigFromBindings,
   type WorkerBindings
 } from "./config/appConfig"
+import { normalizeGenerateDeckRequest } from "./services/ankipankiService"
 import {
   enrichAllTabOverflowItems,
   enrichTabOverflowItem
@@ -119,6 +120,32 @@ const handleNotionWebhook = async (
   return jsonResponse({ message: "Webhook received" }, 202)
 }
 
+const handleAnkiGenerate = async (request: Request) => {
+  const body = await request.json().catch(() => null)
+
+  const result = normalizeGenerateDeckRequest(body)
+
+  if (!result.success) {
+    return jsonResponse(
+      {
+        message: "Invalid generation request",
+        issues: result.issues
+      },
+      400
+    )
+  }
+
+  console.log("Anki generate request:", result.payload)
+
+  return jsonResponse(
+    {
+      message: "Generation request received",
+      data: result.payload
+    },
+    202
+  )
+}
+
 const routeRequest = async (
   request: Request,
   env: WorkerBindings,
@@ -147,6 +174,10 @@ const routeRequest = async (
 
   if (pathname === "/tab-overflow/enrich" && method === "POST") {
     return enqueueTabOverflowEnrichment(config, env, ctx)
+  }
+
+  if (pathname === "/ankipanki/generate" && method === "POST") {
+    return handleAnkiGenerate(request)
   }
 
   if (pathname === "/blog" && method === "GET") {

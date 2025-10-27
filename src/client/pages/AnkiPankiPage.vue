@@ -35,8 +35,15 @@
     TooltipProvider,
     TooltipTrigger
   } from "@/client/components/ui/tooltip"
-  import { type Blueprint, BLUEPRINTS } from "@/client/lib/ankiBlueprints"
+  import { BLUEPRINTS } from "@/client/lib/ankiBlueprints"
   import type { Flashcard } from "@/shared/types"
+  import {
+    type AnkiTopicSelection,
+    type GenerateAnkiDeckRequest,
+    TopicNames
+  } from "@/shared/types/anki"
+
+  type Blueprint = (typeof BLUEPRINTS)[number]
 
   const API_KEY_STORAGE_KEY = "ankipanki:openai-api-key"
   const MIN_CARD_COUNT = 1
@@ -46,7 +53,10 @@
   const SIMULATED_FETCH_DELAY_MS = 1000
   const CARD_REVEAL_STAGGER_MS = 220
 
-  const topicSeed = ref("")
+  const topicSelection = ref<AnkiTopicSelection>({
+    topicName: TopicNames[0],
+    subtopic: ""
+  })
   const cardCount = ref(DEFAULT_CARD_COUNT)
   const cards = ref<Flashcard[]>([])
   const isGenerating = ref(false)
@@ -151,6 +161,14 @@
   const exportDisabled = computed(
     () => isExporting.value || isGenerating.value || cards.value.length === 0
   )
+
+  const buildTopicLabel = (
+    topicName: string,
+    subtopic?: string | null
+  ): string => {
+    const trimmed = subtopic?.trim()
+    return trimmed ? `${topicName} — ${trimmed}` : topicName
+  }
 
   const formatTopic = (value: string) => {
     if (value.length <= 40) {
@@ -362,11 +380,13 @@
       topic,
       headline: replaceTopic(blueprint.headline, topic),
       question: replaceTopic(blueprint.question, topic),
-      options: blueprint.options.map((option) => ({
-        id: uid(),
-        label: option.label,
-        text: replaceTopic(option.text, topic)
-      })),
+      options: blueprint.options.map(
+        (option: Blueprint["options"][number]) => ({
+          id: uid(),
+          label: option.label,
+          text: replaceTopic(option.text, topic)
+        })
+      ),
       answerId: blueprint.answerId,
       explanation: replaceTopic(blueprint.explanation, topic),
       difficulty: blueprint.difficulty,
@@ -542,37 +562,30 @@
     }
   }
 
-  const createDeck = (seed: string): Flashcard[] => {
+  const createDeck = (topicLabel: string): Flashcard[] => {
     return Array.from({ length: cardCount.value }, (_, index) => {
       const rotation =
         (index + Math.floor(Math.random() * BLUEPRINTS.length)) %
         BLUEPRINTS.length
-      return buildCard(seed, BLUEPRINTS[rotation])
+      return buildCard(topicLabel, BLUEPRINTS[rotation])
     })
   }
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (request: GenerateAnkiDeckRequest) => {
     generationError.value = null
-    const seed = topicSeed.value.trim()
+    const topicLabel = buildTopicLabel(
+      request.topicName,
+      request.subtopic ?? null
+    )
 
-    if (!seed.length) {
-      generationError.value = "Input must not be empty"
-      return
-    }
-
-    if (cards.value.length > 0) {
-      isSeedFormOpen.value = false
-    }
+    const hadExistingCards = cards.value.length > 0
 
     activeSlideIndex.value = 0
 
     const api = carouselApi.value
-
     if (api) {
       api.scrollTo(0, true)
     }
-
-    const requestedTopic = seed
 
     const generationToken = uid()
     activeGenerationToken = generationToken
@@ -582,6 +595,40 @@
     skeletonKeys.value = []
     regeneratingCardId.value = null
     isGenerating.value = true
+
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/ankipanki/generate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(request)
+        }
+      )
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null)
+        const message =
+          typeof payload?.message === "string"
+            ? payload.message
+            : "Unable to start generation"
+        throw new Error(message)
+      }
+    } catch (error) {
+      clearScheduledWork()
+      skeletonKeys.value = []
+      isGenerating.value = false
+      activeGenerationToken = null
+      generationError.value =
+        error instanceof Error ? error.message : "Unable to start generation"
+      return
+    }
+
+    if (hadExistingCards) {
+      isSeedFormOpen.value = false
+    }
 
     spawnSkeletons()
 
@@ -593,7 +640,7 @@
           return
         }
 
-        const deck = createDeck(seed)
+        const deck = createDeck(topicLabel)
 
         if (!deck.length) {
           clearScheduledWork()
@@ -603,7 +650,7 @@
           return
         }
 
-        lastGeneratedTopic.value = deck[0]?.topic ?? requestedTopic
+        lastGeneratedTopic.value = deck[0]?.topic ?? topicLabel
 
         deck.forEach((card, index) => {
           const timer = setTimeout(() => {
@@ -772,7 +819,7 @@
     <div class="relative">
       <div v-if="renderSeedForm">
         <AnkiTopicSeedForm
-          v-model="topicSeed"
+          v-model="topicSelection"
           v-model:card-count="cardCount"
           :is-generating="isGenerating"
           :error="generationError"
@@ -793,6 +840,7 @@
             <TooltipTrigger as-child>
               <Button
                 variant="outline"
+                class="cursor-pointer"
                 type="button"
                 :disabled="exportDisabled"
                 @click="handleExportTsv"
