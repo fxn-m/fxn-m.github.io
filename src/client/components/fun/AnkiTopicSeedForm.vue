@@ -8,6 +8,19 @@
   import { Input } from "@/client/components/ui/input"
   import { Label } from "@/client/components/ui/label"
   import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+  } from "@/client/components/ui/select"
+  import {
+    ToggleGroup,
+    ToggleGroupItem
+  } from "@/client/components/ui/toggle-group"
+  import {
+    type AnkiCardFormat,
+    AnkiCardFormats,
     type AnkiTopicSelection,
     type GenerateAnkiDeckRequest,
     TopicNames
@@ -52,9 +65,38 @@
       ? (value as TopicNameOption)
       : topicNameOptions[0]
 
+  const cardFormatOptions = AnkiCardFormats
+  type CardFormatOption = AnkiCardFormat
+
+  const ensureCardFormat = (value: string | undefined): CardFormatOption =>
+    cardFormatOptions.includes(value as CardFormatOption)
+      ? (value as CardFormatOption)
+      : cardFormatOptions[0]
+
+  const cardFormatDisplay: Record<
+    CardFormatOption,
+    { label: string; description: string }
+  > = {
+    cloze_definition: {
+      label: "Cloze",
+      description: "Mask key phrases inside context"
+    },
+    enumerated_list: {
+      label: "List",
+      description: "Memorize ordered or unordered items"
+    },
+    qa_definition: {
+      label: "Q&A",
+      description: "Prompt and answer style definition"
+    }
+  }
+
   const formSchema = z.object({
     topicName: z.enum(
       topicNameOptions as [TopicNameOption, ...TopicNameOption[]]
+    ),
+    cardFormat: z.enum(
+      cardFormatOptions as [CardFormatOption, ...CardFormatOption[]]
     ),
     subtopic: z
       .string()
@@ -70,6 +112,7 @@
 
   const selectionDefaults = (): TopicSeedFormValues => ({
     topicName: ensureTopicOption(props.modelValue?.topicName),
+    cardFormat: ensureCardFormat(props.modelValue?.cardFormat),
     subtopic: props.modelValue?.subtopic ?? ""
   })
 
@@ -95,6 +138,7 @@
 
       const selection: AnkiTopicSelection = {
         topicName: ensureTopicOption(value.topicName),
+        cardFormat: ensureCardFormat(value.cardFormat),
         subtopic: trimmedSubtopic
       }
 
@@ -102,6 +146,7 @@
 
       const payload: GenerateAnkiDeckRequest = {
         topicName: selection.topicName,
+        cardFormat: selection.cardFormat,
         subtopic: trimmedSubtopic.length > 0 ? trimmedSubtopic : null,
         cardCount: count.value
       }
@@ -115,6 +160,9 @@
 
   const topicNameValue = form.useStore(
     (state) => state.values.topicName ?? topicNameOptions[0]
+  )
+  const cardFormatValue = form.useStore(
+    (state) => state.values.cardFormat ?? cardFormatOptions[0]
   )
   const subtopicValue = form.useStore((state) => state.values.subtopic ?? "")
   const isSubmitting = form.useStore((state) => state.isSubmitting)
@@ -184,6 +232,15 @@
         })
       }
 
+      const nextFormat = ensureCardFormat(next?.cardFormat)
+      if (cardFormatValue.value !== nextFormat) {
+        form.setFieldValue("cardFormat", nextFormat, {
+          dontUpdateMeta: true,
+          dontRunListeners: true,
+          dontValidate: true
+        })
+      }
+
       const nextSubtopic = next?.subtopic ?? ""
       if (subtopicValue.value !== nextSubtopic) {
         form.setFieldValue("subtopic", nextSubtopic, {
@@ -199,7 +256,7 @@
 
 <template>
   <form
-    class="relative flex flex-wrap items-center gap-4 bg-white/80 p-10 text-neutral-900 transition-all duration-500 ease-out dark:bg-inherit dark:text-neutral-100 md:flex-nowrap md:items-end"
+    class="relative flex flex-wrap items-center gap-4 bg-white/80 text-neutral-900 transition-all duration-500 ease-out dark:bg-inherit dark:text-neutral-100 md:flex-nowrap md:items-end"
     @submit.prevent="form.handleSubmit()"
     @keydown.esc.prevent.stop="handleClose"
   >
@@ -220,35 +277,94 @@
         <template #default="{ field, state }">
           <div class="grid gap-1.5">
             <Label for="topic-name" :class="labelTone">Topic</Label>
-            <select
-              id="topic-name"
-              :value="state.value ?? topicNameOptions[0]"
+            <Select
+              :model-value="state.value ?? topicNameOptions[0]"
               :disabled="isBusy"
-              :class="[
-                inputTone,
-                'min-w-0 rounded-md border border-input bg-white/80 px-3 py-2 text-sm text-neutral-900 shadow-xs transition-[color,box-shadow] outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] dark:bg-neutral-900/30 dark:text-neutral-100'
-              ]"
-              :aria-invalid="state.meta.errors?.length ? 'true' : undefined"
-              @change="
-                (event) => {
-                  const value = (event.target as HTMLSelectElement).value
-                  field.handleChange(value)
+              @update:modelValue="
+                (value) => {
+                  const nextValue = ensureTopicOption(String(value))
+                  field.handleChange(nextValue)
                   emit('update:modelValue', {
-                    topicName: ensureTopicOption(value),
-                    subtopic: subtopicValue.value ?? ''
+                    topicName: nextValue,
+                    subtopic: subtopicValue.value ?? '',
+                    cardFormat: ensureCardFormat(cardFormatValue.value)
                   })
                 }
               "
-              @blur="field.handleBlur"
             >
-              <option
-                v-for="option in topicNameOptions"
+              <SelectTrigger
+                id="topic-name"
+                :class="[inputTone, 'min-w-0 w-full justify-between']"
+                :aria-invalid="state.meta.errors?.length ? 'true' : undefined"
+                @blur="field.handleBlur"
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent class="min-w-[240px]">
+                <SelectItem
+                  v-for="option in topicNameOptions"
+                  :key="option"
+                  :value="option"
+                >
+                  {{ option }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <p
+              v-if="state.meta.errors?.[0]"
+              class="text-xs text-rose-500 dark:text-rose-400"
+            >
+              {{ state.meta.errors[0] }}
+            </p>
+          </div>
+        </template>
+      </form.Field>
+
+      <form.Field name="cardFormat">
+        <template #default="{ field, state }">
+          <div class="grid gap-1.5">
+            <Label for="card-format" :class="labelTone">Format</Label>
+            <ToggleGroup
+              id="card-format"
+              type="single"
+              :model-value="state.value ?? cardFormatOptions[0]"
+              :disabled="isBusy"
+              class="flex w-full flex-wrap gap-2"
+              :aria-invalid="state.meta.errors?.length ? 'true' : undefined"
+              @update:modelValue="
+                (value) => {
+                  const nextValue = ensureCardFormat(
+                    typeof value === 'string' ? value : undefined
+                  )
+                  field.handleChange(nextValue)
+                  emit('update:modelValue', {
+                    topicName: ensureTopicOption(topicNameValue.value),
+                    subtopic: subtopicValue.value ?? '',
+                    cardFormat: nextValue
+                  })
+                }
+              "
+              @focusout="field.handleBlur"
+            >
+              <ToggleGroupItem
+                v-for="option in cardFormatOptions"
                 :key="option"
                 :value="option"
+                :disabled="isBusy"
+                class="flex-1 justify-start text-left"
               >
-                {{ option }}
-              </option>
-            </select>
+                <div class="flex flex-col text-left">
+                  <span class="text-sm font-medium">
+                    {{ cardFormatDisplay[option].label }}
+                  </span>
+                  <span
+                    class="text-[11px] text-neutral-600 dark:text-neutral-400"
+                  >
+                    {{ cardFormatDisplay[option].description }}
+                  </span>
+                </div>
+              </ToggleGroupItem>
+            </ToggleGroup>
             <p
               v-if="state.meta.errors?.[0]"
               class="text-xs text-rose-500 dark:text-rose-400"
@@ -295,7 +411,8 @@
                   field.handleChange(nextValue)
                   emit('update:modelValue', {
                     topicName: ensureTopicOption(topicNameValue.value),
-                    subtopic: nextValue
+                    subtopic: nextValue,
+                    cardFormat: ensureCardFormat(cardFormatValue.value)
                   })
                 }
               "

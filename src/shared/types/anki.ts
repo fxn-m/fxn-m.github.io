@@ -1,3 +1,5 @@
+import { z } from "zod"
+
 export type FlashcardDifficulty = "Foundation" | "Core" | "Challenger"
 
 export interface MultipleChoiceOption {
@@ -33,11 +35,58 @@ export const TopicNames = [
 
 export type TopicName = (typeof TopicNames)[number]
 
+export const AnkiCardFormats = [
+  "cloze_definition",
+  "enumerated_list",
+  "qa_definition"
+] as const
+
+export type AnkiCardFormat = (typeof AnkiCardFormats)[number]
+
 export interface AnkiTopicSelection {
   topicName: TopicName
   subtopic?: string | null
+  cardFormat: AnkiCardFormat
 }
 
 export interface GenerateAnkiDeckRequest extends AnkiTopicSelection {
   cardCount: number
 }
+
+const BaseCard = z.object({
+  id: z.string().uuid().optional(),
+  createdAt: z.date().optional(),
+  tags: z.array(z.string()).optional()
+})
+
+export const ClozeDefinitionCard = BaseCard.extend({
+  type: z.literal("cloze_definition"),
+  text: z
+    .string()
+    .describe(
+      "HTML or plain text containing <span class='cloze'>[...]</span> or {{cloze}} placeholders."
+    )
+})
+
+export const EnumeratedListCard = BaseCard.extend({
+  type: z.literal("enumerated_list"),
+  prompt: z
+    .string()
+    .describe("Prompt text, often includes item count e.g. '(5)'."),
+  items: z.array(z.string()).nonempty(),
+  ordered: z.boolean().default(true)
+})
+
+export const QADefinitionCard = BaseCard.extend({
+  type: z.literal("qa_definition"),
+  question: z.string(),
+  answer: z.string()
+})
+
+export const AnkiCardSchema = z.discriminatedUnion("type", [
+  ClozeDefinitionCard,
+  EnumeratedListCard,
+  QADefinitionCard
+])
+
+export type AnkiCard = z.infer<typeof AnkiCardSchema>

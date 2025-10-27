@@ -38,6 +38,7 @@
   import { BLUEPRINTS } from "@/client/lib/ankiBlueprints"
   import type { Flashcard } from "@/shared/types"
   import {
+    AnkiCardFormats,
     type AnkiTopicSelection,
     type GenerateAnkiDeckRequest,
     TopicNames
@@ -55,7 +56,8 @@
 
   const topicSelection = ref<AnkiTopicSelection>({
     topicName: TopicNames[0],
-    subtopic: ""
+    subtopic: "",
+    cardFormat: AnkiCardFormats[0]
   })
   const cardCount = ref(DEFAULT_CARD_COUNT)
   const cards = ref<Flashcard[]>([])
