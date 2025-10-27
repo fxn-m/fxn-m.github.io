@@ -78,6 +78,35 @@ const extractPropertyConfig = (
   return null
 }
 
+const withSuppressedNotionToMdLogs = async <T>(
+  action: () => Promise<T>
+): Promise<T> => {
+  const originalDebug = console.debug
+  console.debug = () => {}
+  try {
+    return await action()
+  } finally {
+    console.debug = originalDebug
+  }
+}
+
+const normalizeUrlForComparison = (
+  rawUrl: string
+): { normalized: string; hostname: string } | null => {
+  try {
+    const parsed = new URL(rawUrl)
+    const hostname = parsed.hostname.toLowerCase()
+    let pathname = parsed.pathname || "/"
+    pathname = pathname.replace(/\/+$/, "") || "/" // trim trailing slash, keep root
+    if (!pathname.startsWith("/")) {
+      pathname = `/${pathname}`
+    }
+    return { normalized: `${hostname}${pathname}`, hostname }
+  } catch {
+    return null
+  }
+}
+
 export const getTabOverflowItems = async (
   config: AppConfig
 ): Promise<NotionResponse[]> => {
@@ -124,28 +153,28 @@ export const refreshTabOverflowCache = async (
 export const getBlogPostById = async (config: AppConfig, blockId: string) => {
   const notion = createNotionClient(config.notionBlogToken)
 
-  const buffer: Record<string, string> = {}
-  const bufferExporter = new DefaultExporter({
-    outputType: "buffer",
-    buffer: buffer
-  })
-
-  const renderer = new MDXRenderer({
-    frontmatter: {
-      include: ["Title", "Date", "Tags"]
-    }
-  })
-
-  const n2m = new NotionConverter(notion)
-    .configureFetcher({
-      fetchPageProperties: true
+  return withSuppressedNotionToMdLogs(async () => {
+    const buffer: Record<string, string> = {}
+    const bufferExporter = new DefaultExporter({
+      outputType: "buffer",
+      buffer: buffer
     })
-    .withExporter(bufferExporter)
-    .withRenderer(renderer)
-  await n2m.convert(blockId)
-  const blogPost = buffer[blockId]
 
-  return blogPost
+    const renderer = new MDXRenderer({
+      frontmatter: {
+        include: ["Title", "Date", "Tags"]
+      }
+    })
+
+    const n2m = new NotionConverter(notion)
+      .configureFetcher({
+        fetchPageProperties: true
+      })
+      .withExporter(bufferExporter)
+      .withRenderer(renderer)
+    await n2m.convert(blockId)
+    return buffer[blockId]
+  })
 }
 
 export const getBlogPosts = async (
@@ -317,6 +346,46 @@ const extractCategoriesFromDatabase = async (
         }
       }
 
+      if (
+        typeof response === "object" &&
+        response !== null &&
+        "database_parent" in response
+      ) {
+        const databaseParent = (
+          response as {
+            database_parent:
+              | { type: "database_id"; database_id: string }
+              | { type: "data_source_id"; data_source_id: string }
+              | { type: "page_id"; page_id: string }
+              | { type: "workspace"; workspace: true }
+              | { type: "block_id"; block_id: string }
+              | null
+          }
+        ).database_parent
+
+        if (
+          databaseParent &&
+          databaseParent.type === "database_id" &&
+          databaseParent.database_id
+        ) {
+          const parentCategories = await getCategoriesFromDatabaseId(
+            databaseParent.database_id
+          )
+          if (parentCategories && parentCategories.length > 0) {
+            return parentCategories
+          }
+        }
+
+        if (
+          databaseParent &&
+          databaseParent.type === "data_source_id" &&
+          databaseParent.data_source_id &&
+          databaseParent.data_source_id !== dataSourceId
+        ) {
+          return getCategoriesFromDataSourceId(databaseParent.data_source_id)
+        }
+      }
+
       return categories
     } catch (error) {
       if (
@@ -333,9 +402,32 @@ const extractCategoriesFromDatabase = async (
     }
   }
 
+  const visited = new Set<string>()
+
+  const resolveCategories = async (
+    referenceId: string | null | undefined
+  ): Promise<string[] | null> => {
+    if (!referenceId || visited.has(referenceId)) {
+      return null
+    }
+    visited.add(referenceId)
+
+    const fromDatabase = await getCategoriesFromDatabaseId(referenceId)
+    if (fromDatabase && fromDatabase.length > 0) {
+      return fromDatabase
+    }
+
+    const fromDataSource = await getCategoriesFromDataSourceId(referenceId)
+    if (fromDataSource && fromDataSource.length > 0) {
+      return fromDataSource
+    }
+
+    return null
+  }
+
   const categories =
-    (await getCategoriesFromDatabaseId(parentId)) ??
-    (await getCategoriesFromDataSourceId(parentId))
+    (await resolveCategories(parentId)) ??
+    (await resolveCategories(config.notionTabOverflowDataSourceId))
 
   if (!categories || categories.length === 0) {
     throw new Error(
@@ -357,24 +449,50 @@ const hasDuplicateLink = async (
   pageId: string,
   url: string
 ): Promise<boolean> => {
-  if (!url || url.trim().length === 0) {
+  const normalizedTarget = normalizeUrlForComparison(url)
+  if (!normalizedTarget) {
     return false
   }
 
   const notion = createNotionClient(config.notionTabOverflowToken)
-  const response = await notion.dataSources.query({
-    data_source_id: config.notionTabOverflowDataSourceId,
-    filter: {
-      property: "Link",
-      url: {
-        equals: url
+  let startCursor: string | undefined | null = undefined
+  let hasMore = true
+
+  while (hasMore) {
+    const response = await notion.dataSources.query({
+      data_source_id: config.notionTabOverflowDataSourceId,
+      filter: {
+        property: "Link",
+        url: {
+          contains: normalizedTarget.hostname
+        }
+      },
+      start_cursor: startCursor ?? undefined
+    })
+
+    for (const result of response.results) {
+      if (!isPageObjectResponse(result) || result.id === pageId) {
+        continue
+      }
+      const linkProperty = result.properties?.Link
+      if (!linkProperty || linkProperty.type !== "url" || !linkProperty.url) {
+        continue
+      }
+
+      const normalizedCandidate = normalizeUrlForComparison(linkProperty.url)
+      if (
+        normalizedCandidate &&
+        normalizedCandidate.normalized === normalizedTarget.normalized
+      ) {
+        return true
       }
     }
-  })
 
-  return response.results.some(
-    (result) => isPageObjectResponse(result) && result.id !== pageId
-  )
+    startCursor = response.next_cursor
+    hasMore = response.has_more
+  }
+
+  return false
 }
 
 const enrich = async ({ props, categories, openai }: EnrichInput) => {
@@ -470,6 +588,14 @@ const updateNotionPage = async (
   })
 }
 
+const deleteNotionPage = async (config: AppConfig, pageId: string) => {
+  const notion = createNotionClient(config.notionTabOverflowToken)
+  await notion.pages.update({
+    page_id: pageId,
+    archived: true
+  })
+}
+
 export const enrichTabOverflowItem = async (
   config: AppConfig,
   kv: KVNamespace,
@@ -480,6 +606,16 @@ export const enrichTabOverflowItem = async (
   const props = await getPagePropertiesById(config, pageId)
   const categories = await extractCategoriesFromDatabase(config, databaseId)
   const isDuplicate = await hasDuplicateLink(config, pageId, props.url)
+  if (isDuplicate) {
+    console.warn(
+      `Duplicate Tab Overflow link detected for ${props.url}; deleting page ${pageId}`
+    )
+    await deleteNotionPage(config, pageId)
+    console.log("Deleted duplicate Notion page")
+    await refreshTabOverflowCache(config, kv)
+    console.log("Refreshed tab overflow cache after duplicate deletion")
+    return
+  }
   const enrichedItem = await enrich({
     props,
     categories,

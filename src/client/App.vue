@@ -10,7 +10,6 @@
   import { RouterView } from "vue-router"
 
   import NavBar from "@/client/components/NavBar.vue"
-  import ServerStatus from "@/client/components/ServerStatus.vue"
   import CurrentTrack from "@/client/components/spotify/CurrentTrack.vue"
 
   console.log(`

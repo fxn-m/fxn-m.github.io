@@ -103,6 +103,8 @@ const handleNotionWebhook = async (
 ) => {
   const body = await request.json().catch(() => null)
 
+  console.log("Notion webhook body:", body)
+
   const pageId = body?.entity?.id as string | undefined
   const databaseId = body?.data?.parent?.id as string | undefined
 

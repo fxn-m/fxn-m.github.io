@@ -38,7 +38,6 @@ export async function getStravaAccessToken(config: AppConfig): Promise<string> {
 export async function getStravaActivities(
   accessToken: string
 ): Promise<StravaActivity[]> {
-  console.log("Fetching Strava activities")
   const url = new URL(STRAVA_ACTIVITIES_ENDPOINT)
   url.searchParams.append("per_page", "50")
 
