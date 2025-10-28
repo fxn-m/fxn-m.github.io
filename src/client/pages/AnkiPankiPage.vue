@@ -1,6 +1,6 @@
 <script setup lang="ts">
   import { Download } from "lucide-vue-next"
-  import { Motion } from "motion-v"
+  import { AnimatePresence, LayoutGroup, Motion } from "motion-v"
   import {
     computed,
     nextTick,
@@ -51,6 +51,9 @@
   const MAX_CARD_COUNT = 10
   const DEFAULT_CARD_COUNT = 5
   const SKELETON_STAGGER_MS = 120
+  const SKELETON_ANIMATION_DURATION_MS = 550
+  const SKELETON_SETTLE_BUFFER_MS = 150
+  const SEED_FORM_TRANSITION_MS = 420
 
   const topicSelection = ref<AnkiTopicSelection>({
     topicName: TopicNames[0],
@@ -166,6 +169,7 @@
   const skeletonKeys = ref<string[]>([])
 
   let skeletonTimers: ReturnType<typeof setTimeout>[] = []
+  let seedFormExitTimer: ReturnType<typeof setTimeout> | null = null
   let activeGenerationToken: string | null = null
 
   const showEmptyState = computed(
@@ -291,12 +295,38 @@
     skeletonTimers = []
   }
 
+  const clearSeedFormExitTimer = () => {
+    if (seedFormExitTimer !== null) {
+      clearTimeout(seedFormExitTimer)
+      seedFormExitTimer = null
+    }
+  }
+
+  const scheduleSeedFormExit = (targetCount: number) => {
+    clearSeedFormExitTimer()
+
+    const lastSkeletonDelay = Math.max(targetCount - 1, 0) * SKELETON_STAGGER_MS
+    const totalDelay =
+      lastSkeletonDelay +
+      SKELETON_ANIMATION_DURATION_MS +
+      SKELETON_SETTLE_BUFFER_MS
+
+    seedFormExitTimer = setTimeout(() => {
+      seedFormExitTimer = null
+
+      if (cards.value.length === 0 && isSeedFormOpen.value) {
+        isSeedFormOpen.value = false
+      }
+    }, totalDelay)
+  }
+
   const openSeedForm = () => {
     if (chipDisabled.value && cards.value.length > 0) {
       return
     }
 
     isSeedFormOpen.value = true
+    clearSeedFormExitTimer()
   }
 
   const closeSeedForm = () => {
@@ -305,6 +335,7 @@
     }
 
     isSeedFormOpen.value = false
+    clearSeedFormExitTimer()
   }
 
   const handleSeedShortcut = (event: KeyboardEvent) => {
@@ -397,6 +428,8 @@
       }, index * SKELETON_STAGGER_MS)
       skeletonTimers.push(timer)
     }
+
+    scheduleSeedFormExit(targetCount)
   }
 
   const slugify = (value: string) =>
@@ -729,6 +762,7 @@
     activeGenerationToken = generationToken
 
     clearScheduledWork()
+    clearSeedFormExitTimer()
     cards.value = []
     skeletonKeys.value = []
     regeneratingCardId.value = null
@@ -769,6 +803,7 @@
       const deck = normalizeGeneratedCards(payload, request)
 
       clearScheduledWork()
+      clearSeedFormExitTimer()
       skeletonKeys.value = []
       cards.value = deck
       lastGeneratedTopic.value = deck[0]?.topic ?? topicLabel
@@ -784,12 +819,14 @@
       }
 
       clearScheduledWork()
+      clearSeedFormExitTimer()
       skeletonKeys.value = []
       isGenerating.value = false
       activeGenerationToken = null
       const message =
         error instanceof Error ? error.message : "Unable to generate cards"
       generationError.value = message
+      isSeedFormOpen.value = true
       console.error(error)
     }
   }
@@ -908,6 +945,7 @@
     (nextLength, previousLength) => {
       if (nextLength === 0) {
         isSeedFormOpen.value = true
+        clearSeedFormExitTimer()
         return
       }
 
@@ -946,6 +984,7 @@
     activeGenerationToken = null
     detachCarouselEvents()
     window.removeEventListener("keydown", handleSeedShortcut)
+    clearSeedFormExitTimer()
   })
 </script>
 
@@ -969,101 +1008,135 @@
       made with ♥
     </p>
 
-    <div class="relative">
-      <div v-if="renderSeedForm">
-        <AnkiTopicSeedForm
-          v-model="topicSelection"
-          v-model:card-count="cardCount"
-          :is-generating="isGenerating"
-          :error="generationError"
-          :label-tone="labelTone"
-          :input-tone="inputTone"
-          :min-count="MIN_CARD_COUNT"
-          :max-count="MAX_CARD_COUNT"
-          :show-close="canCloseSeedForm"
-          :auto-focus="isSeedFormOpen && cards.length > 0"
-          class="mb-2"
-          @submit="handleGenerate"
-          @close="closeSeedForm"
-        />
-      </div>
-
-      <div v-else-if="showGenerateChip" class="mb-1 flex justify-end gap-2">
-        <TooltipProvider :delay-duration="150">
-          <Tooltip>
-            <TooltipTrigger as-child>
-              <Button
-                variant="outline"
-                class="cursor-pointer"
-                type="button"
-                :disabled="exportDisabled"
-                @click="handleExportTsv"
-              >
-                <Spinner v-if="isExporting" class="size-4" />
-                <Download v-else class="size-4" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Export</p>
-            </TooltipContent>
-          </Tooltip>
-          <GenerateMoreChip
-            :label="chipLabel"
-            :description="chipDescription"
-            :disabled="chipDisabled"
-            :loading="isGenerating"
-            @click="openSeedForm"
-          />
-        </TooltipProvider>
-      </div>
-    </div>
-
-    <div v-if="!showEmptyState" class="flex flex-col gap-6">
-      <div class="flex justify-center">
-        <RadioGroup
-          v-model="activeSlideValue"
-          aria-label="Select a flashcard"
-          class="auto-cols-max grid-flow-col justify-center gap-3"
-        >
-          <RadioGroupItem
-            v-for="dotIndex in totalDotCount"
-            :key="`carousel-dot-${dotIndex}`"
-            :value="String(dotIndex - 1)"
-            :aria-label="`Go to card ${dotIndex}`"
-            :disabled="dotIndex - 1 >= slideCount"
-            class="size-3 border-neutral-400 transition-colors data-[state=checked]:border-neutral-900 data-[state=checked]:bg-neutral-900 dark:border-neutral-600 dark:data-[state=checked]:border-neutral-100 dark:data-[state=checked]:bg-neutral-100"
-          />
-        </RadioGroup>
-      </div>
-
-      <Carousel
-        class="relative w-full"
-        :opts="{ align: 'center', containScroll: 'trimSnaps' }"
-        @init-api="handleCarouselInit"
-      >
-        <CarouselContent class="gap-6 pb-10 md:gap-8">
-          <CarouselItem
-            v-for="slide in slides"
-            :key="slide.id"
-            :class="['basis-10/12']"
+    <LayoutGroup>
+      <div class="relative">
+        <AnimatePresence :initial="false">
+          <Motion
+            v-if="renderSeedForm"
+            key="seed-form"
+            layout
+            tag="div"
+            class="mb-2"
+            :initial="false"
+            :animate="{ opacity: 1, y: 0 }"
+            :exit="{ opacity: 0, y: -24 }"
+            :transition="{
+              duration: SEED_FORM_TRANSITION_MS / 1000,
+              ease: [0.16, 1, 0.3, 1]
+            }"
           >
-            <AnkiCardEditor
-              v-if="slide.kind === 'card'"
-              :card="slide.card"
-              :index="slide.position"
+            <AnkiTopicSeedForm
+              v-model="topicSelection"
+              v-model:card-count="cardCount"
+              :is-generating="isGenerating"
+              :error="generationError"
               :label-tone="labelTone"
               :input-tone="inputTone"
-              :footnote-tone="footnoteTone"
-              :regenerating-card-id="regeneratingCardId"
-              @update:card="handleCardUpdate"
-              @regenerate="handleRegenerateCard"
+              :min-count="MIN_CARD_COUNT"
+              :max-count="MAX_CARD_COUNT"
+              :show-close="canCloseSeedForm"
+              :auto-focus="isSeedFormOpen && cards.length > 0"
+              @submit="handleGenerate"
+              @close="closeSeedForm"
             />
-            <AnkiCardSkeleton v-else :index="slide.order" />
-          </CarouselItem>
-        </CarouselContent>
-        <CarouselPrevious class="hidden md:flex" />
-        <CarouselNext class="hidden md:flex" />
-      </Carousel>
-    </div>
+          </Motion>
+        </AnimatePresence>
+
+        <Motion
+          v-if="showGenerateChip"
+          layout
+          tag="div"
+          class="mb-1 flex justify-end gap-2"
+          :transition="{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }"
+        >
+          <TooltipProvider :delay-duration="150">
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button
+                  variant="outline"
+                  class="cursor-pointer"
+                  type="button"
+                  :disabled="exportDisabled"
+                  @click="handleExportTsv"
+                >
+                  <Spinner v-if="isExporting" class="size-4" />
+                  <Download v-else class="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Export</p>
+              </TooltipContent>
+            </Tooltip>
+            <GenerateMoreChip
+              :label="chipLabel"
+              :description="chipDescription"
+              :disabled="chipDisabled"
+              :loading="isGenerating"
+              @click="openSeedForm"
+            />
+          </TooltipProvider>
+        </Motion>
+      </div>
+
+      <AnimatePresence :initial="false">
+        <Motion
+          v-if="!showEmptyState"
+          key="card-stack"
+          layout
+          tag="div"
+          class="flex flex-col gap-6"
+          :initial="false"
+          :animate="{ opacity: 1 }"
+          :exit="{ opacity: 0 }"
+          :transition="{ duration: 1, ease: [0.16, 1, 0.3, 1] }"
+        >
+          <div class="flex justify-center">
+            <RadioGroup
+              v-model="activeSlideValue"
+              aria-label="Select a flashcard"
+              class="auto-cols-max grid-flow-col justify-center gap-3"
+            >
+              <RadioGroupItem
+                v-for="dotIndex in totalDotCount"
+                :key="`carousel-dot-${dotIndex}`"
+                :value="String(dotIndex - 1)"
+                :aria-label="`Go to card ${dotIndex}`"
+                :disabled="dotIndex - 1 >= slideCount"
+                class="size-3 border-neutral-400 transition-colors data-[state=checked]:border-neutral-900 data-[state=checked]:bg-neutral-900 dark:border-neutral-600 dark:data-[state=checked]:border-neutral-100 dark:data-[state=checked]:bg-neutral-100"
+              />
+            </RadioGroup>
+          </div>
+
+          <Carousel
+            class="relative w-full"
+            :opts="{ align: 'center', containScroll: 'trimSnaps' }"
+            @init-api="handleCarouselInit"
+          >
+            <CarouselContent class="gap-6 pb-10 md:gap-8">
+              <CarouselItem
+                v-for="slide in slides"
+                :key="slide.id"
+                :class="['basis-10/12']"
+              >
+                <AnkiCardEditor
+                  v-if="slide.kind === 'card'"
+                  :card="slide.card"
+                  :index="slide.position"
+                  :label-tone="labelTone"
+                  :input-tone="inputTone"
+                  :footnote-tone="footnoteTone"
+                  :regenerating-card-id="regeneratingCardId"
+                  @update:card="handleCardUpdate"
+                  @regenerate="handleRegenerateCard"
+                />
+                <AnkiCardSkeleton v-else :index="slide.order" />
+              </CarouselItem>
+            </CarouselContent>
+            <CarouselPrevious class="hidden md:flex" />
+            <CarouselNext class="hidden md:flex" />
+          </Carousel>
+        </Motion>
+      </AnimatePresence>
+    </LayoutGroup>
   </Motion>
 </template>
