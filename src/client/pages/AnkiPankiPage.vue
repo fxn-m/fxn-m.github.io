@@ -35,6 +35,7 @@
     TooltipProvider,
     TooltipTrigger
   } from "@/client/components/ui/tooltip"
+  import { jsConfetti } from "@/main"
   import {
     AnkiCardFormats,
     type AnkiGeneratedCard,
@@ -50,10 +51,18 @@
   const MIN_CARD_COUNT = 1
   const MAX_CARD_COUNT = 10
   const DEFAULT_CARD_COUNT = 5
-  const SKELETON_STAGGER_MS = 120
-  const SKELETON_ANIMATION_DURATION_MS = 550
-  const SKELETON_SETTLE_BUFFER_MS = 150
-  const SEED_FORM_TRANSITION_MS = 420
+  const SKELETON_STAGGER_MS = 150
+  const SKELETON_ANIMATION_DURATION_MS = 0
+  const SKELETON_SETTLE_BUFFER_MS = 0
+  const SEED_FORM_TRANSITION_MS = 500
+
+  const throwHearts = () => {
+    jsConfetti.addConfetti({
+      emojis: ["❤️", "🩵"],
+      confettiRadius: 6,
+      confettiNumber: 100
+    })
+  }
 
   const topicSelection = ref<AnkiTopicSelection>({
     topicName: TopicNames[0],
@@ -1005,7 +1014,10 @@
     <p
       class="text-xs text-neutral-500 dark:text-neutral-500 absolute bottom-4 left-4"
     >
-      made with ♥
+      made with
+      <span @click="throwHearts" class="cursor-pointer hover:text-red-500"
+        >♥</span
+      >
     </p>
 
     <LayoutGroup>

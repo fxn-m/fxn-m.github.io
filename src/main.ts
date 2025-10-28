@@ -1,3 +1,4 @@
+// TODO: tidy up this sh*t
 import "./main.css"
 
 import { library } from "@fortawesome/fontawesome-svg-core"
@@ -18,10 +19,13 @@ import {
 } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { QueryClient, VueQueryPlugin } from "@tanstack/vue-query"
+import JSConfetti from "js-confetti"
 import { createApp } from "vue"
 
 import App from "./client/App.vue"
 import router from "./client/router"
+
+export const jsConfetti = new JSConfetti()
 
 const queryClient = new QueryClient()
 
