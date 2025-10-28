@@ -22,11 +22,11 @@
   const cardTone =
     "overflow-hidden border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-950 shadow-none transition-colors"
   const cardHeaderTone =
-    "flex flex-col gap-2 border-b border-neutral-200 dark:border-neutral-800 bg-transparent py-5"
+    "flex flex-col gap-2 border-b border-neutral-200 dark:border-neutral-800 bg-transparent py-4"
   const cardContentTone =
-    "space-y-6 bg-transparent text-neutral-700 dark:text-neutral-300 py-6"
+    "space-y-4 bg-transparent text-neutral-700 dark:text-neutral-300 py-4"
   const cardFooterTone =
-    "flex flex-col gap-1 border-t border-neutral-200 dark:border-neutral-800 bg-transparent py-4 text-[10px] uppercase tracking-[0.4em]"
+    "flex flex-col gap-1 border-t border-neutral-200 dark:border-neutral-800 bg-transparent py-3 text-[10px] uppercase tracking-[0.4em]"
 </script>
 
 <template>
@@ -44,27 +44,27 @@
       <CardContent :class="[cardContentTone, 'animate-pulse']">
         <div class="space-y-2">
           <div class="h-2 w-20 rounded bg-neutral-200 dark:bg-neutral-800" />
-          <div class="h-20 w-full rounded bg-neutral-200 dark:bg-neutral-800" />
+          <div class="h-12 w-full rounded bg-neutral-200 dark:bg-neutral-800" />
         </div>
-        <div class="grid gap-4">
-          <div v-for="n in 4" :key="n" class="space-y-2">
+        <div class="grid gap-3">
+          <div v-for="n in 3" :key="n" class="space-y-2">
             <div class="h-2 w-24 rounded bg-neutral-200 dark:bg-neutral-800" />
             <div
-              class="h-10 w-full rounded bg-neutral-200 dark:bg-neutral-800"
+              class="h-8 w-full rounded bg-neutral-200 dark:bg-neutral-800"
             />
           </div>
         </div>
         <div class="grid gap-2">
           <div class="h-2 w-28 rounded bg-neutral-200 dark:bg-neutral-800" />
-          <div class="h-10 w-24 rounded bg-neutral-200 dark:bg-neutral-800" />
+          <div class="h-8 w-24 rounded bg-neutral-200 dark:bg-neutral-800" />
         </div>
         <div class="space-y-2">
           <div class="h-2 w-24 rounded bg-neutral-200 dark:bg-neutral-800" />
-          <div class="h-20 w-full rounded bg-neutral-200 dark:bg-neutral-800" />
+          <div class="h-12 w-full rounded bg-neutral-200 dark:bg-neutral-800" />
         </div>
         <div class="space-y-2">
           <div class="h-2 w-28 rounded bg-neutral-200 dark:bg-neutral-800" />
-          <div class="h-10 w-40 rounded bg-neutral-200 dark:bg-neutral-800" />
+          <div class="h-8 w-40 rounded bg-neutral-200 dark:bg-neutral-800" />
         </div>
       </CardContent>
       <CardFooter :class="cardFooterTone">

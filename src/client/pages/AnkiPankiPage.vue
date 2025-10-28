@@ -1130,18 +1130,20 @@
                 :key="slide.id"
                 :class="['basis-10/12']"
               >
-                <AnkiCardEditor
-                  v-if="slide.kind === 'card'"
-                  :card="slide.card"
-                  :index="slide.position"
-                  :label-tone="labelTone"
-                  :input-tone="inputTone"
-                  :footnote-tone="footnoteTone"
-                  :regenerating-card-id="regeneratingCardId"
-                  @update:card="handleCardUpdate"
-                  @regenerate="handleRegenerateCard"
-                />
-                <AnkiCardSkeleton v-else :index="slide.order" />
+                <Motion layout="position" tag="div" class="h-full">
+                  <AnkiCardEditor
+                    v-if="slide.kind === 'card'"
+                    :card="slide.card"
+                    :index="slide.position"
+                    :label-tone="labelTone"
+                    :input-tone="inputTone"
+                    :footnote-tone="footnoteTone"
+                    :regenerating-card-id="regeneratingCardId"
+                    @update:card="handleCardUpdate"
+                    @regenerate="handleRegenerateCard"
+                  />
+                  <AnkiCardSkeleton v-else :index="slide.order" />
+                </Motion>
               </CarouselItem>
             </CarouselContent>
             <CarouselPrevious class="hidden md:flex" />
