@@ -399,6 +399,19 @@
   const safeTrim = (value?: string | null) =>
     typeof value === "string" ? value.trim() : ""
 
+  const resolveNoteType = (card: AnkiGeneratedCard) =>
+    isClozeDefinitionCard(card) ? "Cloze" : "Basic"
+
+  const buildExportDeckName = () => {
+    const label = safeTrim(lastTopic.value)
+
+    if (label.length) {
+      return label.replace(/\s+/g, " ")
+    }
+
+    return "Anki Panki"
+  }
+
   const buildFrontField = (card: AnkiGeneratedCard) => {
     const segments: string[] = []
 
@@ -506,9 +519,25 @@
     return Array.from(tags).join(" ")
   }
 
-  const buildTsvDeck = (deck: AnkiGeneratedCard[]) =>
-    deck
-      .map((card) =>
+  const buildTsvDeck = (deck: AnkiGeneratedCard[]) => {
+    const lines: string[] = ["#separator:tab", "#html:true"]
+    const deckName = buildExportDeckName()
+
+    if (deckName.length) {
+      lines.push(`#deck:${deckName}`)
+    }
+
+    let currentNoteType: string | null = null
+
+    deck.forEach((card) => {
+      const noteType = resolveNoteType(card)
+
+      if (noteType !== currentNoteType) {
+        lines.push(`#notetype:${noteType}`)
+        currentNoteType = noteType
+      }
+
+      lines.push(
         [
           buildFrontField(card),
           buildBackField(card),
@@ -516,7 +545,10 @@
           sanitizeForTsv(buildTagField(card))
         ].join("\t")
       )
-      .join("\n")
+    })
+
+    return lines.join("\n")
+  }
 
   const buildExportFilename = () => {
     const base = lastTopic.value?.trim() || "anki-panki"
