@@ -60,10 +60,30 @@
 
   const format = computed<CardFormat>(() => props.card.type)
 
+  const cardTopicParts = computed(() => {
+    const raw = props.card.topic ?? ""
+    if (!raw.trim().length) {
+      return {
+        topic: "",
+        subtopic: ""
+      }
+    }
+
+    const segments = raw.split(" — ")
+    const topic = segments.shift()?.trim() ?? ""
+    const subtopic = segments.join(" — ").trim()
+
+    return {
+      topic,
+      subtopic
+    }
+  })
+
   const cardHeadline = computed(
-    () => props.card.headline ?? props.card.topic ?? ""
+    () => props.card.headline ?? cardTopicParts.value.topic ?? ""
   )
-  const cardTopic = computed(() => props.card.topic ?? null)
+  const cardTopic = computed(() => cardTopicParts.value.topic)
+  const cardSubtopic = computed(() => cardTopicParts.value.subtopic)
   const regeneratePromptValue = computed(
     () => props.card.regeneratePrompt ?? ""
   )
@@ -222,7 +242,15 @@
   const cardTitleTone =
     "text-[13px] font-semibold uppercase tracking-[0.32em] text-neutral-900 dark:text-neutral-100"
   const cardDescriptionTone =
-    "text-[11px] uppercase tracking-[0.28em] text-neutral-500 dark:text-neutral-500 max-w-[400px]"
+    "text-left text-[11px] tracking-[0.18em] text-neutral-500 dark:text-neutral-500"
+  const topicLabelTone =
+    "text-[10px] font-semibold uppercase tracking-[0.35em] text-neutral-500 dark:text-neutral-400"
+  const topicValueTone =
+    "text-[12px] font-medium tracking-normal text-neutral-900 dark:text-neutral-100"
+  const subtopicLabelTone =
+    "text-[10px] font-semibold uppercase tracking-[0.32em] text-neutral-400 dark:text-neutral-500"
+  const subtopicValueTone =
+    "text-[12px] tracking-normal text-neutral-700 dark:text-neutral-300"
   const formatBadgeTone =
     "inline-flex  items-center rounded-full border border-neutral-300 dark:border-neutral-700 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-neutral-600 dark:text-neutral-300"
 </script>
@@ -231,15 +259,23 @@
   <Card :class="[cardTone, isRegenerating ? 'card-outline-pulse' : '']">
     <CardHeader :class="cardHeaderTone">
       <div class="flex items-start justify-between gap-4 w-full">
-        <div class="flex flex-col gap-1.5">
+        <div class="flex flex-col gap-1.5 max-w-[400px]">
           <CardTitle :class="cardTitleTone">
             {{ cardHeadline?.length ? cardHeadline : `Card ${index + 1}` }}
           </CardTitle>
-          <CardDescription :class="cardDescriptionTone">
-            <span>
-              Topic:
-              {{ cardTopic?.length ? cardTopic : "Not set" }}
-            </span>
+          <CardDescription :class="[cardDescriptionTone, 'flex flex-col']">
+            <div class="flex items-center gap-1">
+              <span :class="topicLabelTone">Topic</span>
+              |
+              <span :class="topicValueTone">
+                {{ cardTopic?.length ? cardTopic : "Not set" }}
+              </span>
+            </div>
+            <div v-if="cardSubtopic?.length" class="flex items-center gap-1">
+              <span :class="subtopicLabelTone">Subtopic</span>
+              |
+              <span :class="subtopicValueTone">{{ cardSubtopic }}</span>
+            </div>
           </CardDescription>
         </div>
         <span :class="formatBadgeTone">{{ formatLabels[format] }}</span>
@@ -378,12 +414,12 @@
       >
         <div class="flex flex-col gap-2">
           <Label :for="`regen-${card.id}`" :class="labelTone">
-            Re-spin prompt
+            Pick another subtopic
           </Label>
           <Input
             :id="`regen-${card.id}`"
             :model-value="regeneratePromptValue"
-            placeholder="e.g. CCAR wholesale lending scenario"
+            placeholder="e.g. Capital planning for regional banks"
             :class="inputTone"
             @update:model-value="handleRegeneratePromptInput"
           />
@@ -391,7 +427,6 @@
         <div class="flex flex-col gap-1 md:items-end">
           <Button
             variant="outline"
-            size="sm"
             type="button"
             :disabled="isRegenerating"
             class="cursor-pointer"
