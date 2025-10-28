@@ -35,10 +35,24 @@ const createOpenAIProvider = (apiKey: string) =>
     fetch: boundFetch
   })
 
+const metadataSchema = z.object({
+  headline: z
+    .string()
+    .trim()
+    .min(5, "Headline should be at least 5 characters")
+    .max(140, "Headline should be 140 characters or fewer")
+})
+
 const generationFormatSchemas: Record<AnkiCardFormat, z.ZodTypeAny> = {
-  cloze_definition: ClozeDefinitionCard.omit({ id: true, createdAt: true }),
-  enumerated_list: EnumeratedListCard.omit({ id: true, createdAt: true }),
-  qa_definition: QADefinitionCard.omit({ id: true, createdAt: true })
+  cloze_definition: ClozeDefinitionCard.omit({ id: true, createdAt: true }).extend(
+    metadataSchema.shape
+  ),
+  enumerated_list: EnumeratedListCard.omit({ id: true, createdAt: true }).extend(
+    metadataSchema.shape
+  ),
+  qa_definition: QADefinitionCard.omit({ id: true, createdAt: true }).extend(
+    metadataSchema.shape
+  )
 }
 
 export const ensureValidOpenAIApiKey = (
@@ -85,7 +99,7 @@ const buildGenerationPrompt = (request: GenerateAnkiDeckRequest): string => {
     ? `Topic: ${topicName}\nSubtopic: ${subtopic}`
     : `Topic: ${topicName}`
 
-  return `You are generating flashcards for FRM exam preparation.\n${scope}\nDesired card format: ${cardFormat}.\n${formatInstructions[cardFormat]}\nReturn your answer as JSON with a top-level object that contains a 'cards' array that matches the provided schema exactly and includes exactly ${cardCount} item${cardCount === 1 ? "" : "s"}. Avoid repeating facts, keep content current, and make the cards rigorous but approachable. Include any helpful tag suggestions in the optional tags array.`
+  return `You are generating flashcards for FRM exam preparation.\n${scope}\nDesired card format: ${cardFormat}.\n${formatInstructions[cardFormat]}\nEach card must include a concise 'headline' (5-140 characters) that will be shown as the card title when studying.\nReturn your answer as JSON with a top-level object that contains a 'cards' array that matches the provided schema exactly and includes exactly ${cardCount} item${cardCount === 1 ? "" : "s"}. Avoid repeating facts, keep content current, and make the cards rigorous but approachable. Include any helpful tag suggestions in the optional tags array.`
 }
 
 type AnkiCardOutput = z.infer<typeof AnkiCardSchema>
@@ -199,8 +213,21 @@ export const generateAnkiCards = async (
     }
 
     const cards = validation.data.cards.map((card) => {
-      const parsed = AnkiCardSchema.parse(card)
-      return parsed
+      const base = AnkiCardSchema.parse(card)
+      const metadata = metadataSchema.safeParse(card)
+
+      if (!metadata.success) {
+        throw new AnkiGenerationError(
+          `Generated card metadata is missing a headline: ${metadata.error.message}`,
+          500,
+          { cause: metadata.error }
+        )
+      }
+
+      return {
+        ...base,
+        headline: metadata.data.headline
+      }
     })
 
     return cards

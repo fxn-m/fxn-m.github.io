@@ -125,7 +125,7 @@ const handleNotionWebhook = async (
   return jsonResponse({ message: "Webhook received" }, 202)
 }
 
-const handleAnkiGenerate = async (request: Request, config: AppConfig) => {
+const handleAnkiGenerate = async (request: Request) => {
   const body = await request.json().catch(() => null)
 
   const result = normalizeGenerateDeckRequest(body)
@@ -163,8 +163,6 @@ const handleAnkiGenerate = async (request: Request, config: AppConfig) => {
     console.error("Failed to read OpenAI API key header:", error)
     return errorResponse("Failed to read OpenAI API key header", 400)
   }
-
-  console.log("Anki generate request:", result.payload)
 
   try {
     const cards = await generateAnkiCards(apiKey, result.payload)
@@ -216,7 +214,7 @@ const routeRequest = async (
   }
 
   if (pathname === "/ankipanki/generate" && method === "POST") {
-    return handleAnkiGenerate(request, config)
+    return handleAnkiGenerate(request)
   }
 
   if (pathname === "/blog" && method === "GET") {

@@ -287,7 +287,7 @@
 
 <template>
   <form
-    class="relative flex flex-col gap-6 bg-white/80 text-neutral-900 transition-all duration-500 ease-out dark:bg-inherit dark:text-neutral-100"
+    class="relative flex flex-col gap-6"
     @submit.prevent="form.handleSubmit()"
     @keydown.esc.prevent.stop="handleClose"
   >
@@ -466,7 +466,7 @@
       <Button
         variant="default"
         type="submit"
-        class="cursor-pointer flex-1"
+        class="cursor-pointer flex-1 dark:bg-neutral-200 dark:hover:bg-neutral-100 px-12"
         :disabled="isBusy"
       >
         {{ buttonLabel }}

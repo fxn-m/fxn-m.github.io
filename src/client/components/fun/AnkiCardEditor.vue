@@ -232,17 +232,13 @@
     <CardHeader :class="cardHeaderTone">
       <div class="flex items-start justify-between gap-4 w-full">
         <div class="flex flex-col gap-1.5">
-          <CardTitle :class="cardTitleTone"> Card {{ index + 1 }} </CardTitle>
+          <CardTitle :class="cardTitleTone">
+            {{ cardHeadline?.length ? cardHeadline : `Card ${index + 1}` }}
+          </CardTitle>
           <CardDescription :class="cardDescriptionTone">
-            <span v-if="cardHeadline?.length">
-              {{ cardHeadline }}
-            </span>
-            <span v-else>Generated Card</span>
-            <span
-              v-if="cardTopic"
-              class="mt-1 block text-[10px] uppercase tracking-[0.32em] text-neutral-400 dark:text-neutral-500"
-            >
-              Topic: {{ cardTopic }}
+            <span>
+              Topic:
+              {{ cardTopic?.length ? cardTopic : "Not set" }}
             </span>
           </CardDescription>
         </div>

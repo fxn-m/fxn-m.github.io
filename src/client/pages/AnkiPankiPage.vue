@@ -652,7 +652,9 @@
       headline: card.headline ?? topicLabel,
       regeneratePrompt: card.regeneratePrompt ?? "",
       tags: Array.isArray(card.tags)
-        ? card.tags.filter((tag) => typeof tag === "string" && tag.trim().length)
+        ? card.tags.filter(
+            (tag) => typeof tag === "string" && tag.trim().length
+          )
         : undefined,
       difficulty: card.difficulty
     }
@@ -667,9 +669,8 @@
     }
 
     if (card.type === "enumerated_list") {
-      const items = Array.isArray(card.items) && card.items.length
-        ? card.items
-        : [""]
+      const items =
+        Array.isArray(card.items) && card.items.length ? card.items : [""]
 
       const enumeratedCard: EnumeratedListGeneratedCard = {
         ...card,
@@ -962,6 +963,12 @@
       class="absolute right-4 md:bottom-4"
     />
 
+    <p
+      class="text-xs text-neutral-500 dark:text-neutral-500 absolute bottom-4 left-4"
+    >
+      made with ♥
+    </p>
+
     <div class="relative">
       <div v-if="renderSeedForm">
         <AnkiTopicSeedForm
@@ -980,6 +987,7 @@
           @close="closeSeedForm"
         />
       </div>
+
       <div v-else-if="showGenerateChip" class="mb-1 flex justify-end gap-2">
         <TooltipProvider :delay-duration="150">
           <Tooltip>
@@ -1053,7 +1061,6 @@
             <AnkiCardSkeleton v-else :index="slide.order" />
           </CarouselItem>
         </CarouselContent>
-
         <CarouselPrevious class="hidden md:flex" />
         <CarouselNext class="hidden md:flex" />
       </Carousel>
