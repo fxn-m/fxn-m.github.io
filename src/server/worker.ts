@@ -11,7 +11,10 @@ import {
   createConfigFromBindings,
   type WorkerBindings
 } from "./config/appConfig"
-import { normalizeGenerateDeckRequest } from "./services/ankipankiService"
+import {
+  generateAnkiCards,
+  normalizeGenerateDeckRequest
+} from "./services/ankipankiService"
 import {
   enrichAllTabOverflowItems,
   enrichTabOverflowItem
@@ -120,7 +123,7 @@ const handleNotionWebhook = async (
   return jsonResponse({ message: "Webhook received" }, 202)
 }
 
-const handleAnkiGenerate = async (request: Request) => {
+const handleAnkiGenerate = async (request: Request, config: AppConfig) => {
   const body = await request.json().catch(() => null)
 
   const result = normalizeGenerateDeckRequest(body)
@@ -137,13 +140,18 @@ const handleAnkiGenerate = async (request: Request) => {
 
   console.log("Anki generate request:", result.payload)
 
-  return jsonResponse(
-    {
-      message: "Generation request received",
-      data: result.payload
-    },
-    202
-  )
+  try {
+    const cards = await generateAnkiCards(config, result.payload)
+
+    return jsonResponse({
+      message: "Anki cards generated",
+      request: result.payload,
+      cards
+    })
+  } catch (error) {
+    console.error("Anki card generation failed:", error)
+    return errorResponse("Failed to generate Anki cards", 500)
+  }
 }
 
 const routeRequest = async (
@@ -177,7 +185,7 @@ const routeRequest = async (
   }
 
   if (pathname === "/ankipanki/generate" && method === "POST") {
-    return handleAnkiGenerate(request)
+    return handleAnkiGenerate(request, config)
   }
 
   if (pathname === "/blog" && method === "GET") {

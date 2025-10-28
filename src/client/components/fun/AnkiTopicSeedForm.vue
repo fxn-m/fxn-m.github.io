@@ -65,7 +65,7 @@
       ? (value as TopicNameOption)
       : topicNameOptions[0]
 
-  const cardFormatOptions = AnkiCardFormats
+  const cardFormatOptions = [...AnkiCardFormats] as CardFormatOption[]
   type CardFormatOption = AnkiCardFormat
 
   const ensureCardFormat = (value: string | undefined): CardFormatOption =>

@@ -90,3 +90,46 @@ export const AnkiCardSchema = z.discriminatedUnion("type", [
 ])
 
 export type AnkiCard = z.infer<typeof AnkiCardSchema>
+
+type ClozeDefinitionCardData = z.infer<typeof ClozeDefinitionCard>
+type EnumeratedListCardData = z.infer<typeof EnumeratedListCard>
+type QADefinitionCardData = z.infer<typeof QADefinitionCard>
+
+export interface AnkiCardMetadata {
+  topic?: string
+  headline?: string
+  regeneratePrompt?: string
+  difficulty?: FlashcardDifficulty
+  tags?: string[]
+}
+
+export interface ClozeDefinitionGeneratedCard
+  extends AnkiCardMetadata,
+    Omit<ClozeDefinitionCardData, "id" | "createdAt"> {
+  id: string
+  createdAt?: Date | string
+}
+
+export interface EnumeratedListGeneratedCard
+  extends AnkiCardMetadata,
+    Omit<EnumeratedListCardData, "id" | "createdAt"> {
+  id: string
+  createdAt?: Date | string
+}
+
+export interface QADefinitionGeneratedCard
+  extends AnkiCardMetadata,
+    Omit<QADefinitionCardData, "id" | "createdAt"> {
+  id: string
+  createdAt?: Date | string
+}
+
+export type MultipleChoiceGeneratedCard = Flashcard & {
+  type?: "multiple_choice"
+}
+
+export type AnkiGeneratedCard =
+  | MultipleChoiceGeneratedCard
+  | ClozeDefinitionGeneratedCard
+  | EnumeratedListGeneratedCard
+  | QADefinitionGeneratedCard
