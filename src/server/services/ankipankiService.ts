@@ -15,13 +15,23 @@ import {
   TopicNames
 } from "@/shared/types/anki"
 
-import type { AppConfig } from "../config/appConfig"
+const API_KEY_REGEX = /^sk-[A-Za-z0-9_-]{20,}$/
+
+export class AnkiGenerationError extends Error {
+  readonly status: number
+
+  constructor(message: string, status = 500, options?: { cause?: unknown }) {
+    super(message, options)
+    this.name = "AnkiGenerationError"
+    this.status = status
+  }
+}
 
 const boundFetch: typeof fetch = (...args) => globalThis.fetch(...args)
 
-const createOpenAIProvider = (config: AppConfig) =>
+const createOpenAIProvider = (apiKey: string) =>
   createOpenAI({
-    apiKey: config.openaiApiKey,
+    apiKey,
     fetch: boundFetch
   })
 
@@ -29,6 +39,22 @@ const generationFormatSchemas: Record<AnkiCardFormat, z.ZodTypeAny> = {
   cloze_definition: ClozeDefinitionCard.omit({ id: true, createdAt: true }),
   enumerated_list: EnumeratedListCard.omit({ id: true, createdAt: true }),
   qa_definition: QADefinitionCard.omit({ id: true, createdAt: true })
+}
+
+export const ensureValidOpenAIApiKey = (
+  rawKey: string | null | undefined
+): string => {
+  const apiKey = rawKey?.trim()
+
+  if (!apiKey) {
+    throw new AnkiGenerationError("OpenAI API key is required", 401)
+  }
+
+  if (!API_KEY_REGEX.test(apiKey)) {
+    throw new AnkiGenerationError("OpenAI API key format is invalid", 401)
+  }
+
+  return apiKey
 }
 
 const formatInstructions: Record<AnkiCardFormat, string> = {
@@ -141,42 +167,102 @@ export const normalizeGenerateDeckRequest = (
 }
 
 export const generateAnkiCards = async (
-  config: AppConfig,
+  apiKey: string,
   request: GenerateAnkiDeckRequest
 ): Promise<AnkiCardOutput[]> => {
-  const openai = createOpenAIProvider(config)
+  const validatedApiKey = ensureValidOpenAIApiKey(apiKey)
+
+  const openai = createOpenAIProvider(validatedApiKey)
   const responseSchema = buildGenerationResponseSchema(
     request.cardFormat,
     request.cardCount
   )
-  const system =
-    "You are a helpful assistant that generates flashcards for FRM exam preparation."
   const prompt = buildGenerationPrompt(request)
 
-  console.log("System:", system)
-  console.log("Prompt:", prompt)
+  try {
+    const { object } = await generateObject({
+      model: openai.responses("gpt-5-mini"),
+      system:
+        "You are a helpful assistant that generates flashcards for FRM exam preparation.",
+      prompt,
+      schema: responseSchema
+    })
 
-  const { object } = await generateObject({
-    model: openai.responses("gpt-5-mini"),
-    system,
-    prompt,
-    schema: responseSchema
-  })
+    const validation = responseSchema.safeParse(object)
 
-  console.log("Generated cards:", object)
+    if (!validation.success) {
+      throw new AnkiGenerationError(
+        `Failed to validate generated cards: ${validation.error.message}`,
+        500,
+        { cause: validation.error }
+      )
+    }
 
-  const validation = responseSchema.safeParse(object)
+    const cards = validation.data.cards.map((card) => {
+      const parsed = AnkiCardSchema.parse(card)
+      return parsed
+    })
 
-  if (!validation.success) {
-    throw new Error(
-      `Failed to validate generated cards: ${validation.error.message}`
-    )
+    return cards
+  } catch (error) {
+    if (error instanceof AnkiGenerationError) {
+      throw error
+    }
+
+    const status = extractStatusCode(error)
+
+    if (status) {
+      const baseMessage =
+        status === 401
+          ? "OpenAI rejected the provided API key"
+          : "OpenAI request failed"
+
+      const detailedMessage = extractProviderMessage(error)
+      const message = detailedMessage
+        ? `${baseMessage}: ${detailedMessage}`
+        : baseMessage
+
+      throw new AnkiGenerationError(message, status, { cause: error })
+    }
+
+    throw new AnkiGenerationError("Failed to generate Anki cards", 500, {
+      cause: error
+    })
+  }
+}
+
+const extractStatusCode = (error: unknown): number | undefined => {
+  if (typeof error === "object" && error !== null && "statusCode" in error) {
+    const statusCode = (error as { statusCode?: unknown }).statusCode
+    if (typeof statusCode === "number") {
+      return statusCode
+    }
   }
 
-  const cards = validation.data.cards.map((card) => {
-    const parsed = AnkiCardSchema.parse(card)
-    return parsed
-  })
+  if (error instanceof AnkiGenerationError) {
+    return error.status
+  }
 
-  return cards
+  return undefined
+}
+
+const extractProviderMessage = (error: unknown): string | undefined => {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "data" in error &&
+    typeof (error as { data?: unknown }).data === "object"
+  ) {
+    const data = (error as { data?: { error?: { message?: unknown } } }).data
+    const message = data?.error?.message
+    if (typeof message === "string" && message.trim().length > 0) {
+      return message
+    }
+  }
+
+  if (error instanceof Error && typeof error.message === "string") {
+    return error.message
+  }
+
+  return undefined
 }

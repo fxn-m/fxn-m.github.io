@@ -57,6 +57,25 @@
     subtopic: "",
     cardFormat: AnkiCardFormats[0]
   })
+  const resolveStoredApiKey = (): string => {
+    if (typeof window === "undefined") {
+      return ""
+    }
+
+    return window.localStorage.getItem(API_KEY_STORAGE_KEY)?.trim() ?? ""
+  }
+
+  const requireApiKey = (): string => {
+    const key = resolveStoredApiKey()
+
+    if (!key) {
+      throw new Error(
+        "An OpenAI API key is required. Use the key icon to add your key first."
+      )
+    }
+
+    return key
+  }
   const cardCount = ref(DEFAULT_CARD_COUNT)
   const cards = ref<AnkiGeneratedCard[]>([])
   const isGenerating = ref(false)
@@ -402,6 +421,9 @@
   const resolveNoteType = (card: AnkiGeneratedCard) =>
     isClozeDefinitionCard(card) ? "Cloze" : "Basic"
 
+  const stripClozeMarkup = (value: string) =>
+    value.replace(/\{\{c\d+::(.*?)(::[^}]*)?}}/g, (_, text: string) => text)
+
   const buildExportDeckName = () => {
     const label = safeTrim(lastTopic.value)
 
@@ -443,7 +465,11 @@
   const buildBackField = (card: AnkiGeneratedCard) => {
     if (isClozeDefinitionCard(card)) {
       const text = safeTrim(card.text)
-      return sanitizeForTsv(text)
+      if (!text.length) {
+        return ""
+      }
+
+      return sanitizeForTsv(stripClozeMarkup(text))
     }
 
     if (isEnumeratedListCard(card)) {
@@ -710,12 +736,15 @@
     spawnSkeletons()
 
     try {
+      const apiKey = requireApiKey()
+
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/ankipanki/generate`,
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "X-Anki-OpenAI-Key": apiKey
           },
           body: JSON.stringify(request)
         }
@@ -790,12 +819,15 @@
     regeneratingCardId.value = cardId
 
     try {
+      const apiKey = requireApiKey()
+
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/ankipanki/generate`,
         {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "X-Anki-OpenAI-Key": apiKey
           },
           body: JSON.stringify(request)
         }

@@ -413,12 +413,6 @@
               >
                 {{ state.meta.errors[0] }}
               </p>
-              <p
-                v-else-if="error"
-                class="text-xs text-rose-500 dark:text-rose-400"
-              >
-                {{ error }}
-              </p>
             </div>
 
             <Input
@@ -477,6 +471,12 @@
       >
         {{ buttonLabel }}
       </Button>
+    </div>
+
+    <div class="flex justify-end">
+      <p v-if="error" class="text-xs text-rose-500 dark:text-rose-400">
+        {{ error }}
+      </p>
     </div>
   </form>
 </template>

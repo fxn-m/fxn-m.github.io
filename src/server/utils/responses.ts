@@ -1,7 +1,8 @@
 const baseCorsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET,HEAD,POST,OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization"
+  "Access-Control-Allow-Headers":
+    "Content-Type, Authorization, X-Anki-OpenAI-Key"
 } as const
 
 const mergeHeaders = (

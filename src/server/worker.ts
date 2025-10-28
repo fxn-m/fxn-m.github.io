@@ -12,6 +12,8 @@ import {
   type WorkerBindings
 } from "./config/appConfig"
 import {
+  AnkiGenerationError,
+  ensureValidOpenAIApiKey,
   generateAnkiCards,
   normalizeGenerateDeckRequest
 } from "./services/ankipankiService"
@@ -138,10 +140,34 @@ const handleAnkiGenerate = async (request: Request, config: AppConfig) => {
     )
   }
 
+  let apiKey: string
+
+  try {
+    const rawHeader =
+      request.headers.get("x-anki-openai-key") ??
+      request.headers.get("X-Anki-OpenAI-Key") ??
+      request.headers.get("authorization") ??
+      request.headers.get("Authorization")
+
+    const normalizedHeader =
+      rawHeader && rawHeader.startsWith("Bearer ")
+        ? rawHeader.slice("Bearer ".length)
+        : rawHeader
+
+    apiKey = ensureValidOpenAIApiKey(normalizedHeader)
+  } catch (error) {
+    if (error instanceof AnkiGenerationError) {
+      return errorResponse(error.message, error.status)
+    }
+
+    console.error("Failed to read OpenAI API key header:", error)
+    return errorResponse("Failed to read OpenAI API key header", 400)
+  }
+
   console.log("Anki generate request:", result.payload)
 
   try {
-    const cards = await generateAnkiCards(config, result.payload)
+    const cards = await generateAnkiCards(apiKey, result.payload)
 
     return jsonResponse({
       message: "Anki cards generated",
@@ -149,6 +175,11 @@ const handleAnkiGenerate = async (request: Request, config: AppConfig) => {
       cards
     })
   } catch (error) {
+    if (error instanceof AnkiGenerationError) {
+      console.warn("Anki card generation failed:", error)
+      return errorResponse(error.message, error.status)
+    }
+
     console.error("Anki card generation failed:", error)
     return errorResponse("Failed to generate Anki cards", 500)
   }

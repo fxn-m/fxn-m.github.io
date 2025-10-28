@@ -160,6 +160,7 @@
       <Input
         ref="inputRef"
         :id="props.storageKey"
+        type="password"
         v-model="apiKey"
         autocomplete="off"
         placeholder="sk-..."
