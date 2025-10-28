@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue"
 import { Plus, X } from "lucide-vue-next"
+import { computed } from "vue"
 
 import { Button } from "@/client/components/ui/button"
 import {
@@ -12,20 +12,19 @@ import {
 } from "@/client/components/ui/card"
 import { Input } from "@/client/components/ui/input"
 import { Label } from "@/client/components/ui/label"
-import {
-  RadioGroup,
-  RadioGroupItem
-} from "@/client/components/ui/radio-group"
 import { Textarea } from "@/client/components/ui/textarea"
-import {
-  type AnkiGeneratedCard,
-  type ClozeDefinitionGeneratedCard,
-  type EnumeratedListGeneratedCard,
-  type MultipleChoiceGeneratedCard,
-  type QADefinitionGeneratedCard
+import type {
+  AnkiGeneratedCard,
+  ClozeDefinitionGeneratedCard,
+  EnumeratedListGeneratedCard,
+  QADefinitionGeneratedCard
 } from "@/shared/types/anki"
 
 import Spinner from "../ui/spinner/Spinner.vue"
+
+type ClozeCard = ClozeDefinitionGeneratedCard
+type EnumeratedCard = EnumeratedListGeneratedCard
+type QACard = QADefinitionGeneratedCard
 
 const props = defineProps<{
   card: AnkiGeneratedCard
@@ -36,13 +35,9 @@ const props = defineProps<{
   regeneratingCardId: string | null
 }>()
 
-const emit = defineEmits<{
-  (e: "update:card", payload: AnkiGeneratedCard): void
-  (e: "regenerate", payload: string): void
-}>()
+const emit = defineEmits<{ "update:card": [AnkiGeneratedCard]; regenerate: [string] }>()
 
 const formatLabels = {
-  multiple_choice: "Multiple Choice",
   cloze_definition: "Cloze Definition",
   enumerated_list: "Enumerated List",
   qa_definition: "Q&A Definition"
@@ -52,41 +47,21 @@ type CardFormat = keyof typeof formatLabels
 
 const isClozeDefinitionCard = (
   card: AnkiGeneratedCard
-): card is ClozeDefinitionGeneratedCard =>
-  "type" in card && card.type === "cloze_definition"
+): card is ClozeCard => card.type === "cloze_definition"
 
 const isEnumeratedListCard = (
   card: AnkiGeneratedCard
-): card is EnumeratedListGeneratedCard =>
-  "type" in card && card.type === "enumerated_list"
+): card is EnumeratedCard => card.type === "enumerated_list"
 
 const isQADefinitionCard = (
   card: AnkiGeneratedCard
-): card is QADefinitionGeneratedCard =>
-  "type" in card && card.type === "qa_definition"
+): card is QACard => card.type === "qa_definition"
 
-const isMultipleChoiceCard = (
-  card: AnkiGeneratedCard
-): card is MultipleChoiceGeneratedCard =>
-  "options" in card && Array.isArray(card.options)
+const format = computed<CardFormat>(() => props.card.type)
 
-const format = computed<CardFormat>(() => {
-  if (isClozeDefinitionCard(props.card)) {
-    return "cloze_definition"
-  }
-
-  if (isEnumeratedListCard(props.card)) {
-    return "enumerated_list"
-  }
-
-  if (isQADefinitionCard(props.card)) {
-    return "qa_definition"
-  }
-
-  return "multiple_choice"
-})
-
-const cardHeadline = computed(() => props.card.headline ?? props.card.topic ?? "")
+const cardHeadline = computed(
+  () => props.card.headline ?? props.card.topic ?? ""
+)
 const cardTopic = computed(() => props.card.topic ?? null)
 const regeneratePromptValue = computed(() => props.card.regeneratePrompt ?? "")
 
@@ -98,71 +73,126 @@ const emitCard = (next: AnkiGeneratedCard) => {
   emit("update:card", next)
 }
 
-const updateMultipleChoiceCard = (
-  updater: (card: MultipleChoiceGeneratedCard) => MultipleChoiceGeneratedCard
-) => {
-  if (!isMultipleChoiceCard(props.card)) {
-    return
-  }
-
-  emitCard(updater(props.card))
-}
-
-const updateClozeCard = (
-  updater: (card: ClozeDefinitionGeneratedCard) => ClozeDefinitionGeneratedCard
-) => {
+const updateClozeText = (value: string | number) => {
   if (!isClozeDefinitionCard(props.card)) {
     return
   }
 
-  emitCard(updater(props.card))
+  const next: ClozeCard = {
+    ...props.card,
+    text: String(value)
+  }
+
+  emitCard(next)
 }
 
-const updateEnumeratedCard = (
-  updater: (card: EnumeratedListGeneratedCard) => EnumeratedListGeneratedCard
-) => {
+const ensureEnumeratedItems = (card: EnumeratedCard) =>
+  card.items.length > 0 ? card.items : [""]
+
+const updateEnumeratedPrompt = (value: string | number) => {
   if (!isEnumeratedListCard(props.card)) {
     return
   }
 
-  emitCard(updater(props.card))
+  const next: EnumeratedCard = {
+    ...props.card,
+    prompt: String(value),
+    items: ensureEnumeratedItems(props.card)
+  }
+
+  emitCard(next)
 }
 
-const updateQaCard = (
-  updater: (card: QADefinitionGeneratedCard) => QADefinitionGeneratedCard
-) => {
+const updateEnumeratedItem = (index: number, value: string | number) => {
+  if (!isEnumeratedListCard(props.card)) {
+    return
+  }
+
+  const items = [...ensureEnumeratedItems(props.card)]
+  items[index] = String(value)
+
+  const next: EnumeratedCard = {
+    ...props.card,
+    items
+  }
+
+  emitCard(next)
+}
+
+const removeEnumeratedItem = (index: number) => {
+  if (!isEnumeratedListCard(props.card)) {
+    return
+  }
+
+  const currentItems = ensureEnumeratedItems(props.card)
+  if (currentItems.length <= 1) {
+    const next: EnumeratedCard = {
+      ...props.card,
+      items: [""]
+    }
+    emitCard(next)
+    return
+  }
+
+  const items = currentItems.filter((_, itemIndex) => itemIndex !== index)
+  const next: EnumeratedCard = {
+    ...props.card,
+    items
+  }
+
+  emitCard(next)
+}
+
+const addEnumeratedItem = () => {
+  if (!isEnumeratedListCard(props.card)) {
+    return
+  }
+
+  const next: EnumeratedCard = {
+    ...props.card,
+    items: [...ensureEnumeratedItems(props.card), ""]
+  }
+
+  emitCard(next)
+}
+
+const toggleEnumeratedOrdering = () => {
+  if (!isEnumeratedListCard(props.card)) {
+    return
+  }
+
+  const next: EnumeratedCard = {
+    ...props.card,
+    ordered: !(props.card.ordered ?? true)
+  }
+
+  emitCard(next)
+}
+
+const updateQuestion = (value: string | number) => {
   if (!isQADefinitionCard(props.card)) {
     return
   }
 
-  emitCard(updater(props.card))
-}
-
-const handleQuestionInput = (value: string | number) => {
-  const nextValue = String(value)
-
-  if (isMultipleChoiceCard(props.card)) {
-    updateMultipleChoiceCard((card) => ({
-      ...card,
-      question: nextValue
-    }))
-  } else if (isQADefinitionCard(props.card)) {
-    updateQaCard((card) => ({
-      ...card,
-      question: nextValue
-    }))
+  const next: QACard = {
+    ...props.card,
+    question: String(value)
   }
+
+  emitCard(next)
 }
 
-const handleExplanationInput = (value: string | number) => {
-  if (!isMultipleChoiceCard(props.card)) {
+const updateAnswer = (value: string | number) => {
+  if (!isQADefinitionCard(props.card)) {
     return
   }
 
-  updateMultipleChoiceCard((card) => ({
-    ...card,
-    explanation: String(value)
-  }))
+  const next: QACard = {
+    ...props.card,
+    answer: String(value)
+  }
+
+  emitCard(next)
 }
 
 const handleRegeneratePromptInput = (value: string | number) => {
@@ -170,92 +200,6 @@ const handleRegeneratePromptInput = (value: string | number) => {
     ...props.card,
     regeneratePrompt: String(value)
   })
-}
-
-const handleOptionTextInput = (optionId: string, value: string | number) => {
-  updateMultipleChoiceCard((card) => ({
-    ...card,
-    options: card.options.map((option) =>
-      option.id === optionId ? { ...option, text: String(value) } : option
-    )
-  }))
-}
-
-const handleAnswerChange = (value: string | null) => {
-  if (!value || !isMultipleChoiceCard(props.card)) {
-    return
-  }
-
-  updateMultipleChoiceCard((card) => ({
-    ...card,
-    answerId: value.toUpperCase()
-  }))
-}
-
-const handleClozeTextInput = (value: string | number) => {
-  updateClozeCard((card) => ({
-    ...card,
-    text: String(value)
-  }))
-}
-
-const handleEnumeratedPromptInput = (value: string | number) => {
-  updateEnumeratedCard((card) => ({
-    ...card,
-    prompt: String(value)
-  }))
-}
-
-const handleEnumeratedItemChange = (
-  index: number,
-  value: string | number
-) => {
-  updateEnumeratedCard((card) => {
-    const items = [...card.items]
-    items[index] = String(value)
-    return {
-      ...card,
-      items
-    }
-  })
-}
-
-const handleEnumeratedItemRemove = (index: number) => {
-  updateEnumeratedCard((card) => {
-    if (card.items.length <= 1) {
-      return {
-        ...card,
-        items: [""]
-      }
-    }
-
-    const items = card.items.filter((_, itemIndex) => itemIndex !== index)
-    return {
-      ...card,
-      items
-    }
-  })
-}
-
-const handleEnumeratedAddItem = () => {
-  updateEnumeratedCard((card) => ({
-    ...card,
-    items: [...card.items, ""]
-  }))
-}
-
-const handleEnumeratedToggleOrdered = () => {
-  updateEnumeratedCard((card) => ({
-    ...card,
-    ordered: !(card.ordered ?? true)
-  }))
-}
-
-const handleQaAnswerInput = (value: string | number) => {
-  updateQaCard((card) => ({
-    ...card,
-    answer: String(value)
-  }))
 }
 
 const handleRegenerate = () => {
@@ -303,85 +247,7 @@ const formatBadgeTone =
       </div>
     </CardHeader>
     <CardContent :class="cardContentTone">
-      <section v-if="format === 'multiple_choice'" class="space-y-5 md:space-y-6">
-        <div class="flex flex-col gap-2">
-          <Label :for="`question-${card.id}`" :class="labelTone">
-            Question
-          </Label>
-          <Textarea
-            :id="`question-${card.id}`"
-            :model-value="isMultipleChoiceCard(card) ? card.question : ''"
-            :class="[inputTone, 'min-h-[60px]']"
-            @update:model-value="handleQuestionInput"
-          />
-        </div>
-        <div class="grid gap-4 md:grid-cols-2">
-          <div
-            v-for="option in isMultipleChoiceCard(card) ? card.options : []"
-            :key="option.id"
-            class="flex flex-col gap-2"
-          >
-            <Label :for="`option-${card.id}-${option.id}`" :class="labelTone">
-              Option {{ option.label }}
-            </Label>
-            <Input
-              :id="`option-${card.id}-${option.id}`"
-              :model-value="option.text"
-              placeholder="Response text"
-              :class="inputTone"
-              @update:model-value="handleOptionTextInput(option.id, $event)"
-            />
-          </div>
-        </div>
-        <div class="flex flex-col gap-2">
-          <Label :for="`answer-${card.id}`" :class="labelTone">
-            Correct Option
-          </Label>
-          <RadioGroup
-            :id="`answer-${card.id}`"
-            :model-value="isMultipleChoiceCard(card) ? card.answerId : ''"
-            class="grid w-full max-w-[180px] grid-cols-4 gap-2"
-            @update:model-value="handleAnswerChange"
-          >
-            <div
-              v-for="option in isMultipleChoiceCard(card) ? card.options : []"
-              :key="option.id"
-              class="contents"
-            >
-              <RadioGroupItem
-                :id="`answer-${card.id}-${option.id}`"
-                :value="option.label"
-                :aria-label="`Option ${option.label}`"
-                class="peer sr-only"
-              />
-              <Label
-                :for="`answer-${card.id}-${option.id}`"
-                class="flex aspect-square items-center justify-center rounded-xl border font-semibold uppercase transition-all duration-200 ease-out peer-focus-visible:ring-2 peer-focus-visible:ring-offset-2 peer-focus-visible:ring-neutral-800 dark:peer-focus-visible:ring-neutral-200"
-                :class="
-                  isMultipleChoiceCard(card) && card.answerId === option.label
-                    ? 'bg-neutral-900 text-neutral-50 dark:bg-neutral-50 dark:text-neutral-900 border-neutral-900 dark:border-neutral-50 shadow-[0_0_0_4px_rgba(59,130,246,0.2)]'
-                    : 'bg-white text-neutral-500 dark:bg-neutral-950 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600'
-                "
-              >
-                {{ option.label }}
-              </Label>
-            </div>
-          </RadioGroup>
-        </div>
-        <div v-if="isMultipleChoiceCard(card)" class="flex flex-col gap-2">
-          <Label :for="`rationale-${card.id}`" :class="labelTone">
-            Rationale
-          </Label>
-          <Textarea
-            :id="`rationale-${card.id}`"
-            :model-value="card.explanation"
-            :class="[inputTone, 'min-h-[96px]']"
-            @update:model-value="handleExplanationInput"
-          />
-        </div>
-      </section>
-
-      <section v-else-if="format === 'cloze_definition'" class="space-y-3 md:space-y-4">
+      <section v-if="format === 'cloze_definition'" class="space-y-3 md:space-y-4">
         <div class="flex flex-col gap-2">
           <Label :for="`cloze-${card.id}`" :class="labelTone">
             Cloze Text
@@ -390,13 +256,11 @@ const formatBadgeTone =
             :id="`cloze-${card.id}`"
             :model-value="isClozeDefinitionCard(card) ? card.text : ''"
             :class="[inputTone, 'min-h-[120px]']"
-            placeholder="e.g. The {{c1::Basel III}} framework introduced the {{c2::Liquidity Coverage Ratio}}."
-            @update:model-value="handleClozeTextInput"
+            placeholder="In FRM, {{c1::risk}} is ..."
+            @update:model-value="updateClozeText"
           />
           <p :class="[footnoteTone, 'text-[10px] tracking-[0.3em]']">
-            Wrap hidden spans with
-            <span v-pre>{{c1::term}}</span>
-            or
+            Wrap hidden spans with <span v-pre>{{c1::term}}</span> or
             <span class="font-mono" v-pre>&lt;span class='cloze'&gt;</span>.
           </p>
         </div>
@@ -411,8 +275,8 @@ const formatBadgeTone =
             :id="`prompt-${card.id}`"
             :model-value="isEnumeratedListCard(card) ? card.prompt : ''"
             :class="[inputTone, 'min-h-[72px]']"
-            placeholder="List the five pillars of ERM maturity"
-            @update:model-value="handleEnumeratedPromptInput"
+            placeholder="List the five components of ..."
+            @update:model-value="updateEnumeratedPrompt"
           />
         </div>
         <div class="flex items-center justify-between">
@@ -422,18 +286,20 @@ const formatBadgeTone =
             size="sm"
             type="button"
             class="cursor-pointer"
-            @click="handleEnumeratedToggleOrdered"
+            @click="toggleEnumeratedOrdering"
           >
             {{
               isEnumeratedListCard(card) && (card.ordered ?? true)
-                ? 'Ordered'
-                : 'Unordered'
+                ? "Ordered"
+                : "Unordered"
             }}
           </Button>
         </div>
         <div class="space-y-3">
           <div
-            v-for="(item, itemIndex) in isEnumeratedListCard(card) ? card.items : []"
+            v-for="(item, itemIndex) in isEnumeratedListCard(card)
+              ? card.items
+              : []"
             :key="`${card.id}-item-${itemIndex}`"
             class="flex items-start gap-2"
           >
@@ -442,7 +308,7 @@ const formatBadgeTone =
               :model-value="item"
               :class="[inputTone, 'min-h-[60px] flex-1']"
               :placeholder="`Item ${itemIndex + 1}`"
-              @update:model-value="handleEnumeratedItemChange(itemIndex, $event)"
+              @update:model-value="(value) => updateEnumeratedItem(itemIndex, value)"
             />
             <Button
               variant="ghost"
@@ -450,7 +316,7 @@ const formatBadgeTone =
               type="button"
               class="mt-1 size-8 shrink-0 cursor-pointer"
               :disabled="enumeratedItemCount <= 1"
-              @click="handleEnumeratedItemRemove(itemIndex)"
+              @click="removeEnumeratedItem(itemIndex)"
             >
               <X class="size-4" />
               <span class="sr-only">Remove item</span>
@@ -461,7 +327,7 @@ const formatBadgeTone =
             size="sm"
             type="button"
             class="cursor-pointer"
-            @click="handleEnumeratedAddItem"
+            @click="addEnumeratedItem"
           >
             <Plus class="mr-2 size-4" />
             Add Item
@@ -479,7 +345,7 @@ const formatBadgeTone =
             :model-value="isQADefinitionCard(card) ? card.question : ''"
             :class="[inputTone, 'min-h-[72px]']"
             placeholder="What does liquidity coverage ratio measure?"
-            @update:model-value="handleQuestionInput"
+            @update:model-value="updateQuestion"
           />
         </div>
         <div class="flex flex-col gap-2">
@@ -491,7 +357,7 @@ const formatBadgeTone =
             :model-value="isQADefinitionCard(card) ? card.answer : ''"
             :class="[inputTone, 'min-h-[96px]']"
             placeholder="It compares HQLA to projected net cash outflows over 30 days."
-            @update:model-value="handleQaAnswerInput"
+            @update:model-value="updateAnswer"
           />
         </div>
       </section>

@@ -35,7 +35,6 @@
     TooltipProvider,
     TooltipTrigger
   } from "@/client/components/ui/tooltip"
-  import { BLUEPRINTS } from "@/client/lib/ankiBlueprints"
   import {
     AnkiCardFormats,
     type AnkiGeneratedCard,
@@ -43,20 +42,15 @@
     type ClozeDefinitionGeneratedCard,
     type EnumeratedListGeneratedCard,
     type GenerateAnkiDeckRequest,
-    type MultipleChoiceGeneratedCard,
     type QADefinitionGeneratedCard,
     TopicNames
   } from "@/shared/types/anki"
-
-  type Blueprint = (typeof BLUEPRINTS)[number]
 
   const API_KEY_STORAGE_KEY = "ankipanki:openai-api-key"
   const MIN_CARD_COUNT = 1
   const MAX_CARD_COUNT = 10
   const DEFAULT_CARD_COUNT = 5
   const SKELETON_STAGGER_MS = 120
-  const SIMULATED_FETCH_DELAY_MS = 1000
-  const CARD_REVEAL_STAGGER_MS = 220
 
   const topicSelection = ref<AnkiTopicSelection>({
     topicName: TopicNames[0],
@@ -88,11 +82,6 @@
     card: AnkiGeneratedCard
   ): card is QADefinitionGeneratedCard =>
     "type" in card && card.type === "qa_definition"
-
-  const isMultipleChoiceCard = (
-    card: AnkiGeneratedCard
-  ): card is MultipleChoiceGeneratedCard =>
-    "options" in card && Array.isArray(card.options)
 
   type CarouselSlide =
     | { kind: "card"; id: string; position: number; card: AnkiGeneratedCard }
@@ -158,7 +147,6 @@
   const skeletonKeys = ref<string[]>([])
 
   let skeletonTimers: ReturnType<typeof setTimeout>[] = []
-  let revealTimers: ReturnType<typeof setTimeout>[] = []
   let activeGenerationToken: string | null = null
 
   const showEmptyState = computed(
@@ -269,11 +257,6 @@
       : containerTransition
   )
 
-  const wait = (ms: number) =>
-    new Promise((resolve) => {
-      setTimeout(resolve, ms)
-    })
-
   const uid = () => {
     if (
       typeof crypto !== "undefined" &&
@@ -286,9 +269,7 @@
 
   const clearScheduledWork = () => {
     skeletonTimers.forEach((timer) => clearTimeout(timer))
-    revealTimers.forEach((timer) => clearTimeout(timer))
     skeletonTimers = []
-    revealTimers = []
   }
 
   const openSeedForm = () => {
@@ -399,34 +380,6 @@
     }
   }
 
-  const replaceTopic = (value: string, topic: string) =>
-    value.replaceAll("{{topic}}", topic)
-
-  const buildCard = (
-    seed: string,
-    blueprint: Blueprint
-  ): MultipleChoiceGeneratedCard => {
-    const topic = seed.trim().length ? seed.trim() : "market risk"
-
-    return {
-      id: uid(),
-      topic,
-      headline: replaceTopic(blueprint.headline, topic),
-      question: replaceTopic(blueprint.question, topic),
-      options: blueprint.options.map(
-        (option: Blueprint["options"][number]) => ({
-          id: uid(),
-          label: option.label,
-          text: replaceTopic(option.text, topic)
-        })
-      ),
-      answerId: blueprint.answerId,
-      explanation: replaceTopic(blueprint.explanation, topic),
-      difficulty: blueprint.difficulty,
-      regeneratePrompt: ""
-    } as MultipleChoiceGeneratedCard
-  }
-
   const slugify = (value: string) =>
     value
       .toLowerCase()
@@ -446,18 +399,6 @@
   const safeTrim = (value?: string | null) =>
     typeof value === "string" ? value.trim() : ""
 
-  const formatOptionsList = (
-    options: MultipleChoiceGeneratedCard["options"] | undefined
-  ) => {
-    if (!options?.length) {
-      return ""
-    }
-
-    return options
-      .map((option) => `${option.label}. ${option.text}`)
-      .join("<br>")
-  }
-
   const buildFrontField = (card: AnkiGeneratedCard) => {
     const segments: string[] = []
 
@@ -466,17 +407,7 @@
       segments.push(headline)
     }
 
-    if (isMultipleChoiceCard(card)) {
-      const question = safeTrim(card.question)
-      if (question.length) {
-        segments.push(question)
-      }
-
-      const optionsList = formatOptionsList(card.options)
-      if (optionsList.length) {
-        segments.push(optionsList)
-      }
-    } else if (isClozeDefinitionCard(card)) {
+    if (isClozeDefinitionCard(card)) {
       const text = safeTrim(card.text)
       if (text.length) {
         segments.push(text)
@@ -497,35 +428,9 @@
   }
 
   const buildBackField = (card: AnkiGeneratedCard) => {
-    if (isMultipleChoiceCard(card)) {
-      const segments: string[] = []
-      const answerOption = card.options.find(
-        (option) =>
-          option.id === card.answerId || option.label === card.answerId
-      )
-
-      if (answerOption) {
-        segments.push(
-          `Answer: ${answerOption.label}. ${answerOption.text}`.trim()
-        )
-      } else {
-        const fallbackAnswerId = safeTrim(card.answerId)
-        if (fallbackAnswerId.length) {
-          segments.push(`Answer: ${fallbackAnswerId}`)
-        }
-      }
-
-      const explanation = safeTrim(card.explanation)
-      if (explanation.length) {
-        segments.push(explanation)
-      }
-
-      return sanitizeForTsv(segments.join("<br><br>"))
-    }
-
     if (isClozeDefinitionCard(card)) {
       const text = safeTrim(card.text)
-      return sanitizeForTsv(text.length ? text : "Cloze card")
+      return sanitizeForTsv(text)
     }
 
     if (isEnumeratedListCard(card)) {
@@ -567,36 +472,38 @@
       )
     } else if (isQADefinitionCard(card)) {
       segments.push("Format: Q&A Definition")
-    } else if (isMultipleChoiceCard(card)) {
-      segments.push("Format: Multiple Choice")
     }
 
     return sanitizeForTsv(segments.join("<br>"))
   }
 
   const buildTagField = (card: AnkiGeneratedCard) => {
-    const tags: string[] = []
+    const tags = new Set<string>()
     const topicTag = slugify(safeTrim(card.topic))
 
     if (topicTag.length) {
-      tags.push(topicTag)
+      tags.add(topicTag)
     }
 
     if (card.difficulty) {
-      tags.push(card.difficulty.toLowerCase())
+      tags.add(card.difficulty.toLowerCase())
     }
+
+    card.tags?.forEach((tag) => {
+      if (typeof tag === "string" && tag.trim().length) {
+        tags.add(tag.trim())
+      }
+    })
 
     if (isClozeDefinitionCard(card)) {
-      tags.push("cloze")
+      tags.add("cloze")
     } else if (isEnumeratedListCard(card)) {
-      tags.push("list")
+      tags.add("list")
     } else if (isQADefinitionCard(card)) {
-      tags.push("qa")
-    } else if (isMultipleChoiceCard(card)) {
-      tags.push("mcq")
+      tags.add("qa")
     }
 
-    return tags.join(" ")
+    return Array.from(tags).join(" ")
   }
 
   const buildTsvDeck = (deck: AnkiGeneratedCard[]) =>
@@ -665,13 +572,82 @@
     }
   }
 
-  const createDeck = (topicLabel: string): AnkiGeneratedCard[] => {
-    return Array.from({ length: cardCount.value }, (_, index) => {
-      const rotation =
-        (index + Math.floor(Math.random() * BLUEPRINTS.length)) %
-        BLUEPRINTS.length
-      return buildCard(topicLabel, BLUEPRINTS[rotation])
-    })
+  type ServerGeneratedCard =
+    | (Omit<ClozeDefinitionGeneratedCard, "id"> & { id?: string })
+    | (Omit<EnumeratedListGeneratedCard, "id"> & { id?: string })
+    | (Omit<QADefinitionGeneratedCard, "id"> & { id?: string })
+
+  const normalizeGeneratedCard = (
+    card: ServerGeneratedCard,
+    request: GenerateAnkiDeckRequest
+  ): AnkiGeneratedCard => {
+    const topicLabel = buildTopicLabel(
+      request.topicName,
+      request.subtopic ?? null
+    )
+
+    const baseId = card.id
+    const id = typeof baseId === "string" && baseId.length ? baseId : uid()
+
+    const common = {
+      topic: safeTrim(card.topic) || topicLabel,
+      headline: card.headline ?? topicLabel,
+      regeneratePrompt: card.regeneratePrompt ?? "",
+      tags: Array.isArray(card.tags)
+        ? card.tags.filter((tag) => typeof tag === "string" && tag.trim().length)
+        : undefined,
+      difficulty: card.difficulty
+    }
+
+    if (card.type === "cloze_definition") {
+      const clozeCard: ClozeDefinitionGeneratedCard = {
+        ...card,
+        ...common,
+        id
+      }
+      return clozeCard
+    }
+
+    if (card.type === "enumerated_list") {
+      const items = Array.isArray(card.items) && card.items.length
+        ? card.items
+        : [""]
+
+      const enumeratedCard: EnumeratedListGeneratedCard = {
+        ...card,
+        items,
+        ordered: card.ordered ?? true,
+        ...common,
+        id
+      }
+      return enumeratedCard
+    }
+
+    const qaCard: QADefinitionGeneratedCard = {
+      ...card,
+      ...common,
+      id
+    }
+    return qaCard
+  }
+
+  const normalizeGeneratedCards = (
+    payload: unknown,
+    request: GenerateAnkiDeckRequest
+  ): AnkiGeneratedCard[] => {
+    if (!payload || typeof payload !== "object") {
+      throw new Error("Malformed response from generator")
+    }
+
+    const cardsPayload = (payload as { cards?: unknown }).cards
+
+    if (!Array.isArray(cardsPayload) || !cardsPayload.length) {
+      throw new Error("No cards returned by generator")
+    }
+
+    return cardsPayload.map((card) =>
+      normalizeGeneratedCard(card as ServerGeneratedCard, request)
+    )
   }
 
   const handleGenerate = async (request: GenerateAnkiDeckRequest) => {
@@ -699,6 +675,8 @@
     regeneratingCardId.value = null
     isGenerating.value = true
 
+    spawnSkeletons()
+
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BACKEND_URL}/ankipanki/generate`,
@@ -719,74 +697,39 @@
             : "Unable to start generation"
         throw new Error(message)
       }
+
+      const payload = await response.json().catch(() => null)
+
+      if (activeGenerationToken !== generationToken) {
+        return
+      }
+
+      const deck = normalizeGeneratedCards(payload, request)
+
+      clearScheduledWork()
+      skeletonKeys.value = []
+      cards.value = deck
+      lastGeneratedTopic.value = deck[0]?.topic ?? topicLabel
+      activeGenerationToken = null
+      isGenerating.value = false
+
+      if (hadExistingCards) {
+        isSeedFormOpen.value = false
+      }
     } catch (error) {
+      if (activeGenerationToken !== generationToken) {
+        return
+      }
+
       clearScheduledWork()
       skeletonKeys.value = []
       isGenerating.value = false
       activeGenerationToken = null
-      generationError.value =
-        error instanceof Error ? error.message : "Unable to start generation"
-      return
+      const message =
+        error instanceof Error ? error.message : "Unable to generate cards"
+      generationError.value = message
+      console.error(error)
     }
-
-    if (hadExistingCards) {
-      isSeedFormOpen.value = false
-    }
-
-    spawnSkeletons()
-
-    void (async () => {
-      try {
-        await wait(SIMULATED_FETCH_DELAY_MS)
-
-        if (activeGenerationToken !== generationToken) {
-          return
-        }
-
-        const deck = createDeck(topicLabel)
-
-        if (!deck.length) {
-          clearScheduledWork()
-          isGenerating.value = false
-          skeletonKeys.value = []
-          activeGenerationToken = null
-          return
-        }
-
-        lastGeneratedTopic.value = deck[0]?.topic ?? topicLabel
-
-        deck.forEach((card, index) => {
-          const timer = setTimeout(() => {
-            if (activeGenerationToken !== generationToken) {
-              return
-            }
-
-            cards.value = [...cards.value, card]
-            skeletonKeys.value = skeletonKeys.value.slice(1)
-
-            if (index === deck.length - 1) {
-              clearScheduledWork()
-              isGenerating.value = false
-              skeletonKeys.value = []
-              activeGenerationToken = null
-            }
-          }, index * CARD_REVEAL_STAGGER_MS)
-
-          revealTimers.push(timer)
-        })
-      } catch (error) {
-        if (activeGenerationToken !== generationToken) {
-          return
-        }
-
-        generationError.value = "Could not sketch the deck. Try again."
-        console.error(error)
-        clearScheduledWork()
-        isGenerating.value = false
-        skeletonKeys.value = []
-        activeGenerationToken = null
-      }
-    })()
   }
 
   const handleCardUpdate = (nextCard: AnkiGeneratedCard) => {
@@ -802,27 +745,60 @@
       return
     }
 
-    const seed =
-      safeTrim(currentCard.regeneratePrompt) ||
-      safeTrim(currentCard.topic) ||
-      topicSelection.value.topicName
+    const promptSeed = safeTrim(currentCard.regeneratePrompt)
+    const request: GenerateAnkiDeckRequest = {
+      topicName: topicSelection.value.topicName,
+      subtopic: promptSeed.length
+        ? promptSeed
+        : safeTrim(currentCard.topic) || null,
+      cardFormat: currentCard.type,
+      cardCount: 1
+    }
 
     regeneratingCardId.value = cardId
 
     try {
-      await wait(500)
-      const replacements = createDeck(seed)
-      const nextCard =
-        replacements[Math.floor(Math.random() * replacements.length)]
+      const response = await fetch(
+        `${import.meta.env.VITE_BACKEND_URL}/ankipanki/generate`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(request)
+        }
+      )
+
+      if (!response.ok) {
+        const payload = await response.json().catch(() => null)
+        const message =
+          typeof payload?.message === "string"
+            ? payload.message
+            : "Unable to regenerate card"
+        throw new Error(message)
+      }
+
+      const payload = await response.json().catch(() => null)
+      const deck = normalizeGeneratedCards(payload, request)
+      const nextCard = deck[0]
+
+      if (!nextCard) {
+        throw new Error("Regeneration returned no card")
+      }
 
       cards.value = cards.value.map((card) =>
         card.id === cardId
-          ? ({
+          ? {
               ...nextCard,
               regeneratePrompt: ""
-            } as AnkiGeneratedCard)
+            }
           : card
       )
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Unable to regenerate card"
+      generationError.value = message
+      console.error(error)
     } finally {
       regeneratingCardId.value = null
     }

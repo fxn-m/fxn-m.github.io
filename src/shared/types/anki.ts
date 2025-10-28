@@ -2,24 +2,6 @@ import { z } from "zod"
 
 export type FlashcardDifficulty = "Foundation" | "Core" | "Challenger"
 
-export interface MultipleChoiceOption {
-  id: string
-  label: string
-  text: string
-}
-
-export interface Flashcard {
-  id: string
-  topic: string
-  headline: string
-  question: string
-  options: MultipleChoiceOption[]
-  answerId: string
-  explanation: string
-  difficulty: FlashcardDifficulty
-  regeneratePrompt: string
-}
-
 export const TopicNames = [
   "Foundations of Risk Management",
   "Quantitative Analysis",
@@ -96,40 +78,32 @@ type EnumeratedListCardData = z.infer<typeof EnumeratedListCard>
 type QADefinitionCardData = z.infer<typeof QADefinitionCard>
 
 export interface AnkiCardMetadata {
-  topic?: string
-  headline?: string
+  topic?: string | null
+  headline?: string | null
   regeneratePrompt?: string
   difficulty?: FlashcardDifficulty
   tags?: string[]
 }
 
-export interface ClozeDefinitionGeneratedCard
-  extends AnkiCardMetadata,
-    Omit<ClozeDefinitionCardData, "id" | "createdAt"> {
-  id: string
-  createdAt?: Date | string
-}
+export type ClozeDefinitionGeneratedCard = AnkiCardMetadata &
+  Omit<ClozeDefinitionCardData, "id" | "createdAt"> & {
+    id: string
+    createdAt?: Date | string
+  }
 
-export interface EnumeratedListGeneratedCard
-  extends AnkiCardMetadata,
-    Omit<EnumeratedListCardData, "id" | "createdAt"> {
-  id: string
-  createdAt?: Date | string
-}
+export type EnumeratedListGeneratedCard = AnkiCardMetadata &
+  Omit<EnumeratedListCardData, "id" | "createdAt"> & {
+    id: string
+    createdAt?: Date | string
+  }
 
-export interface QADefinitionGeneratedCard
-  extends AnkiCardMetadata,
-    Omit<QADefinitionCardData, "id" | "createdAt"> {
-  id: string
-  createdAt?: Date | string
-}
-
-export type MultipleChoiceGeneratedCard = Flashcard & {
-  type?: "multiple_choice"
-}
+export type QADefinitionGeneratedCard = AnkiCardMetadata &
+  Omit<QADefinitionCardData, "id" | "createdAt"> & {
+    id: string
+    createdAt?: Date | string
+  }
 
 export type AnkiGeneratedCard =
-  | MultipleChoiceGeneratedCard
   | ClozeDefinitionGeneratedCard
   | EnumeratedListGeneratedCard
   | QADefinitionGeneratedCard
