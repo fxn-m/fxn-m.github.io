@@ -320,7 +320,10 @@
             >
               <SelectTrigger
                 id="topic-name"
-                :class="[inputTone, 'min-w-0 w-11/12  justify-between']"
+                :class="[
+                  inputTone,
+                  'min-w-0 w-11/12  justify-between cursor-pointer'
+                ]"
                 :aria-invalid="state.meta.errors?.length ? 'true' : undefined"
                 @blur="field.handleBlur"
               >
@@ -331,6 +334,7 @@
                   v-for="option in topicNameOptions"
                   :key="option"
                   :value="option"
+                  class="cursor-pointer"
                 >
                   {{ option }}
                 </SelectItem>
@@ -372,7 +376,7 @@
                 :key="option"
                 :value="option"
                 :disabled="isBusy"
-                class="flex-1 justify-start text-left py-6"
+                class="flex-1 justify-start text-left py-6 cursor-pointer"
               >
                 <div class="flex flex-col text-left">
                   <span class="text-sm font-medium">
