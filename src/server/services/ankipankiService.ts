@@ -1,7 +1,7 @@
 import { z } from "zod"
 
 import type { GenerateAnkiDeckRequest } from "@/shared/types/anki"
-import { TopicNames } from "@/shared/types/anki"
+import { AnkiCardFormats, TopicNames } from "@/shared/types/anki"
 
 const topicNameSchema = z.enum(TopicNames)
 
@@ -22,6 +22,7 @@ const subtopicSchema = z
 
 const generateDeckRequestSchema = z.object({
   topicName: topicNameSchema,
+  cardFormat: z.enum(AnkiCardFormats),
   subtopic: subtopicSchema,
   cardCount: z.number().int().min(1).max(10)
 })
@@ -65,6 +66,7 @@ export const normalizeGenerateDeckRequest = (
 
   const payload: GenerateAnkiDeckRequest = {
     topicName: validation.payload.topicName,
+    cardFormat: validation.payload.cardFormat,
     subtopic: validation.payload.subtopic,
     cardCount: validation.payload.cardCount
   }
