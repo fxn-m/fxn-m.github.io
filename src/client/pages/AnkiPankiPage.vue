@@ -36,15 +36,15 @@
     TooltipTrigger
   } from "@/client/components/ui/tooltip"
   import { BLUEPRINTS } from "@/client/lib/ankiBlueprints"
-import {
+  import {
     AnkiCardFormats,
     type AnkiGeneratedCard,
+    type AnkiTopicSelection,
     type ClozeDefinitionGeneratedCard,
     type EnumeratedListGeneratedCard,
+    type GenerateAnkiDeckRequest,
     type MultipleChoiceGeneratedCard,
     type QADefinitionGeneratedCard,
-    type AnkiTopicSelection,
-    type GenerateAnkiDeckRequest,
     TopicNames
   } from "@/shared/types/anki"
 
@@ -64,39 +64,39 @@ import {
     cardFormat: AnkiCardFormats[0]
   })
   const cardCount = ref(DEFAULT_CARD_COUNT)
-const cards = ref<AnkiGeneratedCard[]>([])
+  const cards = ref<AnkiGeneratedCard[]>([])
   const isGenerating = ref(false)
   const isExporting = ref(false)
   const generationError = ref<string | null>(null)
   const regeneratingCardId = ref<string | null>(null)
   const isSeedFormOpen = ref(true)
   const lastGeneratedTopic = ref<string | null>(null)
-const hasDockedOnce = ref(false)
-let carouselEventTeardown: Array<() => void> = []
+  const hasDockedOnce = ref(false)
+  let carouselEventTeardown: Array<() => void> = []
 
-const isClozeDefinitionCard = (
-  card: AnkiGeneratedCard
-): card is ClozeDefinitionGeneratedCard =>
-  "type" in card && card.type === "cloze_definition"
+  const isClozeDefinitionCard = (
+    card: AnkiGeneratedCard
+  ): card is ClozeDefinitionGeneratedCard =>
+    "type" in card && card.type === "cloze_definition"
 
-const isEnumeratedListCard = (
-  card: AnkiGeneratedCard
-): card is EnumeratedListGeneratedCard =>
-  "type" in card && card.type === "enumerated_list"
+  const isEnumeratedListCard = (
+    card: AnkiGeneratedCard
+  ): card is EnumeratedListGeneratedCard =>
+    "type" in card && card.type === "enumerated_list"
 
-const isQADefinitionCard = (
-  card: AnkiGeneratedCard
-): card is QADefinitionGeneratedCard =>
-  "type" in card && card.type === "qa_definition"
+  const isQADefinitionCard = (
+    card: AnkiGeneratedCard
+  ): card is QADefinitionGeneratedCard =>
+    "type" in card && card.type === "qa_definition"
 
-const isMultipleChoiceCard = (
-  card: AnkiGeneratedCard
-): card is MultipleChoiceGeneratedCard =>
-  "options" in card && Array.isArray(card.options)
+  const isMultipleChoiceCard = (
+    card: AnkiGeneratedCard
+  ): card is MultipleChoiceGeneratedCard =>
+    "options" in card && Array.isArray(card.options)
 
   type CarouselSlide =
     | { kind: "card"; id: string; position: number; card: AnkiGeneratedCard }
-  | { kind: "skeleton"; id: string; position: number; order: number }
+    | { kind: "skeleton"; id: string; position: number; order: number }
 
   const slides = computed<CarouselSlide[]>(() => {
     const cardSlides = cards.value.map((card, index) => ({
@@ -172,17 +172,17 @@ const isMultipleChoiceCard = (
 
   const canCloseSeedForm = computed(() => cards.value.length > 0)
 
-const lastTopic = computed(() => {
-  const firstCard = cards.value[0]
-  if (firstCard) {
-    const topic = safeTrim(firstCard.topic)
-    if (topic.length) {
-      return topic
+  const lastTopic = computed(() => {
+    const firstCard = cards.value[0]
+    if (firstCard) {
+      const topic = safeTrim(firstCard.topic)
+      if (topic.length) {
+        return topic
+      }
     }
-  }
 
-  return lastGeneratedTopic.value
-})
+    return lastGeneratedTopic.value
+  })
 
   const chipDisabled = computed(
     () => isGenerating.value || skeletonKeys.value.length > 0
@@ -234,7 +234,7 @@ const lastTopic = computed(() => {
   const containerAnimate = computed(() => {
     if (!shouldDockInput.value) {
       return {
-        paddingTop: "112px",
+        paddingTop: "36px",
         marginBottom: "112px",
         rowGap: "40px"
       }
@@ -402,30 +402,30 @@ const lastTopic = computed(() => {
   const replaceTopic = (value: string, topic: string) =>
     value.replaceAll("{{topic}}", topic)
 
-const buildCard = (
-  seed: string,
-  blueprint: Blueprint
-): MultipleChoiceGeneratedCard => {
-  const topic = seed.trim().length ? seed.trim() : "market risk"
+  const buildCard = (
+    seed: string,
+    blueprint: Blueprint
+  ): MultipleChoiceGeneratedCard => {
+    const topic = seed.trim().length ? seed.trim() : "market risk"
 
-  return {
-    id: uid(),
-    topic,
-    headline: replaceTopic(blueprint.headline, topic),
-    question: replaceTopic(blueprint.question, topic),
-    options: blueprint.options.map(
+    return {
+      id: uid(),
+      topic,
+      headline: replaceTopic(blueprint.headline, topic),
+      question: replaceTopic(blueprint.question, topic),
+      options: blueprint.options.map(
         (option: Blueprint["options"][number]) => ({
           id: uid(),
           label: option.label,
-      text: replaceTopic(option.text, topic)
-    })
-  ),
-  answerId: blueprint.answerId,
-  explanation: replaceTopic(blueprint.explanation, topic),
-  difficulty: blueprint.difficulty,
-  regeneratePrompt: ""
-  } as MultipleChoiceGeneratedCard
-}
+          text: replaceTopic(option.text, topic)
+        })
+      ),
+      answerId: blueprint.answerId,
+      explanation: replaceTopic(blueprint.explanation, topic),
+      difficulty: blueprint.difficulty,
+      regeneratePrompt: ""
+    } as MultipleChoiceGeneratedCard
+  }
 
   const slugify = (value: string) =>
     value
@@ -435,169 +435,172 @@ const buildCard = (
       .replace(/-+/g, "-")
       .slice(0, 80)
 
-const sanitizeForTsv = (value: string | null | undefined) => {
-  if (!value) {
-    return ""
+  const sanitizeForTsv = (value: string | null | undefined) => {
+    if (!value) {
+      return ""
+    }
+
+    return value.replace(/\r?\n/g, "<br>").replace(/\t/g, " ").trim()
   }
 
-  return value.replace(/\r?\n/g, "<br>").replace(/\t/g, " ").trim()
-}
+  const safeTrim = (value?: string | null) =>
+    typeof value === "string" ? value.trim() : ""
 
-const safeTrim = (value?: string | null) =>
-  typeof value === "string" ? value.trim() : ""
+  const formatOptionsList = (
+    options: MultipleChoiceGeneratedCard["options"] | undefined
+  ) => {
+    if (!options?.length) {
+      return ""
+    }
 
-const formatOptionsList = (
-  options: MultipleChoiceGeneratedCard["options"] | undefined
-) => {
-  if (!options?.length) {
-    return ""
-  }
-
-  return options
+    return options
       .map((option) => `${option.label}. ${option.text}`)
       .join("<br>")
   }
 
-const buildFrontField = (card: AnkiGeneratedCard) => {
-  const segments: string[] = []
-
-  const headline = safeTrim(card.headline)
-  if (headline.length) {
-    segments.push(headline)
-  }
-
-  if (isMultipleChoiceCard(card)) {
-    const question = safeTrim(card.question)
-    if (question.length) {
-      segments.push(question)
-    }
-
-    const optionsList = formatOptionsList(card.options)
-    if (optionsList.length) {
-      segments.push(optionsList)
-    }
-  } else if (isClozeDefinitionCard(card)) {
-    const text = safeTrim(card.text)
-    if (text.length) {
-      segments.push(text)
-    }
-  } else if (isEnumeratedListCard(card)) {
-    const prompt = safeTrim(card.prompt)
-    if (prompt.length) {
-      segments.push(prompt)
-    }
-  } else if (isQADefinitionCard(card)) {
-    const question = safeTrim(card.question)
-    if (question.length) {
-      segments.push(question)
-    }
-  }
-
-  return sanitizeForTsv(segments.join("<br><br>"))
-}
-
-const buildBackField = (card: AnkiGeneratedCard) => {
-  if (isMultipleChoiceCard(card)) {
+  const buildFrontField = (card: AnkiGeneratedCard) => {
     const segments: string[] = []
-    const answerOption = card.options.find(
-      (option) => option.id === card.answerId || option.label === card.answerId
-    )
 
-    if (answerOption) {
-      segments.push(
-        `Answer: ${answerOption.label}. ${answerOption.text}`.trim()
-      )
-    } else {
-      const fallbackAnswerId = safeTrim(card.answerId)
-      if (fallbackAnswerId.length) {
-        segments.push(`Answer: ${fallbackAnswerId}`)
-      }
+    const headline = safeTrim(card.headline)
+    if (headline.length) {
+      segments.push(headline)
     }
 
-    const explanation = safeTrim(card.explanation)
-    if (explanation.length) {
-      segments.push(explanation)
+    if (isMultipleChoiceCard(card)) {
+      const question = safeTrim(card.question)
+      if (question.length) {
+        segments.push(question)
+      }
+
+      const optionsList = formatOptionsList(card.options)
+      if (optionsList.length) {
+        segments.push(optionsList)
+      }
+    } else if (isClozeDefinitionCard(card)) {
+      const text = safeTrim(card.text)
+      if (text.length) {
+        segments.push(text)
+      }
+    } else if (isEnumeratedListCard(card)) {
+      const prompt = safeTrim(card.prompt)
+      if (prompt.length) {
+        segments.push(prompt)
+      }
+    } else if (isQADefinitionCard(card)) {
+      const question = safeTrim(card.question)
+      if (question.length) {
+        segments.push(question)
+      }
     }
 
     return sanitizeForTsv(segments.join("<br><br>"))
   }
 
-  if (isClozeDefinitionCard(card)) {
-    const text = safeTrim(card.text)
-    return sanitizeForTsv(text.length ? text : "Cloze card")
+  const buildBackField = (card: AnkiGeneratedCard) => {
+    if (isMultipleChoiceCard(card)) {
+      const segments: string[] = []
+      const answerOption = card.options.find(
+        (option) =>
+          option.id === card.answerId || option.label === card.answerId
+      )
+
+      if (answerOption) {
+        segments.push(
+          `Answer: ${answerOption.label}. ${answerOption.text}`.trim()
+        )
+      } else {
+        const fallbackAnswerId = safeTrim(card.answerId)
+        if (fallbackAnswerId.length) {
+          segments.push(`Answer: ${fallbackAnswerId}`)
+        }
+      }
+
+      const explanation = safeTrim(card.explanation)
+      if (explanation.length) {
+        segments.push(explanation)
+      }
+
+      return sanitizeForTsv(segments.join("<br><br>"))
+    }
+
+    if (isClozeDefinitionCard(card)) {
+      const text = safeTrim(card.text)
+      return sanitizeForTsv(text.length ? text : "Cloze card")
+    }
+
+    if (isEnumeratedListCard(card)) {
+      const items = card.items
+        .map((item, index) => {
+          const label = (card.ordered ?? true) ? `${index + 1}.` : "•"
+          const content = safeTrim(item)
+          return content.length ? `${label} ${content}` : ""
+        })
+        .filter((entry) => entry.length)
+
+      return sanitizeForTsv(items.join("<br>"))
+    }
+
+    if (isQADefinitionCard(card)) {
+      return sanitizeForTsv(safeTrim(card.answer))
+    }
+
+    return ""
   }
 
-  if (isEnumeratedListCard(card)) {
-    const items = card.items
-      .map((item, index) => {
-        const label = (card.ordered ?? true) ? `${index + 1}.` : "•"
-        const content = safeTrim(item)
-        return content.length ? `${label} ${content}` : ""
-      })
-      .filter((entry) => entry.length)
+  const buildExtraField = (card: AnkiGeneratedCard) => {
+    const segments: string[] = []
 
-    return sanitizeForTsv(items.join("<br>"))
+    const topic = safeTrim(card.topic)
+    if (topic.length) {
+      segments.push(`Topic: ${topic}`)
+    }
+
+    if (card.difficulty) {
+      segments.push(`Difficulty: ${card.difficulty}`)
+    }
+
+    if (isClozeDefinitionCard(card)) {
+      segments.push("Format: Cloze Definition")
+    } else if (isEnumeratedListCard(card)) {
+      segments.push(
+        `Format: Enumerated List (${(card.ordered ?? true) ? "ordered" : "unordered"})`
+      )
+    } else if (isQADefinitionCard(card)) {
+      segments.push("Format: Q&A Definition")
+    } else if (isMultipleChoiceCard(card)) {
+      segments.push("Format: Multiple Choice")
+    }
+
+    return sanitizeForTsv(segments.join("<br>"))
   }
 
-  if (isQADefinitionCard(card)) {
-    return sanitizeForTsv(safeTrim(card.answer))
+  const buildTagField = (card: AnkiGeneratedCard) => {
+    const tags: string[] = []
+    const topicTag = slugify(safeTrim(card.topic))
+
+    if (topicTag.length) {
+      tags.push(topicTag)
+    }
+
+    if (card.difficulty) {
+      tags.push(card.difficulty.toLowerCase())
+    }
+
+    if (isClozeDefinitionCard(card)) {
+      tags.push("cloze")
+    } else if (isEnumeratedListCard(card)) {
+      tags.push("list")
+    } else if (isQADefinitionCard(card)) {
+      tags.push("qa")
+    } else if (isMultipleChoiceCard(card)) {
+      tags.push("mcq")
+    }
+
+    return tags.join(" ")
   }
 
-  return ""
-}
-
-const buildExtraField = (card: AnkiGeneratedCard) => {
-  const segments: string[] = []
-
-  const topic = safeTrim(card.topic)
-  if (topic.length) {
-    segments.push(`Topic: ${topic}`)
-  }
-
-  if (card.difficulty) {
-    segments.push(`Difficulty: ${card.difficulty}`)
-  }
-
-  if (isClozeDefinitionCard(card)) {
-    segments.push("Format: Cloze Definition")
-  } else if (isEnumeratedListCard(card)) {
-    segments.push(`Format: Enumerated List (${(card.ordered ?? true) ? "ordered" : "unordered"})`)
-  } else if (isQADefinitionCard(card)) {
-    segments.push("Format: Q&A Definition")
-  } else if (isMultipleChoiceCard(card)) {
-    segments.push("Format: Multiple Choice")
-  }
-
-  return sanitizeForTsv(segments.join("<br>"))
-}
-
-const buildTagField = (card: AnkiGeneratedCard) => {
-  const tags: string[] = []
-  const topicTag = slugify(safeTrim(card.topic))
-
-  if (topicTag.length) {
-    tags.push(topicTag)
-  }
-
-  if (card.difficulty) {
-    tags.push(card.difficulty.toLowerCase())
-  }
-
-  if (isClozeDefinitionCard(card)) {
-    tags.push("cloze")
-  } else if (isEnumeratedListCard(card)) {
-    tags.push("list")
-  } else if (isQADefinitionCard(card)) {
-    tags.push("qa")
-  } else if (isMultipleChoiceCard(card)) {
-    tags.push("mcq")
-  }
-
-  return tags.join(" ")
-}
-
-const buildTsvDeck = (deck: AnkiGeneratedCard[]) =>
-  deck
+  const buildTsvDeck = (deck: AnkiGeneratedCard[]) =>
+    deck
       .map((card) =>
         [
           buildFrontField(card),
@@ -662,11 +665,11 @@ const buildTsvDeck = (deck: AnkiGeneratedCard[]) =>
     }
   }
 
-const createDeck = (topicLabel: string): AnkiGeneratedCard[] => {
-  return Array.from({ length: cardCount.value }, (_, index) => {
-    const rotation =
-      (index + Math.floor(Math.random() * BLUEPRINTS.length)) %
-      BLUEPRINTS.length
+  const createDeck = (topicLabel: string): AnkiGeneratedCard[] => {
+    return Array.from({ length: cardCount.value }, (_, index) => {
+      const rotation =
+        (index + Math.floor(Math.random() * BLUEPRINTS.length)) %
+        BLUEPRINTS.length
       return buildCard(topicLabel, BLUEPRINTS[rotation])
     })
   }
@@ -786,13 +789,13 @@ const createDeck = (topicLabel: string): AnkiGeneratedCard[] => {
     })()
   }
 
-const handleCardUpdate = (nextCard: AnkiGeneratedCard) => {
-  cards.value = cards.value.map((card) =>
-    card.id === nextCard.id ? nextCard : card
-  )
-}
+  const handleCardUpdate = (nextCard: AnkiGeneratedCard) => {
+    cards.value = cards.value.map((card) =>
+      card.id === nextCard.id ? nextCard : card
+    )
+  }
 
-const handleRegenerateCard = async (cardId: string) => {
+  const handleRegenerateCard = async (cardId: string) => {
     const currentCard = cards.value.find((card) => card.id === cardId)
 
     if (!currentCard) {

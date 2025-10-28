@@ -59,7 +59,7 @@ const buildGenerationPrompt = (request: GenerateAnkiDeckRequest): string => {
     ? `Topic: ${topicName}\nSubtopic: ${subtopic}`
     : `Topic: ${topicName}`
 
-  return `You are generating flashcards for FRM exam preparation.\n${scope}\nDesired card format: ${cardFormat}.\n${formatInstructions[cardFormat]}\nReturn your answer as JSON with a top-level object that contains a \'cards\' array that matches the provided schema exactly and includes exactly ${cardCount} item${cardCount === 1 ? "" : "s"}. Avoid repeating facts, keep content current, and make the cards rigorous but approachable. Include any helpful tag suggestions in the optional tags array.`
+  return `You are generating flashcards for FRM exam preparation.\n${scope}\nDesired card format: ${cardFormat}.\n${formatInstructions[cardFormat]}\nReturn your answer as JSON with a top-level object that contains a 'cards' array that matches the provided schema exactly and includes exactly ${cardCount} item${cardCount === 1 ? "" : "s"}. Avoid repeating facts, keep content current, and make the cards rigorous but approachable. Include any helpful tag suggestions in the optional tags array.`
 }
 
 type AnkiCardOutput = z.infer<typeof AnkiCardSchema>
@@ -155,7 +155,6 @@ export const generateAnkiCards = async (
 
   console.log("System:", system)
   console.log("Prompt:", prompt)
-  console.log("Response schema:", responseSchema)
 
   const { object } = await generateObject({
     model: openai.responses("gpt-5-mini"),

@@ -447,14 +447,6 @@
 
     <div class="flex items-center gap-2 md:self-end">
       <Button
-        variant="default"
-        type="submit"
-        class="cursor-pointer"
-        :disabled="isBusy"
-      >
-        {{ buttonLabel }}
-      </Button>
-      <Button
         variant="outline"
         size="icon"
         type="button"
@@ -475,6 +467,15 @@
       >
         <Plus class="size-4" />
         <span class="sr-only">Increase card total</span>
+      </Button>
+
+      <Button
+        variant="default"
+        type="submit"
+        class="cursor-pointer flex-1"
+        :disabled="isBusy"
+      >
+        {{ buttonLabel }}
       </Button>
     </div>
   </form>
