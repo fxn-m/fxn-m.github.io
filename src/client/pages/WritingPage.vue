@@ -11,7 +11,9 @@
           {{ blog.title }}
         </router-link>
         <span aria-hidden="true" class="dot-leader"></span>
-        <p class="text-xs text-muted-foreground text-right">{{ blog.date }}</p>
+        <span class="text-md text-muted-foreground text-right">{{
+          blog.date
+        }}</span>
       </li>
     </ul>
   </div>
@@ -92,18 +94,6 @@
     flex-direction: row;
     justify-content: left;
     margin-top: 1em;
-  }
-
-  .container p {
-    color: #868686;
-    font-size: 0.95em;
-    margin: 0px 0px 0px 0px;
-    min-width: 100px;
-  }
-
-  li {
-    display: flex;
-    align-items: center;
   }
 
   .dot-leader {
