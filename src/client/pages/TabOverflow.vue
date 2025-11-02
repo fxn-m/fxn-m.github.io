@@ -48,15 +48,16 @@
           class="relative mx-auto flex h-full w-full min-w-0 flex-col overflow-hidden border border-gray-200 bg-background/80 backdrop-blur dark:border-gray-800 dark:bg-zinc-900/70"
         >
           <div class="grid h-full min-w-0">
-            <AnimatePresence :initial="false">
+            <AnimatePresence :initial="false" :custom="transitionDirection">
               <Motion
                 v-if="tabOverflowSuggestion.id"
                 :key="tabOverflowSuggestion.id"
                 tag="div"
                 class="col-start-1 row-start-1 flex h-full w-full min-w-0 flex-col"
-                :initial="cardInitial"
-                :animate="cardAnimate"
-                :exit="cardExit"
+                :variants="cardVariants"
+                :initial="'enter'"
+                :animate="'center'"
+                :exit="'exit'"
                 :transition="cardTransition"
               >
                 <header
@@ -370,13 +371,15 @@
   })
 
   const transitionDirection = ref<1 | -1>(1)
-  const cardInitial = computed(() => ({
-    x: transitionDirection.value > 0 ? "100%" : "-100%"
-  }))
-  const cardAnimate = { x: "0%" }
-  const cardExit = computed(() => ({
-    x: transitionDirection.value > 0 ? "-100%" : "100%"
-  }))
+  const cardVariants = {
+    enter: (direction: 1 | -1) => ({
+      x: direction > 0 ? "100%" : "-100%"
+    }),
+    center: { x: "0%" },
+    exit: (direction: 1 | -1) => ({
+      x: direction > 0 ? "-100%" : "100%"
+    })
+  }
   const cardTransition = {
     duration: 0.6,
     ease: [0.16, 1, 0.3, 1] as const
