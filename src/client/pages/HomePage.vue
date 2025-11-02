@@ -8,6 +8,8 @@
 
     <p>Based in London.</p>
 
+    <div ref="asciiHost" class="flex-1" />
+
     <footer>
       <p>Last updated: {{ buildDate }}</p>
     </footer>
@@ -16,6 +18,43 @@
 
 <script setup lang="ts">
   import { format } from "date-fns"
+  import { onBeforeUnmount, onMounted, ref } from "vue"
+
+  const asciiHost = ref<HTMLElement | null>(null)
+  let dispose: (() => void) | undefined
+  let scriptEl: HTMLScriptElement | null = null
+  let cssEl: HTMLLinkElement | null = null
+
+  onMounted(() => {
+    if (!asciiHost.value) return
+
+    cssEl = document.createElement("link")
+    cssEl.rel = "stylesheet"
+    cssEl.href = "/voltaire/dist/assets/index-DbAKVpNT.css"
+    document.head.appendChild(cssEl)
+
+    scriptEl = document.createElement("script")
+    scriptEl.type = "module"
+    scriptEl.src = "/voltaire/dist/assets/index-DABSRlN3.js"
+    scriptEl.crossOrigin = "anonymous"
+    scriptEl.onload = () => {
+      // @ts-expect-error | method does exist
+      dispose = window.mountVoltaire?.(asciiHost.value!)
+    }
+    document.body.appendChild(scriptEl)
+  })
+
+  onBeforeUnmount(() => {
+    dispose?.()
+    if (scriptEl) {
+      document.body.removeChild(scriptEl)
+      scriptEl = null
+    }
+    if (cssEl) {
+      document.head.removeChild(cssEl)
+      cssEl = null
+    }
+  })
 
   const buildDate = format(
     // eslint-disable-next-line no-undef
@@ -66,7 +105,7 @@
     bottom: 0;
     width: 100%;
     margin-top: auto;
-    padding: 4rem 0 1rem 0;
+    padding: 0 0 1rem 0;
   }
 
   footer p {
