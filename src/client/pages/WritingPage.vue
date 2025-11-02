@@ -1,8 +1,7 @@
 <template>
   <div id="content" class="container">
     <ul class="space-y-2">
-      <li v-for="blog in allBlogs" :key="blog.id">
-        <p>{{ blog.date }}</p>
+      <li v-for="blog in allBlogs" :key="blog.id" class="flex items-center">
         <router-link
           :to="{
             name: 'writingPost',
@@ -11,6 +10,8 @@
         >
           {{ blog.title }}
         </router-link>
+        <span aria-hidden="true" class="dot-leader"></span>
+        <p class="text-xs text-muted-foreground text-right">{{ blog.date }}</p>
       </li>
     </ul>
   </div>
@@ -103,6 +104,12 @@
   li {
     display: flex;
     align-items: center;
+  }
+
+  .dot-leader {
+    flex-grow: 1;
+    border-bottom: 1px dotted rgba(134, 134, 134, 0.4);
+    margin: 0 0.75rem;
   }
 
   @media (max-width: 1200px) {
