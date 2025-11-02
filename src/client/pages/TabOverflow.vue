@@ -30,6 +30,7 @@
 
     <div
       v-else
+      ref="suggestionCardRef"
       class="tab-overflow-suggestion flex flex-col items-center justify-center gap-2 my-8 flex-1"
     >
       <div class="mx-auto grid w-full max-w-4xl grid-cols-[auto_1fr_auto]">
@@ -199,12 +200,11 @@
         >
           <Button
             size="sm"
-            :variant="showOnlyBookmarked ? 'secondary' : 'outline'"
+            :variant="showOnlyBookmarked ? 'secondary' : 'ghost'"
             class="gap-1 text-xs"
             @click="toggleBookmarkFilter"
           >
-            <ListFilter class="size-4" />
-            {{ showOnlyBookmarked ? "Showing bookmarks" : "All suggestions" }}
+            <BookmarkCheck class="size-4" />
           </Button>
           <span class="text-xs text-gray-500 dark:text-gray-400">
             {{ bookmarkCount }} saved
@@ -243,7 +243,7 @@
                     —
                   </span>
                 </TableCell>
-                <TableCell class="max-w-[200px] sm:max-w-[300px]">
+                <TableCell class="max-w-[200px]">
                   <div class="flex overflow-x-scroll gap-1 no-scrollbar">
                     <span
                       v-for="(category, index) in row.item.categories"
@@ -265,6 +265,7 @@
                     <Button
                       size="icon-sm"
                       variant="ghost"
+                      class="cursor-pointer"
                       @click.stop="toggleBookmarkById(row.item.id)"
                     >
                       <BookmarkCheck
@@ -276,6 +277,7 @@
                     <Button
                       size="icon-sm"
                       variant="ghost"
+                      class="cursor-pointer"
                       @click.stop="openLink(row.item.url)"
                     >
                       <ArrowUpRight class="size-4" />
@@ -287,7 +289,7 @@
             <TableBody v-else>
               <TableEmpty :colspan="4">
                 <span class="text-sm text-gray-500 dark:text-gray-400">
-                  No suggestions to display. Try saving a bookmark first.
+                  No items to display. Try saving a bookmark first.
                 </span>
               </TableEmpty>
             </TableBody>
@@ -306,12 +308,12 @@
     BookmarkCheck,
     ChevronDown,
     ChevronLeft,
-    ChevronRight,
-    ListFilter
+    ChevronRight
   } from "lucide-vue-next"
   import { AnimatePresence, Motion } from "motion-v"
   import {
     computed,
+    nextTick,
     onMounted,
     onUnmounted,
     ref,
@@ -385,6 +387,7 @@
   const bookmarkedIds = ref<string[]>([])
   const isTableVisible = ref(false)
   const showOnlyBookmarked = ref(false)
+  const suggestionCardRef = ref<HTMLElement | null>(null)
 
   const fetchTabOverflow = async (): Promise<TabOverflowItem[]> => {
     const response = await fetch(
@@ -633,6 +636,26 @@
     }
     currentIndex.value = suggestionHistory.value.length - 1
     applySuggestionFromIndex(index)
+    nextTick(() => {
+      scrollToSuggestionCard()
+    })
+  }
+
+  const scrollToSuggestionCard = () => {
+    if (typeof window === "undefined") {
+      return
+    }
+    if (!suggestionCardRef.value) {
+      window.scrollTo({ top: 0, behavior: "smooth" })
+      return
+    }
+    const rect = suggestionCardRef.value.getBoundingClientRect()
+    const viewportCenter = window.innerHeight / 2
+    const target = window.scrollY + rect.top + rect.height / 2 - viewportCenter
+    window.scrollTo({
+      top: target > 0 ? target : 0,
+      behavior: "smooth"
+    })
   }
 
   // Kick off the first suggestion once data is ready
