@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="track"
-    class="mini-player hidden lg:flex"
+    :class="cn('mini-player hidden lg:flex', isExpanded ? 'expanded' : '')"
     @mouseenter="isExpanded = true"
     @mouseleave="isExpanded = false"
   >
@@ -36,8 +36,9 @@
 <script setup lang="ts">
   import { onMounted, ref, watch } from "vue"
 
-  import WaveForm from "./WaveForm.vue"
+  import { cn } from "@/client/lib/utils"
 
+  import WaveForm from "./WaveForm.vue"
   const isExpanded = ref(false)
   const delayedExpanded = ref(false)
   let timer: number | null = null
@@ -92,11 +93,17 @@
     backdrop-filter: blur(8px);
     padding: 0.25rem;
     border-radius: 9999px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     cursor: pointer;
     height: fit-content;
     width: fit-content;
     max-width: calc(100% - 2rem);
+    border: 1px solid #e0e0e0;
+    transition: border-radius 1s ease-in-out;
+  }
+
+  .mini-player.expanded,
+  body.dark.mini-player.expanded {
+    border-radius: 9999px 0 0 9999px;
   }
 
   body.dark .mini-player:hover {
@@ -210,16 +217,11 @@
 
   body.dark .mini-player {
     background: rgba(255, 255, 255, 0.01);
+    border: 1px solid #2a3855;
   }
 
   body.dark .mini-player:hover {
     background: rgba(255, 255, 255, 0.01);
-  }
-
-  @media (hover: hover) {
-    .mini-player:hover {
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
   }
 
   @media (max-width: 600px) {

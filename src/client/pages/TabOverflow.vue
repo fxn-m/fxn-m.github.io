@@ -195,10 +195,69 @@
         </button>
 
         <div
+          ref="readingTimeFilterRoot"
           :class="
-            cn('flex items-center gap-2', isTableVisible ? 'flex' : 'hidden')
+            cn(
+              'relative items-center gap-2',
+              isTableVisible ? 'flex' : 'hidden'
+            )
           "
         >
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button
+                  size="icon-sm"
+                  :variant="
+                    selectedReadingTimeFilter ? 'secondary' : 'ghost'
+                  "
+                  class="cursor-pointer"
+                  @click="toggleReadingTimeFilterVisibility"
+                >
+                  <Hourglass class="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                filter by read time
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          <div
+            v-if="isReadingTimeFilterOpen"
+            class="absolute right-0 top-full z-10 mt-2 min-w-[160px] rounded-md border border-gray-200 bg-background/95 p-2 shadow-lg backdrop-blur-sm dark:border-gray-800 dark:bg-zinc-900/95"
+          >
+            <p
+              class="px-1 pb-2 text-[11px] uppercase tracking-wide text-muted-foreground"
+            >
+              under
+            </p>
+            <div class="flex flex-col gap-1">
+              <Button
+                v-for="option in readingTimeOptions"
+                :key="option.value"
+                size="sm"
+                variant="ghost"
+                class="justify-start rounded-sm text-xs capitalize"
+                :class="
+                  option.value === selectedReadingTimeFilter
+                    ? 'bg-primary/10 text-primary hover:bg-primary/20'
+                    : ''
+                "
+                @click="selectReadingTimeFilter(option.value)"
+              >
+                {{ option.label }}
+              </Button>
+            </div>
+          </div>
+
+          <span
+            v-if="readingTimeFilterLabel"
+            class="text-xs text-muted-foreground"
+          >
+            under {{ readingTimeFilterLabel }}
+          </span>
+
           <Button
             size="sm"
             :variant="showOnlyBookmarked ? 'secondary' : 'ghost'"
@@ -309,7 +368,8 @@
     BookmarkCheck,
     ChevronDown,
     ChevronLeft,
-    ChevronRight
+    ChevronRight,
+    Hourglass
   } from "lucide-vue-next"
   import { AnimatePresence, Motion } from "motion-v"
   import {
@@ -391,6 +451,35 @@
   const isTableVisible = ref(false)
   const showOnlyBookmarked = ref(false)
   const suggestionCardRef = ref<HTMLElement | null>(null)
+  const readingTimeFilterRoot = ref<HTMLElement | null>(null)
+
+  const readingTimeOptions = [
+    { label: "5 min", value: 5 },
+    { label: "10 min", value: 10 },
+    { label: "20 min", value: 20 }
+  ] as const
+
+  type ReadingTimeValue = (typeof readingTimeOptions)[number]["value"]
+
+  const selectedReadingTimeFilter = ref<ReadingTimeValue | null>(null)
+  const isReadingTimeFilterOpen = ref(false)
+
+  const toggleReadingTimeFilterVisibility = () => {
+    isReadingTimeFilterOpen.value = !isReadingTimeFilterOpen.value
+  }
+
+  const selectReadingTimeFilter = (value: ReadingTimeValue) => {
+    selectedReadingTimeFilter.value =
+      selectedReadingTimeFilter.value === value ? null : value
+    isReadingTimeFilterOpen.value = false
+  }
+
+  const readingTimeFilterLabel = computed(() => {
+    const match = readingTimeOptions.find(
+      (option) => option.value === selectedReadingTimeFilter.value
+    )
+    return match?.label ?? ""
+  })
 
   const fetchTabOverflow = async (): Promise<TabOverflowItem[]> => {
     const response = await fetch(
@@ -608,6 +697,17 @@
     showOnlyBookmarked.value = !showOnlyBookmarked.value
   }
 
+  const handleReadingTimeFilterClickOutside = (event: MouseEvent) => {
+    if (!isReadingTimeFilterOpen.value) {
+      return
+    }
+
+    const root = readingTimeFilterRoot.value
+    if (root && !root.contains(event.target as Node)) {
+      isReadingTimeFilterOpen.value = false
+    }
+  }
+
   const filteredTableItems = computed(() => {
     const bookmarkSet = new Set(bookmarkedIds.value)
     return normalizedTabOverflowItems.value
@@ -615,6 +715,15 @@
       .filter(({ item }) =>
         showOnlyBookmarked.value ? bookmarkSet.has(item.id) : true
       )
+      .filter(({ item }) => {
+        if (selectedReadingTimeFilter.value === null) {
+          return true
+        }
+        if (typeof item.readingTime !== "number") {
+          return false
+        }
+        return item.readingTime < selectedReadingTimeFilter.value
+      })
   })
 
   const openSuggestionFromTable = (index: number) => {
@@ -679,9 +788,18 @@
   onMounted(() => {
     loadBookmarks()
     window.addEventListener("keydown", handleKeydown)
+    if (typeof document !== "undefined") {
+      document.addEventListener("click", handleReadingTimeFilterClickOutside)
+    }
   })
 
   onUnmounted(() => {
     window.removeEventListener("keydown", handleKeydown)
+    if (typeof document !== "undefined") {
+      document.removeEventListener(
+        "click",
+        handleReadingTimeFilterClickOutside
+      )
+    }
   })
 </script>
