@@ -203,14 +203,19 @@
             )
           "
         >
+          <span
+            v-if="readingTimeFilterLabel"
+            class="text-xs text-muted-foreground"
+          >
+            under {{ readingTimeFilterLabel }}
+          </span>
+
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger as-child>
                 <Button
                   size="icon-sm"
-                  :variant="
-                    selectedReadingTimeFilter ? 'secondary' : 'ghost'
-                  "
+                  :variant="selectedReadingTimeFilter ? 'secondary' : 'ghost'"
                   class="cursor-pointer"
                   @click="toggleReadingTimeFilterVisibility"
                 >
@@ -238,7 +243,7 @@
                 :key="option.value"
                 size="sm"
                 variant="ghost"
-                class="justify-start rounded-sm text-xs capitalize"
+                class="justify-start rounded-sm text-xs capitalize cursor-pointer"
                 :class="
                   option.value === selectedReadingTimeFilter
                     ? 'bg-primary/10 text-primary hover:bg-primary/20'
@@ -251,21 +256,23 @@
             </div>
           </div>
 
-          <span
-            v-if="readingTimeFilterLabel"
-            class="text-xs text-muted-foreground"
-          >
-            under {{ readingTimeFilterLabel }}
-          </span>
-
-          <Button
-            size="sm"
-            :variant="showOnlyBookmarked ? 'secondary' : 'ghost'"
-            class="gap-1 text-xs"
-            @click="toggleBookmarkFilter"
-          >
-            <BookmarkCheck class="size-4" />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button
+                  size="sm"
+                  :variant="showOnlyBookmarked ? 'secondary' : 'ghost'"
+                  class="gap-1 text-xs cursor-pointer"
+                  @click="toggleBookmarkFilter"
+                >
+                  <BookmarkCheck class="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                filter by bookmarked
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <span class="text-xs text-gray-500 dark:text-gray-400">
             {{ bookmarkCount }} saved
           </span>
@@ -796,10 +803,7 @@
   onUnmounted(() => {
     window.removeEventListener("keydown", handleKeydown)
     if (typeof document !== "undefined") {
-      document.removeEventListener(
-        "click",
-        handleReadingTimeFilterClickOutside
-      )
+      document.removeEventListener("click", handleReadingTimeFilterClickOutside)
     }
   })
 </script>
