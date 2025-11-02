@@ -8,7 +8,14 @@
 
     <p>Based in London.</p>
 
-    <div ref="asciiHost" class="flex-1" />
+    <Motion
+      :initial="{ opacity: 0 }"
+      :animate="{ opacity: 1 }"
+      :transition="{ duration: 4, delay: 2 }"
+      class="flex-1"
+    >
+      <div ref="asciiHost" class="h-full" />
+    </Motion>
 
     <footer>
       <p>Last updated: {{ buildDate }}</p>
@@ -18,6 +25,7 @@
 
 <script setup lang="ts">
   import { format } from "date-fns"
+  import { Motion } from "motion-v"
   import { onBeforeUnmount, onMounted, ref } from "vue"
 
   const asciiHost = ref<HTMLElement | null>(null)
