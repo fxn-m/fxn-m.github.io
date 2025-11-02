@@ -263,7 +263,7 @@
 </script>
 
 <template>
-  <div class="strava-activity-viewer transition-all duration-1000">
+  <div class="strava-activity-viewer font-sans transition-all duration-1000">
     <!-- Loading / Error states -->
     <div v-if="isLoading" class="activity-card loading-skeleton">
       <div class="activity-content">
@@ -304,7 +304,7 @@
         <!-- Canvas gradient -->
         <!-- Top -->
         <div
-          class="absolute inset-0 bg-gradient-to-b from-white to-transparent to-25%"
+          class="absolute inset-0 bg-gradient-to-b from-[#fafafa] to-transparent to-25%"
           :class="{ 'opacity-0': isDark }"
         />
 
@@ -314,7 +314,7 @@
         />
         <!-- Bottom -->
         <div
-          class="absolute inset-0 bg-gradient-to-t from-white to-25% to-transparent transition-opacity duration-1000 sm:invisible"
+          class="absolute inset-0 bg-gradient-to-t from-background to-25% to-transparent transition-opacity duration-1000 sm:invisible"
           :class="{ 'opacity-0': isDark }"
         />
 
@@ -430,7 +430,6 @@
   /* Base (light mode) styles */
   .strava-activity-viewer {
     width: 100%;
-    font-family: sans-serif;
     color: #222;
   }
 
@@ -538,7 +537,7 @@
   .error {
     text-align: center;
     padding: 2rem;
-    background: #fefefe;
+    background: #fafafa;
     border: 1px solid #ddd;
     border-radius: 8px;
     margin-top: 1rem;

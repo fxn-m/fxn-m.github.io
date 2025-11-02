@@ -1,3 +1,4 @@
+@import url("https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -51,14 +52,6 @@
 }
 
 body {
-  font-family:
-    Roboto,
-    system-ui,
-    -apple-system,
-    "Hubot Sans",
-    "Kanit",
-    "Gantari",
-    serif;
   width: 50%;
   min-height: 100dvh;
   margin: 0 auto;
@@ -67,6 +60,7 @@ body {
     color 0.5s ease-in-out;
   display: flex;
   flex-direction: column;
+  background-color: #fafafa;
 }
 
 #app {
@@ -165,7 +159,7 @@ pre {
   overflow-x: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
-  background-color: #fafafa;
+  background-color: #f0f0f0;
   border-radius: 10px;
   transition:
     background-color 0.5s ease-in-out,
@@ -176,7 +170,7 @@ pre {
 p code {
   margin: 0px 4px;
   line-height: 2em;
-  background-color: #fafafa;
+  background-color: #f0f0f0;
   padding: 2px 5px;
   border-radius: 3px;
   transition:
@@ -420,6 +414,13 @@ body.dark header {
 
 /* eslint-disable-next-line */
 @theme {
+  --font-sans:
+    "General Sans Variable", "General Sans", Roboto, system-ui, -apple-system,
+    "Hubot Sans", "Kanit", "Gantari", serif;
+  --font-heading:
+    "General Sans Variable", "General Sans", Roboto, system-ui, -apple-system,
+    "Hubot Sans", "Kanit", "Gantari", serif;
+  --font-roboto: "Roboto", system-ui, -apple-system, serif;
   --color-primary-light: #444;
   --color-primary-dark: #bbb;
 }
@@ -503,6 +504,14 @@ body.dark header {
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply font-sans bg-background text-foreground;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
   }
 }

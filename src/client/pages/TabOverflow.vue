@@ -232,7 +232,7 @@
                 @click="openSuggestionFromTable(row.index)"
               >
                 <TableCell
-                  class="font-medium truncate lowercase max-w-[200px] sm:max-w-[300px]"
+                  class="font-medium truncate lowercase max-w-[200px] sm:max-w-[300px] pr-4"
                 >
                   {{ row.item.name }}
                 </TableCell>
@@ -244,12 +244,12 @@
                     —
                   </span>
                 </TableCell>
-                <TableCell class="max-w-[200px]">
+                <TableCell class="max-w-[200px] lowercase">
                   <div class="flex overflow-x-scroll gap-1 no-scrollbar">
                     <span
                       v-for="(category, index) in row.item.categories"
                       :key="`${row.item.id}-cat-${index}`"
-                      class="rounded-full bg-gray-200 px-2 py-0.5 text-[11px] font-medium dark:bg-gray-700"
+                      class="bg-gray-200 px-2 py-0.5 text-[11px] font-medium dark:bg-zinc-800"
                     >
                       {{ category }}
                     </span>

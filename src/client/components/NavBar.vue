@@ -1,8 +1,8 @@
 <template>
   <header class="py-2 mt-4">
-    <h2 class="flex font-semibold text-lg tracking-wide">
+    <h2 class="flex font-semibold text-lg">
       <RouterLink
-        class="absolute whitespace-nowrap border-none !no-underline font-bold self-center"
+        class="absolute whitespace-nowrap border-none !no-underline font-bolder self-center"
         to="/"
         @mouseover="isHovering = true"
         @mouseout="isHovering = false"
