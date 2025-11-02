@@ -30,7 +30,7 @@
 
     <div
       v-else
-      class="tab-overflow-suggestion flex flex-col items-center justify-center gap-2 my-24 flex-1"
+      class="tab-overflow-suggestion flex flex-col items-center justify-center gap-2 my-8 flex-1"
     >
       <div class="mx-auto grid w-full max-w-4xl grid-cols-[auto_1fr_auto]">
         <Button
@@ -64,7 +64,7 @@
                   <a
                     :href="tabOverflowSuggestion.url"
                     target="_blank"
-                    class="block min-w-0 flex-1 truncate text-lg font-semibold leading-tight text-foreground transition-colors hover:text-primary"
+                    class="block min-w-0 flex-1 lowercase truncate text-md sm:text-lg font-semibold leading-tight text-foreground transition-colors hover:text-primary"
                   >
                     {{ tabOverflowSuggestion.name }}
                   </a>
@@ -83,7 +83,7 @@
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent side="bottom"
-                          >Open in new tab</TooltipContent
+                          >open in new tab</TooltipContent
                         >
                       </Tooltip>
 
@@ -105,8 +105,8 @@
                         <TooltipContent side="bottom">
                           {{
                             isCurrentBookmarked
-                              ? "Remove bookmark"
-                              : "Save for later"
+                              ? "remove bookmark"
+                              : "save for later"
                           }}
                         </TooltipContent>
                       </Tooltip>
@@ -129,9 +129,9 @@
                 <footer
                   class="flex min-w-0 flex-col gap-4 border-t border-gray-200 px-5 py-5 text-xs text-muted-foreground dark:border-gray-800 sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <div class="flex flex-wrap items-center gap-3">
+                  <div class="flex flex-wrap items-center gap-1">
                     <span class="font-medium text-foreground">
-                      Reading Time:
+                      reading time:
                     </span>
                     <span>
                       {{
@@ -147,7 +147,7 @@
                         category, index
                       ) in tabOverflowSuggestion.categories"
                       :key="index"
-                      class="border border-gray-300 px-2.5 py-1 text-xs font-medium text-foreground dark:border-gray-700"
+                      class="border lowercase border-gray-300 px-2.5 py-1 text-xs font-medium text-foreground dark:border-gray-700"
                     >
                       {{ category }}
                     </span>
@@ -182,20 +182,21 @@
 
     <!-- Full list of tab-overflow items -->
     <div class="mt-8 border-t border-gray-200 pt-4 dark:border-gray-800">
-      <div class="flex flex-wrap items-center justify-between gap-2">
-        <Button
-          size="sm"
-          variant="ghost"
-          class="gap-1 text-xs"
+      <div class="flex flex-wrap items-center justify-between gap-2 h-8">
+        <button
+          class="gap-1 text-xs border-0 p-0 flex cursor-pointer items-center hover:text-primary font-semibold"
           @click="toggleTableVisibility"
         >
+          {{ isTableVisible ? "hide all" : "show all" }}
           <ChevronDown v-if="isTableVisible" class="size-4" />
           <ChevronRight v-else class="size-4" />
-          {{
-            isTableVisible ? "Hide suggestions list" : "Show suggestions list"
-          }}
-        </Button>
-        <div class="flex items-center gap-2">
+        </button>
+
+        <div
+          :class="
+            cn('flex items-center gap-2', isTableVisible ? 'flex' : 'hidden')
+          "
+        >
           <Button
             size="sm"
             :variant="showOnlyBookmarked ? 'secondary' : 'outline'"
@@ -217,10 +218,6 @@
       >
         <div class="overflow-x-auto">
           <Table>
-            <TableCaption>
-              Browse the full Tab Overflow backlog and revisit bookmarked links.
-            </TableCaption>
-
             <TableBody v-if="filteredTableItems.length">
               <TableRow
                 v-for="row in filteredTableItems"
@@ -233,7 +230,9 @@
                 ]"
                 @click="openSuggestionFromTable(row.index)"
               >
-                <TableCell class="font-medium truncate max-w-[400px]">
+                <TableCell
+                  class="font-medium truncate lowercase max-w-[200px] sm:max-w-[300px]"
+                >
                   {{ row.item.name }}
                 </TableCell>
                 <TableCell>
@@ -244,8 +243,8 @@
                     —
                   </span>
                 </TableCell>
-                <TableCell>
-                  <div class="flex flex-wrap gap-1">
+                <TableCell class="max-w-[200px] sm:max-w-[300px]">
+                  <div class="flex overflow-x-scroll gap-1 no-scrollbar">
                     <span
                       v-for="(category, index) in row.item.categories"
                       :key="`${row.item.id}-cat-${index}`"
@@ -324,7 +323,6 @@
   import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableEmpty,
     TableRow
@@ -335,6 +333,7 @@
     TooltipProvider,
     TooltipTrigger
   } from "@/client/components/ui/tooltip"
+  import { cn } from "@/client/lib/utils"
 
   // Define the type for the tab overflow suggestion based on the new schema
   interface TabOverflowSuggestion {

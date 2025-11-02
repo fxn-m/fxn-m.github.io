@@ -3,6 +3,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
 :root {
   --text-underline-offset: 5px;
   --radius: 0.625rem;
