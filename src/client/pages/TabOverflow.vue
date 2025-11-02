@@ -4,108 +4,338 @@
   >
     <div
       v-if="isLoading"
-      class="flex flex-1 gap-2 flex-col items-center justify-center h-full text-gray-600 dark:text-gray-400 transition-color duration-1000"
+      class="flex flex-1 flex-col items-center justify-center gap-4 py-8 transition-colors duration-1000"
     >
-      <p class="text-sm">Loading...</p>
-      <Loader2 class="animate-spin size-6" />
-    </div>
-
-    <div
-      v-else
-      class="relative tab-overflow-suggestion gap-2 flex flex-col px-1 py-8 flex-1"
-    >
-      <div class="absolute top-2 right-2 text-xs text-gray-500">
-        {{ currentItemNumber }} / {{ tabOverflowCount }} on
-        <a
-          :href="`https://notion.so/fxn-m/${tabOverflowSuggestion.id.replace(
-            /-/g,
-            ''
-          )}`"
-          target="_blank"
-          class="!text-inherit"
-          >Notion</a
+      <div class="w-full">
+        <div
+          class="border border-gray-200 bg-white/80 p-6 backdrop-blur dark:border-gray-800 dark:bg-zinc-900/60 animate-pulse"
         >
-      </div>
-
-      <div class="space-y-4 sm:space-y-6 sm:min-h-60 min-h-72">
-        <p>
-          <a
-            :href="tabOverflowSuggestion.url"
-            target="_blank"
-            class="text-lg font-bold inline-flex items-start gap-1 break-words"
-          >
-            {{ tabOverflowSuggestion.name }}
-            <ExternalLink class="inline-block size-3 flex-shrink-0 mt-1" />
-          </a>
-        </p>
-
-        <p
-          v-if="tabOverflowSuggestion.summary"
-          class="mt-2 text-sm sm:text-base text-gray-700 dark:text-gray-500 line-clamp-6 sm:line-clamp-none"
-        >
-          {{ tabOverflowSuggestion.summary }}
-        </p>
-
-        <div class="flex flex-col sm:flex-row sm:items-center mt-3 sm:gap-2">
-          <p
-            v-if="tabOverflowSuggestion.readingTime"
-            class="text-xs sm:text-sm text-gray-600"
-          >
-            <span class="font-semibold">Reading Time:</span>
-            {{ tabOverflowSuggestion.readingTime }} minutes
-          </p>
-
-          <div
-            v-if="
-              tabOverflowSuggestion.categories &&
-              tabOverflowSuggestion.categories.length
-            "
-            class="flex flex-wrap gap-2 mt-2 sm:mt-0"
-          >
-            <span
-              v-for="(category, index) in tabOverflowSuggestion.categories"
-              :key="index"
-              class="bg-gray-200 text-gray-800 px-2 py-1 rounded-full text-xs dark:bg-gray-700 dark:text-gray-200 transition-colors duration-1000"
-            >
-              {{ category }}
-            </span>
+          <div class="h-4 w-24 rounded bg-gray-200 dark:bg-gray-700" />
+          <div class="mt-6 h-6 w-3/4 rounded bg-gray-200 dark:bg-gray-700" />
+          <div class="mt-3 h-4 w-full rounded bg-gray-200 dark:bg-gray-700" />
+          <div class="mt-2 h-4 w-5/6 rounded bg-gray-200 dark:bg-gray-700" />
+          <div class="mt-2 h-4 w-1/2 rounded bg-gray-200 dark:bg-gray-700" />
+          <div class="mt-6 flex flex-wrap gap-2">
+            <span class="block h-6 w-20 bg-gray-200 dark:bg-gray-700" />
+            <span class="block h-6 w-16 bg-gray-200 dark:bg-gray-700" />
+          </div>
+          <div class="mt-6 flex flex-wrap gap-2">
+            <span class="block h-9 w-28 bg-gray-200 dark:bg-gray-700" />
+            <span class="block h-9 w-28 bg-gray-200 dark:bg-gray-700" />
+            <span class="block h-9 w-32 bg-gray-200 dark:bg-gray-700" />
           </div>
         </div>
       </div>
-      <!-- Navigation Arrows at the bottom -->
-      <div class="flex flex-1 w-full justify-between items-end mt-4">
-        <button
-          class="text-gray-800 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-400 p-2"
-          :class="{
-            'opacity-50 cursor-not-allowed': currentIndex === 0
-          }"
-          :disabled="currentIndex === 0"
+    </div>
+
+    <div v-else class="tab-overflow-suggestion flex flex-col px-1 py-8 flex-1">
+      <div
+        class="relative mx-auto flex w-full max-w-3xl flex-col overflow-hidden border border-gray-200 bg-background/80 backdrop-blur dark:border-gray-800 dark:bg-zinc-900/70"
+      >
+        <span
+          class="pointer-events-none absolute font-mono z-10 right-1 top-1 font-semibold tracking-tight text-muted-foreground text-[10px]"
+        >
+          {{ currentItemNumber }} / {{ tabOverflowCount }}
+        </span>
+        <header
+          class="flex flex-col gap-4 border-b border-gray-200 px-5 py-6 dark:border-gray-800 sm:flex-row sm:items-start sm:justify-between"
+        >
+          <div class="space-y-1 min-w-0 flex-1">
+            <a
+              :href="tabOverflowSuggestion.url"
+              target="_blank"
+              class="group flex min-w-0 items-start gap-2 text-lg font-semibold leading-tight text-foreground transition-colors hover:text-primary"
+            >
+              <span class="truncate">{{ tabOverflowSuggestion.name }}</span>
+            </a>
+          </div>
+          <TooltipProvider>
+            <div class="flex flex-nowrap items-center gap-2">
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <Button
+                    size="icon-sm"
+                    variant="secondary"
+                    class="rounded-none"
+                    @click="openCurrentLink"
+                  >
+                    <ArrowUpRight class="size-4" />
+                    <span class="sr-only">Open in new tab</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">Open in new tab</TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <Button
+                    size="icon-sm"
+                    :variant="isCurrentBookmarked ? 'default' : 'ghost'"
+                    class="border border-transparent hover:border-primary/40 rounded-none"
+                    @click="toggleBookmarkForCurrent"
+                  >
+                    <BookmarkCheck v-if="isCurrentBookmarked" class="size-4" />
+                    <Bookmark v-else class="size-4" />
+                    <span class="sr-only">
+                      {{ isCurrentBookmarked ? "Remove bookmark" : "Save" }}
+                    </span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  {{
+                    isCurrentBookmarked ? "Remove bookmark" : "Save for later"
+                  }}
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </TooltipProvider>
+        </header>
+
+        <section class="px-5 py-6">
+          <p
+            v-if="tabOverflowSuggestion.summary"
+            class="text-sm leading-relaxed text-muted-foreground sm:text-base line-clamp-5 min-h-[5lh]"
+          >
+            {{ tabOverflowSuggestion.summary }}
+          </p>
+          <p v-else class="text-sm italic text-muted-foreground">
+            No summary available for this suggestion yet.
+          </p>
+        </section>
+
+        <footer
+          class="flex flex-col gap-4 border-t border-gray-200 px-5 py-5 text-xs text-muted-foreground dark:border-gray-800 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div class="flex flex-wrap items-center gap-3">
+            <span class="font-medium text-foreground"> Reading Time: </span>
+            <span>
+              {{
+                tabOverflowSuggestion.readingTime
+                  ? `${tabOverflowSuggestion.readingTime} minutes`
+                  : "Not set"
+              }}
+            </span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span
+              v-for="(category, index) in tabOverflowSuggestion.categories"
+              :key="index"
+              class="border border-gray-300 px-2.5 py-1 text-xs font-medium text-foreground dark:border-gray-700"
+            >
+              {{ category }}
+            </span>
+            <span
+              v-if="!tabOverflowSuggestion.categories.length"
+              class="border border-dashed border-gray-300 px-2.5 py-1 text-xs"
+            >
+              No categories yet
+            </span>
+          </div>
+        </footer>
+      </div>
+
+      <div
+        class="mt-6 flex w-full flex-1 items-center justify-between gap-4 text-sm font-medium text-foreground"
+      >
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          class="rounded-none gap-2 px-3 py-2"
+          :disabled="currentIndex <= 0"
           @click="prevSuggestion"
         >
-          <FontAwesomeIcon
-            icon="fa-solid fa-arrow-left"
-            class="sm:text-base text-xl"
-          />
-        </button>
-        <button
-          class="text-gray-800 hover:text-gray-800 dark:text-gray-300 dark:hover:text-gray-400 p-2"
+          <ChevronLeft class="size-4" />
+          <span class="hidden sm:inline">Previous</span>
+          <Kbd class="ml-2 hidden sm:inline-flex">←</Kbd>
+        </Button>
+
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          class="rounded-none gap-2 px-3 py-2"
           @click="nextSuggestion"
         >
-          <FontAwesomeIcon
-            icon="fa-solid fa-arrow-left"
-            class="rotate-180 sm:text-base text-xl"
-          />
-        </button>
+          <span class="hidden sm:inline">Next</span>
+          <Kbd class="ml-2 hidden sm:inline-flex">→</Kbd>
+          <ChevronRight class="size-4" />
+        </Button>
+      </div>
+      <div class="mt-8 border-t border-gray-200 pt-4 dark:border-gray-800">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <Button
+            size="sm"
+            variant="ghost"
+            class="gap-1 text-xs"
+            @click="toggleTableVisibility"
+          >
+            <ChevronDown v-if="isTableVisible" class="size-4" />
+            <ChevronRight v-else class="size-4" />
+            {{
+              isTableVisible ? "Hide suggestions list" : "Show suggestions list"
+            }}
+          </Button>
+          <div class="flex items-center gap-2">
+            <Button
+              size="sm"
+              :variant="showOnlyBookmarked ? 'secondary' : 'outline'"
+              class="gap-1 text-xs"
+              @click="toggleBookmarkFilter"
+            >
+              <ListFilter class="size-4" />
+              {{ showOnlyBookmarked ? "Showing bookmarks" : "All suggestions" }}
+            </Button>
+            <span class="text-xs text-gray-500 dark:text-gray-400">
+              {{ bookmarkCount }} saved
+            </span>
+          </div>
+        </div>
+
+        <div
+          v-if="isTableVisible"
+          class="mt-4 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800"
+        >
+          <div class="overflow-x-auto">
+            <Table>
+              <TableCaption>
+                Browse the full Tab Overflow backlog and revisit bookmarked
+                links.
+              </TableCaption>
+              <TableHeader>
+                <TableRow>
+                  <TableHead class="min-w-[220px]">Title</TableHead>
+                  <TableHead class="min-w-[140px]">Reading Time</TableHead>
+                  <TableHead class="min-w-[180px]">Categories</TableHead>
+                  <TableHead class="min-w-[100px] text-right"
+                    >Actions</TableHead
+                  >
+                </TableRow>
+              </TableHeader>
+              <TableBody v-if="filteredTableItems.length">
+                <TableRow
+                  v-for="row in filteredTableItems"
+                  :key="row.item.id"
+                  :class="[
+                    'cursor-pointer transition-colors',
+                    row.item.id === tabOverflowSuggestion.id
+                      ? 'bg-primary/10 dark:bg-primary/20'
+                      : 'hover:bg-muted/60 dark:hover:bg-zinc-800/70'
+                  ]"
+                  @click="openSuggestionFromTable(row.index)"
+                >
+                  <TableCell class="font-medium">
+                    {{ row.item.name }}
+                  </TableCell>
+                  <TableCell>
+                    <span v-if="row.item.readingTime">
+                      {{ row.item.readingTime }} min
+                    </span>
+                    <span v-else class="text-gray-500 dark:text-gray-400">
+                      —
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <div class="flex flex-wrap gap-1">
+                      <span
+                        v-for="(category, index) in row.item.categories"
+                        :key="`${row.item.id}-cat-${index}`"
+                        class="rounded-full bg-gray-200 px-2 py-0.5 text-[11px] font-medium dark:bg-gray-700"
+                      >
+                        {{ category }}
+                      </span>
+                      <span
+                        v-if="!row.item.categories.length"
+                        class="text-xs text-gray-500 dark:text-gray-400"
+                      >
+                        —
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell class="text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <Button
+                        size="icon-sm"
+                        variant="ghost"
+                        @click.stop="toggleBookmarkById(row.item.id)"
+                      >
+                        <BookmarkCheck
+                          v-if="isBookmarked(row.item.id)"
+                          class="size-4"
+                        />
+                        <Bookmark v-else class="size-4" />
+                        <span class="sr-only">
+                          {{
+                            isBookmarked(row.item.id)
+                              ? "Remove bookmark"
+                              : "Save bookmark"
+                          }}
+                        </span>
+                      </Button>
+                      <Button
+                        size="icon-sm"
+                        variant="ghost"
+                        @click.stop="openLink(row.item.url)"
+                      >
+                        <ArrowUpRight class="size-4" />
+                        <span class="sr-only">Open link</span>
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+              <TableBody v-else>
+                <TableEmpty :colspan="4">
+                  <span class="text-sm text-gray-500 dark:text-gray-400">
+                    No suggestions to display. Try saving a bookmark first.
+                  </span>
+                </TableEmpty>
+              </TableBody>
+            </Table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
   import { useQuery } from "@tanstack/vue-query"
-  import { ExternalLink, Loader2 } from "lucide-vue-next"
-  import { computed, onMounted, onUnmounted, ref, watchEffect } from "vue"
+  import {
+    ArrowUpRight,
+    Bookmark,
+    BookmarkCheck,
+    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
+    ListFilter
+  } from "lucide-vue-next"
+  import {
+    computed,
+    onMounted,
+    onUnmounted,
+    ref,
+    watch,
+    watchEffect
+  } from "vue"
+
+  import { Button } from "@/client/components/ui/button"
+  import { Kbd } from "@/client/components/ui/kbd"
+  import {
+    Table,
+    TableBody,
+    TableCaption,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow
+  } from "@/client/components/ui/table"
+  import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger
+  } from "@/client/components/ui/tooltip"
 
   // Define the type for the tab overflow suggestion based on the new schema
   interface TabOverflowSuggestion {
@@ -139,6 +369,12 @@
     summary: ""
   })
 
+  const BOOKMARK_STORAGE_KEY = "tabOverflow:bookmarks"
+
+  const bookmarkedIds = ref<string[]>([])
+  const isTableVisible = ref(false)
+  const showOnlyBookmarked = ref(false)
+
   const fetchTabOverflow = async (): Promise<TabOverflowItem[]> => {
     const response = await fetch(
       `${import.meta.env.VITE_BACKEND_URL}/tab-overflow`,
@@ -162,22 +398,9 @@
 
   const tabOverflowItems = computed(() => data.value ?? [])
 
-  // History for navigation (storing indices) and pointer
-  const suggestionHistory = ref<number[]>([])
-  const currentIndex = ref(-1)
-
-  const currentItemNumber = computed(() => {
-    if (currentIndex.value >= 0 && suggestionHistory.value.length > 0) {
-      return suggestionHistory.value[currentIndex.value] + 1
-    }
-    return 0
-  })
-
-  const tabOverflowCount = computed(() => tabOverflowItems.value.length)
-
-  // Helper: Apply a suggestion from a given index
-  const applySuggestionFromIndex = (index: number) => {
-    const item = tabOverflowItems.value[index]
+  const mapItemToSuggestion = (
+    item: TabOverflowItem
+  ): TabOverflowSuggestion => {
     const props = item.properties || {}
     const name = props.Name?.title?.[0]?.plain_text || "Untitled"
     const url = props.Link?.url || "#"
@@ -189,7 +412,7 @@
       ? props.Summary.rich_text.map((txt) => txt.plain_text).join(" ")
       : ""
 
-    tabOverflowSuggestion.value = {
+    return {
       id: item.id,
       name,
       url,
@@ -199,9 +422,40 @@
     }
   }
 
+  const normalizedTabOverflowItems = computed(() =>
+    tabOverflowItems.value.map((item) => mapItemToSuggestion(item))
+  )
+
+  // History for navigation (storing indices) and pointer
+  const suggestionHistory = ref<number[]>([])
+  const currentIndex = ref(-1)
+
+  const currentItemNumber = computed(() => {
+    if (currentIndex.value >= 0 && suggestionHistory.value.length > 0) {
+      return suggestionHistory.value[currentIndex.value] + 1
+    }
+    return 0
+  })
+
+  const tabOverflowCount = computed(
+    () => normalizedTabOverflowItems.value.length
+  )
+
+  const bookmarkCount = computed(() => bookmarkedIds.value.length)
+
+  // Helper: Apply a suggestion from a given index
+  const applySuggestionFromIndex = (index: number) => {
+    const item = normalizedTabOverflowItems.value[index]
+    if (!item) {
+      return
+    }
+
+    tabOverflowSuggestion.value = { ...item }
+  }
+
   // Choose a random index from the tab overflow items
   const chooseRandomIndex = (): number => {
-    return Math.floor(Math.random() * tabOverflowItems.value.length)
+    return Math.floor(Math.random() * normalizedTabOverflowItems.value.length)
   }
 
   // Navigate to the next suggestion
@@ -213,7 +467,10 @@
     } else {
       let randomIndex = chooseRandomIndex()
       // Avoid duplicate if possible
-      if (suggestionHistory.value.length > 0 && tabOverflowItems.value.length > 1) {
+      if (
+        suggestionHistory.value.length > 0 &&
+        normalizedTabOverflowItems.value.length > 1
+      ) {
         while (
           randomIndex ===
           suggestionHistory.value[suggestionHistory.value.length - 1]
@@ -244,6 +501,114 @@
     }
   }
 
+  const isBookmarked = (id: string) => bookmarkedIds.value.includes(id)
+
+  const persistBookmarks = () => {
+    if (typeof window === "undefined") {
+      return
+    }
+    window.localStorage.setItem(
+      BOOKMARK_STORAGE_KEY,
+      JSON.stringify(bookmarkedIds.value)
+    )
+  }
+
+  const loadBookmarks = () => {
+    if (typeof window === "undefined") {
+      return
+    }
+    try {
+      const stored = window.localStorage.getItem(BOOKMARK_STORAGE_KEY)
+      if (!stored) {
+        return
+      }
+      const parsed = JSON.parse(stored)
+      if (Array.isArray(parsed)) {
+        bookmarkedIds.value = parsed.filter(
+          (value): value is string => typeof value === "string"
+        )
+      }
+    } catch (error) {
+      console.error("Failed to load Tab Overflow bookmarks", error)
+    }
+  }
+
+  const filterInvalidBookmarks = () => {
+    const availableIds = new Set(
+      normalizedTabOverflowItems.value.map((item) => item.id)
+    )
+    const filtered = bookmarkedIds.value.filter((id) => availableIds.has(id))
+    if (filtered.length !== bookmarkedIds.value.length) {
+      bookmarkedIds.value = filtered
+      persistBookmarks()
+    }
+  }
+
+  const isCurrentBookmarked = computed(() =>
+    isBookmarked(tabOverflowSuggestion.value.id)
+  )
+
+  const toggleBookmarkById = (id: string) => {
+    if (!id) {
+      return
+    }
+    if (isBookmarked(id)) {
+      bookmarkedIds.value = bookmarkedIds.value.filter(
+        (bookmarkId) => bookmarkId !== id
+      )
+    } else {
+      bookmarkedIds.value = [...bookmarkedIds.value, id]
+    }
+    persistBookmarks()
+  }
+
+  const toggleBookmarkForCurrent = () => {
+    toggleBookmarkById(tabOverflowSuggestion.value.id)
+  }
+
+  const openLink = (url: string) => {
+    if (!url || url === "#") {
+      return
+    }
+    window.open(url, "_blank", "noopener")
+  }
+
+  const openCurrentLink = () => {
+    openLink(tabOverflowSuggestion.value.url)
+  }
+
+  const toggleTableVisibility = () => {
+    isTableVisible.value = !isTableVisible.value
+  }
+
+  const toggleBookmarkFilter = () => {
+    showOnlyBookmarked.value = !showOnlyBookmarked.value
+  }
+
+  const filteredTableItems = computed(() => {
+    const bookmarkSet = new Set(bookmarkedIds.value)
+    return normalizedTabOverflowItems.value
+      .map((item, index) => ({ item, index }))
+      .filter(({ item }) =>
+        showOnlyBookmarked.value ? bookmarkSet.has(item.id) : true
+      )
+  })
+
+  const openSuggestionFromTable = (index: number) => {
+    if (index < 0 || index >= normalizedTabOverflowItems.value.length) {
+      return
+    }
+
+    if (
+      suggestionHistory.value.length === 0 ||
+      suggestionHistory.value[suggestionHistory.value.length - 1] !== index
+    ) {
+      suggestionHistory.value.push(index)
+    }
+    currentIndex.value = suggestionHistory.value.length - 1
+    applySuggestionFromIndex(index)
+  }
+
   // Kick off the first suggestion once data is ready
   watchEffect(() => {
     if (
@@ -255,7 +620,12 @@
     }
   })
 
+  watch(normalizedTabOverflowItems, () => {
+    filterInvalidBookmarks()
+  })
+
   onMounted(() => {
+    loadBookmarks()
     window.addEventListener("keydown", handleKeydown)
   })
 
@@ -267,20 +637,5 @@
 <style scoped>
   .tab-overflow-suggestion {
     line-height: 1.5;
-  }
-
-  button {
-    background: none;
-    border: none;
-    cursor: pointer;
-    touch-action: manipulation;
-  }
-
-  button {
-    min-height: 44px;
-    min-width: 44px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 </style>

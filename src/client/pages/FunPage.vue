@@ -22,7 +22,7 @@
             </h3>
 
             <p
-              class="font-light text-sm text-neutral-400 dark:text-primary-dark"
+              class="font-light text-sm lowercase text-neutral-400 dark:text-neutral-500"
             >
               {{ project.subtitle }}
             </p>

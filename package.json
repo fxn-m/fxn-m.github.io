@@ -36,6 +36,7 @@
     "@tanstack/form-core": "^1.24.4",
     "@tanstack/vue-form": "^1.23.8",
     "@tanstack/vue-query": "^5.90.2",
+    "@tanstack/vue-table": "^8.21.3",
     "@trpc/client": "^11.6.0",
     "@trpc/server": "^11.6.0",
     "@vueuse/core": "^13.9.0",
