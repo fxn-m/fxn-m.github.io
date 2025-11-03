@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
-import type { Group } from "three"
 import { Canvas } from "@react-three/fiber"
+import { type Group } from "three"
 import {
   AsciiRenderer,
   OrbitControls,
@@ -49,7 +49,7 @@ function App() {
       <Canvas
         className={styles.canvas}
         shadows
-        camera={{ position: [2, 2, 4], fov: 40 }}
+        camera={{ position: [-1, 0, 4], fov: 40 }}
       >
         <fog attach="fog" args={["#020817", 6, 18]} />
 
@@ -61,7 +61,7 @@ function App() {
           shadow-mapSize={[2048, 2048]}
         />
 
-        <group position={[-0.2, -0.7, 0]} rotation={[0, 4, 0]}>
+        <group position={[-0.08, -0.5, 0]} rotation={[0, 0, 0]}>
           <PlantModel />
         </group>
 
@@ -80,5 +80,3 @@ function App() {
 }
 
 useGLTF.preload("/plant.glb")
-
-export default App
