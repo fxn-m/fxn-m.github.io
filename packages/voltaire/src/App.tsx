@@ -80,3 +80,5 @@ function App() {
 }
 
 useGLTF.preload("/plant.glb")
+
+export default App
