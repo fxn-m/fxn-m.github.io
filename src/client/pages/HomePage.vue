@@ -10,8 +10,8 @@
 
     <Motion
       :initial="{ opacity: 0 }"
-      :animate="{ opacity: 1 }"
-      :transition="{ duration: 4, delay: 2 }"
+      :animate="voltaireReady ? { opacity: 1 } : { opacity: 0 }"
+      :transition="{ duration: 5 }"
       class="voltaire-container"
     >
       <div ref="asciiHost" class="voltaire-host" />
@@ -49,9 +49,13 @@
   const VOLTAIRE_FALLBACK_SCRIPT = "/voltaire/dist/assets/index.js"
   const VOLTAIRE_FALLBACK_STYLE = "/voltaire/dist/assets/main.css"
 
+  type VoltaireWindow = Window & { __voltairePlantLoaded?: boolean }
+
   const asciiHost = ref<HTMLElement | null>(null)
+  const voltaireReady = ref(false)
   let dispose: (() => void) | undefined
   const appendedNodes: Array<HTMLScriptElement | HTMLLinkElement> = []
+  let listeningForVoltaire = false
 
   const appendNode = <T extends HTMLLinkElement | HTMLScriptElement>(
     node: T
@@ -141,11 +145,41 @@
     mountFromAssets(scriptSrc, cssPaths, preloadPaths)
   }
 
+  const handleVoltaireModelLoaded = () => {
+    voltaireReady.value = true
+    if (listeningForVoltaire) {
+      window.removeEventListener(
+        "voltaire:model-loaded",
+        handleVoltaireModelLoaded
+      )
+      listeningForVoltaire = false
+    }
+  }
+
   onMounted(() => {
+    const typedWindow = window as VoltaireWindow
+    if (typedWindow.__voltairePlantLoaded) {
+      voltaireReady.value = true
+    } else {
+      window.addEventListener(
+        "voltaire:model-loaded",
+        handleVoltaireModelLoaded
+      )
+      listeningForVoltaire = true
+    }
+
     void loadVoltaire()
   })
 
   onBeforeUnmount(() => {
+    if (listeningForVoltaire) {
+      window.removeEventListener(
+        "voltaire:model-loaded",
+        handleVoltaireModelLoaded
+      )
+      listeningForVoltaire = false
+    }
+
     dispose?.()
     appendedNodes.forEach((node) => {
       if (node.parentNode) {

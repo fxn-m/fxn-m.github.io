@@ -10,6 +10,12 @@ import {
 } from "@react-three/drei"
 import styles from "./App.module.css"
 
+declare global {
+  interface Window {
+    __voltairePlantLoaded?: boolean
+  }
+}
+
 function PlantModel() {
   const group = useRef<Group>(null)
 
@@ -22,12 +28,23 @@ function PlantModel() {
     if (actionKeys.length === 0) return
 
     const first = actions[actionKeys[0]]
-    first?.reset().fadeIn(0.5).play()
+    first?.reset().fadeIn(5).play()
 
     return () => {
       first?.fadeOut(0.5)
     }
   }, [actions])
+
+  useEffect(() => {
+    if (!scene || window.__voltairePlantLoaded) return
+
+    window.__voltairePlantLoaded = true
+    window.dispatchEvent(
+      new CustomEvent("voltaire:model-loaded", {
+        detail: { asset: "/plant.glb" }
+      })
+    )
+  }, [scene])
 
   return (
     <primitive
@@ -75,6 +92,10 @@ function App() {
         />
         <Preload all />
       </Canvas>
+
+      <div className={styles.messageContainer}>
+        <span className={styles.message}>il faut cultiver notre jardin...</span>
+      </div>
     </div>
   )
 }

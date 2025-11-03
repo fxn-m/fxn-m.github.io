@@ -1,3 +1,5 @@
+@import url("https://api.fontshare.com/v2/css?f[]=array@400,500,600,700&display=swap");
+
 .root {
   position: absolute;
   inset: 0;
@@ -18,4 +20,24 @@
   width: 100% !important;
   height: 100% !important;
   display: block;
+}
+
+.messageContainer {
+  height: 100%;
+  aspect-ratio: 1/1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.message {
+  font-family: "Array", "General Sans";
+  color: oklch(55.2% 0.016 285.938);
+  opacity: 50%;
+  position: absolute;
+  left: 5px;
+  bottom: 5px;
+  font-size: 14px;
 }
