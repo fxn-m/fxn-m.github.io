@@ -92,10 +92,6 @@ function App() {
         />
         <Preload all />
       </Canvas>
-
-      <div className={styles.messageContainer}>
-        <span className={styles.message}>il faut cultiver notre jardin...</span>
-      </div>
     </div>
   )
 }
