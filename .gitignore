@@ -30,6 +30,7 @@ packages/voltaire/dist
 desktop.ini
 
 /public/html
+/public/voltaire
 
 *.code-workspace
 
