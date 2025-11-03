@@ -28,40 +28,120 @@
   import { Motion } from "motion-v"
   import { onBeforeUnmount, onMounted, ref } from "vue"
 
+  type ViteManifestEntry = {
+    file: string
+    css?: string[]
+    imports?: string[]
+    dynamicImports?: string[]
+  }
+
+  type ViteManifest = Record<string, ViteManifestEntry>
+
+  declare global {
+    interface Window {
+      mountVoltaire?: (target: HTMLElement) => () => void
+    }
+  }
+
+  const VOLTAIRE_BASE_PATH = "/voltaire/dist"
+  const VOLTAIRE_ENTRY = "src/main.tsx"
+  const VOLTAIRE_FALLBACK_SCRIPT = "/voltaire/dist/assets/index-DABSRlN3.js"
+  const VOLTAIRE_FALLBACK_STYLE = "/voltaire/dist/assets/index-DbAKVpNT.css"
+
   const asciiHost = ref<HTMLElement | null>(null)
   let dispose: (() => void) | undefined
-  let scriptEl: HTMLScriptElement | null = null
-  let cssEl: HTMLLinkElement | null = null
+  const appendedNodes: Array<HTMLScriptElement | HTMLLinkElement> = []
 
-  onMounted(() => {
+  const appendNode = <T extends HTMLLinkElement | HTMLScriptElement>(node: T) => {
+    appendedNodes.push(node)
+    if (node.tagName === "SCRIPT") {
+      document.body.appendChild(node)
+    } else {
+      document.head.appendChild(node)
+    }
+    return node
+  }
+
+  const mountFromAssets = (scriptSrc: string, cssPaths: string[], preloadPaths: string[]) => {
+    preloadPaths.forEach((href) => {
+      const preloadEl = document.createElement("link")
+      preloadEl.rel = "modulepreload"
+      preloadEl.crossOrigin = "anonymous"
+      preloadEl.href = href
+      appendNode(preloadEl)
+    })
+
+    cssPaths.forEach((href) => {
+      const cssEl = document.createElement("link")
+      cssEl.rel = "stylesheet"
+      cssEl.href = href
+      appendNode(cssEl)
+    })
+
+    const scriptEl = document.createElement("script")
+    scriptEl.type = "module"
+    scriptEl.crossOrigin = "anonymous"
+    scriptEl.src = scriptSrc
+    scriptEl.onload = () => {
+      if (!asciiHost.value) return
+      dispose = window.mountVoltaire?.(asciiHost.value)
+    }
+    scriptEl.onerror = (event) => {
+      console.error("[voltaire] failed to load module", event)
+    }
+    appendNode(scriptEl)
+  }
+
+  const mountWithFallback = () => {
+    if (!asciiHost.value) return
+    console.warn("[voltaire] falling back to legacy assets")
+    mountFromAssets(VOLTAIRE_FALLBACK_SCRIPT, [VOLTAIRE_FALLBACK_STYLE], [])
+  }
+
+  const loadVoltaire = async () => {
     if (!asciiHost.value) return
 
-    cssEl = document.createElement("link")
-    cssEl.rel = "stylesheet"
-    cssEl.href = "/voltaire/dist/assets/index-DbAKVpNT.css"
-    document.head.appendChild(cssEl)
-
-    scriptEl = document.createElement("script")
-    scriptEl.type = "module"
-    scriptEl.src = "/voltaire/dist/assets/index-DABSRlN3.js"
-    scriptEl.crossOrigin = "anonymous"
-    scriptEl.onload = () => {
-      // @ts-expect-error | method does exist
-      dispose = window.mountVoltaire?.(asciiHost.value!)
+    let manifest: ViteManifest | undefined
+    try {
+      const response = await fetch(`${VOLTAIRE_BASE_PATH}/manifest.json`, {
+        cache: "force-cache"
+      })
+      if (!response.ok) {
+        throw new Error(`Unable to load Voltaire manifest: ${response.status}`)
+      }
+      manifest = (await response.json()) as ViteManifest
+    } catch (error) {
+      console.error("[voltaire] failed to fetch manifest", error)
+      mountWithFallback()
+      return
     }
-    document.body.appendChild(scriptEl)
+
+    const entry = manifest[VOLTAIRE_ENTRY]
+    if (!entry) {
+      console.error("[voltaire] manifest missing entry", VOLTAIRE_ENTRY)
+      mountWithFallback()
+      return
+    }
+
+    const scriptSrc = `${VOLTAIRE_BASE_PATH}/${entry.file}`
+    const cssPaths = (entry.css ?? []).map((path) => `${VOLTAIRE_BASE_PATH}/${path}`)
+    const preloadPaths = (entry.imports ?? []).map((path) => `${VOLTAIRE_BASE_PATH}/${path}`)
+
+    mountFromAssets(scriptSrc, cssPaths, preloadPaths)
+  }
+
+  onMounted(() => {
+    void loadVoltaire()
   })
 
   onBeforeUnmount(() => {
     dispose?.()
-    if (scriptEl) {
-      document.body.removeChild(scriptEl)
-      scriptEl = null
-    }
-    if (cssEl) {
-      document.head.removeChild(cssEl)
-      cssEl = null
-    }
+    appendedNodes.forEach((node) => {
+      if (node.parentNode) {
+        node.parentNode.removeChild(node)
+      }
+    })
+    appendedNodes.length = 0
   })
 
   const buildDate = format(

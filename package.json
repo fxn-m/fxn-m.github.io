@@ -6,11 +6,12 @@
   "type": "module",
   "packageManager": "pnpm@10.8.0",
   "scripts": {
-    "build": "pnpm build:markdown && run-p type-check build-only",
+    "build": "pnpm build:voltaire && pnpm build:markdown && run-p type-check build-only",
     "build:markdown": "npx tsx --tsconfig tsconfig.server.json ./scripts/buildBlog.ts",
     "build-only": "vite build",
     "preview": "vite preview",
     "dev": "vite",
+    "dev:all": "run-p dev voltaire:dev",
     "dev:server": "wrangler dev",
     "lint": "npx eslint --ext .ts,.js,.vue src",
     "format": "prettier . --write",
@@ -18,7 +19,12 @@
     "type-check:app": "vue-tsc --noEmit -p tsconfig.app.json --composite false",
     "type-check:server": "tsc --noEmit -p tsconfig.server.json",
     "tunnel:server": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:8787",
-    "tunnel:client": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:5173"
+    "tunnel:client": "ngrok http --url=discrete-allegedly-eagle.ngrok-free.app localhost:5173",
+    "build:voltaire": "run-s voltaire:build voltaire:copy",
+    "voltaire:build": "pnpm --filter @fxn/voltaire build",
+    "voltaire:watch": "pnpm --filter @fxn/voltaire watch",
+    "voltaire:dev": "pnpm --filter @fxn/voltaire dev",
+    "voltaire:copy": "node ./scripts/syncVoltaire.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.53",
