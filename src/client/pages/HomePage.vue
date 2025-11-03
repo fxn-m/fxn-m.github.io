@@ -12,9 +12,9 @@
       :initial="{ opacity: 0 }"
       :animate="{ opacity: 1 }"
       :transition="{ duration: 4, delay: 2 }"
-      class="flex-1"
+      class="voltaire-container"
     >
-      <div ref="asciiHost" class="h-full" />
+      <div ref="asciiHost" class="voltaire-host" />
     </Motion>
 
     <footer>
@@ -39,20 +39,23 @@
 
   declare global {
     interface Window {
+      // eslint-disable-next-line
       mountVoltaire?: (target: HTMLElement) => () => void
     }
   }
 
   const VOLTAIRE_BASE_PATH = "/voltaire/dist"
   const VOLTAIRE_ENTRY = "src/main.tsx"
-  const VOLTAIRE_FALLBACK_SCRIPT = "/voltaire/dist/assets/index-DABSRlN3.js"
-  const VOLTAIRE_FALLBACK_STYLE = "/voltaire/dist/assets/index-DbAKVpNT.css"
+  const VOLTAIRE_FALLBACK_SCRIPT = "/voltaire/dist/assets/index.js"
+  const VOLTAIRE_FALLBACK_STYLE = "/voltaire/dist/assets/main.css"
 
   const asciiHost = ref<HTMLElement | null>(null)
   let dispose: (() => void) | undefined
   const appendedNodes: Array<HTMLScriptElement | HTMLLinkElement> = []
 
-  const appendNode = <T extends HTMLLinkElement | HTMLScriptElement>(node: T) => {
+  const appendNode = <T extends HTMLLinkElement | HTMLScriptElement>(
+    node: T
+  ) => {
     appendedNodes.push(node)
     if (node.tagName === "SCRIPT") {
       document.body.appendChild(node)
@@ -62,7 +65,11 @@
     return node
   }
 
-  const mountFromAssets = (scriptSrc: string, cssPaths: string[], preloadPaths: string[]) => {
+  const mountFromAssets = (
+    scriptSrc: string,
+    cssPaths: string[],
+    preloadPaths: string[]
+  ) => {
     preloadPaths.forEach((href) => {
       const preloadEl = document.createElement("link")
       preloadEl.rel = "modulepreload"
@@ -124,8 +131,12 @@
     }
 
     const scriptSrc = `${VOLTAIRE_BASE_PATH}/${entry.file}`
-    const cssPaths = (entry.css ?? []).map((path) => `${VOLTAIRE_BASE_PATH}/${path}`)
-    const preloadPaths = (entry.imports ?? []).map((path) => `${VOLTAIRE_BASE_PATH}/${path}`)
+    const cssPaths = (entry.css ?? []).map(
+      (path) => `${VOLTAIRE_BASE_PATH}/${path}`
+    )
+    const preloadPaths = (entry.imports ?? []).map(
+      (path) => `${VOLTAIRE_BASE_PATH}/${path}`
+    )
 
     mountFromAssets(scriptSrc, cssPaths, preloadPaths)
   }
@@ -200,6 +211,20 @@
     color: #b3b3b3;
     font-size: 0.8rem;
     margin-left: auto;
+  }
+
+  .voltaire-container {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    position: relative;
+  }
+
+  .voltaire-host {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
   }
 
   .asterisk {

@@ -8,7 +8,7 @@ import {
   useAnimations,
   useGLTF
 } from "@react-three/drei"
-import "./App.css"
+import styles from "./App.module.css"
 
 function PlantModel() {
   const group = useRef<Group>(null)
@@ -45,8 +45,12 @@ useGLTF.preload("/plant.glb")
 
 function App() {
   return (
-    <div className="viewport cursor-grab">
-      <Canvas shadows camera={{ position: [2, 2, 4], fov: 40 }}>
+    <div className={styles.root}>
+      <Canvas
+        className={styles.canvas}
+        shadows
+        camera={{ position: [2, 2, 4], fov: 40 }}
+      >
         <fog attach="fog" args={["#020817", 6, 18]} />
 
         <ambientLight intensity={2.0} />
