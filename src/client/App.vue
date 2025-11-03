@@ -18,5 +18,5 @@
  |_| /_/\\_\\_| |_|     |_| |_| |_(_)___\\___/|_| |_| |_|              
                                                      
 `)
-  console.info("yo 👋")
+  console.info("...il faut cultiver notre jardin 🌱")
 </script>
