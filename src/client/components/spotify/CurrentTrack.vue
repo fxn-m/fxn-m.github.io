@@ -39,10 +39,12 @@
       target="_blank"
       rel="noreferrer noopener"
       :aria-label="`Listen to ${track.name} by ${track.artist} on Spotify`"
-      :class="cn(
-        sheetTileClass,
-        'group now-playing-tile items-start gap-3 overflow-hidden'
-      )"
+      :class="
+        cn(
+          sheetTileClass,
+          'group dark:bg-transparent dark:border-none border-none bg-transparent now-playing-tile items-start gap-3 overflow-hidden'
+        )
+      "
     >
       <span class="flex items-center gap-3 truncate">
         <span
@@ -54,7 +56,9 @@
             class="h-full w-full object-cover"
           />
         </span>
-        <span class="flex min-w-0 flex-col gap-1 text-left normal-case tracking-normal">
+        <span
+          class="flex min-w-0 flex-col gap-1 text-left normal-case tracking-normal"
+        >
           <span
             class="text-[10px] font-semibold uppercase tracking-[0.35em] text-muted-foreground/70"
           >
@@ -76,13 +80,7 @@
 </template>
 
 <script setup lang="ts">
-  import {
-    computed,
-    onBeforeUnmount,
-    onMounted,
-    ref,
-    watch
-  } from "vue"
+  import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue"
 
   import { cn } from "@/client/lib/utils"
 
