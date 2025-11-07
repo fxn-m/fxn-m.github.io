@@ -48,25 +48,29 @@
 
         <SheetContent
           side="right"
-          class="w-full max-w-[90vw] space-y-6 px-6 py-16 flex flex-col justify-between text-foreground"
+          class="flex h-full w-full max-w-[90vw] flex-col gap-6 px-6 py-16 text-foreground"
         >
-          <nav class="grid gap-2">
-            <SheetClose
-              v-for="route in routes"
-              :key="`drawer-route-${route.path}`"
-              as-child
-            >
-              <RouterLink
-                :to="route.path"
-                class="flex items-center justify-between border border-zinc-200 bg-background/80 px-4 py-3 font-semibold uppercase tracking-[0.35em] text-xs text-foreground transition-colors duration-200 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-900/80"
+          <div class="grid gap-2">
+            <CurrentTrack
+              variant="sheet"
+              :sheet-tile-class="drawerTileClasses"
+            />
+
+            <nav class="grid gap-2">
+              <SheetClose
+                v-for="route in routes"
+                :key="`drawer-route-${route.path}`"
+                as-child
               >
-                <span class="truncate">{{ route.name }}</span>
-                <span class="text-[10px] font-medium text-muted-foreground/80"
-                  >open</span
-                >
-              </RouterLink>
-            </SheetClose>
-          </nav>
+                <RouterLink :to="route.path" :class="drawerTileClasses">
+                  <span class="truncate">{{ route.name }}</span>
+                  <span class="text-[10px] font-medium text-muted-foreground/80"
+                    >open</span
+                  >
+                </RouterLink>
+              </SheetClose>
+            </nav>
+          </div>
 
           <div class="grid gap-2">
             <SheetClose
@@ -78,7 +82,7 @@
                 :href="link.href"
                 target="_blank"
                 rel="noreferrer noopener"
-                class="flex items-center justify-between border border-zinc-200 bg-background/80 px-4 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-foreground transition-colors duration-200 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-900/80"
+                :class="drawerTileClasses"
               >
                 <span class="flex items-center gap-3 truncate">
                   <FontAwesomeIcon
@@ -92,7 +96,7 @@
             </SheetClose>
           </div>
 
-          <SheetFooter>
+          <SheetFooter class="mt-auto">
             <ThemeToggle class="self-center size-20" />
           </SheetFooter>
         </SheetContent>
@@ -123,6 +127,7 @@
   import { computed, ref, watch } from "vue"
   import { RouterLink, useRoute, useRouter } from "vue-router"
 
+  import CurrentTrack from "@/client/components/spotify/CurrentTrack.vue"
   import ThemeToggle from "@/client/components/theme/ThemeToggle.vue"
   import { Button } from "@/client/components/ui/button"
   import {
@@ -198,6 +203,9 @@
       label: "polarsteps"
     }
   ]
+
+  const drawerTileClasses =
+    "flex items-center justify-between border border-zinc-200 bg-background/80 px-4 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-foreground transition-colors duration-200 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-900/80"
 </script>
 
 <style scoped>

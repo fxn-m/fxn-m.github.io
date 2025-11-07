@@ -1,47 +1,120 @@
 <template>
-  <div
-    v-if="track"
-    :class="cn('mini-player hidden lg:flex', isExpanded ? 'expanded' : '')"
-    @mouseenter="isExpanded = true"
-    @mouseleave="isExpanded = false"
-  >
-    <a :href="track.externalUrl" target="_blank">
-      <div class="artwork-container">
-        <img :src="track.cover" :alt="track.name" class="artwork spinning" />
-      </div>
+  <div v-if="track">
+    <div
+      v-if="!isSheetVariant"
+      :class="cn('mini-player hidden lg:flex', isExpanded ? 'expanded' : '')"
+      @mouseenter="handleMouseEnter"
+      @mouseleave="handleMouseLeave"
+    >
+      <a :href="track.externalUrl" target="_blank">
+        <div class="artwork-container">
+          <img :src="track.cover" :alt="track.name" class="artwork spinning" />
+        </div>
 
-      <div class="info-container" :class="{ expanded: isExpanded }">
-        <div class="info">
-          <p class="track-link">
-            {{ track.name }}
-            <small>{{ track.artist }}</small>
-          </p>
+        <div class="info-container" :class="{ expanded: isExpanded }">
+          <div class="info">
+            <p class="track-link">
+              {{ track.name }}
+              <small>{{ track.artist }}</small>
+            </p>
+          </div>
         </div>
+      </a>
+      <div class="sub-info-wrapper">
+        <transition name="fade-slide">
+          <div
+            v-if="delayedExpanded"
+            class="flex gap-1 items-center text-gray-400 text-xs"
+          >
+            <p>Now playing on Spotify</p>
+            <WaveForm />
+          </div>
+        </transition>
       </div>
-    </a>
-    <div class="sub-info-wrapper">
-      <transition name="fade-slide">
-        <div
-          v-if="delayedExpanded"
-          class="flex gap-1 items-center text-gray-400 text-xs"
-        >
-          <p>Now playing on Spotify</p>
-          <WaveForm />
-        </div>
-      </transition>
     </div>
+
+    <a
+      v-else
+      :href="track.externalUrl"
+      target="_blank"
+      rel="noreferrer noopener"
+      :aria-label="`Listen to ${track.name} by ${track.artist} on Spotify`"
+      :class="cn(
+        sheetTileClass,
+        'group now-playing-tile items-start gap-3 overflow-hidden'
+      )"
+    >
+      <span class="flex items-center gap-3 truncate">
+        <span
+          class="relative flex size-9 items-center justify-center overflow-hidden rounded-full border border-zinc-200 bg-muted dark:border-zinc-800"
+        >
+          <img
+            :src="track.cover"
+            :alt="track.name"
+            class="h-full w-full object-cover"
+          />
+        </span>
+        <span class="flex min-w-0 flex-col gap-1 text-left normal-case tracking-normal">
+          <span
+            class="text-[10px] font-semibold uppercase tracking-[0.35em] text-muted-foreground/70"
+          >
+            now playing
+          </span>
+          <span class="truncate text-sm font-semibold text-foreground">
+            {{ track.name }}
+          </span>
+          <span class="truncate text-[11px] font-medium text-muted-foreground">
+            {{ track.artist }}
+          </span>
+        </span>
+      </span>
+      <span class="flex shrink-0 items-center pl-3 text-muted-foreground/80">
+        <WaveForm />
+      </span>
+    </a>
   </div>
 </template>
 
 <script setup lang="ts">
-  import { onMounted, ref, watch } from "vue"
+  import {
+    computed,
+    onBeforeUnmount,
+    onMounted,
+    ref,
+    watch
+  } from "vue"
 
   import { cn } from "@/client/lib/utils"
 
   import WaveForm from "./WaveForm.vue"
+
+  const props = withDefaults(
+    defineProps<{
+      variant?: "floating" | "sheet"
+      sheetTileClass?: string
+    }>(),
+    {
+      variant: "floating",
+      sheetTileClass: ""
+    }
+  )
+
   const isExpanded = ref(false)
   const delayedExpanded = ref(false)
   let timer: number | null = null
+  let intervalId: number | null = null
+
+  const isSheetVariant = computed(() => props.variant === "sheet")
+
+  const handleMouseEnter = () => {
+    if (isSheetVariant.value) return
+    isExpanded.value = true
+  }
+
+  const handleMouseLeave = () => {
+    if (isSheetVariant.value) return
+    isExpanded.value = false
+  }
 
   watch(isExpanded, (newVal) => {
     if (newVal) {
@@ -80,11 +153,24 @@
 
   onMounted(() => {
     fetchCurrentTrack()
-    setInterval(fetchCurrentTrack, 30000)
+    intervalId = window.setInterval(fetchCurrentTrack, 30000)
+  })
+
+  onBeforeUnmount(() => {
+    if (intervalId !== null) {
+      clearInterval(intervalId)
+    }
+    if (timer !== null) {
+      clearTimeout(timer)
+    }
   })
 </script>
 
 <style scoped>
+  .now-playing-tile {
+    text-decoration: none !important;
+  }
+
   .mini-player {
     z-index: 2;
     position: fixed;
