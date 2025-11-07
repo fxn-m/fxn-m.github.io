@@ -23,12 +23,12 @@
 
     <div id="restOfHeader">
       <ul id="navigation">
-        <li v-for="route in routes" :key="route.path">
+        <li v-for="navRoute in routes" :key="navRoute.path">
           <RouterLink
-            :to="route.path"
-            :class="{ active: route.path === route.path }"
+            :to="navRoute.path"
+            :class="{ active: route.path === navRoute.path }"
           >
-            {{ route.name }}
+            {{ navRoute.name }}
           </RouterLink>
         </li>
       </ul>
@@ -39,25 +39,17 @@
             type="button"
             variant="ghost"
             size="icon-sm"
-            class="sm:hidden border border-gray-200/80 bg-background/80 text-muted-foreground shadow-[0_0_18px_rgba(59,130,246,0.35)] transition-all duration-200 hover:bg-muted/50 hover:text-primary focus-visible:ring-primary/60 rounded-none"
+            class="sm:hidden translate-y-px text-muted-foreground transition-all duration-200 rounded-none"
             aria-label="open navigation drawer"
           >
-            <Bars3Icon class="size-5" />
+            <Bars3Icon class="size-6" />
           </Button>
         </SheetTrigger>
+
         <SheetContent
           side="right"
-          class="w-80 max-w-[90vw] space-y-6 border-gray-200 bg-background/95 px-6 py-6 text-foreground dark:border-gray-800 dark:bg-zinc-950/95"
+          class="w-full max-w-[90vw] space-y-6 px-6 py-16 flex flex-col justify-between text-foreground"
         >
-          <SheetHeader class="space-y-3">
-            <SheetTitle class="text-base uppercase tracking-[0.45em] text-foreground/80">
-              systems access
-            </SheetTitle>
-            <SheetDescription class="text-[10px] uppercase tracking-[0.4em] text-muted-foreground/70">
-              quick jumps & signal boosts
-            </SheetDescription>
-          </SheetHeader>
-
           <nav class="grid gap-2">
             <SheetClose
               v-for="route in routes"
@@ -66,48 +58,42 @@
             >
               <RouterLink
                 :to="route.path"
-                class="flex items-center justify-between border border-gray-200 bg-background/80 px-4 py-3 font-semibold uppercase tracking-[0.35em] text-xs text-foreground transition-colors duration-200 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 dark:border-gray-800 dark:bg-zinc-900/80"
+                class="flex items-center justify-between border border-zinc-200 bg-background/80 px-4 py-3 font-semibold uppercase tracking-[0.35em] text-xs text-foreground transition-colors duration-200 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-900/80"
               >
                 <span class="truncate">{{ route.name }}</span>
-                <span class="text-[10px] font-medium text-muted-foreground/80">go</span>
+                <span class="text-[10px] font-medium text-muted-foreground/80"
+                  >open</span
+                >
               </RouterLink>
             </SheetClose>
           </nav>
 
-          <div class="space-y-2">
-            <p class="text-[11px] uppercase tracking-[0.35em] text-muted-foreground/70">
-              signal relays
-            </p>
-            <div class="grid gap-2">
-              <SheetClose
-                v-for="link in links"
-                :key="`drawer-link-${link.href}`"
-                as-child
+          <div class="grid gap-2">
+            <SheetClose
+              v-for="link in links"
+              :key="`drawer-link-${link.href}`"
+              as-child
+            >
+              <a
+                :href="link.href"
+                target="_blank"
+                rel="noreferrer noopener"
+                class="flex items-center justify-between border border-zinc-200 bg-background/80 px-4 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-foreground transition-colors duration-200 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-900/80"
               >
-                <a
-                  :href="link.href"
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  class="flex items-center justify-between border border-gray-200 bg-background/80 px-4 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-foreground transition-colors duration-200 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 dark:border-gray-800 dark:bg-zinc-900/80"
-                >
-                  <span class="flex items-center gap-3 truncate">
-                    <FontAwesomeIcon
-                      :icon="link.icon"
-                      :class="['text-lg', link.class]"
-                    />
-                    <span class="truncate">{{ link.label }}</span>
-                  </span>
-                  <ArrowUpRightIcon class="size-4 text-muted-foreground/70" />
-                </a>
-              </SheetClose>
-            </div>
+                <span class="flex items-center gap-3 truncate">
+                  <FontAwesomeIcon
+                    :icon="link.icon"
+                    :class="['text-lg', link.class]"
+                  />
+                  <span class="truncate">{{ link.label }}</span>
+                </span>
+                <ArrowUpRightIcon class="size-4 text-muted-foreground/70" />
+              </a>
+            </SheetClose>
           </div>
 
-          <SheetFooter class="border-t border-dashed border-gray-300 pt-4 dark:border-gray-700">
-            <p class="text-[10px] uppercase tracking-[0.4em] text-muted-foreground/60">
-              tune interface
-            </p>
-            <ThemeToggle class="self-start" />
+          <SheetFooter>
+            <ThemeToggle class="self-center size-20" />
           </SheetFooter>
         </SheetContent>
       </Sheet>
@@ -143,10 +129,7 @@
     Sheet,
     SheetClose,
     SheetContent,
-    SheetDescription,
     SheetFooter,
-    SheetHeader,
-    SheetTitle,
     SheetTrigger
   } from "@/client/components/ui/sheet"
 

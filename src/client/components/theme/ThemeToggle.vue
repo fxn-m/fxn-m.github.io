@@ -1,8 +1,7 @@
 <template>
   <div class="theme-toggle-wrapper">
     <button
-      id="toggle-btn"
-      class="size-full flex items-center justify-center"
+      class="w-full h-full flex items-center justify-center"
       :title="tooltipText"
       @click="toggleTheme"
       @mouseenter="showTooltip = true"
@@ -103,6 +102,8 @@
     display: flex;
     justify-content: start;
     align-items: center;
+    height: 40px;
+    width: 40px;
   }
 
   .tooltip {
@@ -121,19 +122,6 @@
   }
 
   /* // dark mode toggle styling */
-
-  #toggle-btn {
-    background-color: none;
-    border: none;
-    font-size: 1.3em;
-    padding: 0;
-    margin: 0;
-    min-width: 40px;
-  }
-
-  #toggle-btn:hover {
-    cursor: pointer;
-  }
 
   #dark-mode-icon {
     filter: invert(69%) sepia(10%) saturate(17%) hue-rotate(318deg)
