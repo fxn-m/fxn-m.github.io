@@ -4,16 +4,16 @@
       <Loader2 class="size-6 animate-spin" />
     </div>
 
-    <div v-else>
-      <div class="metadata">
+    <article v-else>
+      <header class="metadata">
         <h1 class="text-wrap text-black dark:text-white">
           {{ metadata.title }}
         </h1>
         <p>{{ metadata.date }}</p>
-      </div>
+      </header>
 
-      <div class="blog" v-html="blogContent" />
-    </div>
+      <main class="blog" v-html="blogContent" />
+    </article>
   </div>
 </template>
 
