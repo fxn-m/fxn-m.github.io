@@ -23,15 +23,84 @@
 
     <div id="restOfHeader">
       <ul id="navigation">
-        <li v-for="route in routes" :key="route.path">
+        <li v-for="navRoute in routes" :key="navRoute.path">
           <RouterLink
-            :to="route.path"
-            :class="{ active: route.path === route.path }"
+            :to="navRoute.path"
+            :class="{ active: route.path === navRoute.path }"
           >
-            {{ route.name }}
+            {{ navRoute.name }}
           </RouterLink>
         </li>
       </ul>
+
+      <Sheet v-model:open="isMobileMenuOpen">
+        <SheetTrigger as-child>
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            class="sm:hidden translate-y-px text-muted-foreground transition-all duration-200 rounded-none"
+            aria-label="open navigation drawer"
+          >
+            <Bars3Icon class="size-6" />
+          </Button>
+        </SheetTrigger>
+
+        <SheetContent
+          side="right"
+          class="flex h-full w-full max-w-[90vw] flex-col gap-6 px-6 py-16 text-foreground"
+        >
+          <div class="grid gap-2">
+            <CurrentTrack
+              variant="sheet"
+              :sheet-tile-class="drawerTileClasses"
+            />
+
+            <nav class="grid gap-2">
+              <SheetClose
+                v-for="route in routes"
+                :key="`drawer-route-${route.path}`"
+                as-child
+              >
+                <RouterLink :to="route.path" :class="drawerTileClasses">
+                  <span class="truncate">{{ route.name }}</span>
+                  <span class="text-[10px] font-medium text-muted-foreground/80"
+                    >open</span
+                  >
+                </RouterLink>
+              </SheetClose>
+            </nav>
+          </div>
+
+          <div class="grid gap-2">
+            <SheetClose
+              v-for="link in links"
+              :key="`drawer-link-${link.href}`"
+              as-child
+            >
+              <a
+                :href="link.href"
+                target="_blank"
+                rel="noreferrer noopener"
+                :class="drawerTileClasses"
+              >
+                <span class="flex items-center gap-3 truncate">
+                  <FontAwesomeIcon
+                    :icon="link.icon"
+                    :class="['text-lg', link.class]"
+                  />
+                  <span class="truncate">{{ link.label }}</span>
+                </span>
+                <ArrowUpRightIcon class="size-4 text-muted-foreground/70" />
+              </a>
+            </SheetClose>
+          </div>
+
+          <SheetFooter class="mt-auto">
+            <ThemeToggle class="self-center size-20" />
+          </SheetFooter>
+        </SheetContent>
+      </Sheet>
 
       <div id="icons">
         <a
@@ -54,20 +123,38 @@
 
 <script setup lang="ts">
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
-  import { computed, ref } from "vue"
+  import { ArrowUpRightIcon, Bars3Icon } from "@heroicons/vue/24/outline"
+  import { computed, ref, watch } from "vue"
   import { RouterLink, useRoute, useRouter } from "vue-router"
 
+  import CurrentTrack from "@/client/components/spotify/CurrentTrack.vue"
   import ThemeToggle from "@/client/components/theme/ThemeToggle.vue"
+  import { Button } from "@/client/components/ui/button"
+  import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetFooter,
+    SheetTrigger
+  } from "@/client/components/ui/sheet"
 
   const route = useRoute()
   const router = useRouter()
   const isHovering = ref(false)
+  const isMobileMenuOpen = ref(false)
 
   const routes = [
     { path: "/", name: "/" },
     { path: "/writing", name: "writing" },
     { path: "/fun", name: "fun" }
   ]
+
+  watch(
+    () => route.path,
+    () => {
+      isMobileMenuOpen.value = false
+    }
+  )
 
   const pageTitle = computed(() => {
     const currentRoute = route.path !== "/" ? route.path : ""
@@ -94,24 +181,31 @@
     {
       href: "https://github.com/fxn-m",
       icon: "fa-brands fa-github",
-      class: "fa-github"
+      class: "fa-github",
+      label: "github"
     },
     {
       href: "https://x.com/fxn__m",
       icon: "fa-brands fa-x-twitter",
-      class: "fa-twitter"
+      class: "fa-twitter",
+      label: "x"
     },
     {
       href: "https://www.strava.com/athletes/29743058",
       icon: "fa-brands fa-strava",
-      class: "fa-strava"
+      class: "fa-strava",
+      label: "strava"
     },
     {
       href: "https://www.polarsteps.com/FelixNewportMangell",
       icon: "fa-regular fa-compass",
-      class: "fa-compass"
+      class: "fa-compass",
+      label: "polarsteps"
     }
   ]
+
+  const drawerTileClasses =
+    "flex items-center justify-between border border-zinc-200 bg-background/80 px-4 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-foreground transition-colors duration-200 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-900/80"
 </script>
 
 <style scoped>

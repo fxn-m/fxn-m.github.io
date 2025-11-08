@@ -29,7 +29,14 @@
           </div>
 
           <p
+            v-if="project.mobileDescription"
+            class="text-sm text-neutral-600 dark:text-neutral-500 sm:hidden"
+          >
+            {{ project.mobileDescription }}
+          </p>
+          <p
             class="text-sm text-neutral-600 dark:text-neutral-500"
+            :class="project.mobileDescription ? 'hidden sm:block' : ''"
             v-html="project.description"
           />
 
@@ -61,8 +68,10 @@
         id: 1,
         title: "tab-overflow",
         subtitle: "Overcoming the paradox of choice",
-        description: `I come across tonnes of niche little articles on technical topics, general life advice and other bits and pieces. I use a chrome extension to save the links to a Notion database, but rarely get around to reading them. Just glancing at the <span class="font-mono">>400</span class="font-mono"> articles in there makes me shiver, so I got <span class="font-mono">gpt-4o</span> to summarise most of them, and built this front-end to bubble up one at random, with estimated reading time and a few tags.
+        description: `I come across tonnes of niche little articles on technical topics, general life advice and other bits and pieces. I use a chrome extension to save the links to a Notion database, but rarely get around to reading them. Just glancing at the <span class="font-mono">&gt;400</span> articles in there makes me shiver, so I got <span class="font-mono">gpt-4o</span> to summarise most of them, and built this front-end to bubble up one at random, with estimated reading time and a few tags.
         The hardest thing about the abundance of information today is deciding <a href="https://jeremy.zawodny.com/blog/archives/008581.html" target="_blank">what to ignore</a>.`,
+        mobileDescription:
+          "Surface a random summary from my 400+ saved reads, with tags and reading time so I actually pick one.",
         link: "/fun/tab-overflow",
         date: "2023-10 (updated 2025-11)"
       },
@@ -71,7 +80,9 @@
         title: "pgt",
         subtitle: "Paul Graham's Essays, Translated",
         description:
-          "I noticed that some of Paul Graham's essays had translations in other languages. Not all of them were translated, and some of the translations were incomplete or dead links altogether. I decided to create a website that hosted translations of all his essays, translated into 8 langugages, using 4 LLMs. I imagined that the people that would find this most useful were those that weren't aware of browser's in-built translation features, so I heavily optimised for SEO and performance in Next.js with SSG. Learned a lot about SEO and performance in the process. ",
+          "I noticed that some of Paul Graham's essays had translations in other languages. Not all of them were translated, and some of the translations were incomplete or dead links altogether. I decided to create a website that hosted translations of all his essays, translated into 8 languages, using 4 LLMs. I imagined that the people that would find this most useful were those that weren't aware of browsers' built-in translation features, so I heavily optimised for SEO and performance in Next.js with SSG. Learned a lot about SEO and performance in the process.",
+        mobileDescription:
+          "Hosts every Paul Graham essay in 8 languages, tuned for speed and SEO so readers can find a translation fast.",
         link: "https://paulgraham-translated.vercel.app",
         date: "2024-11"
       }
