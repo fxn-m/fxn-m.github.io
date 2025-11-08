@@ -83,6 +83,7 @@ function App() {
         </group>
 
         <OrbitControls enableZoom={false} enableDamping dampingFactor={0.04} />
+
         <AsciiRenderer
           fgColor="green"
           bgColor="transparent"
