@@ -39,7 +39,7 @@
             type="button"
             variant="ghost"
             size="icon-sm"
-            class="sm:hidden translate-y-px text-muted-foreground transition-all duration-200 rounded-none"
+            class="sm:hidden cursor-pointer translate-y-px text-muted-foreground transition-all duration-1000 rounded-none"
             aria-label="open navigation drawer"
           >
             <Bars3Icon class="size-6" />
@@ -48,7 +48,7 @@
 
         <SheetContent
           side="right"
-          class="flex h-full w-full max-w-[90vw] flex-col gap-6 px-6 py-12 text-foreground"
+          class="flex h-full w-full max-w-[90vw] flex-col gap-6 px-6 py-2 text-foreground"
         >
           <div class="grid gap-2">
             <CurrentTrack
@@ -97,7 +97,10 @@
           </div>
 
           <SheetFooter class="mt-auto">
-            <ThemeToggle class="self-center size-20" />
+            <ThemeToggle
+              class="self-center size-20"
+              :is-mobile-menu-open="isMobileMenuOpen"
+            />
           </SheetFooter>
         </SheetContent>
       </Sheet>
@@ -115,7 +118,8 @@
             :class="link.class"
           />
         </a>
-        <ThemeToggle />
+        <!-- pass isMobileMenuOpen to ThemeToggle -->
+        <ThemeToggle :is-mobile-menu-open="isMobileMenuOpen" />
       </div>
     </div>
   </header>
@@ -205,7 +209,7 @@
   ]
 
   const drawerTileClasses =
-    "flex items-center justify-between border border-zinc-200 bg-background/80 px-4 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-foreground transition-colors duration-200 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-900/80"
+    "flex items-center justify-between border border-zinc-200 bg-background/80 px-4 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-foreground transition-all duration-1000 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-900/80"
 </script>
 
 <style scoped>
@@ -213,5 +217,11 @@
     position: absolute;
     left: -9px;
     transform: rotate(45deg);
+  }
+
+  /* Override global link transitions for drawer tiles */
+  :deep(a.flex.items-center),
+  :deep(a.flex.items-center:hover) {
+    transition: all 0.5s ease-in-out !important;
   }
 </style>

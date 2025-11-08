@@ -1,7 +1,7 @@
 <template>
   <div class="theme-toggle-wrapper">
     <button
-      class="w-full h-full flex items-center justify-center"
+      :class="buttonClasses"
       :title="tooltipText"
       @click="toggleTheme"
       @mouseenter="showTooltip = true"
@@ -23,6 +23,22 @@
   import { computed, onMounted, ref, watch } from "vue"
 
   import { theme } from "./themeState"
+
+  const props = withDefaults(
+    defineProps<{
+      isMobileMenuOpen?: boolean
+    }>(),
+    {
+      isMobileMenuOpen: false
+    }
+  )
+
+  const buttonClasses = computed(() => [
+    "w-full h-full flex items-center justify-center rounded-full transition-colors duration-200",
+    props.isMobileMenuOpen
+      ? "bg-zinc-200/60 dark:bg-zinc-800/60"
+      : "bg-transparent"
+  ])
 
   const showTooltip = ref(false)
   const tooltipText = computed(() => `${theme.value}`)
@@ -91,7 +107,6 @@
 
 <style scoped>
   button {
-    background: none;
     border: none;
     cursor: pointer;
     justify-content: center;

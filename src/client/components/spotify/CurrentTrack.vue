@@ -1,7 +1,7 @@
 <template>
-  <div v-if="track">
+  <div>
     <div
-      v-if="!isSheetVariant"
+      v-if="track && !isSheetVariant"
       :class="cn('mini-player hidden lg:flex', isExpanded ? 'expanded' : '')"
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
@@ -34,7 +34,7 @@
     </div>
 
     <a
-      v-else
+      v-if="track && isSheetVariant"
       :href="track.externalUrl"
       target="_blank"
       rel="noreferrer noopener"
@@ -42,7 +42,7 @@
       :class="
         cn(
           sheetTileClass,
-          'group dark:bg-transparent dark:border-none border-none bg-transparent now-playing-tile items-start gap-3 overflow-hidden'
+          'group justify-start px-0 dark:bg-transparent dark:border-none border-none bg-transparent now-playing-tile items-start gap-3 overflow-hidden'
         )
       "
     >
@@ -53,7 +53,7 @@
           <img
             :src="track.cover"
             :alt="track.name"
-            class="h-full w-full object-cover"
+            class="h-full w-full object-cover spinning"
           />
         </span>
         <span
@@ -62,7 +62,7 @@
           <span
             class="text-[10px] font-semibold uppercase tracking-[0.35em] text-muted-foreground/70"
           >
-            now playing
+            now playing on Spotify
           </span>
           <span class="truncate text-sm font-semibold text-foreground">
             {{ track.name }}
@@ -72,10 +72,15 @@
           </span>
         </span>
       </span>
-      <span class="flex shrink-0 items-center pl-3 text-muted-foreground/80">
+      <span class="flex shrink-0 items-center pl-1 text-muted-foreground/80">
         <WaveForm />
       </span>
     </a>
+
+    <div
+      v-if="!track && isSheetVariant"
+      :class="cn(sheetTileClass, 'h-[32px] opacity-0')"
+    />
   </div>
 </template>
 
