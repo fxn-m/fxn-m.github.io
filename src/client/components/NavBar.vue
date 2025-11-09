@@ -48,9 +48,9 @@
 
         <SheetContent
           side="right"
-          class="flex h-full w-full max-w-[90vw] flex-col gap-6 px-6 py-2 text-foreground"
+          class="flex h-full w-full max-w-[90vw] flex-col gap-6 p-6 py-12 text-foreground"
         >
-          <div class="grid grid-cols-1 gap-2">
+          <div class="grid grid-cols-1">
             <CurrentTrack
               variant="sheet"
               :sheet-tile-class="drawerTileClasses"

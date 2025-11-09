@@ -61,7 +61,7 @@
       :class="
         cn(
           sheetTileClass,
-          'group max-w-full mr-4 justify-start px-0 dark:bg-transparent dark:border-none border-none bg-transparent now-playing-tile items-center gap-3 overflow-clip'
+          'group max-w-full hover:bg-transparent mb-6 justify-start py-0 px-0 dark:bg-transparent dark:border-none border-none bg-transparent now-playing-tile items-center gap-3 overflow-clip'
         )
       "
     >
@@ -78,7 +78,7 @@
         class="flex min-w-0 flex-1 overflow-hidden flex-col gap-1 text-left normal-case tracking-normal"
       >
         <span
-          class="text-[10px] flex gap-2 font-semibold uppercase tracking-[0.35em] text-muted-foreground/70"
+          class="text-[10px] flex justify-between font-semibold uppercase tracking-[0.35em] text-muted-foreground/70"
         >
           Now listening to
 
@@ -88,19 +88,34 @@
             <WaveForm />
           </span>
         </span>
-        <span class="truncate text-sm font-semibold text-foreground">
-          {{ track.name }}
+        <span
+          class="marquee-wrapper text-sm font-semibold text-foreground"
+          ref="trackNameWrapper"
+        >
+          <span
+            ref="trackNameText"
+            class="marquee-text"
+            :class="{ 'marquee-active': shouldScrollTrack }"
+            :style="trackMarqueeInlineStyle"
+          >
+            {{ track.name }}
+          </span>
         </span>
-        <span class="truncate text-[11px] font-medium text-muted-foreground">
-          {{ track.artist }}
+        <span
+          class="marquee-wrapper text-[11px] font-medium text-muted-foreground"
+          ref="artistNameWrapper"
+        >
+          <span
+            ref="artistNameText"
+            class="marquee-text"
+            :class="{ 'marquee-active': shouldScrollArtist }"
+            :style="artistMarqueeInlineStyle"
+          >
+            {{ track.artist }}
+          </span>
         </span>
       </span>
     </a>
-
-    <div
-      v-if="!track && isSheetVariant"
-      :class="cn(sheetTileClass, 'h-[32px] opacity-0')"
-    />
   </div>
 </template>
 
@@ -192,12 +207,11 @@
   }
 
   const scheduleMarqueeMeasurement = () => {
-    if (
-      isSheetVariant.value ||
-      !track.value ||
-      !delayedExpanded.value ||
-      typeof window === "undefined"
-    ) {
+    if (!track.value || typeof window === "undefined") {
+      return
+    }
+
+    if (!isSheetVariant.value && !delayedExpanded.value) {
       return
     }
 
@@ -234,6 +248,8 @@
   }
 
   watch(isExpanded, (newVal) => {
+    if (isSheetVariant.value) return
+
     if (newVal) {
       timer = window.setTimeout(() => {
         delayedExpanded.value = true
@@ -250,6 +266,8 @@
   })
 
   watch(delayedExpanded, (isReady) => {
+    if (isSheetVariant.value) return
+
     if (isReady) {
       scheduleMarqueeMeasurement()
     }
@@ -391,8 +409,10 @@
   .marquee-wrapper {
     display: block;
     width: 100%;
+    min-width: 0;
     overflow: hidden;
     max-width: 100%;
+    white-space: nowrap;
   }
 
   .marquee-text {

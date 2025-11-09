@@ -304,22 +304,22 @@
         <!-- Canvas gradient -->
         <!-- Top -->
         <div
-          class="absolute inset-0 bg-gradient-to-b from-[#fafafa] to-transparent to-25%"
+          class="absolute inset-0 bg-gradient-to-b from-[#fafafa] to-transparent to-15%"
           :class="{ 'opacity-0': isDark }"
         />
 
         <div
-          class="absolute inset-0 bg-gradient-to-b from-[#101017] to-transparent to-25%"
+          class="absolute inset-0 bg-gradient-to-b from-[#101017] to-transparent to-15%"
           :class="{ 'opacity-0': !isDark }"
         />
         <!-- Bottom -->
         <div
-          class="absolute inset-0 bg-gradient-to-t from-background to-25% to-transparent transition-opacity duration-1000 sm:invisible"
+          class="absolute inset-0 bg-gradient-to-t from-[#fafafa] to-15% to-transparent transition-opacity duration-1000 sm:invisible"
           :class="{ 'opacity-0': isDark }"
         />
 
         <div
-          class="absolute inset-0 bg-gradient-to-t from-[#101017] to-25% to-transparent transition-opacity duration-1000 sm:invisible"
+          class="absolute inset-0 bg-gradient-to-t from-[#101017] to-15% to-transparent transition-opacity duration-1000 sm:invisible"
           :class="{ 'opacity-0': !isDark }"
         />
         <!-- Countdown Timer: Only show if IS_GOAL is true -->
@@ -444,6 +444,7 @@
     display: grid;
     grid-template-columns: 1fr 175px;
     min-height: 400px;
+    background-color: #fafafa;
   }
 
   /* Light mode canvas background */
