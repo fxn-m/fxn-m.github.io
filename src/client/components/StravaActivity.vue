@@ -444,7 +444,6 @@
     display: grid;
     grid-template-columns: 1fr 175px;
     min-height: 400px;
-    background-color: #fafafa;
   }
 
   /* Light mode canvas background */
