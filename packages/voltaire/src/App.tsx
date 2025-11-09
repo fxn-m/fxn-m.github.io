@@ -1,13 +1,8 @@
 import { useEffect, useRef } from "react"
 import { Canvas } from "@react-three/fiber"
 import { type Group } from "three"
-import {
-  AsciiRenderer,
-  OrbitControls,
-  Preload,
-  useAnimations,
-  useGLTF
-} from "@react-three/drei"
+import { OrbitControls, Preload, useAnimations, useGLTF } from "@react-three/drei"
+import { AsciiRenderer } from "./components/AsciiRenderer"
 import styles from "./App.module.css"
 
 declare global {
