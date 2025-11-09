@@ -50,7 +50,7 @@
           side="right"
           class="flex h-full w-full max-w-[90vw] flex-col gap-6 px-6 py-2 text-foreground"
         >
-          <div class="grid gap-2">
+          <div class="grid grid-cols-1 gap-2">
             <CurrentTrack
               variant="sheet"
               :sheet-tile-class="drawerTileClasses"
@@ -72,7 +72,7 @@
             </nav>
           </div>
 
-          <div class="grid gap-2">
+          <div class="grid grid-cols-1 gap-2">
             <SheetClose
               v-for="link in links"
               :key="`drawer-link-${link.href}`"

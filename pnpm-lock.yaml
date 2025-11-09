@@ -137,6 +137,9 @@ importers:
       vue-router:
         specifier: ^4.5.1
         version: 4.5.1(vue@3.5.22(typescript@5.8.3))
+      vue3-marquee:
+        specifier: ^4.2.2
+        version: 4.2.2(vue@3.5.22(typescript@5.8.3))
       zod:
         specifier: ^4.1.12
         version: 4.1.12
@@ -3792,6 +3795,12 @@ packages:
     hasBin: true
     peerDependencies:
       typescript: '>=5.0.0'
+
+  vue3-marquee@4.2.2:
+    resolution: {integrity: sha512-FeFvGUVInKfFilXFcnl8sDRBJBZCZSNLlQDquJErB9db6W2xICRVqbRV/jtdzsEP0rftarLQhx9MeEAU0+TPuQ==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      vue: ^3.2
 
   vue@3.5.22:
     resolution: {integrity: sha512-toaZjQ3a/G/mYaLSbV+QsQhIdMo9x5rrqIpYRObsJ6T/J+RyCSFwN2LHNVH9v8uIcljDNa3QzPVdv3Y6b9hAJQ==}
@@ -7752,6 +7761,10 @@ snapshots:
       '@volar/typescript': 2.4.23
       '@vue/language-core': 3.1.1(typescript@5.8.3)
       typescript: 5.8.3
+
+  vue3-marquee@4.2.2(vue@3.5.22(typescript@5.8.3)):
+    dependencies:
+      vue: 3.5.22(typescript@5.8.3)
 
   vue@3.5.22(typescript@5.8.3):
     dependencies:

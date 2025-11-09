@@ -35,7 +35,7 @@
     TooltipProvider,
     TooltipTrigger
   } from "@/client/components/ui/tooltip"
-  import { jsConfetti } from "@/main"
+  import { jsConfetti } from "@/client/config/confetti"
   import {
     AnkiCardFormats,
     type AnkiGeneratedCard,

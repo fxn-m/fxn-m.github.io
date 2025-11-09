@@ -42,38 +42,39 @@
       :class="
         cn(
           sheetTileClass,
-          'group justify-start px-0 dark:bg-transparent dark:border-none border-none bg-transparent now-playing-tile items-start gap-3 overflow-hidden'
+          'group max-w-full mr-4 justify-start px-0 dark:bg-transparent dark:border-none border-none bg-transparent now-playing-tile items-center gap-3 overflow-clip'
         )
       "
     >
-      <span class="flex items-center gap-3 truncate">
-        <span
-          class="relative flex size-9 items-center justify-center overflow-hidden rounded-full border border-zinc-200 bg-muted dark:border-zinc-800"
-        >
-          <img
-            :src="track.cover"
-            :alt="track.name"
-            class="h-full w-full object-cover spinning"
-          />
-        </span>
-        <span
-          class="flex min-w-0 flex-col gap-1 text-left normal-case tracking-normal"
-        >
-          <span
-            class="text-[10px] font-semibold uppercase tracking-[0.35em] text-muted-foreground/70"
-          >
-            now playing on Spotify
-          </span>
-          <span class="truncate text-sm font-semibold text-foreground">
-            {{ track.name }}
-          </span>
-          <span class="truncate text-[11px] font-medium text-muted-foreground">
-            {{ track.artist }}
-          </span>
-        </span>
+      <span
+        class="relative flex size-9 items-center justify-center overflow-hidden rounded-full border border-zinc-200 bg-muted dark:border-zinc-800"
+      >
+        <img
+          :src="track.cover"
+          :alt="track.name"
+          class="h-full w-full object-cover spinning"
+        />
       </span>
-      <span class="flex shrink-0 items-center pl-1 text-muted-foreground/80">
-        <WaveForm />
+      <span
+        class="flex min-w-0 flex-1 overflow-hidden flex-col gap-1 text-left normal-case tracking-normal"
+      >
+        <span
+          class="text-[10px] flex gap-2 font-semibold uppercase tracking-[0.35em] text-muted-foreground/70"
+        >
+          Now listening to
+
+          <span
+            class="flex shrink-0 items-center pl-1 text-muted-foreground/80"
+          >
+            <WaveForm />
+          </span>
+        </span>
+        <span class="truncate text-sm font-semibold text-foreground">
+          {{ track.name }}
+        </span>
+        <span class="truncate text-[11px] font-medium text-muted-foreground">
+          {{ track.artist }}
+        </span>
       </span>
     </a>
 
