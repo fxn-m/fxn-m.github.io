@@ -6,16 +6,11 @@
       @click="toggleTheme"
       @mouseenter="showTooltip = true"
       @mouseleave="showTooltip = false"
+      class="size-[40px] p-[5px]"
     >
-      <img
-        v-if="iconSrc"
-        :id="iconId"
-        class="size-[28px]"
-        :src="iconSrc"
-        :alt="tooltipText"
-      />
+      <img v-if="iconSrc" :id="iconId" :src="iconSrc" :alt="tooltipText" />
+      <span v-if="showTooltip" :class="tooltipClasses">{{ tooltipText }}</span>
     </button>
-    <span v-if="showTooltip" class="tooltip">{{ tooltipText }}</span>
   </div>
 </template>
 
@@ -38,6 +33,11 @@
     props.isMobileMenuOpen
       ? "bg-zinc-200/60 dark:bg-zinc-800/60"
       : "bg-transparent"
+  ])
+
+  const tooltipClasses = computed(() => [
+    "tooltip",
+    props.isMobileMenuOpen ? "-translate-y-[35px] " : "translate-x-[40px]"
   ])
 
   const showTooltip = ref(false)
@@ -123,7 +123,6 @@
 
   .tooltip {
     position: absolute;
-    transform: translateX(40px);
     border-radius: 4px;
     font-size: 12px;
     white-space: nowrap;
