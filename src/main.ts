@@ -3,7 +3,6 @@ import "./main.css"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { VueQueryPlugin } from "@tanstack/vue-query"
 import { createApp } from "vue"
-import Vue3Marquee from "vue3-marquee"
 
 import App from "./client/App.vue"
 import { registerIcons } from "./client/config/icons"
@@ -19,7 +18,6 @@ const app = createApp(App)
 // Register plugins
 app.use(VueQueryPlugin, { queryClient })
 app.use(router)
-app.use(Vue3Marquee)
 app.component("font-awesome-icon", FontAwesomeIcon)
 
 app.mount("#app")
