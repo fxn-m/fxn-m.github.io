@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Desktop variant -->
     <div
       v-if="track && !isSheetVariant"
       :class="cn('mini-player hidden lg:flex', isExpanded ? 'expanded' : '')"
@@ -12,14 +13,31 @@
         </div>
 
         <div class="info-container" :class="{ expanded: isExpanded }">
-          <div class="info">
-            <p class="track-link">
-              {{ track.name }}
-              <small>{{ track.artist }}</small>
-            </p>
-          </div>
+          <p class="track-link">
+            <span class="marquee-wrapper" ref="trackNameWrapper">
+              <span
+                ref="trackNameText"
+                class="marquee-text"
+                :class="{ 'marquee-active': shouldScrollTrack }"
+                :style="trackMarqueeInlineStyle"
+              >
+                {{ track.name }}
+              </span>
+            </span>
+            <span class="marquee-wrapper" ref="artistNameWrapper">
+              <small
+                ref="artistNameText"
+                class="marquee-text"
+                :class="{ 'marquee-active': shouldScrollArtist }"
+                :style="artistMarqueeInlineStyle"
+              >
+                {{ track.artist }}
+              </small>
+            </span>
+          </p>
         </div>
       </a>
+
       <div class="sub-info-wrapper">
         <transition name="fade-slide">
           <div
@@ -33,6 +51,7 @@
       </div>
     </div>
 
+    <!-- Sheet variant -->
     <a
       v-if="track && isSheetVariant"
       :href="track.externalUrl"
@@ -86,7 +105,14 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue"
+  import {
+    computed,
+    nextTick,
+    onBeforeUnmount,
+    onMounted,
+    ref,
+    watch
+  } from "vue"
 
   import { cn } from "@/client/lib/utils"
 
@@ -110,6 +136,93 @@
 
   const isSheetVariant = computed(() => props.variant === "sheet")
 
+  const trackNameWrapper = ref<HTMLElement | null>(null)
+  const trackNameText = ref<HTMLElement | null>(null)
+  const artistNameWrapper = ref<HTMLElement | null>(null)
+  const artistNameText = ref<HTMLElement | null>(null)
+
+  const shouldScrollTrack = ref(false)
+  const shouldScrollArtist = ref(false)
+  const trackScrollDistance = ref(0)
+  const artistScrollDistance = ref(0)
+
+  const track = ref()
+
+  const pxPerSecond = 15
+
+  const calculateDuration = (distance: number) => {
+    if (distance <= 0) return 0
+    const seconds = distance / pxPerSecond
+    return Math.min(Math.max(seconds, 6), 18)
+  }
+
+  const trackMarqueeInlineStyle = computed(() =>
+    shouldScrollTrack.value
+      ? {
+          "--scroll-distance": `${trackScrollDistance.value}px`,
+          "--scroll-duration": `${calculateDuration(trackScrollDistance.value)}s`
+        }
+      : {}
+  )
+
+  const artistMarqueeInlineStyle = computed(() =>
+    shouldScrollArtist.value
+      ? {
+          "--scroll-distance": `${artistScrollDistance.value}px`,
+          "--scroll-duration": `${calculateDuration(artistScrollDistance.value)}s`
+        }
+      : {}
+  )
+
+  const updateMarqueeFor = (
+    wrapper: HTMLElement | null,
+    textEl: HTMLElement | null,
+    shouldScrollRef: typeof shouldScrollTrack,
+    distanceRef: typeof trackScrollDistance
+  ) => {
+    if (!wrapper || !textEl) {
+      shouldScrollRef.value = false
+      distanceRef.value = 0
+      return
+    }
+
+    const overflow = textEl.scrollWidth - wrapper.clientWidth
+    shouldScrollRef.value = overflow > 4
+    distanceRef.value = Math.max(overflow, 0)
+  }
+
+  const scheduleMarqueeMeasurement = () => {
+    if (
+      isSheetVariant.value ||
+      !track.value ||
+      !delayedExpanded.value ||
+      typeof window === "undefined"
+    ) {
+      return
+    }
+
+    nextTick(() => {
+      requestAnimationFrame(() => {
+        updateMarqueeFor(
+          trackNameWrapper.value,
+          trackNameText.value,
+          shouldScrollTrack,
+          trackScrollDistance
+        )
+        updateMarqueeFor(
+          artistNameWrapper.value,
+          artistNameText.value,
+          shouldScrollArtist,
+          artistScrollDistance
+        )
+      })
+    })
+  }
+
+  const handleResize = () => {
+    scheduleMarqueeMeasurement()
+  }
+
   const handleMouseEnter = () => {
     if (isSheetVariant.value) return
     isExpanded.value = true
@@ -125,15 +238,26 @@
       timer = window.setTimeout(() => {
         delayedExpanded.value = true
       }, 1000)
+      scheduleMarqueeMeasurement()
     } else {
       if (timer !== null) {
         clearTimeout(timer)
       }
       delayedExpanded.value = false
+      shouldScrollTrack.value = false
+      shouldScrollArtist.value = false
     }
   })
 
-  const track = ref()
+  watch(delayedExpanded, (isReady) => {
+    if (isReady) {
+      scheduleMarqueeMeasurement()
+    }
+  })
+
+  watch(track, () => {
+    scheduleMarqueeMeasurement()
+  })
 
   async function fetchCurrentTrack() {
     try {
@@ -150,6 +274,7 @@
       }
 
       track.value = data
+      scheduleMarqueeMeasurement()
     } catch {
       track.value = null
     }
@@ -158,6 +283,7 @@
   onMounted(() => {
     fetchCurrentTrack()
     intervalId = window.setInterval(fetchCurrentTrack, 30000)
+    window.addEventListener("resize", handleResize)
   })
 
   onBeforeUnmount(() => {
@@ -167,6 +293,7 @@
     if (timer !== null) {
       clearTimeout(timer)
     }
+    window.removeEventListener("resize", handleResize)
   })
 </script>
 
@@ -233,20 +360,16 @@
   }
 
   .info-container {
-    max-width: 0;
+    width: 0;
     overflow: hidden;
     transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.75rem;
+    white-space: nowrap;
   }
 
   .info-container.expanded {
-    max-width: 125px;
-    margin-left: 0.75rem;
-  }
-
-  .info {
-    padding-right: 0.75rem;
-    font-size: 0.75rem;
-    white-space: nowrap;
+    width: 100px;
+    margin-left: 0.5rem;
   }
 
   .track-link {
@@ -263,6 +386,44 @@
     opacity: 0.7;
     font-size: 0.65rem;
     margin-top: 1px;
+  }
+
+  .marquee-wrapper {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    max-width: 100%;
+  }
+
+  .marquee-text {
+    display: inline-flex;
+    align-items: center;
+    will-change: transform;
+  }
+
+  .marquee-active {
+    animation: marquee-slide var(--scroll-duration, 8s) ease-in-out infinite;
+  }
+
+  @keyframes marquee-slide {
+    0%,
+    10% {
+      transform: translateX(0);
+    }
+    50%,
+    60% {
+      transform: translateX(calc(-1 * var(--scroll-distance, 0px)));
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-active {
+      animation: none;
+      transform: translateX(0);
+    }
   }
 
   .sub-info-wrapper {
