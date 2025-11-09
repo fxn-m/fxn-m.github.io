@@ -5,12 +5,12 @@
 </template>
 
 <script setup lang="ts">
-  import { type Component, onMounted, ref } from "vue"
+  import { type Component, onMounted, shallowRef } from "vue"
   import { useRoute } from "vue-router"
 
   import ReadingSuggestion from "@/client/pages/TabOverflow.vue"
 
-  const selectedComponent = ref<Component>()
+  const selectedComponent = shallowRef<Component>()
 
   const selectComponent = () => {
     const route = useRoute()
