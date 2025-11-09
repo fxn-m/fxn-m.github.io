@@ -20,26 +20,12 @@ export function AsciiRenderer({
   ...effectOptions
 }: AsciiRendererProps) {
   const { size, gl, scene, camera } = useThree()
-  const {
-    resolution,
-    scale,
-    color,
-    alpha,
-    block,
-    strResolution
-  } = effectOptions
-
   const effect = useMemo(() => {
     return new AsciiEffect(gl, characters, {
       invert,
-      resolution,
-      scale,
-      color,
-      alpha,
-      block,
-      strResolution
+      ...effectOptions
     })
-  }, [alpha, block, characters, color, gl, invert, resolution, scale, strResolution])
+  }, [characters, effectOptions, gl, invert])
 
   useLayoutEffect(() => {
     effect.domElement.style.color = fgColor
@@ -60,7 +46,7 @@ export function AsciiRenderer({
     }
   }, [effect, gl])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     effect.setSize(size.width, size.height)
   }, [effect, size.height, size.width])
 
