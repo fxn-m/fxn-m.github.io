@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { Plus, X } from "lucide-vue-next"
+  import { Plus, Trash2, X } from "lucide-vue-next"
   import { computed } from "vue"
 
   import { Button } from "@/client/components/ui/button"
@@ -38,6 +38,7 @@
   const emit = defineEmits<{
     "update:card": [AnkiGeneratedCard]
     regenerate: [string]
+    remove: [string]
   }>()
 
   const formatLabels = {
@@ -229,6 +230,10 @@
     emit("regenerate", props.card.id)
   }
 
+  const handleRemove = () => {
+    emit("remove", props.card.id)
+  }
+
   const enumeratedItemCount = computed(() =>
     isEnumeratedListCard(props.card) ? props.card.items.length : 0
   )
@@ -278,7 +283,19 @@
             </div>
           </CardDescription>
         </div>
-        <span :class="formatBadgeTone">{{ formatLabels[format] }}</span>
+        <div class="flex items-center gap-2">
+          <span :class="formatBadgeTone">{{ formatLabels[format] }}</span>
+          <Button
+            variant="ghost"
+            size="icon"
+            type="button"
+            class="size-8 cursor-pointer"
+            @click="handleRemove"
+          >
+            <Trash2 class="size-4" />
+            <span class="sr-only">Delete card</span>
+          </Button>
+        </div>
       </div>
     </CardHeader>
     <CardContent :class="cardContentTone">
