@@ -50,12 +50,7 @@
           side="right"
           class="flex h-full w-full max-w-[90vw] flex-col gap-6 p-6 py-12 text-foreground"
         >
-          <div class="grid grid-cols-1">
-            <CurrentTrack
-              variant="sheet"
-              :sheet-tile-class="drawerTileClasses"
-            />
-
+          <div class="flex flex-1 flex-col gap-6 overflow-y-auto">
             <nav class="grid gap-2">
               <SheetClose
                 v-for="route in routes"
@@ -70,38 +65,45 @@
                 </RouterLink>
               </SheetClose>
             </nav>
-          </div>
 
-          <div class="grid grid-cols-1 gap-2">
-            <SheetClose
-              v-for="link in links"
-              :key="`drawer-link-${link.href}`"
-              as-child
-            >
-              <a
-                :href="link.href"
-                target="_blank"
-                rel="noreferrer noopener"
-                :class="drawerTileClasses"
+            <div class="grid grid-cols-1 gap-2">
+              <SheetClose
+                v-for="link in links"
+                :key="`drawer-link-${link.href}`"
+                as-child
               >
-                <span class="flex items-center gap-3 truncate">
-                  <FontAwesomeIcon
-                    :icon="link.icon"
-                    :class="['text-lg', link.class]"
-                  />
-                  <span class="truncate">{{ link.label }}</span>
-                </span>
-                <ArrowUpRightIcon class="size-4 text-muted-foreground/70" />
-              </a>
-            </SheetClose>
+                <a
+                  :href="link.href"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  :class="drawerTileClasses"
+                >
+                  <span class="flex items-center gap-3 truncate">
+                    <FontAwesomeIcon
+                      :icon="link.icon"
+                      :class="['text-lg', link.class]"
+                    />
+                    <span class="truncate">{{ link.label }}</span>
+                  </span>
+                  <ArrowUpRightIcon class="size-4 text-muted-foreground/70" />
+                </a>
+              </SheetClose>
+            </div>
           </div>
 
-          <SheetFooter class="mt-auto">
-            <ThemeToggle
-              class="self-center size-20"
-              :is-mobile-menu-open="isMobileMenuOpen"
+          <div class="grid gap-3 mt-auto">
+            <CurrentTrack
+              variant="sheet"
+              :sheet-tile-class="drawerTileClasses"
             />
-          </SheetFooter>
+
+            <SheetFooter>
+              <ThemeToggle
+                class="self-center size-20"
+                :is-mobile-menu-open="isMobileMenuOpen"
+              />
+            </SheetFooter>
+          </div>
         </SheetContent>
       </Sheet>
 

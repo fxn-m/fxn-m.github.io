@@ -915,6 +915,42 @@
     }
   }
 
+  const handleRemoveCard = (cardId: string) => {
+    const targetIndex = cards.value.findIndex((card) => card.id === cardId)
+
+    if (targetIndex === -1) {
+      return
+    }
+
+    const nextCards = cards.value.filter((card) => card.id !== cardId)
+    cards.value = nextCards
+
+    if (nextCards.length === 0) {
+      activeSlideIndex.value = 0
+      clearSeedFormExitTimer()
+      isSeedFormOpen.value = true
+      return
+    }
+
+    const nextIndex = Math.min(
+      targetIndex <= activeSlideIndex.value
+        ? Math.max(activeSlideIndex.value - 1, 0)
+        : activeSlideIndex.value,
+      Math.max(nextCards.length - 1, 0)
+    )
+
+    if (nextIndex !== activeSlideIndex.value) {
+      activeSlideIndex.value = nextIndex
+    }
+
+    nextTick(() => {
+      const api = carouselApi.value
+      if (api) {
+        api.scrollTo(activeSlideIndex.value, true)
+      }
+    })
+  }
+
   watch(
     () => slides.value.map((slide) => slide.id),
     async () => {
@@ -1141,6 +1177,7 @@
                     :regenerating-card-id="regeneratingCardId"
                     @update:card="handleCardUpdate"
                     @regenerate="handleRegenerateCard"
+                    @remove="handleRemoveCard"
                   />
                   <AnkiCardSkeleton v-else :index="slide.order" />
                 </Motion>
