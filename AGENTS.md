@@ -27,7 +27,7 @@
 
 ## Environment & Secrets
 
-- **Worker bindings (`wrangler`):** required `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN`, `NOTION_TAB_OVERFLOW_TOKEN`, `NOTION_TAB_OVERFLOW_DATA_SOURCE_ID`, `NOTION_BLOG_TOKEN`, `NOTION_BLOG_DATA_SOURCE_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_REFRESH_TOKEN`, `OPENAI_API_KEY`, `GITHUB_REPO_DISPATCH_TOKEN`; optional `MAILGUN_API_KEY`, `MAILGUN_DOMAIN`, `readmeSecret`. Wrangler injects `TAB_OVERFLOW_KV`.
+- **Worker bindings (`wrangler`):** required `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN`, `NOTION_TAB_OVERFLOW_TOKEN`, `NOTION_TAB_OVERFLOW_DATA_SOURCE_ID`, `NOTION_BLOG_TOKEN`, `NOTION_BLOG_DATA_SOURCE_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_REFRESH_TOKEN`, `OPENAI_API_KEY`, `GITHUB_REPO_DISPATCH_TOKEN`. Wrangler injects `TAB_OVERFLOW_KV`.
 - **Client `.env` (Vite):** `VITE_BACKEND_URL` (point at the worker, e.g., `http://localhost:8787`), `VITE_POSTHOG_KEY`, `VITE_POSTHOG_HOST` (defaults to EU cluster), `VITE_POSTHOG_CAPTURE_DEV` toggles analytics during local dev.
 - **Blog build script:** set `BACKEND_URL` to the worker base before running `pnpm build:markdown`; the script wipes and rewrites `public/html`.
 - **Third-party expectations:** Spotify and Strava secrets must correspond to the configured accounts; Notion entries rely on data source IDs (not classic database IDs) and the OpenAI key powers Tab Overflow enrichment.

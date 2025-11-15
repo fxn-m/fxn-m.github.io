@@ -7,8 +7,6 @@ export default {
   spotifyClientId: process.env.SPOTIFY_CLIENT_ID,
   spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
   spotifyRefreshToken: process.env.SPOTIFY_REFRESH_TOKEN,
-  mailgunApiKey: process.env.MAILGUN_API_KEY,
-  mailgunDomain: process.env.MAILGUN_DOMAIN,
   notionTabOverflowToken: process.env.NOTION_TAB_OVERFLOW_TOKEN,
   notionTabOverflowDataSourceId: process.env.NOTION_TAB_OVERFLOW_DATA_SOURCE_ID,
   notionBlogToken: process.env.NOTION_BLOG_TOKEN,
