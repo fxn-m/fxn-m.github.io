@@ -309,7 +309,7 @@
         />
 
         <div
-          class="absolute inset-0 bg-gradient-to-b from-[#101017] to-transparent to-15%"
+          class="absolute inset-0 bg-gradient-to-b from-[#17171a] to-transparent to-15%"
           :class="{ 'opacity-0': !isDark }"
         />
         <!-- Bottom -->
@@ -319,7 +319,7 @@
         />
 
         <div
-          class="absolute inset-0 bg-gradient-to-t from-[#101017] to-15% to-transparent transition-opacity duration-1000 sm:invisible"
+          class="absolute inset-0 bg-gradient-to-t from-[#17171a] to-15% to-transparent transition-opacity duration-1000 sm:invisible"
           :class="{ 'opacity-0': !isDark }"
         />
         <!-- Countdown Timer: Only show if IS_GOAL is true -->
@@ -635,7 +635,7 @@
   }
 
   body.dark .activity-card {
-    background-color: #101017;
+    background-color: #17171a;
   }
 
   body.dark .activity-info {

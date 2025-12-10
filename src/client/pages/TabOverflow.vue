@@ -8,7 +8,7 @@
     >
       <div class="w-full">
         <div
-          class="border border-gray-200 bg-white/80 p-6 backdrop-blur dark:border-gray-800 dark:bg-zinc-900/60 animate-pulse"
+          class="border border-zinc-200 bg-white/80 p-6 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/60 animate-pulse"
         >
           <div class="h-4 w-24 rounded bg-gray-200 dark:bg-gray-700" />
           <div class="mt-6 h-6 w-3/4 rounded bg-gray-200 dark:bg-gray-700" />
@@ -37,7 +37,7 @@
         <Button
           type="button"
           variant="ghost"
-          class="flex h-full cursor-pointer w-6 items-center justify-center rounded-none border border-r-0 border-gray-200 bg-background/80 p-0 text-muted-foreground transition-colors hover:bg-muted/40 dark:border-gray-800 dark:bg-zinc-900/70"
+          class="flex h-full cursor-pointer w-6 items-center justify-center rounded-none border border-r-0 border-zinc-200 bg-background/80 p-0 text-muted-foreground transition-colors hover:bg-muted/40 dark:border-zinc-800 dark:bg-zinc-900/70"
           :disabled="currentIndex <= 0"
           @click="prevSuggestion"
         >
@@ -45,7 +45,7 @@
         </Button>
 
         <div
-          class="relative mx-auto flex h-full w-full min-w-0 flex-col overflow-hidden border border-gray-200 bg-background/80 backdrop-blur dark:border-gray-800 dark:bg-zinc-900/70"
+          class="relative mx-auto flex h-full w-full min-w-0 flex-col overflow-hidden border border-zinc-200 bg-background/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-900/70"
         >
           <div class="grid h-full min-w-0">
             <AnimatePresence :initial="false" :custom="transitionDirection">
@@ -61,7 +61,7 @@
                 :transition="cardTransition"
               >
                 <header
-                  class="flex w-full min-w-0 flex-nowrap items-center gap-4 overflow-hidden border-b border-gray-200 py-3 px-4 dark:border-gray-800"
+                  class="flex w-full min-w-0 flex-nowrap items-center gap-4 overflow-hidden border-b border-zinc-200 py-3 px-4 dark:border-zinc-800"
                 >
                   <a
                     :href="tabOverflowSuggestion.url"
@@ -129,7 +129,7 @@
                 </section>
 
                 <footer
-                  class="flex min-w-0 flex-col gap-4 border-t border-gray-200 px-5 py-5 text-xs text-muted-foreground dark:border-gray-800 sm:flex-row sm:items-center sm:justify-between"
+                  class="flex min-w-0 flex-col gap-4 border-t border-zinc-200 px-5 py-5 text-xs text-muted-foreground dark:border-zinc-800 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div class="flex flex-wrap items-center gap-1">
                     <span class="font-medium text-foreground">
@@ -149,13 +149,13 @@
                         category, index
                       ) in tabOverflowSuggestion.categories"
                       :key="index"
-                      class="border lowercase border-gray-300 px-2.5 py-1 text-xs font-medium text-foreground dark:border-gray-700"
+                      class="border lowercase border-zinc-300 px-2.5 py-1 text-xs font-medium text-foreground dark:border-zinc-700"
                     >
                       {{ category }}
                     </span>
                     <span
                       v-if="!tabOverflowSuggestion.categories.length"
-                      class="border border-dashed border-gray-300 px-2.5 py-1 text-xs"
+                      class="border border-dashed border-zinc-300 px-2.5 py-1 text-xs"
                     >
                       No categories yet
                     </span>
@@ -169,7 +169,7 @@
         <Button
           type="button"
           variant="ghost"
-          class="flex h-full cursor-pointer w-6 items-center justify-center rounded-none border border-l-0 border-gray-200 bg-background/80 p-0 text-muted-foreground transition-colors hover:bg-muted/40 dark:border-gray-800 dark:bg-zinc-900/70"
+          class="flex h-full cursor-pointer w-6 items-center justify-center rounded-none border border-l-0 border-zinc-200 bg-background/80 p-0 text-muted-foreground transition-colors hover:bg-muted/40 dark:border-zinc-800 dark:bg-zinc-900/70"
           @click="nextSuggestion"
         >
           <ChevronRight class="size-4" />
@@ -183,7 +183,7 @@
     </div>
 
     <!-- Full list of tab-overflow items -->
-    <div class="mt-8 border-t border-gray-200 pt-4 dark:border-gray-800">
+    <div class="mt-8 border-t border-zinc-200 pt-4 dark:border-zinc-800">
       <div class="flex flex-wrap items-center justify-between gap-2 h-8">
         <button
           class="gap-1 text-xs border-0 p-0 flex cursor-pointer items-center hover:text-primary font-semibold"
@@ -230,7 +230,7 @@
 
           <div
             v-if="isReadingTimeFilterOpen"
-            class="absolute right-0 top-full z-10 mt-2 min-w-[160px] rounded-md border border-gray-200 bg-background/95 p-2 shadow-lg backdrop-blur-sm dark:border-gray-800 dark:bg-zinc-900/95"
+            class="absolute right-0 top-full z-10 mt-2 min-w-[160px] rounded-md border border-zinc-200 bg-background/95 p-2 shadow-lg backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/95"
           >
             <p
               class="px-1 pb-2 text-[11px] uppercase tracking-wide text-muted-foreground"
@@ -281,7 +281,7 @@
 
       <div
         v-if="isTableVisible"
-        class="mt-4 overflow-hidden border-gray-200 dark:border-gray-800"
+        class="mt-4 overflow-hidden border-zinc-200 dark:border-zinc-800"
       >
         <div class="overflow-x-auto">
           <Table>

@@ -276,13 +276,13 @@ a > svg[class*="fa-"] {
 /* // dark mode styling */
 
 body.dark {
-  background-color: #101017;
+  background-color: #17171a;
   transition: background-color 0.5s ease-in-out;
 }
 
 body.dark pre,
 body.dark p code {
-  background-color: #12161d;
+  background-color: #1a1a1a;
   color: #c3e3f1;
   transition:
     background-color 0.5s ease-in-out,
@@ -320,7 +320,7 @@ body.dark a:not([href]):not([class]):hover {
 }
 
 body.dark blockquote {
-  border-color: #2a3855;
+  border-color: #262626;
   transition: all 0.5s ease-in-out;
   color: #cecece;
 }
@@ -367,7 +367,7 @@ body.dark
 }
 
 body.dark header {
-  border-bottom: 1px solid #2a3855;
+  border-bottom: 1px solid #262626;
 }
 
 @media (max-width: 1640px) {

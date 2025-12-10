@@ -488,7 +488,7 @@
 
   body.dark .mini-player {
     background: rgba(255, 255, 255, 0.01);
-    border: 1px solid #2a3855;
+    border: 1px solid #262626;
   }
 
   body.dark .mini-player:hover {
