@@ -1,20 +1,22 @@
 <template>
   <div id="content">
-    <p class="mt-0 mb-2">
-      Founding Engineer @
-      <a href="https://kenobi.ai" target="_blank">Kenobi</a>
-      (YC W22).
-    </p>
+    <div class="relative z-[1]">
+      <p class="mt-0 mb-4">
+        Founding Engineer @
+        <a href="https://kenobi.ai" target="_blank">Kenobi</a>
+        (YC W22).
+      </p>
 
-    <p class="my-2">Based in London.</p>
+      <p>Based in London.</p>
+    </div>
 
     <Motion
       :initial="{ opacity: 0 }"
       :animate="voltaireReady ? { opacity: 1 } : { opacity: 0 }"
       :transition="{ duration: 5 }"
-      class="relative flex flex-1 min-h-0"
+      class="relative flex flex-1 min-h-0 min-w-dvh voltaire-layer"
     >
-      <div ref="asciiHost" class="relative flex-1 min-h-0 w-full" />
+      <div ref="asciiHost" class="absolute voltaire-host" />
     </Motion>
 
     <footer

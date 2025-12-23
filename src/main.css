@@ -77,6 +77,15 @@ body {
   flex-direction: column;
 }
 
+.voltaire-layer {
+  overflow: visible;
+  z-index: 0;
+}
+
+.voltaire-host {
+  inset: -6rem -6rem -4rem -6rem;
+}
+
 .blog {
   margin: 4em 0;
 }
