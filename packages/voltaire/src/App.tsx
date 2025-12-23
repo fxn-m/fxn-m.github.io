@@ -66,7 +66,7 @@ function App() {
       <Canvas
         className={styles.canvas}
         shadows
-        camera={{ position: [-1, 0, 4], fov: 40 }}
+        camera={{ position: [-1, 0, 4], fov: 45 }}
       >
         <fog attach="fog" args={["#020817", 6, 18]} />
 

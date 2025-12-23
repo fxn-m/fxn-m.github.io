@@ -14,7 +14,7 @@
       :initial="{ opacity: 0 }"
       :animate="voltaireReady ? { opacity: 1 } : { opacity: 0 }"
       :transition="{ duration: 5 }"
-      class="relative flex flex-1 min-h-0 min-w-dvh voltaire-layer"
+      class="relative flex flex-1 min-h-0 voltaire-layer"
     >
       <div ref="asciiHost" class="absolute voltaire-host" />
     </Motion>
