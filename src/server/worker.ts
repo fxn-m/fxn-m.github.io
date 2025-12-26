@@ -121,6 +121,18 @@ const handleNotionWebhook = async (
 
   console.log("Notion webhook body:", body)
 
+  const verificationToken = body?.verification_token as string | undefined
+
+  if (verificationToken) {
+    return jsonResponse(
+      {
+        message: "Webhook verification token received",
+        verification_token: verificationToken
+      },
+      200
+    )
+  }
+
   const pageId = body?.entity?.id as string | undefined
   const databaseId = body?.data?.parent?.id as string | undefined
 
@@ -133,6 +145,26 @@ const handleNotionWebhook = async (
   )
 
   return jsonResponse({ message: "Webhook received" }, 202)
+}
+
+const handleNotionWebhookVerification = async (request: Request) => {
+  const body = await request.json().catch(() => null)
+
+  console.log("Notion webhook verification body:", body)
+
+  const verificationToken = body?.verification_token as string | undefined
+
+  if (!verificationToken) {
+    return errorResponse("Missing verification_token", 400)
+  }
+
+  return jsonResponse(
+    {
+      message: "Webhook verification token received",
+      verification_token: verificationToken
+    },
+    200
+  )
 }
 
 const handleNotionLinksWebhook = async (
@@ -274,6 +306,10 @@ const routeRequest = async (
 
   if (pathname === "/notion/webhooks" && method === "POST") {
     return handleNotionWebhook(request, env, config, ctx)
+  }
+
+  if (pathname === "/notion/webhooks/verify" && method === "POST") {
+    return handleNotionWebhookVerification(request)
   }
 
   if (pathname === "/notion/links-webhooks" && method === "POST") {
