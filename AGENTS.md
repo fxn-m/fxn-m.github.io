@@ -19,7 +19,7 @@
 
 ## Tooling & Commands
 
-- Install with `pnpm install` (repo pins `packageManager` to `pnpm@10.8.0`).
+- Install with `pnpm install` (repo pins `packageManager` to `pnpm@10.26.2`).
 - Run the client with `pnpm dev` (Vite at `localhost:5173`, host-access enabled for ngrok domains).
 - Run the worker locally with `pnpm dev:server` (Wrangler dev server on `localhost:8787`, exposing the Cloudflare Worker routes).
 - `pnpm build` chains `build:markdown`, `pnpm type-check`, and `vite build`; use `pnpm build-only` if `public/html` is already fresh.
