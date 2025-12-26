@@ -268,6 +268,10 @@ const routeRequest = async (
     return handlePing()
   }
 
+  if (method === "POST" && pathname === "/") {
+    return handleNotionWebhookVerification(request)
+  }
+
   if (pathname === "/tab-overflow" && method === "GET") {
     return handleTabOverflow(config, env)
   }
