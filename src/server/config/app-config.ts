@@ -37,11 +37,14 @@ export type AppConfig = {
   spotifyRefreshToken: string
   notionTabOverflowToken: string
   notionTabOverflowDataSourceId: string
+  notionLinksToken: string
+  notionLinksDataSourceId: string
   notionBlogToken: string
   notionBlogDataSourceId: string
   stravaClientSecret: string
   stravaRefreshToken: string
   openaiApiKey: string
+  googleGenerativeAiApiKey: string
   githubRepoDispatchToken: string
 }
 
@@ -67,6 +70,14 @@ export const createAppConfig = (source: ConfigSource): AppConfig => ({
     "NOTION_TAB_OVERFLOW_DATA_SOURCE_ID",
     ["NOTION_TAB_OVERFLOW_DATA_SOURCE_ID"]
   ),
+  notionLinksToken: requireValue(source, "NOTION_LINKS_TOKEN", [
+    "NOTION_LINKS_TOKEN"
+  ]),
+  notionLinksDataSourceId: requireValue(
+    source,
+    "NOTION_LINKS_DATA_SOURCE_ID",
+    ["NOTION_LINKS_DATA_SOURCE_ID"]
+  ),
   notionBlogToken: requireValue(source, "NOTION_BLOG_TOKEN", [
     "NOTION_BLOG_TOKEN"
   ]),
@@ -80,6 +91,11 @@ export const createAppConfig = (source: ConfigSource): AppConfig => ({
     "STRAVA_REFRESH_TOKEN"
   ]),
   openaiApiKey: requireValue(source, "OPENAI_API_KEY", ["OPENAI_API_KEY"]),
+  googleGenerativeAiApiKey: requireValue(
+    source,
+    "GOOGLE_GENERATIVE_AI_API_KEY",
+    ["GOOGLE_GENERATIVE_AI_API_KEY"]
+  ),
   githubRepoDispatchToken: requireValue(source, "GITHUB_REPO_DISPATCH_TOKEN", [
     "GITHUB_REPO_DISPATCH_TOKEN"
   ])

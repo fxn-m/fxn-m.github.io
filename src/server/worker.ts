@@ -3,6 +3,7 @@ import {
   fetchBlogPostsApi,
   triggerBlogBuildApi
 } from "./api/blog"
+import { enrichLinksApi } from "./api/links"
 import { getCurrentTrackApi } from "./api/spotify"
 import { getStravaActivitiesApi } from "./api/strava"
 import { getTabOverflowApi } from "./api/tab-overflow"
@@ -17,6 +18,7 @@ import {
   generateAnkiCards,
   normalizeGenerateDeckRequest
 } from "./services/ankipanki-service"
+import { enrichLinkItem } from "./services/links-service"
 import {
   enrichAllTabOverflowItems,
   enrichTabOverflowItem
@@ -52,6 +54,14 @@ const handlePing = () => jsonResponse({ message: "pong" })
 const handleTabOverflow = async (config: AppConfig, env: WorkerBindings) => {
   const tabOverflow = await getTabOverflowApi(config, env.TAB_OVERFLOW_KV)
   return jsonResponse(tabOverflow)
+}
+
+const enqueueLinksEnrichment = async (
+  config: AppConfig,
+  ctx: ExecutionContext
+) => {
+  ctx.waitUntil(enrichLinksApi(config))
+  return jsonResponse({ message: "Links enrichment started" }, 202)
 }
 
 const enqueueTabOverflowEnrichment = async (
@@ -123,6 +133,27 @@ const handleNotionWebhook = async (
   )
 
   return jsonResponse({ message: "Webhook received" }, 202)
+}
+
+const handleNotionLinksWebhook = async (
+  request: Request,
+  config: AppConfig,
+  ctx: ExecutionContext
+) => {
+  const body = await request.json().catch(() => null)
+
+  console.log("Notion links webhook body:", body)
+
+  const pageId = body?.entity?.id as string | undefined
+  const dataSourceId = body?.data?.parent?.id as string | undefined
+
+  if (!pageId || !dataSourceId) {
+    return errorResponse("Invalid webhook payload", 400)
+  }
+
+  ctx.waitUntil(enrichLinkItem(config, pageId, dataSourceId))
+
+  return jsonResponse({ message: "Links webhook received" }, 202)
 }
 
 const handleAnkiGenerate = async (request: Request) => {
@@ -213,6 +244,10 @@ const routeRequest = async (
     return enqueueTabOverflowEnrichment(config, env, ctx)
   }
 
+  if (pathname === "/links/enrich" && method === "POST") {
+    return enqueueLinksEnrichment(config, ctx)
+  }
+
   if (pathname === "/ankipanki/generate" && method === "POST") {
     return handleAnkiGenerate(request)
   }
@@ -239,6 +274,10 @@ const routeRequest = async (
 
   if (pathname === "/notion/webhooks" && method === "POST") {
     return handleNotionWebhook(request, env, config, ctx)
+  }
+
+  if (pathname === "/notion/links-webhooks" && method === "POST") {
+    return handleNotionLinksWebhook(request, config, ctx)
   }
 
   return errorResponse("Not Found", 404)
