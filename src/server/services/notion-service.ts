@@ -251,7 +251,7 @@ const PagePropertiesSchema = z.object({
         })
       )
     }),
-    Link: z.object({
+    URL: z.object({
       url: z.string()
     })
   })
@@ -269,7 +269,7 @@ const getPagePropertiesById = async (config: AppConfig, pageId: string) => {
     id: parsed.id,
     title: parsed.properties.Name.title[0].text.content,
     created: parsed.created_time,
-    url: parsed.properties.Link.url
+    url: parsed.properties.URL.url
   }
 
   return relevantProperties
@@ -444,7 +444,7 @@ type EnrichInput = {
   openai: ReturnType<typeof createOpenAIProvider>
 }
 
-const hasDuplicateLink = async (
+const hasDuplicateURL = async (
   config: AppConfig,
   pageId: string,
   url: string
@@ -462,7 +462,7 @@ const hasDuplicateLink = async (
     const response = await notion.dataSources.query({
       data_source_id: config.notionTabOverflowDataSourceId,
       filter: {
-        property: "Link",
+        property: "URL",
         url: {
           contains: normalizedTarget.hostname
         }
@@ -474,12 +474,12 @@ const hasDuplicateLink = async (
       if (!isPageObjectResponse(result) || result.id === pageId) {
         continue
       }
-      const linkProperty = result.properties?.Link
-      if (!linkProperty || linkProperty.type !== "url" || !linkProperty.url) {
+      const URLProperty = result.properties?.URL
+      if (!URLProperty || URLProperty.type !== "url" || !URLProperty.url) {
         continue
       }
 
-      const normalizedCandidate = normalizeUrlForComparison(linkProperty.url)
+      const normalizedCandidate = normalizeUrlForComparison(URLProperty.url)
 
       // if domain is news.ycombinator.com, skip
       if (
@@ -614,10 +614,10 @@ export const enrichTabOverflowItem = async (
   const openai = createOpenAIProvider(config)
   const props = await getPagePropertiesById(config, pageId)
   const categories = await extractCategoriesFromDatabase(config, databaseId)
-  const isDuplicate = await hasDuplicateLink(config, pageId, props.url)
+  const isDuplicate = await hasDuplicateURL(config, pageId, props.url)
   if (isDuplicate) {
     console.warn(
-      `Duplicate Tab Overflow link detected for ${props.url}; deleting page ${pageId}`
+      `Duplicate Tab Overflow URL detected for ${props.url}; deleting page ${pageId}`
     )
     await deleteNotionPage(config, pageId)
     console.log("Deleted duplicate Notion page")
@@ -693,7 +693,7 @@ export const enrichAllTabOverflowItems = async (
 
         try {
           const props = await getPagePropertiesById(config, item.id)
-          const isDuplicate = await hasDuplicateLink(config, item.id, props.url)
+          const isDuplicate = await hasDuplicateURL(config, item.id, props.url)
           const enrichedItem = await enrich({
             props,
             categories,
