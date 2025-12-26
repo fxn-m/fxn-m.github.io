@@ -316,7 +316,7 @@ const routeRequest = async (
     return handleNotionWebhookVerification(request)
   }
 
-  if (pathname === "/notion/links-webhooks" && method === "POST") {
+  if (pathname === "/notion/webhooks/enrich/link" && method === "POST") {
     return handleNotionLinksWebhook(request, config, ctx)
   }
 
