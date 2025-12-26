@@ -205,14 +205,14 @@ const extractCategoriesFromDataSource = async (
     }
     visited.add(referenceId)
 
-    const fromDatabase = await getCategoriesFromDatabaseId(referenceId)
-    if (fromDatabase && fromDatabase.length > 0) {
-      return fromDatabase
-    }
-
     const fromDataSource = await getCategoriesFromDataSourceId(referenceId)
     if (fromDataSource && fromDataSource.length > 0) {
       return fromDataSource
+    }
+
+    const fromDatabase = await getCategoriesFromDatabaseId(referenceId)
+    if (fromDatabase && fromDatabase.length > 0) {
+      return fromDatabase
     }
 
     return null
@@ -301,25 +301,52 @@ const enrichLink = async (
   categories: string[],
   google: ReturnType<typeof createGoogleProvider>
 ) => {
-  const { content } = await generateText({
-    model: google("gemini-2.5-flash-lite"),
-    output: Output.object({ schema: enrichedLinkSchema }),
-    prompt: `Summarize the link in 1-2 short sentences (ideally 1) and choose 1-3 categories. Use the URL context tool for the page content.
+  const prompt = `Summarize the link in 1-2 short sentences (ideally 1) and choose 1-3 categories. Use the URL context tool for the page content.
 Title: ${props.title}
 URL: ${props.url}
 Existing categories: ${categories.join(", ")}
-If none are a great fit, create a short new category (1-2 words, title case).`,
+If none are a great fit, create a short new category (1-2 words, title case).
+Return ONLY a JSON object that matches this schema:
+{
+  "summary": string,
+  "categories": string[]
+}`
+
+  // log the prompt
+  console.log("prompt", prompt)
+
+  // enrich the link
+  const response = await generateText({
+    model: google("gemini-2.5-flash-lite"),
+    output: Output.text(),
+    prompt,
     tools: {
       url_context: google.tools.urlContext({})
     }
   })
 
-  const { success, data, error } = enrichedLinkSchema.safeParse(content)
-  if (!success) {
-    throw new Error(error.message, error)
+  // log the full response
+  console.log("gemini response", response)
+
+  // parse the response
+  const extractJson = (value: string): unknown => {
+    try {
+      return JSON.parse(value)
+    } catch {
+      const match = value.match(/\{[\s\S]*\}/)
+      if (!match) {
+        throw new Error("No JSON object found in model response.")
+      }
+      return JSON.parse(match[0])
+    }
   }
 
-  return data
+  const parsed = enrichedLinkSchema.safeParse(extractJson(response.text))
+  if (!parsed.success) {
+    throw new Error(parsed.error.message, parsed.error)
+  }
+
+  return parsed.data
 }
 
 const updateLinkPage = async (

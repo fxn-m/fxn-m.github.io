@@ -134,7 +134,11 @@ const handleNotionWebhook = async (
   }
 
   const pageId = body?.entity?.id as string | undefined
-  const databaseId = body?.data?.parent?.id as string | undefined
+  const parent = body?.data?.parent as
+    | { id?: string; data_source_id?: string; database_id?: string }
+    | undefined
+  const databaseId =
+    parent?.id ?? parent?.data_source_id ?? parent?.database_id
 
   if (!pageId || !databaseId) {
     return errorResponse("Invalid webhook payload", 400)
@@ -147,26 +151,6 @@ const handleNotionWebhook = async (
   return jsonResponse({ message: "Webhook received" }, 202)
 }
 
-const handleNotionWebhookVerification = async (request: Request) => {
-  const body = await request.json().catch(() => null)
-
-  console.log("Notion webhook verification body:", body)
-
-  const verificationToken = body?.verification_token as string | undefined
-
-  if (!verificationToken) {
-    return errorResponse("Missing verification_token", 400)
-  }
-
-  return jsonResponse(
-    {
-      message: "Webhook verification token received",
-      verification_token: verificationToken
-    },
-    200
-  )
-}
-
 const handleNotionLinksWebhook = async (
   request: Request,
   config: AppConfig,
@@ -177,13 +161,18 @@ const handleNotionLinksWebhook = async (
   console.log("Notion links webhook body:", body)
 
   const pageId = body?.entity?.id as string | undefined
-  const dataSourceId = body?.data?.parent?.id as string | undefined
+  const parent = body?.data?.parent as
+    | { id?: string; data_source_id?: string; database_id?: string }
+    | undefined
+  const dataSourceId =
+    parent?.data_source_id ?? parent?.id ?? parent?.database_id
+  const resolvedDataSourceId = dataSourceId ?? config.notionLinksDataSourceId
 
-  if (!pageId || !dataSourceId) {
+  if (!pageId || !resolvedDataSourceId) {
     return errorResponse("Invalid webhook payload", 400)
   }
 
-  ctx.waitUntil(enrichLinkItem(config, pageId, dataSourceId))
+  ctx.waitUntil(enrichLinkItem(config, pageId, resolvedDataSourceId))
 
   return jsonResponse({ message: "Links webhook received" }, 202)
 }
@@ -268,10 +257,6 @@ const routeRequest = async (
     return handlePing()
   }
 
-  if (method === "POST" && pathname === "/") {
-    return handleNotionWebhookVerification(request)
-  }
-
   if (pathname === "/tab-overflow" && method === "GET") {
     return handleTabOverflow(config, env)
   }
@@ -310,10 +295,6 @@ const routeRequest = async (
 
   if (pathname === "/notion/webhooks" && method === "POST") {
     return handleNotionWebhook(request, env, config, ctx)
-  }
-
-  if (pathname === "/notion/webhooks/verify" && method === "POST") {
-    return handleNotionWebhookVerification(request)
   }
 
   if (pathname === "/notion/webhooks/enrich/link" && method === "POST") {
