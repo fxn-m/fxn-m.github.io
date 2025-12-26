@@ -27,7 +27,7 @@
   import { nextTick, onMounted, onUnmounted, ref, watchEffect } from "vue"
   import { useRoute } from "vue-router"
 
-  import { convertMarkdownToHTML } from "@/server/utils/blogUtils"
+  import { convertMarkdownToHTML } from "@/server/utils/blog-utils"
   import type { BlogMetadata, BlogPost } from "@/shared"
 
   hljs.registerLanguage("javascript", javascript)

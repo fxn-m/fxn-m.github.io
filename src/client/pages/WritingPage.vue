@@ -23,7 +23,7 @@
   import { useQuery } from "@tanstack/vue-query"
   import { onMounted, ref, watchEffect } from "vue"
 
-  import { getSlugMap } from "@/server/utils/blogUtils"
+  import { getSlugMap } from "@/server/utils/blog-utils"
   import type { BlogPost, SlugMap } from "@/shared"
 
   const allBlogs = ref<BlogPost[]>([])
