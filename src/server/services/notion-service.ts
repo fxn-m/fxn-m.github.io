@@ -12,9 +12,9 @@ import {
   type NotionResponse
 } from "@/shared/types/notion"
 
-import type { AppConfig } from "../config/appConfig"
+import type { AppConfig } from "../config/app-config"
 import type { KVNamespace } from "../types/cloudflare"
-import { writeTabOverflowToCache } from "../utils/tabOverflowStore"
+import { writeTabOverflowToCache } from "../utils/tab-overflow-store"
 
 const boundFetch: typeof fetch = (...args) => {
   return globalThis.fetch(...args)

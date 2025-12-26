@@ -1,4 +1,4 @@
-import type { AppConfig } from "../config/appConfig"
+import type { AppConfig } from "../config/app-config"
 
 export const triggerRebuild = async (config: AppConfig) => {
   console.log("Triggering rebuild...")

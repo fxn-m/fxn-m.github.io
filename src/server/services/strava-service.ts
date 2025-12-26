@@ -1,6 +1,6 @@
 import type { StravaActivity } from "@/shared/types/strava"
 
-import type { AppConfig } from "../config/appConfig"
+import type { AppConfig } from "../config/app-config"
 import {
   STRAVA_ACTIVITIES_ENDPOINT,
   STRAVA_CLIENT_ID,

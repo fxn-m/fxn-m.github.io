@@ -3,12 +3,9 @@ import slugify from "slugify"
 
 import type { BlogPost } from "@/shared/types"
 
-import type { AppConfig } from "../config/appConfig"
-import { triggerRebuild } from "../services/githubService"
-import {
-  getBlogPostById,
-  getBlogPosts
-} from "../services/notionService"
+import type { AppConfig } from "../config/app-config"
+import { triggerRebuild } from "../services/github-service"
+import { getBlogPostById, getBlogPosts } from "../services/notion-service"
 
 const parseBlogsFromNotionResponse = (
   response: PageObjectResponse[]

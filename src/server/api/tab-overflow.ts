@@ -1,9 +1,9 @@
 import type { NotionResponse } from "@/shared/types/notion"
 
-import type { AppConfig } from "../config/appConfig"
-import { refreshTabOverflowCache } from "../services/notionService"
+import type { AppConfig } from "../config/app-config"
+import { refreshTabOverflowCache } from "../services/notion-service"
 import type { KVNamespace } from "../types/cloudflare"
-import { readTabOverflowFromCache } from "../utils/tabOverflowStore"
+import { readTabOverflowFromCache } from "../utils/tab-overflow-store"
 
 export const getTabOverflowApi = async (
   config: AppConfig,

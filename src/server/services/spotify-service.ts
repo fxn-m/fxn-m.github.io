@@ -1,6 +1,6 @@
 import { z } from "zod"
 
-import type { AppConfig } from "../config/appConfig"
+import type { AppConfig } from "../config/app-config"
 import {
   SPOTIFY_CURRENT_TRACK_ENDPOINT,
   SPOTIFY_TOKEN_ENDPOINT

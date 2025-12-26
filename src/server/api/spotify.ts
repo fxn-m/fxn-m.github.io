@@ -1,8 +1,8 @@
-import type { AppConfig } from "../config/appConfig"
+import type { AppConfig } from "../config/app-config"
 import {
   getCurrentPlayingTrack,
   getSpotifyAccessToken
-} from "../services/spotifyService"
+} from "../services/spotify-service"
 
 export const getCurrentTrackApi = async (config: AppConfig) => {
   const accessToken = await getSpotifyAccessToken(config)

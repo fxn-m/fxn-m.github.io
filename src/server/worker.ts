@@ -5,22 +5,22 @@ import {
 } from "./api/blog"
 import { getCurrentTrackApi } from "./api/spotify"
 import { getStravaActivitiesApi } from "./api/strava"
-import { getTabOverflowApi } from "./api/tabOverflow"
+import { getTabOverflowApi } from "./api/tab-overflow"
 import {
   type AppConfig,
   createConfigFromBindings,
   type WorkerBindings
-} from "./config/appConfig"
+} from "./config/app-config"
 import {
   AnkiGenerationError,
   ensureValidOpenAIApiKey,
   generateAnkiCards,
   normalizeGenerateDeckRequest
-} from "./services/ankipankiService"
+} from "./services/ankipanki-service"
 import {
   enrichAllTabOverflowItems,
   enrichTabOverflowItem
-} from "./services/notionService"
+} from "./services/notion-service"
 import type { ExecutionContext, WorkerEntrypoint } from "./types/cloudflare"
 import {
   errorResponse,
