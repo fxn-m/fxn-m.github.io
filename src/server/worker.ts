@@ -18,11 +18,11 @@ import {
   generateAnkiCards,
   normalizeGenerateDeckRequest
 } from "./services/ankipanki-service"
-import { enrichLinkItem } from "./services/notion/links-service"
 import {
   enrichAllTabOverflowItems,
+  enrichLinkItem,
   enrichTabOverflowItem
-} from "./services/notion/tab-overflow-service"
+} from "./services/notion"
 import type { ExecutionContext, WorkerEntrypoint } from "./types/cloudflare"
 import {
   errorResponse,

@@ -5,7 +5,7 @@ import type { BlogPost } from "@/shared/types"
 
 import type { AppConfig } from "../config/app-config"
 import { triggerRebuild } from "../services/github-service"
-import { getBlogPostById, getBlogPosts } from "../services/notion/blog-service"
+import { getBlogPostById, getBlogPosts } from "../services/notion"
 
 const parseBlogsFromNotionResponse = (
   response: PageObjectResponse[]

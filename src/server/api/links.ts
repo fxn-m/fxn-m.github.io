@@ -1,5 +1,5 @@
 import type { AppConfig } from "../config/app-config"
-import { enrichAllLinks } from "../services/notion/links-service"
+import { enrichAllLinks } from "../services/notion"
 
 export const enrichLinksApi = async (config: AppConfig) => {
   await enrichAllLinks(config)

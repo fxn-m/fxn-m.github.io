@@ -413,6 +413,7 @@
     readingTime: number | null
     categories: string[]
     summary: string
+    added: Date | null
   }
 
   // Define type for a tab overflow item
@@ -424,6 +425,7 @@
       "Read Time"?: { number: number }
       Categories?: { multi_select: { name: string }[] }
       Summary?: { rich_text: { plain_text: string }[] }
+      Added?: { type: "date"; date?: { start?: string | null } | null }
     }
   }
 
@@ -434,7 +436,8 @@
     url: "",
     readingTime: null,
     categories: [],
-    summary: ""
+    summary: "",
+    added: null
   })
 
   const transitionDirection = ref<1 | -1>(1)
@@ -524,6 +527,10 @@
     const summary = props.Summary?.rich_text
       ? props.Summary.rich_text.map((txt) => txt.plain_text).join(" ")
       : ""
+    const added =
+      props.Added?.type === "date" && props.Added.date?.start
+        ? new Date(props.Added.date.start)
+        : null
 
     return {
       id: item.id,
@@ -531,7 +538,8 @@
       url,
       readingTime,
       categories,
-      summary
+      summary,
+      added
     }
   }
 
@@ -730,6 +738,11 @@
           return false
         }
         return item.readingTime < selectedReadingTimeFilter.value
+      })
+      .sort((a, b) => {
+        const timeA = a.item.added?.getTime() ?? 0
+        const timeB = b.item.added?.getTime() ?? 0
+        return timeB - timeA
       })
   })
 
