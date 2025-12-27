@@ -206,7 +206,7 @@ const handleNotionTabOverflowWebhook = async (
 ) => {
   const parseResult = await parseNotionWebhookBody(
     request,
-    config.notionTabOverflowWebhookSecret
+    config.notionTabOverflowSecret
   )
   if (parseResult instanceof Response) {
     return parseResult
@@ -255,7 +255,7 @@ const handleNotionLinksWebhook = async (
 ) => {
   const parseResult = await parseNotionWebhookBody(
     request,
-    config.notionLinksWebhookSecret
+    config.notionLinksSecret
   )
   if (parseResult instanceof Response) {
     return parseResult

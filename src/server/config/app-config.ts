@@ -42,8 +42,6 @@ export type AppConfig = {
   notionLinksDataSourceId: string
   notionBlogSecret: string
   notionBlogDataSourceId: string
-  notionTabOverflowWebhookSecret?: string
-  notionLinksWebhookSecret?: string
   stravaClientSecret: string
   stravaRefreshToken: string
   openaiApiKey: string
@@ -85,12 +83,6 @@ export const createAppConfig = (source: ConfigSource): AppConfig => ({
   ]),
   notionBlogDataSourceId: requireValue(source, "NOTION_BLOG_DATA_SOURCE_ID", [
     "NOTION_BLOG_DATA_SOURCE_ID"
-  ]),
-  notionTabOverflowWebhookSecret: firstDefined(source, [
-    "NOTION_TAB_OVERFLOW_SECRET"
-  ]),
-  notionLinksWebhookSecret: firstDefined(source, [
-    "NOTION_LINKS_WEBHOOK_SECRET"
   ]),
   stravaClientSecret: requireValue(source, "STRAVA_CLIENT_SECRET", [
     "STRAVA_CLIENT_SECRET"
