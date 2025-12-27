@@ -30,6 +30,51 @@ import {
   noContentResponse
 } from "./utils/responses"
 
+type NotionWebhookBody = {
+  verification_token?: string
+  entity?: { id?: string }
+  data?: {
+    parent?: { id?: string; data_source_id?: string; database_id?: string }
+  }
+}
+
+const normalizeNotionWebhookBody = (
+  body: unknown
+): NotionWebhookBody | null => {
+  if (!body || typeof body !== "object") {
+    return null
+  }
+  return body as NotionWebhookBody
+}
+
+const parseNotionWebhookBody = async (
+  request: Request,
+  secret?: string
+): Promise<{ body: NotionWebhookBody | null } | Response> => {
+  const rawBody = await request.text()
+  const signature =
+    request.headers.get("x-notion-signature") ??
+    request.headers.get("X-Notion-Signature")
+
+  if (secret) {
+    if (!signature) {
+      return errorResponse("Missing Notion signature", 401)
+    }
+  } else {
+    console.warn(
+      "Notion webhook secret is not configured; signature verification skipped."
+    )
+  }
+
+  try {
+    const parsed = rawBody.length > 0 ? JSON.parse(rawBody) : null
+    return { body: normalizeNotionWebhookBody(parsed) }
+  } catch (error) {
+    console.error("Failed to parse Notion webhook body:", error)
+    return errorResponse("Invalid webhook payload", 400)
+  }
+}
+
 const normalizeIdFromPath = (
   pathname: string,
   prefix: string
@@ -111,19 +156,29 @@ const handleStravaActivities = async (config: AppConfig) => {
   return jsonResponse(activities)
 }
 
-const handleNotionWebhook = async (
+const handleNotionTabOverflowWebhook = async (
   request: Request,
   env: WorkerBindings,
   config: AppConfig,
   ctx: ExecutionContext
 ) => {
-  const body = await request.json().catch(() => null)
+  const parseResult = await parseNotionWebhookBody(
+    request,
+    config.notionTabOverflowWebhookSecret ?? config.notionWebhookSecret
+  )
+  if (parseResult instanceof Response) {
+    return parseResult
+  }
+  const { body } = parseResult
 
   console.log("Notion webhook body:", body)
 
   const verificationToken = body?.verification_token as string | undefined
 
   if (verificationToken) {
+    console.warn(
+      "Notion verification token received. Store this value as the webhook secret to enable signature verification."
+    )
     return jsonResponse(
       {
         message: "Webhook verification token received",
@@ -137,15 +192,15 @@ const handleNotionWebhook = async (
   const parent = body?.data?.parent as
     | { id?: string; data_source_id?: string; database_id?: string }
     | undefined
-  const databaseId =
-    parent?.id ?? parent?.data_source_id ?? parent?.database_id
+  const dataSourceId =
+    parent?.data_source_id ?? parent?.id ?? parent?.database_id
 
-  if (!pageId || !databaseId) {
+  if (!pageId || !dataSourceId) {
     return errorResponse("Invalid webhook payload", 400)
   }
 
   ctx.waitUntil(
-    enrichTabOverflowItem(config, env.TAB_OVERFLOW_KV, pageId, databaseId)
+    enrichTabOverflowItem(config, env.TAB_OVERFLOW_KV, pageId, dataSourceId)
   )
 
   return jsonResponse({ message: "Webhook received" }, 202)
@@ -156,23 +211,44 @@ const handleNotionLinksWebhook = async (
   config: AppConfig,
   ctx: ExecutionContext
 ) => {
-  const body = await request.json().catch(() => null)
+  const parseResult = await parseNotionWebhookBody(
+    request,
+    config.notionLinksWebhookSecret ?? config.notionWebhookSecret
+  )
+  if (parseResult instanceof Response) {
+    return parseResult
+  }
+  const { body } = parseResult
 
   console.log("Notion links webhook body:", body)
+
+  const verificationToken = body?.verification_token as string | undefined
+
+  if (verificationToken) {
+    console.warn(
+      "Notion verification token received. Store this value as the webhook secret to enable signature verification."
+    )
+    return jsonResponse(
+      {
+        message: "Webhook verification token received",
+        verification_token: verificationToken
+      },
+      200
+    )
+  }
 
   const pageId = body?.entity?.id as string | undefined
   const parent = body?.data?.parent as
     | { id?: string; data_source_id?: string; database_id?: string }
     | undefined
   const dataSourceId =
-    parent?.data_source_id ?? parent?.id ?? parent?.database_id
-  const resolvedDataSourceId = dataSourceId ?? config.notionLinksDataSourceId
+    parent?.data_source_id ?? config.notionLinksDataSourceId ?? parent?.id
 
-  if (!pageId || !resolvedDataSourceId) {
+  if (!pageId || !dataSourceId) {
     return errorResponse("Invalid webhook payload", 400)
   }
 
-  ctx.waitUntil(enrichLinkItem(config, pageId, resolvedDataSourceId))
+  ctx.waitUntil(enrichLinkItem(config, pageId, dataSourceId))
 
   return jsonResponse({ message: "Links webhook received" }, 202)
 }
@@ -277,12 +353,12 @@ const routeRequest = async (
     return handleBlogIndex(config, url)
   }
 
-  if (pathname.startsWith("/blog/") && method === "GET") {
-    return handleBlogPost(config, pathname)
-  }
-
   if (pathname === "/blog/build" && method === "GET") {
     return handleBlogBuild(config)
+  }
+
+  if (pathname.startsWith("/blog/") && method === "GET") {
+    return handleBlogPost(config, pathname)
   }
 
   if (pathname === "/spotify/current-track" && method === "GET") {
@@ -293,12 +369,15 @@ const routeRequest = async (
     return handleStravaActivities(config)
   }
 
-  if (pathname === "/notion/webhooks" && method === "POST") {
-    return handleNotionWebhook(request, env, config, ctx)
-  }
-
   if (pathname === "/notion/webhooks/enrich/link" && method === "POST") {
     return handleNotionLinksWebhook(request, config, ctx)
+  }
+
+  if (
+    pathname === "/notion/webhooks/enrich/tab-overflow" &&
+    method === "POST"
+  ) {
+    return handleNotionTabOverflowWebhook(request, env, config, ctx)
   }
 
   return errorResponse("Not Found", 404)

@@ -1,16 +1,20 @@
-import { Client } from "@notionhq/client"
-
 import env from "@/server/config/env"
+import {
+  createNotionClient,
+  resolveDataSourceId
+} from "@/server/utils/notion-client"
 
 export const getTabOverflow = async () => {
   console.log("Getting tab overflow...")
 
-  const NOTION_TAB_OVERFLOW_TOKEN = env.notionTabOverflowToken
+  const NOTION_TAB_OVERFLOW_SECRET = env.notionTabOverflowWebhookSecret
   const NOTION_TAB_OVERFLOW_DATA_SOURCE_ID = env.notionTabOverflowDataSourceId
 
-  const notion = new Client({
-    auth: NOTION_TAB_OVERFLOW_TOKEN
-  })
+  const notion = createNotionClient(NOTION_TAB_OVERFLOW_SECRET ?? "")
+  const dataSourceId = await resolveDataSourceId(
+    notion,
+    NOTION_TAB_OVERFLOW_DATA_SOURCE_ID ?? ""
+  )
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let tabOverflow: any[] = []
@@ -20,7 +24,7 @@ export const getTabOverflow = async () => {
   while (hasNextPage) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const response: any = await notion.dataSources.query({
-      data_source_id: NOTION_TAB_OVERFLOW_DATA_SOURCE_ID ?? "",
+      data_source_id: dataSourceId,
       filter: {
         or: [
           {

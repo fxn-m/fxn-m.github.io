@@ -1,5 +1,4 @@
 import { createOpenAI } from "@ai-sdk/openai"
-import { APIErrorCode, APIResponseError, Client } from "@notionhq/client"
 import { generateObject, generateText } from "ai"
 import { NotionConverter } from "notion-to-md"
 import { DefaultExporter } from "notion-to-md/plugins/exporter"
@@ -14,17 +13,12 @@ import {
 
 import type { AppConfig } from "../config/app-config"
 import type { KVNamespace } from "../types/cloudflare"
+import { createNotionClient, resolveDataSourceId } from "../utils/notion-client"
 import { writeTabOverflowToCache } from "../utils/tab-overflow-store"
 
 const boundFetch: typeof fetch = (...args) => {
   return globalThis.fetch(...args)
 }
-
-const createNotionClient = (token: string) =>
-  new Client({
-    auth: token,
-    fetch: boundFetch
-  })
 
 const createOpenAIProvider = (config: AppConfig) =>
   createOpenAI({
@@ -112,6 +106,7 @@ export const getTabOverflowItems = async (
 ): Promise<NotionResponse[]> => {
   console.log("Fetching tab overflow from Notion...")
   const notion = createNotionClient(config.notionTabOverflowToken)
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config)
 
   let tabOverflowItems: NotionResponse[] = []
   let hasNextPage = true
@@ -119,7 +114,7 @@ export const getTabOverflowItems = async (
 
   while (hasNextPage) {
     const response = await notion.dataSources.query({
-      data_source_id: config.notionTabOverflowDataSourceId,
+      data_source_id: resolvedDataSourceId,
       filter: {
         or: [
           {
@@ -182,6 +177,7 @@ export const getBlogPosts = async (
   isDevelopment: boolean
 ): Promise<NotionResponse[]> => {
   const notion = createNotionClient(config.notionBlogToken)
+  const notionBlogDataSourceId = await resolveBlogDataSourceId(config)
 
   let blogPosts: NotionResponse[] = []
   let hasNextPage = true
@@ -189,7 +185,7 @@ export const getBlogPosts = async (
 
   while (hasNextPage) {
     const response = await notion.dataSources.query({
-      data_source_id: config.notionBlogDataSourceId,
+      data_source_id: notionBlogDataSourceId,
       filter: isDevelopment
         ? {
             or: [
@@ -275,163 +271,47 @@ const getPagePropertiesById = async (config: AppConfig, pageId: string) => {
   return relevantProperties
 }
 
-const extractCategoriesFromDatabase = async (
+const resolveTabOverflowDataSourceId = async (
   config: AppConfig,
-  parentId: string
+  dataSourceId?: string
 ) => {
   const notion = createNotionClient(config.notionTabOverflowToken)
+  const candidates = [dataSourceId, config.notionTabOverflowDataSourceId].filter(
+    (value): value is string => Boolean(value)
+  )
 
-  const getCategoriesFromDatabaseId = async (
-    databaseId: string
-  ): Promise<string[] | null> => {
+  let lastError: unknown
+  for (const candidate of candidates) {
     try {
-      const response = await notion.databases.retrieve({
-        database_id: databaseId
-      })
-      const properties = extractPropertyConfig(response)
-      if (!properties) {
-        return null
-      }
-      return parseCategoriesProperty(properties)
+      return await resolveDataSourceId(notion, candidate)
     } catch (error) {
-      if (
-        APIResponseError.isAPIResponseError(error) &&
-        (error.code === APIErrorCode.ObjectNotFound ||
-          error.code === APIErrorCode.ValidationError)
-      ) {
-        console.warn(
-          `Unable to retrieve database ${databaseId} for categories: ${error.message}`
-        )
-        return null
-      }
-      throw error
+      lastError = error
     }
   }
 
-  const getCategoriesFromDataSourceId = async (
-    dataSourceId: string
-  ): Promise<string[] | null> => {
-    try {
-      const response = await notion.dataSources.retrieve({
-        data_source_id: dataSourceId
-      })
-      const properties = extractPropertyConfig(response)
-      const categories = properties ? parseCategoriesProperty(properties) : null
-      if (categories && categories.length > 0) {
-        return categories
-      }
+  throw lastError ?? new Error("Unable to resolve Tab Overflow data source id.")
+}
 
-      if (
-        typeof response === "object" &&
-        response !== null &&
-        "parent" in response
-      ) {
-        const parent = (
-          response as {
-            parent:
-              | { type: "database_id"; database_id: string }
-              | { type: "data_source_id"; data_source_id: string }
-          }
-        ).parent
+const resolveBlogDataSourceId = async (config: AppConfig) => {
+  const notion = createNotionClient(config.notionBlogToken)
+  return resolveDataSourceId(notion, config.notionBlogDataSourceId)
+}
 
-        if (parent.type === "database_id") {
-          return getCategoriesFromDatabaseId(parent.database_id)
-        }
-
-        if (
-          parent.type === "data_source_id" &&
-          parent.data_source_id !== dataSourceId
-        ) {
-          return getCategoriesFromDataSourceId(parent.data_source_id)
-        }
-      }
-
-      if (
-        typeof response === "object" &&
-        response !== null &&
-        "database_parent" in response
-      ) {
-        const databaseParent = (
-          response as {
-            database_parent:
-              | { type: "database_id"; database_id: string }
-              | { type: "data_source_id"; data_source_id: string }
-              | { type: "page_id"; page_id: string }
-              | { type: "workspace"; workspace: true }
-              | { type: "block_id"; block_id: string }
-              | null
-          }
-        ).database_parent
-
-        if (
-          databaseParent &&
-          databaseParent.type === "database_id" &&
-          databaseParent.database_id
-        ) {
-          const parentCategories = await getCategoriesFromDatabaseId(
-            databaseParent.database_id
-          )
-          if (parentCategories && parentCategories.length > 0) {
-            return parentCategories
-          }
-        }
-
-        if (
-          databaseParent &&
-          databaseParent.type === "data_source_id" &&
-          databaseParent.data_source_id &&
-          databaseParent.data_source_id !== dataSourceId
-        ) {
-          return getCategoriesFromDataSourceId(databaseParent.data_source_id)
-        }
-      }
-
-      return categories
-    } catch (error) {
-      if (
-        APIResponseError.isAPIResponseError(error) &&
-        (error.code === APIErrorCode.ObjectNotFound ||
-          error.code === APIErrorCode.ValidationError)
-      ) {
-        console.warn(
-          `Unable to retrieve data source ${dataSourceId} for categories: ${error.message}`
-        )
-        return null
-      }
-      throw error
-    }
-  }
-
-  const visited = new Set<string>()
-
-  const resolveCategories = async (
-    referenceId: string | null | undefined
-  ): Promise<string[] | null> => {
-    if (!referenceId || visited.has(referenceId)) {
-      return null
-    }
-    visited.add(referenceId)
-
-    const fromDatabase = await getCategoriesFromDatabaseId(referenceId)
-    if (fromDatabase && fromDatabase.length > 0) {
-      return fromDatabase
-    }
-
-    const fromDataSource = await getCategoriesFromDataSourceId(referenceId)
-    if (fromDataSource && fromDataSource.length > 0) {
-      return fromDataSource
-    }
-
-    return null
-  }
-
-  const categories =
-    (await resolveCategories(parentId)) ??
-    (await resolveCategories(config.notionTabOverflowDataSourceId))
+const extractCategoriesFromDataSource = async (
+  config: AppConfig,
+  dataSourceId: string
+) => {
+  const notion = createNotionClient(config.notionTabOverflowToken)
+  const resolvedId = await resolveDataSourceId(notion, dataSourceId)
+  const response = await notion.dataSources.retrieve({
+    data_source_id: resolvedId
+  })
+  const properties = extractPropertyConfig(response)
+  const categories = properties ? parseCategoriesProperty(properties) : null
 
   if (!categories || categories.length === 0) {
     throw new Error(
-      `Unable to resolve Categories property for Tab Overflow source ${parentId}`
+      `Unable to resolve Categories property for Tab Overflow source ${resolvedId}`
     )
   }
 
@@ -447,7 +327,8 @@ type EnrichInput = {
 const hasDuplicateURL = async (
   config: AppConfig,
   pageId: string,
-  url: string
+  url: string,
+  dataSourceId?: string
 ): Promise<boolean> => {
   const normalizedTarget = normalizeUrlForComparison(url)
   if (!normalizedTarget) {
@@ -455,12 +336,16 @@ const hasDuplicateURL = async (
   }
 
   const notion = createNotionClient(config.notionTabOverflowToken)
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(
+    config,
+    dataSourceId
+  )
   let startCursor: string | undefined | null = undefined
   let hasMore = true
 
   while (hasMore) {
     const response = await notion.dataSources.query({
-      data_source_id: config.notionTabOverflowDataSourceId,
+      data_source_id: resolvedDataSourceId,
       filter: {
         property: "URL",
         url: {
@@ -609,12 +494,24 @@ export const enrichTabOverflowItem = async (
   config: AppConfig,
   kv: KVNamespace,
   pageId: string,
-  databaseId: string
+  dataSourceId: string
 ) => {
   const openai = createOpenAIProvider(config)
   const props = await getPagePropertiesById(config, pageId)
-  const categories = await extractCategoriesFromDatabase(config, databaseId)
-  const isDuplicate = await hasDuplicateURL(config, pageId, props.url)
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(
+    config,
+    dataSourceId
+  )
+  const categories = await extractCategoriesFromDataSource(
+    config,
+    resolvedDataSourceId
+  )
+  const isDuplicate = await hasDuplicateURL(
+    config,
+    pageId,
+    props.url,
+    resolvedDataSourceId
+  )
   if (isDuplicate) {
     console.warn(
       `Duplicate Tab Overflow URL detected for ${props.url}; deleting page ${pageId}`
@@ -654,9 +551,10 @@ export const enrichAllTabOverflowItems = async (
     isPageObjectResponse(item)
   )
 
-  const categories = await extractCategoriesFromDatabase(
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config)
+  const categories = await extractCategoriesFromDataSource(
     config,
-    config.notionTabOverflowDataSourceId
+    resolvedDataSourceId
   )
   const openai = createOpenAIProvider(config)
   const limit = pLimit(5)
@@ -693,7 +591,12 @@ export const enrichAllTabOverflowItems = async (
 
         try {
           const props = await getPagePropertiesById(config, item.id)
-          const isDuplicate = await hasDuplicateURL(config, item.id, props.url)
+          const isDuplicate = await hasDuplicateURL(
+            config,
+            item.id,
+            props.url,
+            resolvedDataSourceId
+          )
           const enrichedItem = await enrich({
             props,
             categories,

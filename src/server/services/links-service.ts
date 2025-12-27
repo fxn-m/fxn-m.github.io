@@ -1,20 +1,14 @@
 import { createGoogleGenerativeAI } from "@ai-sdk/google"
-import { APIErrorCode, APIResponseError, Client } from "@notionhq/client"
 import { generateText, Output } from "ai"
 import pLimit from "p-limit"
 import { z } from "zod"
 
 import type { AppConfig } from "../config/app-config"
+import { createNotionClient, resolveDataSourceId } from "../utils/notion-client"
 
 const boundFetch: typeof fetch = (...args) => {
   return globalThis.fetch(...args)
 }
-
-const createNotionClient = (token: string) =>
-  new Client({
-    auth: token,
-    fetch: boundFetch
-  })
 
 const createGoogleProvider = (config: AppConfig) =>
   createGoogleGenerativeAI({
@@ -68,163 +62,42 @@ const extractPropertyConfig = (
   return null
 }
 
+const resolveLinksDataSourceId = async (
+  config: AppConfig,
+  dataSourceId?: string
+) => {
+  const notion = createNotionClient(config.notionLinksToken)
+  const candidates = [dataSourceId, config.notionLinksDataSourceId].filter(
+    (value): value is string => Boolean(value)
+  )
+
+  let lastError: unknown
+  for (const candidate of candidates) {
+    try {
+      return await resolveDataSourceId(notion, candidate)
+    } catch (error) {
+      lastError = error
+    }
+  }
+
+  throw lastError ?? new Error("Unable to resolve Links data source id.")
+}
+
 const extractCategoriesFromDataSource = async (
   config: AppConfig,
   dataSourceId: string
 ) => {
   const notion = createNotionClient(config.notionLinksToken)
-
-  const getCategoriesFromDatabaseId = async (
-    databaseId: string
-  ): Promise<string[] | null> => {
-    try {
-      const response = await notion.databases.retrieve({
-        database_id: databaseId
-      })
-      const properties = extractPropertyConfig(response)
-      if (!properties) {
-        return null
-      }
-      return parseCategoriesProperty(properties)
-    } catch (error) {
-      if (
-        APIResponseError.isAPIResponseError(error) &&
-        (error.code === APIErrorCode.ObjectNotFound ||
-          error.code === APIErrorCode.ValidationError)
-      ) {
-        console.warn(
-          `Unable to retrieve database ${databaseId} for categories: ${error.message}`
-        )
-        return null
-      }
-      throw error
-    }
-  }
-
-  const getCategoriesFromDataSourceId = async (
-    currentDataSourceId: string
-  ): Promise<string[] | null> => {
-    try {
-      const response = await notion.dataSources.retrieve({
-        data_source_id: currentDataSourceId
-      })
-      const properties = extractPropertyConfig(response)
-      const categories = properties ? parseCategoriesProperty(properties) : null
-      if (categories && categories.length > 0) {
-        return categories
-      }
-
-      if (
-        typeof response === "object" &&
-        response !== null &&
-        "parent" in response
-      ) {
-        const parent = (
-          response as {
-            parent:
-              | { type: "database_id"; database_id: string }
-              | { type: "data_source_id"; data_source_id: string }
-          }
-        ).parent
-
-        if (parent.type === "database_id") {
-          return getCategoriesFromDatabaseId(parent.database_id)
-        }
-
-        if (
-          parent.type === "data_source_id" &&
-          parent.data_source_id !== currentDataSourceId
-        ) {
-          return getCategoriesFromDataSourceId(parent.data_source_id)
-        }
-      }
-
-      if (
-        typeof response === "object" &&
-        response !== null &&
-        "database_parent" in response
-      ) {
-        const databaseParent = (
-          response as {
-            database_parent:
-              | { type: "database_id"; database_id: string }
-              | { type: "data_source_id"; data_source_id: string }
-              | { type: "page_id"; page_id: string }
-              | { type: "workspace"; workspace: true }
-              | { type: "block_id"; block_id: string }
-              | null
-          }
-        ).database_parent
-
-        if (
-          databaseParent &&
-          databaseParent.type === "database_id" &&
-          databaseParent.database_id
-        ) {
-          const parentCategories = await getCategoriesFromDatabaseId(
-            databaseParent.database_id
-          )
-          if (parentCategories && parentCategories.length > 0) {
-            return parentCategories
-          }
-        }
-
-        if (
-          databaseParent &&
-          databaseParent.type === "data_source_id" &&
-          databaseParent.data_source_id &&
-          databaseParent.data_source_id !== currentDataSourceId
-        ) {
-          return getCategoriesFromDataSourceId(databaseParent.data_source_id)
-        }
-      }
-
-      return categories
-    } catch (error) {
-      if (
-        APIResponseError.isAPIResponseError(error) &&
-        (error.code === APIErrorCode.ObjectNotFound ||
-          error.code === APIErrorCode.ValidationError)
-      ) {
-        console.warn(
-          `Unable to retrieve data source ${currentDataSourceId} for categories: ${error.message}`
-        )
-        return null
-      }
-      throw error
-    }
-  }
-
-  const visited = new Set<string>()
-
-  const resolveCategories = async (
-    referenceId: string | null | undefined
-  ): Promise<string[] | null> => {
-    if (!referenceId || visited.has(referenceId)) {
-      return null
-    }
-    visited.add(referenceId)
-
-    const fromDataSource = await getCategoriesFromDataSourceId(referenceId)
-    if (fromDataSource && fromDataSource.length > 0) {
-      return fromDataSource
-    }
-
-    const fromDatabase = await getCategoriesFromDatabaseId(referenceId)
-    if (fromDatabase && fromDatabase.length > 0) {
-      return fromDatabase
-    }
-
-    return null
-  }
-
-  const categories =
-    (await resolveCategories(dataSourceId)) ??
-    (await resolveCategories(config.notionLinksDataSourceId))
+  const resolvedId = await resolveDataSourceId(notion, dataSourceId)
+  const response = await notion.dataSources.retrieve({
+    data_source_id: resolvedId
+  })
+  const properties = extractPropertyConfig(response)
+  const categories = properties ? parseCategoriesProperty(properties) : null
 
   if (!categories || categories.length === 0) {
     throw new Error(
-      `Unable to resolve Categories property for Links source ${dataSourceId}`
+      `Unable to resolve Categories property for Links source ${resolvedId}`
     )
   }
 
@@ -301,7 +174,7 @@ const enrichLink = async (
   categories: string[],
   google: ReturnType<typeof createGoogleProvider>
 ) => {
-  const prompt = `Summarize the link in 1-2 short sentences (ideally 1) and choose 1-3 categories. Use the URL context tool for the page content.
+  const prompt = `Summarize the link in 1-2 short sentences (ideally 1, less than 20 words!) and choose 1-3 categories. Use the URL context tool for the page content.
 Title: ${props.title}
 URL: ${props.url}
 Existing categories: ${categories.join(", ")}
@@ -317,7 +190,7 @@ Return ONLY a JSON object that matches this schema:
 
   // enrich the link
   const response = await generateText({
-    model: google("gemini-2.5-flash-lite"),
+    model: google("gemini-3-flash-preview"),
     output: Output.text(),
     prompt,
     tools: {
@@ -379,16 +252,27 @@ const updateLinkPage = async (
 }
 
 const getLinksMissingSummary = async (
-  config: AppConfig
+  config: AppConfig,
+  dataSourceId: string
 ): Promise<{ id: string }[]> => {
   const notion = createNotionClient(config.notionLinksToken)
+  const resolvedId = await resolveDataSourceId(notion, dataSourceId)
   let results: { id: string }[] = []
   let hasNextPage = true
   let startCursor: string | undefined | null = undefined
+  const hasId = (item: unknown): item is { id: string } =>
+    typeof item === "object" && item !== null && "id" in item
 
   while (hasNextPage) {
-    const response = await notion.dataSources.query({
-      data_source_id: config.notionLinksDataSourceId,
+    const query: {
+      filter: {
+        property: "Summary"
+        rich_text: {
+          is_empty: true
+        }
+      }
+      start_cursor?: string
+    } = {
       filter: {
         property: "Summary",
         rich_text: {
@@ -396,13 +280,20 @@ const getLinksMissingSummary = async (
         }
       },
       start_cursor: startCursor ?? undefined
+    }
+
+    const response: {
+      results: unknown[]
+      next_cursor: string | null
+      has_more: boolean
+    } = await notion.dataSources.query({
+      data_source_id: resolvedId,
+      ...query
     })
 
     results = [
       ...results,
-      ...response.results
-        .filter((item) => typeof item === "object" && item && "id" in item)
-        .map((item) => ({ id: (item as { id: string }).id }))
+      ...response.results.filter(hasId).map((item) => ({ id: item.id }))
     ]
     startCursor = response.next_cursor
     hasNextPage = response.has_more
@@ -423,18 +314,32 @@ export const enrichLinkItem = async (
     return
   }
 
-  const categories = await extractCategoriesFromDataSource(config, dataSourceId)
+  const resolvedDataSourceId = await resolveLinksDataSourceId(
+    config,
+    dataSourceId
+  )
+  const categories = await extractCategoriesFromDataSource(
+    config,
+    resolvedDataSourceId
+  )
   const enriched = await enrichLink(props, categories, google)
   await updateLinkPage(config, pageId, enriched)
   console.log(`Updated link ${props.title} with summary + categories`)
 }
 
-export const enrichAllLinks = async (config: AppConfig) => {
+export const enrichAllLinks = async (
+  config: AppConfig,
+  dataSourceId = config.notionLinksDataSourceId
+) => {
   const google = createGoogleProvider(config)
-  const links = await getLinksMissingSummary(config)
+  const resolvedDataSourceId = await resolveLinksDataSourceId(
+    config,
+    dataSourceId
+  )
+  const links = await getLinksMissingSummary(config, resolvedDataSourceId)
   const categories = await extractCategoriesFromDataSource(
     config,
-    config.notionLinksDataSourceId
+    resolvedDataSourceId
   )
   const limit = pLimit(5)
 
