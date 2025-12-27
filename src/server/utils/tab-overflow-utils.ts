@@ -13,7 +13,11 @@ export const getTabOverflow = async () => {
   const notion = createNotionClient(NOTION_TOKEN ?? "")
   const dataSourceId = await resolveDataSourceId(
     notion,
-    NOTION_TAB_OVERFLOW_DATA_SOURCE_ID ?? ""
+    NOTION_TAB_OVERFLOW_DATA_SOURCE_ID ?? "",
+    {
+      label: "Tab Overflow",
+      envKey: "NOTION_TAB_OVERFLOW_DATA_SOURCE_ID"
+    }
   )
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -65,7 +65,10 @@ const resolveLinksDataSourceId = async (
   let lastError: unknown
   for (const candidate of candidates) {
     try {
-      return await resolveDataSourceId(notion, candidate)
+      return await resolveDataSourceId(notion, candidate, {
+        label: "Links",
+        envKey: "NOTION_LINKS_DATA_SOURCE_ID"
+      })
     } catch (error) {
       lastError = error
     }
@@ -79,7 +82,10 @@ const extractCategoriesFromDataSource = async (
   dataSourceId: string
 ) => {
   const notion = createNotionClient(config.notionLinksSecret)
-  const resolvedId = await resolveDataSourceId(notion, dataSourceId)
+  const resolvedId = await resolveDataSourceId(notion, dataSourceId, {
+    label: "Links",
+    envKey: "NOTION_LINKS_DATA_SOURCE_ID"
+  })
   const response = await notion.dataSources.retrieve({
     data_source_id: resolvedId
   })
@@ -247,7 +253,10 @@ const getLinksMissingSummary = async (
   dataSourceId: string
 ): Promise<{ id: string }[]> => {
   const notion = createNotionClient(config.notionLinksSecret)
-  const resolvedId = await resolveDataSourceId(notion, dataSourceId)
+  const resolvedId = await resolveDataSourceId(notion, dataSourceId, {
+    label: "Links",
+    envKey: "NOTION_LINKS_DATA_SOURCE_ID"
+  })
   let results: { id: string }[] = []
   let hasNextPage = true
   let startCursor: string | undefined | null = undefined

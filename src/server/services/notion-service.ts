@@ -283,7 +283,10 @@ const resolveTabOverflowDataSourceId = async (
   let lastError: unknown
   for (const candidate of candidates) {
     try {
-      return await resolveDataSourceId(notion, candidate)
+      return await resolveDataSourceId(notion, candidate, {
+        label: "Tab Overflow",
+        envKey: "NOTION_TAB_OVERFLOW_DATA_SOURCE_ID"
+      })
     } catch (error) {
       lastError = error
     }
@@ -293,8 +296,11 @@ const resolveTabOverflowDataSourceId = async (
 }
 
 const resolveBlogDataSourceId = async (config: AppConfig) => {
-  const notion = createNotionClient(config.notionTabOverflowSecret)
-  return resolveDataSourceId(notion, config.notionBlogDataSourceId)
+  const notion = createNotionClient(config.notionBlogSecret)
+  return resolveDataSourceId(notion, config.notionBlogDataSourceId, {
+    label: "Blog",
+    envKey: "NOTION_BLOG_DATA_SOURCE_ID"
+  })
 }
 
 const extractCategoriesFromDataSource = async (
@@ -302,7 +308,10 @@ const extractCategoriesFromDataSource = async (
   dataSourceId: string
 ) => {
   const notion = createNotionClient(config.notionTabOverflowSecret)
-  const resolvedId = await resolveDataSourceId(notion, dataSourceId)
+  const resolvedId = await resolveDataSourceId(notion, dataSourceId, {
+    label: "Tab Overflow",
+    envKey: "NOTION_TAB_OVERFLOW_DATA_SOURCE_ID"
+  })
   const response = await notion.dataSources.retrieve({
     data_source_id: resolvedId
   })

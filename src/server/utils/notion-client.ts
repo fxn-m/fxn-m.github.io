@@ -17,10 +17,11 @@ export const createNotionClient = (token: string) =>
 
 export const resolveDataSourceId = async (
   notion: Client,
-  referenceId: string
+  referenceId: string,
+  context?: { label?: string; envKey?: string }
 ): Promise<string> => {
   if (!referenceId) {
-    throw new Error("Missing Notion data source or database id.")
+    throw new Error("Missing Notion data source id.")
   }
 
   const cached = dataSourceIdCache.get(referenceId)
@@ -33,32 +34,27 @@ export const resolveDataSourceId = async (
     dataSourceIdCache.set(referenceId, referenceId)
     return referenceId
   } catch (error) {
+    const label = context?.label ?? "Notion"
+    const envKey = context?.envKey ?? "UNKNOWN_ENV_VAR"
     if (
       APIResponseError.isAPIResponseError(error) &&
       (error.code === APIErrorCode.ObjectNotFound ||
         error.code === APIErrorCode.ValidationError)
     ) {
-      const databaseResponse = (await notion.databases.retrieve({
-        database_id: referenceId
-      })) as { data_sources?: { id: string; name?: string }[] }
-
-      const dataSources = databaseResponse.data_sources ?? []
-      if (dataSources.length === 0) {
-        throw new Error(
-          `No data sources found for database ${referenceId}.`
-        )
-      }
-
-      const resolvedId = dataSources[0].id
-      if (dataSources.length > 1) {
-        console.warn(
-          `Multiple data sources found for database ${referenceId}; using ${resolvedId}.`
-        )
-      }
-
-      dataSourceIdCache.set(referenceId, resolvedId)
-      dataSourceIdCache.set(resolvedId, resolvedId)
-      return resolvedId
+      console.error(
+        `${label} data source lookup failed.`,
+        {
+          envKey,
+          referenceId,
+          notionErrorCode: error.code,
+          notionMessage: error.message,
+          hint:
+            "Ensure the env var is a data_source_id (not a database_id) and that the integration is shared with the data source."
+        }
+      )
+      throw new Error(
+        `${label} data source lookup failed for ${referenceId}. Check ${envKey} and Notion sharing.`
+      )
     }
     throw error
   }
