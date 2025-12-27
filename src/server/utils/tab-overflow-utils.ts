@@ -7,10 +7,10 @@ import {
 export const getTabOverflow = async () => {
   console.log("Getting tab overflow...")
 
-  const NOTION_TAB_OVERFLOW_SECRET = env.notionTabOverflowWebhookSecret
+  const NOTION_TOKEN = env.notionTabOverflowSecret
   const NOTION_TAB_OVERFLOW_DATA_SOURCE_ID = env.notionTabOverflowDataSourceId
 
-  const notion = createNotionClient(NOTION_TAB_OVERFLOW_SECRET ?? "")
+  const notion = createNotionClient(NOTION_TOKEN ?? "")
   const dataSourceId = await resolveDataSourceId(
     notion,
     NOTION_TAB_OVERFLOW_DATA_SOURCE_ID ?? ""

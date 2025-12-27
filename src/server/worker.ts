@@ -38,6 +38,48 @@ type NotionWebhookBody = {
   }
 }
 
+const toHex = (buffer: ArrayBuffer): string =>
+  [...new Uint8Array(buffer)]
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("")
+
+const timingSafeEqual = (a: string, b: string): boolean => {
+  if (a.length !== b.length) {
+    return false
+  }
+  let result = 0
+  for (let index = 0; index < a.length; index += 1) {
+    result |= a.charCodeAt(index) ^ b.charCodeAt(index)
+  }
+  return result === 0
+}
+
+const verifyNotionSignature = async (
+  rawBody: string,
+  signature: string,
+  secret: string
+): Promise<boolean> => {
+  const encoder = new TextEncoder()
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  )
+  const signatureBuffer = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    encoder.encode(rawBody)
+  )
+  const expectedHex = toHex(signatureBuffer)
+  const expected = `sha256=${expectedHex}`
+  return (
+    timingSafeEqual(signature, expected) ||
+    timingSafeEqual(signature, expectedHex)
+  )
+}
+
 const normalizeNotionWebhookBody = (
   body: unknown
 ): NotionWebhookBody | null => {
@@ -60,10 +102,10 @@ const parseNotionWebhookBody = async (
     if (!signature) {
       return errorResponse("Missing Notion signature", 401)
     }
-  } else {
-    console.warn(
-      "Notion webhook secret is not configured; signature verification skipped."
-    )
+    const isValid = await verifyNotionSignature(rawBody, signature, secret)
+    if (!isValid) {
+      return errorResponse("Invalid Notion signature", 401)
+    }
   }
 
   try {
@@ -164,7 +206,7 @@ const handleNotionTabOverflowWebhook = async (
 ) => {
   const parseResult = await parseNotionWebhookBody(
     request,
-    config.notionTabOverflowWebhookSecret ?? config.notionWebhookSecret
+    config.notionTabOverflowWebhookSecret
   )
   if (parseResult instanceof Response) {
     return parseResult
@@ -213,7 +255,7 @@ const handleNotionLinksWebhook = async (
 ) => {
   const parseResult = await parseNotionWebhookBody(
     request,
-    config.notionLinksWebhookSecret ?? config.notionWebhookSecret
+    config.notionLinksWebhookSecret
   )
   if (parseResult instanceof Response) {
     return parseResult

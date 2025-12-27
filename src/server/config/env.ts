@@ -9,14 +9,13 @@ export default {
   spotifyClientSecret: process.env.SPOTIFY_CLIENT_SECRET,
   spotifyRefreshToken: process.env.SPOTIFY_REFRESH_TOKEN,
 
+  notionTabOverflowSecret: process.env.NOTION_TAB_OVERFLOW_SECRET,
   notionTabOverflowDataSourceId: process.env.NOTION_TAB_OVERFLOW_DATA_SOURCE_ID,
-  notionTabOverflowWebhookSecret:
-    process.env.NOTION_TAB_OVERFLOW_WEBHOOK_SECRET,
 
+  notionLinksSecret: process.env.NOTION_LINKS_SECRET,
   notionLinksDataSourceId: process.env.NOTION_LINKS_DATA_SOURCE_ID,
-  notionLinksWebhookSecret: process.env.NOTION_LINKS_WEBHOOK_SECRET,
 
-  notionBlogToken: process.env.NOTION_BLOG_TOKEN,
+  notionBlogSecret: process.env.NOTION_BLOG_SECRET,
   notionBlogDataSourceId: process.env.NOTION_BLOG_DATA_SOURCE_ID,
 
   stravaClientSecret: process.env.STRAVA_CLIENT_SECRET,

@@ -4,17 +4,8 @@ import pLimit from "p-limit"
 import { z } from "zod"
 
 import type { AppConfig } from "../config/app-config"
+import env from "../config/env"
 import { createNotionClient, resolveDataSourceId } from "../utils/notion-client"
-
-const boundFetch: typeof fetch = (...args) => {
-  return globalThis.fetch(...args)
-}
-
-const createGoogleProvider = (config: AppConfig) =>
-  createGoogleGenerativeAI({
-    apiKey: config.googleGenerativeAiApiKey,
-    fetch: boundFetch
-  })
 
 const CategoryOptionSchema = z.object({
   name: z.string()
@@ -66,7 +57,7 @@ const resolveLinksDataSourceId = async (
   config: AppConfig,
   dataSourceId?: string
 ) => {
-  const notion = createNotionClient(config.notionLinksToken)
+  const notion = createNotionClient(config.notionLinksSecret)
   const candidates = [dataSourceId, config.notionLinksDataSourceId].filter(
     (value): value is string => Boolean(value)
   )
@@ -87,7 +78,7 @@ const extractCategoriesFromDataSource = async (
   config: AppConfig,
   dataSourceId: string
 ) => {
-  const notion = createNotionClient(config.notionLinksToken)
+  const notion = createNotionClient(config.notionLinksSecret)
   const resolvedId = await resolveDataSourceId(notion, dataSourceId)
   const response = await notion.dataSources.retrieve({
     data_source_id: resolvedId
@@ -144,7 +135,7 @@ const getLinkPagePropertiesById = async (
   config: AppConfig,
   pageId: string
 ): Promise<LinkPageProperties> => {
-  const notion = createNotionClient(config.notionLinksToken)
+  const notion = createNotionClient(config.notionLinksSecret)
   const response = await notion.pages.retrieve({
     page_id: pageId
   })
@@ -172,7 +163,7 @@ const enrichedLinkSchema = z.object({
 const enrichLink = async (
   props: LinkPageProperties,
   categories: string[],
-  google: ReturnType<typeof createGoogleProvider>
+  google: ReturnType<typeof createGoogleGenerativeAI>
 ) => {
   const prompt = `Summarize the link in 1-2 short sentences (ideally 1, less than 20 words!) and choose 1-3 categories. Use the URL context tool for the page content.
 Title: ${props.title}
@@ -227,7 +218,7 @@ const updateLinkPage = async (
   pageId: string,
   enriched: z.infer<typeof enrichedLinkSchema>
 ) => {
-  const notion = createNotionClient(config.notionLinksToken)
+  const notion = createNotionClient(config.notionLinksSecret)
 
   await notion.pages.update({
     page_id: pageId,
@@ -255,7 +246,7 @@ const getLinksMissingSummary = async (
   config: AppConfig,
   dataSourceId: string
 ): Promise<{ id: string }[]> => {
-  const notion = createNotionClient(config.notionLinksToken)
+  const notion = createNotionClient(config.notionLinksSecret)
   const resolvedId = await resolveDataSourceId(notion, dataSourceId)
   let results: { id: string }[] = []
   let hasNextPage = true
@@ -307,7 +298,9 @@ export const enrichLinkItem = async (
   pageId: string,
   dataSourceId: string
 ) => {
-  const google = createGoogleProvider(config)
+  const google = createGoogleGenerativeAI({
+    apiKey: env.googleGenerativeAiApiKey
+  })
   const props = await getLinkPagePropertiesById(config, pageId)
   if (props.hasSummary) {
     console.log(`Skipping ${props.title} because it already has a summary.`)
@@ -331,7 +324,10 @@ export const enrichAllLinks = async (
   config: AppConfig,
   dataSourceId = config.notionLinksDataSourceId
 ) => {
-  const google = createGoogleProvider(config)
+  console.log("google generative api key:", env.googleGenerativeAiApiKey)
+  const google = createGoogleGenerativeAI({
+    apiKey: env.googleGenerativeAiApiKey
+  })
   const resolvedDataSourceId = await resolveLinksDataSourceId(
     config,
     dataSourceId

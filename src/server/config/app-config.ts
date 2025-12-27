@@ -32,16 +32,16 @@ const requireValue = (
 }
 
 export type AppConfig = {
+  port: string
   spotifyClientId: string
   spotifyClientSecret: string
   spotifyRefreshToken: string
-  notionTabOverflowToken: string
+  notionTabOverflowSecret: string
   notionTabOverflowDataSourceId: string
-  notionLinksToken: string
+  notionLinksSecret: string
   notionLinksDataSourceId: string
-  notionBlogToken: string
+  notionBlogSecret: string
   notionBlogDataSourceId: string
-  notionWebhookSecret?: string
   notionTabOverflowWebhookSecret?: string
   notionLinksWebhookSecret?: string
   stravaClientSecret: string
@@ -56,6 +56,7 @@ export type WorkerBindings = {
 } & Record<string, string | undefined>
 
 export const createAppConfig = (source: ConfigSource): AppConfig => ({
+  port: firstDefined(source, ["PORT"]) ?? "3000",
   spotifyClientId: requireValue(source, "SPOTIFY_CLIENT_ID", [
     "SPOTIFY_CLIENT_ID"
   ]),
@@ -65,36 +66,30 @@ export const createAppConfig = (source: ConfigSource): AppConfig => ({
   spotifyRefreshToken: requireValue(source, "SPOTIFY_REFRESH_TOKEN", [
     "SPOTIFY_REFRESH_TOKEN"
   ]),
-  notionTabOverflowToken: requireValue(source, "NOTION_TAB_OVERFLOW_TOKEN", [
-    "NOTION_TAB_OVERFLOW_TOKEN"
+  notionTabOverflowSecret: requireValue(source, "NOTION_TAB_OVERFLOW_SECRET", [
+    "NOTION_TAB_OVERFLOW_SECRET"
   ]),
   notionTabOverflowDataSourceId: requireValue(
     source,
     "NOTION_TAB_OVERFLOW_DATA_SOURCE_ID",
     ["NOTION_TAB_OVERFLOW_DATA_SOURCE_ID"]
   ),
-  notionLinksToken: requireValue(source, "NOTION_LINKS_TOKEN", [
-    "NOTION_LINKS_TOKEN"
+  notionLinksSecret: requireValue(source, "NOTION_LINKS_SECRET", [
+    "NOTION_LINKS_SECRET"
   ]),
   notionLinksDataSourceId: requireValue(source, "NOTION_LINKS_DATA_SOURCE_ID", [
     "NOTION_LINKS_DATA_SOURCE_ID"
   ]),
-  notionBlogToken: requireValue(source, "NOTION_BLOG_TOKEN", [
-    "NOTION_BLOG_TOKEN"
+  notionBlogSecret: requireValue(source, "NOTION_BLOG_SECRET", [
+    "NOTION_BLOG_SECRET"
   ]),
   notionBlogDataSourceId: requireValue(source, "NOTION_BLOG_DATA_SOURCE_ID", [
     "NOTION_BLOG_DATA_SOURCE_ID"
   ]),
-  notionWebhookSecret: firstDefined(source, [
-    "NOTION_WEBHOOK_VERIFICATION_TOKEN",
-    "NOTION_WEBHOOK_SECRET"
-  ]),
   notionTabOverflowWebhookSecret: firstDefined(source, [
-    "NOTION_TAB_OVERFLOW_WEBHOOK_VERIFICATION_TOKEN",
-    "NOTION_TAB_OVERFLOW_WEBHOOK_SECRET"
+    "NOTION_TAB_OVERFLOW_SECRET"
   ]),
   notionLinksWebhookSecret: firstDefined(source, [
-    "NOTION_LINKS_WEBHOOK_VERIFICATION_TOKEN",
     "NOTION_LINKS_WEBHOOK_SECRET"
   ]),
   stravaClientSecret: requireValue(source, "STRAVA_CLIENT_SECRET", [

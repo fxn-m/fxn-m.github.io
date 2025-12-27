@@ -105,7 +105,7 @@ export const getTabOverflowItems = async (
   config: AppConfig
 ): Promise<NotionResponse[]> => {
   console.log("Fetching tab overflow from Notion...")
-  const notion = createNotionClient(config.notionTabOverflowToken)
+  const notion = createNotionClient(config.notionTabOverflowSecret)
   const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config)
 
   let tabOverflowItems: NotionResponse[] = []
@@ -146,7 +146,7 @@ export const refreshTabOverflowCache = async (
 }
 
 export const getBlogPostById = async (config: AppConfig, blockId: string) => {
-  const notion = createNotionClient(config.notionBlogToken)
+  const notion = createNotionClient(config.notionBlogSecret)
 
   return withSuppressedNotionToMdLogs(async () => {
     const buffer: Record<string, string> = {}
@@ -176,7 +176,7 @@ export const getBlogPosts = async (
   config: AppConfig,
   isDevelopment: boolean
 ): Promise<NotionResponse[]> => {
-  const notion = createNotionClient(config.notionBlogToken)
+  const notion = createNotionClient(config.notionBlogSecret)
   const notionBlogDataSourceId = await resolveBlogDataSourceId(config)
 
   let blogPosts: NotionResponse[] = []
@@ -254,7 +254,7 @@ const PagePropertiesSchema = z.object({
 })
 
 const getPagePropertiesById = async (config: AppConfig, pageId: string) => {
-  const notion = createNotionClient(config.notionTabOverflowToken)
+  const notion = createNotionClient(config.notionTabOverflowSecret)
 
   const response = await notion.pages.retrieve({
     page_id: pageId
@@ -275,7 +275,7 @@ const resolveTabOverflowDataSourceId = async (
   config: AppConfig,
   dataSourceId?: string
 ) => {
-  const notion = createNotionClient(config.notionTabOverflowToken)
+  const notion = createNotionClient(config.notionTabOverflowSecret)
   const candidates = [dataSourceId, config.notionTabOverflowDataSourceId].filter(
     (value): value is string => Boolean(value)
   )
@@ -293,7 +293,7 @@ const resolveTabOverflowDataSourceId = async (
 }
 
 const resolveBlogDataSourceId = async (config: AppConfig) => {
-  const notion = createNotionClient(config.notionBlogToken)
+  const notion = createNotionClient(config.notionTabOverflowSecret)
   return resolveDataSourceId(notion, config.notionBlogDataSourceId)
 }
 
@@ -301,7 +301,7 @@ const extractCategoriesFromDataSource = async (
   config: AppConfig,
   dataSourceId: string
 ) => {
-  const notion = createNotionClient(config.notionTabOverflowToken)
+  const notion = createNotionClient(config.notionTabOverflowSecret)
   const resolvedId = await resolveDataSourceId(notion, dataSourceId)
   const response = await notion.dataSources.retrieve({
     data_source_id: resolvedId
@@ -335,7 +335,7 @@ const hasDuplicateURL = async (
     return false
   }
 
-  const notion = createNotionClient(config.notionTabOverflowToken)
+  const notion = createNotionClient(config.notionTabOverflowSecret)
   const resolvedDataSourceId = await resolveTabOverflowDataSourceId(
     config,
     dataSourceId
@@ -435,7 +435,7 @@ const updateNotionPage = async (
   created: string,
   isDuplicate: boolean
 ) => {
-  const notion = createNotionClient(config.notionTabOverflowToken)
+  const notion = createNotionClient(config.notionTabOverflowSecret)
 
   await notion.pages.update({
     page_id: pageId,
@@ -483,7 +483,7 @@ const updateNotionPage = async (
 }
 
 const deleteNotionPage = async (config: AppConfig, pageId: string) => {
-  const notion = createNotionClient(config.notionTabOverflowToken)
+  const notion = createNotionClient(config.notionTabOverflowSecret)
   await notion.pages.update({
     page_id: pageId,
     archived: true
