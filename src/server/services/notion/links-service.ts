@@ -3,55 +3,13 @@ import { generateText, Output } from "ai"
 import pLimit from "p-limit"
 import { z } from "zod"
 
-import type { AppConfig } from "../config/app-config"
-import env from "../config/env"
-import { createNotionClient, resolveDataSourceId } from "../utils/notion-client"
-
-const CategoryOptionSchema = z.object({
-  name: z.string()
-})
-
-const CategoriesPropertySchema = z
-  .object({
-    multi_select: z.object({
-      options: z.array(CategoryOptionSchema)
-    })
-  })
-  .loose()
-
-const CategoriesPropertiesSchema = z
-  .object({
-    Categories: CategoriesPropertySchema
-  })
-  .loose()
-
-const parseCategoriesProperty = (properties: unknown): string[] | null => {
-  const result = CategoriesPropertiesSchema.safeParse(properties)
-  if (!result.success) {
-    return null
-  }
-
-  return result.data.Categories.multi_select.options.map(
-    (option) => option.name
-  )
-}
-
-const extractPropertyConfig = (
-  response: unknown
-): Record<string, unknown> | null => {
-  if (
-    typeof response === "object" &&
-    response !== null &&
-    "properties" in response
-  ) {
-    const candidate = (response as { properties: unknown }).properties
-    if (candidate && typeof candidate === "object") {
-      return candidate as Record<string, unknown>
-    }
-  }
-
-  return null
-}
+import type { AppConfig } from "../../config/app-config"
+import env from "../../config/env"
+import { createNotionClient, resolveDataSourceId } from "./utils/notion-client"
+import {
+  extractPropertyConfig,
+  parseCategoriesProperty
+} from "./utils/notion-properties"
 
 const resolveLinksDataSourceId = async (
   config: AppConfig,

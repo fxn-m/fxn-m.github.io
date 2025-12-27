@@ -2,7 +2,7 @@ import env from "@/server/config/env"
 import {
   createNotionClient,
   resolveDataSourceId
-} from "@/server/utils/notion-client"
+} from "@/server/services/notion/utils/notion-client"
 
 export const getTabOverflow = async () => {
   console.log("Getting tab overflow...")

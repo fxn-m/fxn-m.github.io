@@ -1,8 +1,5 @@
 import { createOpenAI } from "@ai-sdk/openai"
 import { generateObject, generateText } from "ai"
-import { NotionConverter } from "notion-to-md"
-import { DefaultExporter } from "notion-to-md/plugins/exporter"
-import { MDXRenderer } from "notion-to-md/plugins/renderer"
 import pLimit from "p-limit"
 import { z } from "zod"
 
@@ -11,10 +8,14 @@ import {
   type NotionResponse
 } from "@/shared/types/notion"
 
-import type { AppConfig } from "../config/app-config"
-import type { KVNamespace } from "../types/cloudflare"
-import { createNotionClient, resolveDataSourceId } from "../utils/notion-client"
-import { writeTabOverflowToCache } from "../utils/tab-overflow-store"
+import type { AppConfig } from "../../config/app-config"
+import type { KVNamespace } from "../../types/cloudflare"
+import { writeTabOverflowToCache } from "../../utils/tab-overflow-store"
+import { createNotionClient, resolveDataSourceId } from "./utils/notion-client"
+import {
+  extractPropertyConfig,
+  parseCategoriesProperty
+} from "./utils/notion-properties"
 
 const boundFetch: typeof fetch = (...args) => {
   return globalThis.fetch(...args)
@@ -25,64 +26,6 @@ const createOpenAIProvider = (config: AppConfig) =>
     apiKey: config.openaiApiKey,
     fetch: boundFetch
   })
-
-const CategoryOptionSchema = z.object({
-  name: z.string()
-})
-
-const CategoriesPropertySchema = z
-  .object({
-    multi_select: z.object({
-      options: z.array(CategoryOptionSchema)
-    })
-  })
-  .loose()
-
-const CategoriesPropertiesSchema = z
-  .object({
-    Categories: CategoriesPropertySchema
-  })
-  .loose()
-
-const parseCategoriesProperty = (properties: unknown): string[] | null => {
-  const result = CategoriesPropertiesSchema.safeParse(properties)
-  if (!result.success) {
-    return null
-  }
-
-  return result.data.Categories.multi_select.options.map(
-    (option) => option.name
-  )
-}
-
-const extractPropertyConfig = (
-  response: unknown
-): Record<string, unknown> | null => {
-  if (
-    typeof response === "object" &&
-    response !== null &&
-    "properties" in response
-  ) {
-    const candidate = (response as { properties: unknown }).properties
-    if (candidate && typeof candidate === "object") {
-      return candidate as Record<string, unknown>
-    }
-  }
-
-  return null
-}
-
-const withSuppressedNotionToMdLogs = async <T>(
-  action: () => Promise<T>
-): Promise<T> => {
-  const originalDebug = console.debug
-  console.debug = () => {}
-  try {
-    return await action()
-  } finally {
-    console.debug = originalDebug
-  }
-}
 
 const normalizeUrlForComparison = (
   rawUrl: string
@@ -99,125 +42,6 @@ const normalizeUrlForComparison = (
   } catch {
     return null
   }
-}
-
-export const getTabOverflowItems = async (
-  config: AppConfig
-): Promise<NotionResponse[]> => {
-  console.log("Fetching tab overflow from Notion...")
-  const notion = createNotionClient(config.notionTabOverflowSecret)
-  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config)
-
-  let tabOverflowItems: NotionResponse[] = []
-  let hasNextPage = true
-  let startCursor: string | undefined | null = undefined
-
-  while (hasNextPage) {
-    const response = await notion.dataSources.query({
-      data_source_id: resolvedDataSourceId,
-      filter: {
-        or: [
-          {
-            property: "Status",
-            select: {
-              equals: "Shelved"
-            }
-          }
-        ]
-      },
-      start_cursor: startCursor ?? undefined
-    })
-
-    tabOverflowItems = [...tabOverflowItems, ...response.results]
-    startCursor = response.next_cursor
-    hasNextPage = response.has_more
-  }
-
-  return tabOverflowItems
-}
-
-export const refreshTabOverflowCache = async (
-  config: AppConfig,
-  kv: KVNamespace
-): Promise<NotionResponse[]> => {
-  const tabOverflowItems = await getTabOverflowItems(config)
-  await writeTabOverflowToCache(kv, tabOverflowItems)
-  return tabOverflowItems
-}
-
-export const getBlogPostById = async (config: AppConfig, blockId: string) => {
-  const notion = createNotionClient(config.notionBlogSecret)
-
-  return withSuppressedNotionToMdLogs(async () => {
-    const buffer: Record<string, string> = {}
-    const bufferExporter = new DefaultExporter({
-      outputType: "buffer",
-      buffer: buffer
-    })
-
-    const renderer = new MDXRenderer({
-      frontmatter: {
-        include: ["Title", "Date", "Tags"]
-      }
-    })
-
-    const n2m = new NotionConverter(notion)
-      .configureFetcher({
-        fetchPageProperties: true
-      })
-      .withExporter(bufferExporter)
-      .withRenderer(renderer)
-    await n2m.convert(blockId)
-    return buffer[blockId]
-  })
-}
-
-export const getBlogPosts = async (
-  config: AppConfig,
-  isDevelopment: boolean
-): Promise<NotionResponse[]> => {
-  const notion = createNotionClient(config.notionBlogSecret)
-  const notionBlogDataSourceId = await resolveBlogDataSourceId(config)
-
-  let blogPosts: NotionResponse[] = []
-  let hasNextPage = true
-  let startCursor = undefined
-
-  while (hasNextPage) {
-    const response = await notion.dataSources.query({
-      data_source_id: notionBlogDataSourceId,
-      filter: isDevelopment
-        ? {
-            or: [
-              {
-                property: "Status",
-                status: {
-                  equals: "Published"
-                }
-              },
-              {
-                property: "Status",
-                status: {
-                  equals: "Draft"
-                }
-              }
-            ]
-          }
-        : {
-            property: "Status",
-            status: {
-              equals: "Published"
-            }
-          },
-      start_cursor: startCursor ?? undefined
-    })
-
-    blogPosts = [...blogPosts, ...response.results]
-    startCursor = response.next_cursor
-    hasNextPage = response.has_more
-  }
-
-  return blogPosts
 }
 
 const enrichedTabOverflowItemSchema = z.object({
@@ -276,9 +100,10 @@ const resolveTabOverflowDataSourceId = async (
   dataSourceId?: string
 ) => {
   const notion = createNotionClient(config.notionTabOverflowSecret)
-  const candidates = [dataSourceId, config.notionTabOverflowDataSourceId].filter(
-    (value): value is string => Boolean(value)
-  )
+  const candidates = [
+    dataSourceId,
+    config.notionTabOverflowDataSourceId
+  ].filter((value): value is string => Boolean(value))
 
   let lastError: unknown
   for (const candidate of candidates) {
@@ -295,15 +120,7 @@ const resolveTabOverflowDataSourceId = async (
   throw lastError ?? new Error("Unable to resolve Tab Overflow data source id.")
 }
 
-const resolveBlogDataSourceId = async (config: AppConfig) => {
-  const notion = createNotionClient(config.notionBlogSecret)
-  return resolveDataSourceId(notion, config.notionBlogDataSourceId, {
-    label: "Blog",
-    envKey: "NOTION_BLOG_DATA_SOURCE_ID"
-  })
-}
-
-const extractCategoriesFromDataSource = async (
+const extractTabOverflowCategoriesFromDataSource = async (
   config: AppConfig,
   dataSourceId: string
 ) => {
@@ -375,7 +192,6 @@ const hasDuplicateURL = async (
 
       const normalizedCandidate = normalizeUrlForComparison(URLProperty.url)
 
-      // if domain is news.ycombinator.com, skip
       if (
         normalizedCandidate &&
         normalizedCandidate.hostname === "news.ycombinator.com"
@@ -499,6 +315,50 @@ const deleteNotionPage = async (config: AppConfig, pageId: string) => {
   })
 }
 
+export const getTabOverflowItems = async (
+  config: AppConfig
+): Promise<NotionResponse[]> => {
+  console.log("Fetching tab overflow from Notion...")
+  const notion = createNotionClient(config.notionTabOverflowSecret)
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config)
+
+  let tabOverflowItems: NotionResponse[] = []
+  let hasNextPage = true
+  let startCursor: string | undefined | null = undefined
+
+  while (hasNextPage) {
+    const response = await notion.dataSources.query({
+      data_source_id: resolvedDataSourceId,
+      filter: {
+        or: [
+          {
+            property: "Status",
+            select: {
+              equals: "Shelved"
+            }
+          }
+        ]
+      },
+      start_cursor: startCursor ?? undefined
+    })
+
+    tabOverflowItems = [...tabOverflowItems, ...response.results]
+    startCursor = response.next_cursor
+    hasNextPage = response.has_more
+  }
+
+  return tabOverflowItems
+}
+
+export const refreshTabOverflowCache = async (
+  config: AppConfig,
+  kv: KVNamespace
+): Promise<NotionResponse[]> => {
+  const tabOverflowItems = await getTabOverflowItems(config)
+  await writeTabOverflowToCache(kv, tabOverflowItems)
+  return tabOverflowItems
+}
+
 export const enrichTabOverflowItem = async (
   config: AppConfig,
   kv: KVNamespace,
@@ -511,7 +371,7 @@ export const enrichTabOverflowItem = async (
     config,
     dataSourceId
   )
-  const categories = await extractCategoriesFromDataSource(
+  const categories = await extractTabOverflowCategoriesFromDataSource(
     config,
     resolvedDataSourceId
   )
@@ -561,7 +421,7 @@ export const enrichAllTabOverflowItems = async (
   )
 
   const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config)
-  const categories = await extractCategoriesFromDataSource(
+  const categories = await extractTabOverflowCategoriesFromDataSource(
     config,
     resolvedDataSourceId
   )

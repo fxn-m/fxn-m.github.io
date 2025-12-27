@@ -41,17 +41,13 @@ export const resolveDataSourceId = async (
       (error.code === APIErrorCode.ObjectNotFound ||
         error.code === APIErrorCode.ValidationError)
     ) {
-      console.error(
-        `${label} data source lookup failed.`,
-        {
-          envKey,
-          referenceId,
-          notionErrorCode: error.code,
-          notionMessage: error.message,
-          hint:
-            "Ensure the env var is a data_source_id (not a database_id) and that the integration is shared with the data source."
-        }
-      )
+      console.error(`${label} data source lookup failed.`, {
+        envKey,
+        referenceId,
+        notionErrorCode: error.code,
+        notionMessage: error.message,
+        hint: "Ensure the env var is a data_source_id (not a database_id) and that the integration is shared with the data source."
+      })
       throw new Error(
         `${label} data source lookup failed for ${referenceId}. Check ${envKey} and Notion sharing.`
       )

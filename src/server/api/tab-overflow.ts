@@ -1,7 +1,7 @@
 import type { NotionResponse } from "@/shared/types/notion"
 
 import type { AppConfig } from "../config/app-config"
-import { refreshTabOverflowCache } from "../services/notion-service"
+import { refreshTabOverflowCache } from "../services/notion/tab-overflow-service"
 import type { KVNamespace } from "../types/cloudflare"
 import { readTabOverflowFromCache } from "../utils/tab-overflow-store"
 
