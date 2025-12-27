@@ -38,48 +38,6 @@ type NotionWebhookBody = {
   }
 }
 
-const toHex = (buffer: ArrayBuffer): string =>
-  [...new Uint8Array(buffer)]
-    .map((byte) => byte.toString(16).padStart(2, "0"))
-    .join("")
-
-const timingSafeEqual = (a: string, b: string): boolean => {
-  if (a.length !== b.length) {
-    return false
-  }
-  let result = 0
-  for (let index = 0; index < a.length; index += 1) {
-    result |= a.charCodeAt(index) ^ b.charCodeAt(index)
-  }
-  return result === 0
-}
-
-const verifyNotionSignature = async (
-  rawBody: string,
-  signature: string,
-  secret: string
-): Promise<boolean> => {
-  const encoder = new TextEncoder()
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  )
-  const signatureBuffer = await crypto.subtle.sign(
-    "HMAC",
-    key,
-    encoder.encode(rawBody)
-  )
-  const expectedHex = toHex(signatureBuffer)
-  const expected = `sha256=${expectedHex}`
-  return (
-    timingSafeEqual(signature, expected) ||
-    timingSafeEqual(signature, expectedHex)
-  )
-}
-
 const normalizeNotionWebhookBody = (
   body: unknown
 ): NotionWebhookBody | null => {
@@ -90,23 +48,9 @@ const normalizeNotionWebhookBody = (
 }
 
 const parseNotionWebhookBody = async (
-  request: Request,
-  secret?: string
+  request: Request
 ): Promise<{ body: NotionWebhookBody | null } | Response> => {
   const rawBody = await request.text()
-  const signature =
-    request.headers.get("x-notion-signature") ??
-    request.headers.get("X-Notion-Signature")
-
-  if (secret) {
-    if (!signature) {
-      return errorResponse("Missing Notion signature", 401)
-    }
-    const isValid = await verifyNotionSignature(rawBody, signature, secret)
-    if (!isValid) {
-      return errorResponse("Invalid Notion signature", 401)
-    }
-  }
 
   try {
     const parsed = rawBody.length > 0 ? JSON.parse(rawBody) : null
@@ -204,10 +148,7 @@ const handleNotionTabOverflowWebhook = async (
   config: AppConfig,
   ctx: ExecutionContext
 ) => {
-  const parseResult = await parseNotionWebhookBody(
-    request,
-    config.notionTabOverflowSecret
-  )
+  const parseResult = await parseNotionWebhookBody(request)
   if (parseResult instanceof Response) {
     return parseResult
   }
@@ -253,10 +194,7 @@ const handleNotionLinksWebhook = async (
   config: AppConfig,
   ctx: ExecutionContext
 ) => {
-  const parseResult = await parseNotionWebhookBody(
-    request,
-    config.notionLinksSecret
-  )
+  const parseResult = await parseNotionWebhookBody(request)
   if (parseResult instanceof Response) {
     return parseResult
   }
