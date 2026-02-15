@@ -421,7 +421,7 @@
     id: string
     properties: {
       Name?: { title: { plain_text: string }[] }
-      Link?: { url: string }
+      URL?: { url: string }
       "Read Time"?: { number: number }
       Categories?: { multi_select: { name: string }[] }
       Summary?: { rich_text: { plain_text: string }[] }
@@ -519,7 +519,7 @@
   ): TabOverflowSuggestion => {
     const props = item.properties || {}
     const name = props.Name?.title?.[0]?.plain_text || "Untitled"
-    const url = props.Link?.url || "#"
+    const url = props.URL?.url || "#"
     const readingTime = props["Read Time"]?.number || null
     const categories = props.Categories?.multi_select
       ? props.Categories.multi_select.map((cat) => cat.name)
