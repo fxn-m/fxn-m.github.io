@@ -93,7 +93,7 @@
         (theme.value === "system" && darkColorSchemeQuery.matches)
       favicon.setAttribute(
         "href",
-        isDark ? "/favicon-dark.png" : "/favicon.png"
+        isDark ? "/favicon.ico" : "/favicon-inverted.ico"
       )
     }
 

@@ -27,11 +27,6 @@ const router = createRouter({
       component: () => import("@/client/pages/FunPage.vue")
     },
     {
-      path: "/fun/ankipanki",
-      name: "funAnkiPanki",
-      component: () => import("@/client/pages/AnkiPankiPage.vue")
-    },
-    {
       path: "/fun/:name",
       name: "funItem",
       component: () => import("@/client/pages/ProjectPage.vue")

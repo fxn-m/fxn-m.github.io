@@ -10,11 +10,11 @@
 
 ## Layout Highlights
 
-- `src/client/` holds `pages/` (router targets like `HomePage`, `WritingPage`, `TabOverflow`, `AnkiPankiPage`), shared UI (`components/`), analytics (`analytics/posthog.ts`), and local helpers (`lib/ankiBlueprints.ts`, `lib/utils.ts`).
+- `src/client/` holds `pages/` (router targets like `HomePage`, `WritingPage`, and `TabOverflow`), shared UI (`components/`), analytics (`analytics/posthog.ts`), and local helpers (`lib/utils.ts`).
 - `src/server/` is organized by concern: `api/` (per-endpoint orchestration), `services/` (Notion enrichment, Spotify, Strava, GitHub dispatch), `config/` (env + constants), `utils/` (blog transforms, KV cache, response helpers), and the Worker entry at `worker.ts`.
-- `src/shared/` exposes domain models for blogs, Strava, Notion, and Anki flashcards so the client, worker, and scripts stay in sync.
+- `src/shared/` exposes domain models for blogs, Strava, and Notion so the client, worker, and scripts stay in sync.
 - `scripts/buildBlog.ts` fetches from the worker using `process.env.BACKEND_URL` and regenerates `public/html` (clearing the folder first) plus `index.json` used by the writing routes.
-- `public/` keeps favicons and theme icons; compiled assets land in `dist/`; `components.json` tracks the shadcn registry; `frm.json` is large reference data for the Anki feature.
+- `public/` keeps favicons and theme icons; compiled assets land in `dist/`; `components.json` tracks the shadcn registry.
 - Root configs: `vite.config.ts` sets `@` to `./src`, `tsconfig.*.json` split app/server targets, `wrangler.toml` binds `TAB_OVERFLOW_KV` and sets `compatibility_date` to 2025-10-25.
 
 ## Tooling & Commands
@@ -31,15 +31,14 @@
 - **Client `.env` (Vite):** `VITE_BACKEND_URL` (point at the worker, e.g., `http://localhost:8787`), `VITE_POSTHOG_KEY`, `VITE_POSTHOG_HOST` (defaults to EU cluster), `VITE_POSTHOG_CAPTURE_DEV` toggles analytics during local dev.
 - **Blog build script:** set `BACKEND_URL` to the worker base before running `pnpm build:markdown`; the script wipes and rewrites `public/html`.
 - **Third-party expectations:** Spotify and Strava secrets must correspond to the configured accounts; Notion entries rely on data source IDs (not classic database IDs) and the OpenAI key powers Tab Overflow enrichment.
-- **Local storage keys:** the Anki generator stores the user-provided OpenAI key under `ankipanki:openai-api-key`; Tab Overflow persists slug maps in `localStorage.slugMap`.
+- **Local storage keys:** Tab Overflow persists slug maps in `localStorage.slugMap`.
 
 ## Frontend Notes
 
-- Router (hash history) lives in `src/client/router/index.ts`; routes cover `/`, `/writing`, `/writing/:slug`, `/fun`, `/fun/ankipanki`, `/fun/:name`, `/contact`, with a catch-all redirect.
+- Router (hash history) lives in `src/client/router/index.ts`; routes cover `/`, `/writing`, `/writing/:slug`, `/fun`, `/fun/:name`, `/contact`, with a catch-all redirect.
 - `WritingPage` and `WritingPost` use TanStack Query against the worker in development and fall back to `public/html/index.json` + HTML files in production, caching a slug/id map in `localStorage`.
 - `TabOverflow.vue` fetches from `/tab-overflow`, randomizes suggestions with keyboard navigation, and displays KV-backed enrichment (summary, tags, reading time) returned by the worker.
 - `FunPage` aggregates projects; `StravaActivity.vue` pulls `/strava/activities`, renders decoded GPS routes on a `<canvas>`, and shows a countdown to the Spartan Beast on 2025-10-12.
-- `AnkiPankiPage.vue` orchestrates flashcard generation using predefined FRM blueprints (`src/client/lib/ankiBlueprints.ts`), TanStack Form + Zod validation, motion-v transitions, and user-owned OpenAI keys captured via `AnkiApiKeyControl`.
 - `ThemeToggle` flips between light/dark/system, rewrites the favicon, and `main.css` constrains the page to a centered column with Tailwind tokens; note that `App.vue` still imports `<ServerStatus />`, which has not been committed yet.
 
 ## Worker & API Notes

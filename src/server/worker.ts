@@ -13,12 +13,6 @@ import {
   type WorkerBindings
 } from "./config/app-config"
 import {
-  AnkiGenerationError,
-  ensureValidOpenAIApiKey,
-  generateAnkiCards,
-  normalizeGenerateDeckRequest
-} from "./services/ankipanki-service"
-import {
   enrichAllTabOverflowItems,
   enrichLinkItem,
   enrichTabOverflowItem
@@ -233,64 +227,6 @@ const handleNotionLinksWebhook = async (
   return jsonResponse({ message: "Links webhook received" }, 202)
 }
 
-const handleAnkiGenerate = async (request: Request) => {
-  const body = await request.json().catch(() => null)
-
-  const result = normalizeGenerateDeckRequest(body)
-
-  if (!result.success) {
-    return jsonResponse(
-      {
-        message: "Invalid generation request",
-        issues: result.issues
-      },
-      400
-    )
-  }
-
-  let apiKey: string
-
-  try {
-    const rawHeader =
-      request.headers.get("x-anki-openai-key") ??
-      request.headers.get("X-Anki-OpenAI-Key") ??
-      request.headers.get("authorization") ??
-      request.headers.get("Authorization")
-
-    const normalizedHeader =
-      rawHeader && rawHeader.startsWith("Bearer ")
-        ? rawHeader.slice("Bearer ".length)
-        : rawHeader
-
-    apiKey = ensureValidOpenAIApiKey(normalizedHeader)
-  } catch (error) {
-    if (error instanceof AnkiGenerationError) {
-      return errorResponse(error.message, error.status)
-    }
-
-    console.error("Failed to read OpenAI API key header:", error)
-    return errorResponse("Failed to read OpenAI API key header", 400)
-  }
-
-  try {
-    const cards = await generateAnkiCards(apiKey, result.payload)
-
-    return jsonResponse({
-      message: "Anki cards generated",
-      request: result.payload,
-      cards
-    })
-  } catch (error) {
-    if (error instanceof AnkiGenerationError) {
-      console.warn("Anki card generation failed:", error)
-      return errorResponse(error.message, error.status)
-    }
-
-    console.error("Anki card generation failed:", error)
-    return errorResponse("Failed to generate Anki cards", 500)
-  }
-}
-
 const routeRequest = async (
   request: Request,
   env: WorkerBindings,
@@ -323,10 +259,6 @@ const routeRequest = async (
 
   if (pathname === "/links/enrich" && method === "POST") {
     return enqueueLinksEnrichment(config, ctx)
-  }
-
-  if (pathname === "/ankipanki/generate" && method === "POST") {
-    return handleAnkiGenerate(request)
   }
 
   if (pathname === "/blog" && method === "GET") {
