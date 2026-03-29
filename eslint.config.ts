@@ -1,29 +1,51 @@
-import css from "@eslint/css"
 import js from "@eslint/js"
 import json from "@eslint/json"
 import markdown from "@eslint/markdown"
 import { defineConfig } from "eslint/config"
+import reactHooks from "eslint-plugin-react-hooks"
 import simpleImportSort from "eslint-plugin-simple-import-sort"
-import pluginVue from "eslint-plugin-vue"
 import globals from "globals"
 import typescriptEslint from "typescript-eslint"
 
 export default defineConfig([
   typescriptEslint.configs.recommended,
   {
-    files: ["**/*.{ts,js,vue}"],
-    plugins: { "simple-import-sort": simpleImportSort },
+    files: ["**/*.{ts,tsx,js,jsx}"],
+    plugins: {
+      "react-hooks": reactHooks,
+      "simple-import-sort": simpleImportSort
+    },
     extends: [js.configs.recommended],
-    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+        __BUILD_DATE__: "readonly"
+      },
+      parserOptions: {
+        ecmaFeatures: {
+          jsx: true
+        }
+      }
+    },
     rules: {
+      ...reactHooks.configs.recommended.rules,
+      "no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_"
+        }
+      ],
       "simple-import-sort/imports": "error",
       "simple-import-sort/exports": "error"
     }
   },
   {
-    files: ["**/*.vue"],
-    languageOptions: { parserOptions: { parser: typescriptEslint.parser } },
-    extends: [pluginVue.configs["flat/essential"]]
+    files: ["**/*.d.ts"],
+    rules: {
+      "no-undef": "off",
+      "no-unused-vars": "off"
+    }
   },
   {
     files: ["**/*.json"],
@@ -37,16 +59,4 @@ export default defineConfig([
     language: "markdown/gfm",
     extends: ["markdown/recommended"]
   },
-  {
-    files: ["**/*.css"],
-    plugins: { css },
-    language: "css/css",
-    extends: ["css/recommended"]
-  },
-  {
-    files: ["src/client/components/ui/**/*.{vue,ts,js}"],
-    rules: {
-      "vue/multi-word-component-names": "off"
-    }
-  }
 ])

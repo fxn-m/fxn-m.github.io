@@ -6,7 +6,7 @@ import {
 import { enrichLinksApi } from "./api/links"
 import { getCurrentTrackApi } from "./api/spotify"
 import { getStravaActivitiesApi } from "./api/strava"
-import { getTabOverflowApi } from "./api/tab-overflow"
+import { getTabOverflowApi, refreshTabOverflowApi } from "./api/tab-overflow"
 import {
   type AppConfig,
   createConfigFromBindings,
@@ -81,6 +81,17 @@ const handleTabOverflow = async (config: AppConfig, env: WorkerBindings) => {
   return jsonResponse(tabOverflow)
 }
 
+const handleTabOverflowRefresh = async (
+  config: AppConfig,
+  env: WorkerBindings
+) => {
+  const tabOverflow = await refreshTabOverflowApi(config, env.TAB_OVERFLOW_KV)
+  return jsonResponse({
+    count: tabOverflow.length,
+    message: "Tab Overflow cache refreshed"
+  })
+}
+
 const enqueueLinksEnrichment = async (
   config: AppConfig,
   ctx: ExecutionContext
@@ -134,6 +145,25 @@ const handleStravaActivities = async (config: AppConfig) => {
     return jsonResponse({ message: "No activities found" })
   }
   return jsonResponse(activities)
+}
+
+let tabOverflowStartupRefreshPromise: Promise<unknown> | null = null
+
+const ensureTabOverflowCacheInitialized = async (
+  config: AppConfig,
+  env: WorkerBindings
+) => {
+  if (!tabOverflowStartupRefreshPromise) {
+    tabOverflowStartupRefreshPromise = refreshTabOverflowApi(
+      config,
+      env.TAB_OVERFLOW_KV
+    ).catch((error) => {
+      tabOverflowStartupRefreshPromise = null
+      throw error
+    })
+  }
+
+  await tabOverflowStartupRefreshPromise
 }
 
 const handleNotionTabOverflowWebhook = async (
@@ -253,6 +283,10 @@ const routeRequest = async (
     return handleTabOverflow(config, env)
   }
 
+  if (pathname === "/tab-overflow/refresh" && method === "POST") {
+    return handleTabOverflowRefresh(config, env)
+  }
+
   if (pathname === "/tab-overflow/enrich" && method === "POST") {
     return enqueueTabOverflowEnrichment(config, env, ctx)
   }
@@ -299,6 +333,7 @@ const worker: WorkerEntrypoint<WorkerBindings> = {
   async fetch(request, env, ctx) {
     try {
       const config = createConfigFromBindings(env)
+      await ensureTabOverflowCacheInitialized(config, env)
       return await routeRequest(request, env, config, ctx)
     } catch (error) {
       console.error("Fetch handler error:", error)
