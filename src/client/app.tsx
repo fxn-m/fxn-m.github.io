@@ -20,7 +20,7 @@ export default function App() {
   return (
     <div className="mx-auto flex min-h-dvh w-11/12 flex-col px-0 sm:w-xl lg:w-4xl">
       <NavBar />
-      <main className="flex flex-1 flex-col pb-16 sm:pb-8" id="app-shell">
+      <main className="flex flex-1 flex-col sm:pb-8" id="app-shell">
         <Outlet />
       </main>
       <CurrentTrack />

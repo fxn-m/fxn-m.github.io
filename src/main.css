@@ -197,6 +197,16 @@
     inset: -6rem -6rem -3rem -6rem;
   }
 
+  @media (max-width: 640px) {
+    #app-shell {
+      overflow-x: clip;
+    }
+
+    .voltaire-layer {
+      overflow: visible;
+    }
+  }
+
   .blog-content {
     @apply my-4;
   }

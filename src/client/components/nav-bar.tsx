@@ -40,9 +40,6 @@ const links = [
   }
 ]
 
-const drawerTileClasses =
-  "flex items-center justify-between border border-zinc-200 bg-background/80 px-4 py-3 text-xs font-semibold uppercase tracking-[0.35em] text-foreground transition-all duration-500 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 focus-visible:ring-offset-2 dark:border-zinc-800 dark:bg-zinc-900/80"
-
 function getPageTitle(pathname: string) {
   const currentRoute = pathname !== "/" ? pathname : ""
 
@@ -166,61 +163,67 @@ export default function NavBar() {
               />
             </a>
           ))}
-          <ThemeToggle isMobileMenuOpen={isMobileMenuOpen} />
+          <ThemeToggle />
         </div>
       </div>
 
       {isMobileMenuOpen ? (
-        <div className="fixed inset-0 z-50 bg-black/30 backdrop-blur-sm sm:hidden">
-          <div className="ml-auto flex h-full w-full max-w-[90vw] flex-col gap-6 bg-background px-6 py-12 text-foreground shadow-2xl dark:bg-zinc-950">
-            <div className="flex items-start justify-end">
+        <div className="fixed inset-0 z-50 bg-background sm:hidden">
+          <div className="mx-auto flex min-h-dvh w-11/12 flex-col">
+            <div className="mt-4 flex items-center justify-between border-b border-zinc-200 py-2 transition-colors duration-500 dark:border-zinc-800">
+              <Link
+                className="text-lg font-semibold whitespace-nowrap border-none !no-underline"
+                to="/"
+              >
+                fxn-m.com
+              </Link>
               <button
-                className="cursor-pointer border-0 bg-transparent p-0 text-muted-foreground"
+                aria-label="close navigation"
+                className="translate-y-px cursor-pointer border-0 bg-transparent p-0 text-muted-foreground transition-all duration-300"
                 onClick={() => setIsMobileMenuOpen(false)}
                 type="button"
               >
-                <X className="size-5" />
+                <X className="size-6" />
               </button>
             </div>
 
-            <nav className="grid gap-2">
+            <nav className="mt-12 flex flex-col gap-6">
               {routes.map((route) => (
                 <Link
-                  className={drawerTileClasses}
+                  className={cn(
+                    "w-fit border-none text-2xl font-semibold uppercase tracking-[0.3em] no-underline transition-colors duration-300",
+                    location.pathname === route.path
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
                   key={route.path}
                   to={route.path}
                 >
-                  <span className="truncate">{route.name}</span>
-                  <span className="text-[10px] font-medium text-muted-foreground/80">
-                    open
-                  </span>
+                  {route.name}
                 </Link>
               ))}
             </nav>
 
-            <div className="grid gap-2">
+            <div className="my-8 w-8 border-t border-zinc-300 dark:border-zinc-700" />
+
+            <div className="flex flex-col gap-4">
               {links.map((link) => (
                 <a
-                  className={drawerTileClasses}
+                  className="flex w-fit items-center gap-2 border-none text-xs font-medium uppercase tracking-[0.3em] text-muted-foreground no-underline transition-colors duration-300 hover:text-foreground"
                   href={link.href}
                   key={link.href}
                   rel="noreferrer noopener"
                   target="_blank"
                 >
-                  <span className="truncate">{link.label}</span>
-                  <ArrowUpRight className="size-4 text-muted-foreground/70" />
+                  {link.label}
+                  <ArrowUpRight className="size-3" />
                 </a>
               ))}
             </div>
 
-            <div className="mt-auto grid gap-3">
-              <CurrentTrack
-                sheetTileClass={drawerTileClasses}
-                variant="sheet"
-              />
-              <div className="flex justify-center">
-                <ThemeToggle className="size-20" isMobileMenuOpen />
-              </div>
+            <div className="mt-auto flex flex-col items-center gap-6 pb-8">
+              <CurrentTrack variant="sheet" />
+              <ThemeToggle isMobileMenuOpen />
             </div>
           </div>
         </div>

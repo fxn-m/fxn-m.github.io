@@ -187,7 +187,7 @@ export default function CurrentTrack({
         aria-label={`Listen to ${track.name} by ${track.artist} on Spotify`}
         className={cn(
           sheetTileClass,
-          "group mb-6 max-w-full items-center gap-3 overflow-clip border-none bg-transparent px-0 py-0 normal-case tracking-normal no-underline hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent"
+          "flex group max-w-full items-center gap-3 overflow-clip border-none bg-transparent px-0 py-0 normal-case tracking-normal no-underline hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent"
         )}
         href={track.externalUrl}
         rel="noreferrer noopener"
