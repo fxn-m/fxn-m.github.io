@@ -328,16 +328,7 @@ export default function TabOverflow() {
             className="flex flex-1 flex-col items-center justify-center gap-2 py-8"
             ref={suggestionCardRef}
           >
-            <div className="grid w-full grid-cols-[auto_1fr_auto] sm:block">
-              <button
-                className="flex h-full w-6 cursor-pointer items-center justify-center rounded-none border-0 bg-transparent p-0 text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 sm:hidden"
-                disabled={currentIndex <= 0}
-                onClick={previousSuggestion}
-                type="button"
-              >
-                <ChevronLeft className="size-4" />
-              </button>
-
+            <div className="w-full">
               <div className="relative flex h-full w-full min-w-0 flex-col overflow-hidden border-0 bg-transparent">
                 <div className="flex h-full w-full min-w-0 flex-col">
                   <header className="flex w-full min-w-0 flex-nowrap items-center gap-4 overflow-hidden">
@@ -398,8 +389,8 @@ export default function TabOverflow() {
                     )}
                   </section>
 
-                  <footer className="flex min-w-0 flex-col gap-3 py-1 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-                    <div className="flex flex-wrap items-center gap-1">
+                  <footer className="flex min-w-0 flex-col gap-3 py-1 text-xs text-muted-foreground sm:flex-row sm:items-center sm:gap-4">
+                    <div className="flex shrink-0 flex-wrap items-center gap-1">
                       <span className="font-medium text-foreground">
                         reading time:
                       </span>
@@ -410,37 +401,32 @@ export default function TabOverflow() {
                       </span>
                     </div>
 
-                    <div className="flex flex-wrap gap-2">
-                      {tabOverflowSuggestion.categories.length ? (
-                        tabOverflowSuggestion.categories.map((category) => (
-                          <span
-                            className="border border-zinc-300 px-2.5 py-1 text-xs font-medium lowercase text-foreground dark:border-zinc-700"
-                            key={`${tabOverflowSuggestion.id}-${category}`}
-                          >
-                            {category}
+                    <div className="no-scrollbar w-full min-w-0 overflow-x-auto sm:ml-auto sm:w-auto sm:max-w-[60%]">
+                      <div className="flex w-max min-w-full flex-nowrap gap-2 sm:justify-end">
+                        {tabOverflowSuggestion.categories.length ? (
+                          tabOverflowSuggestion.categories.map((category) => (
+                            <span
+                              className="shrink-0 border border-zinc-300 px-2.5 py-1 text-xs font-medium lowercase text-foreground dark:border-zinc-700"
+                              key={`${tabOverflowSuggestion.id}-${category}`}
+                            >
+                              {category}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="shrink-0 border border-dashed border-zinc-300 px-2.5 py-1 text-xs">
+                            No categories yet
                           </span>
-                        ))
-                      ) : (
-                        <span className="border border-dashed border-zinc-300 px-2.5 py-1 text-xs">
-                          No categories yet
-                        </span>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </footer>
                 </div>
               </div>
-              <button
-                className="flex h-full w-6 cursor-pointer items-center justify-center rounded-none border-0 bg-transparent p-0 text-muted-foreground transition-colors hover:text-foreground sm:hidden"
-                onClick={nextSuggestion}
-                type="button"
-              >
-                <ChevronRight className="size-4" />
-              </button>
             </div>
 
             <div className="mt-3 flex items-center justify-center gap-3">
               <button
-                className="hidden cursor-pointer items-center justify-center rounded-none border-0 bg-transparent p-0 text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 sm:flex"
+                className="flex min-h-10 min-w-10 cursor-pointer items-center justify-center rounded-md border border-zinc-300/80 px-3 py-2 text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-800 sm:min-h-0 sm:min-w-0 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0"
                 disabled={currentIndex <= 0}
                 onClick={previousSuggestion}
                 type="button"
@@ -449,14 +435,16 @@ export default function TabOverflow() {
               </button>
 
               <span className="pointer-events-none font-mono text-[10px] font-semibold tracking-tight text-muted-foreground">
-                {currentIndex >= 0 && suggestionHistory.length > 0
-                  ? suggestionHistory[currentIndex] + 1
-                  : 0}{" "}
+                {String(
+                  currentIndex >= 0 && suggestionHistory.length > 0
+                    ? suggestionHistory[currentIndex] + 1
+                    : 0
+                ).padStart(3, "0")}{" "}
                 / {tabOverflowCount}
               </span>
 
               <button
-                className="hidden cursor-pointer items-center justify-center rounded-none border-0 bg-transparent p-0 text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 sm:flex"
+                className="flex min-h-10 min-w-10 cursor-pointer items-center justify-center rounded-md border border-zinc-300/80 px-3 py-2 text-muted-foreground transition-colors hover:text-foreground disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-800 sm:min-h-0 sm:min-w-0 sm:rounded-none sm:border-0 sm:bg-transparent sm:p-0"
                 onClick={nextSuggestion}
                 type="button"
               >
@@ -561,10 +549,10 @@ export default function TabOverflow() {
           <div className="overflow-x-auto">
             <table className="w-full table-fixed caption-bottom text-sm">
                 <colgroup>
-                  <col className="w-[48%]" />
-                  <col className="w-[11%]" />
-                  <col className="w-[31%]" />
-                  <col className="w-[10%]" />
+                  <col className="w-[calc(100%-128px)] sm:w-[48%]" />
+                  <col className="w-[56px] sm:w-[72px]" />
+                  <col className="hidden sm:table-column sm:w-[calc(52%-160px)]" />
+                  <col className="w-[72px] sm:w-[88px]" />
                 </colgroup>
                 <tbody>
                   {filteredTableItems.length ? (
@@ -579,8 +567,8 @@ export default function TabOverflow() {
                         key={row.item.id}
                         onClick={() => openSuggestionFromTable(row.index)}
                       >
-                        <td className="truncate py-1.5 pr-5 text-sm font-medium lowercase text-zinc-800 dark:text-zinc-300">
-                          {row.item.name}
+                        <td className="overflow-hidden py-1.5 pr-5 text-sm font-medium lowercase text-zinc-800 dark:text-zinc-300">
+                          <div className="truncate">{row.item.name}</div>
                         </td>
                         <td className="px-2 py-1.5 text-sm">
                           {row.item.readingTime ? (
@@ -589,24 +577,26 @@ export default function TabOverflow() {
                             <span className="opacity-70">—</span>
                           )}
                         </td>
-                        <td className="px-2 py-1.5 lowercase">
-                          <div className="no-scrollbar flex gap-1 overflow-hidden whitespace-nowrap">
-                            {row.item.categories.length ? (
-                              row.item.categories.map((category, index) => (
-                                <span
-                                  className="shrink-0 bg-zinc-100 px-3 py-[3px] text-[11px] font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
-                                  key={`${row.item.id}-cat-${index}`}
-                                >
-                                  {category}
-                                </span>
-                              ))
-                            ) : (
-                              <span className="text-xs opacity-70">—</span>
-                            )}
+                        <td className="hidden overflow-hidden px-2 py-1.5 lowercase sm:table-cell">
+                          <div className="no-scrollbar w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden">
+                            <div className="inline-flex flex-nowrap gap-1">
+                              {row.item.categories.length ? (
+                                row.item.categories.map((category, index) => (
+                                  <span
+                                    className="shrink-0 bg-zinc-100 px-3 py-[3px] text-[11px] font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
+                                    key={`${row.item.id}-cat-${index}`}
+                                  >
+                                    {category}
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="shrink-0 text-xs opacity-70">—</span>
+                              )}
+                            </div>
                           </div>
                         </td>
-                        <td className="px-4 py-1.5 text-right">
-                          <div className="flex items-center justify-end gap-4">
+                        <td className="relative z-10 px-2 py-1.5 text-right sm:px-4">
+                          <div className="flex items-center justify-end gap-3 sm:gap-4">
                             <button
                               className="cursor-pointer border-0 bg-transparent p-0 transition-colors hover:text-zinc-800 dark:hover:text-zinc-300"
                               onClick={(event) => {
