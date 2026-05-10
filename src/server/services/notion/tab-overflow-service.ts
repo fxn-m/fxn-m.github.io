@@ -51,6 +51,8 @@ const enrichedTabOverflowItemSchema = z.object({
   readingTimeEstimate: z.number()
 })
 
+const TAB_OVERFLOW_FAILED_STATUS = "Failed"
+
 type PageProperties = {
   id: string
   title: string
@@ -142,6 +144,24 @@ const extractTabOverflowCategoriesFromDataSource = async (
   }
 
   return categories
+}
+
+const serializeError = (error: unknown): Record<string, unknown> => {
+  if (error instanceof Error) {
+    const details: Record<string, unknown> = {
+      message: error.message,
+      name: error.name,
+      stack: error.stack
+    }
+
+    if ("cause" in error && error.cause) {
+      details.cause = serializeError(error.cause)
+    }
+
+    return details
+  }
+
+  return { message: String(error) }
 }
 
 type EnrichInput = {
@@ -307,6 +327,33 @@ const updateNotionPage = async (
   })
 }
 
+const markTabOverflowItemFailed = async (
+  config: AppConfig,
+  pageId: string,
+  error: unknown
+) => {
+  const notion = createNotionClient(config.notionTabOverflowSecret)
+
+  try {
+    await notion.pages.update({
+      page_id: pageId,
+      properties: {
+        Status: {
+          select: {
+            name: TAB_OVERFLOW_FAILED_STATUS
+          }
+        }
+      }
+    })
+  } catch (statusError) {
+    console.error("Failed to mark Tab Overflow item as failed:", {
+      enrichmentError: serializeError(error),
+      pageId,
+      statusError: serializeError(statusError)
+    })
+  }
+}
+
 const deleteNotionPage = async (config: AppConfig, pageId: string) => {
   const notion = createNotionClient(config.notionTabOverflowSecret)
   await notion.pages.update({
@@ -335,6 +382,47 @@ export const getTabOverflowItems = async (
             property: "Status",
             select: {
               equals: "Shelved"
+            }
+          }
+        ]
+      },
+      start_cursor: startCursor ?? undefined
+    })
+
+    tabOverflowItems = [...tabOverflowItems, ...response.results]
+    startCursor = response.next_cursor
+    hasNextPage = response.has_more
+  }
+
+  return tabOverflowItems
+}
+
+const getTabOverflowEnrichmentCandidates = async (
+  config: AppConfig
+): Promise<NotionResponse[]> => {
+  console.log("Fetching Tab Overflow enrichment candidates from Notion...")
+  const notion = createNotionClient(config.notionTabOverflowSecret)
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config)
+
+  let tabOverflowItems: NotionResponse[] = []
+  let hasNextPage = true
+  let startCursor: string | undefined | null = undefined
+
+  while (hasNextPage) {
+    const response = await notion.dataSources.query({
+      data_source_id: resolvedDataSourceId,
+      filter: {
+        and: [
+          {
+            property: "Summary",
+            rich_text: {
+              is_empty: true
+            }
+          },
+          {
+            property: "Status",
+            select: {
+              does_not_equal: "Shelved"
             }
           }
         ]
@@ -391,19 +479,32 @@ export const enrichTabOverflowItem = async (
     console.log("Refreshed tab overflow cache after duplicate deletion")
     return
   }
-  const enrichedItem = await enrich({
-    props,
-    categories,
-    openai
-  })
-  console.log("Enriched item:", enrichedItem)
-  await updateNotionPage(
-    config,
-    pageId,
-    enrichedItem,
-    props.created,
-    isDuplicate
-  )
+
+  try {
+    const enrichedItem = await enrich({
+      props,
+      categories,
+      openai
+    })
+    console.log("Enriched item:", enrichedItem)
+    await updateNotionPage(
+      config,
+      pageId,
+      enrichedItem,
+      props.created,
+      isDuplicate
+    )
+  } catch (error) {
+    console.error("Tab Overflow item enrichment failed:", {
+      error: serializeError(error),
+      pageId,
+      title: props.title,
+      url: props.url
+    })
+    await markTabOverflowItemFailed(config, pageId, error)
+    throw error
+  }
+
   console.log(
     `Updated Notion page with enriched item (duplicate: ${isDuplicate})`
   )
@@ -415,7 +516,7 @@ export const enrichAllTabOverflowItems = async (
   config: AppConfig,
   kv: KVNamespace
 ) => {
-  const tabOverflowItems = await getTabOverflowItems(config)
+  const tabOverflowItems = await getTabOverflowEnrichmentCandidates(config)
   const filteredTabOverflowItems = tabOverflowItems.filter((item) =>
     isPageObjectResponse(item)
   )
@@ -427,6 +528,7 @@ export const enrichAllTabOverflowItems = async (
   )
   const openai = createOpenAIProvider(config)
   const limit = pLimit(5)
+  const failures: { error: unknown; pageId: string; pageName: string }[] = []
 
   await Promise.all(
     filteredTabOverflowItems.map((item) =>
@@ -444,15 +546,6 @@ export const enrichAllTabOverflowItems = async (
           )
         ) {
           console.log(`Skipping ${pageName} because it already has a summary.`)
-          return
-        }
-
-        if (
-          item.properties.Status.type === "select" &&
-          item.properties.Status.select &&
-          item.properties.Status.select.name !== "Shelved"
-        ) {
-          console.log(`Skipping ${pageName} because it is not shelved.`)
           return
         }
 
@@ -478,14 +571,26 @@ export const enrichAllTabOverflowItems = async (
             item.created_time,
             isDuplicate
           )
+          console.log(`Updated ${pageName} with enriched item`)
         } catch (error) {
-          console.error(`Error enriching ${pageName}:`, error)
+          console.error("Tab Overflow batch item enrichment failed:", {
+            error: serializeError(error),
+            pageId: item.id,
+            pageName
+          })
+          failures.push({ error, pageId: item.id, pageName })
+          await markTabOverflowItemFailed(config, item.id, error)
         }
-
-        console.log(`Updated ${pageName} with enriched item`)
       })
     )
   )
 
   await refreshTabOverflowCache(config, kv)
+
+  if (failures.length > 0) {
+    throw new Error(
+      `${failures.length} Tab Overflow item(s) failed enrichment. First failed page: ${failures[0].pageName} (${failures[0].pageId})`,
+      { cause: failures[0].error }
+    )
+  }
 }

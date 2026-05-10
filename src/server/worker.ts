@@ -344,9 +344,9 @@ const worker: WorkerEntrypoint<WorkerBindings> = {
   async scheduled(controller, env) {
     try {
       const config = createConfigFromBindings(env)
-      const tabOverflow = await refreshTabOverflowApi(config, env.TAB_OVERFLOW_KV)
+      await enrichAllTabOverflowItems(config, env.TAB_OVERFLOW_KV)
       console.log(
-        `Scheduled ${controller.cron} refreshed ${tabOverflow.length} Tab Overflow items.`
+        `Scheduled ${controller.cron} completed Tab Overflow enrichment.`
       )
     } catch (error) {
       console.error("Scheduled handler error:", error)
