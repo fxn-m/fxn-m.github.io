@@ -368,6 +368,37 @@ export const getTabOverflowItems = async (
   return tabOverflowItems
 }
 
+const getPendingTabOverflowItems = async (
+  config: AppConfig
+): Promise<NotionResponse[]> => {
+  console.log("Fetching pending Tab Overflow items from Notion...")
+  const notion = createNotionClient(config.notionTabOverflowSecret)
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config)
+
+  let tabOverflowItems: NotionResponse[] = []
+  let hasNextPage = true
+  let startCursor: string | undefined | null = undefined
+
+  while (hasNextPage) {
+    const response = await notion.dataSources.query({
+      data_source_id: resolvedDataSourceId,
+      filter: {
+        property: "Status",
+        select: {
+          is_empty: true
+        }
+      },
+      start_cursor: startCursor ?? undefined
+    })
+
+    tabOverflowItems = [...tabOverflowItems, ...response.results]
+    startCursor = response.next_cursor
+    hasNextPage = response.has_more
+  }
+
+  return tabOverflowItems
+}
+
 export const refreshTabOverflowCache = async (
   config: AppConfig,
   kv: KVNamespace
@@ -445,7 +476,7 @@ export const enrichAllTabOverflowItems = async (
   config: AppConfig,
   kv: KVNamespace
 ) => {
-  const tabOverflowItems = await getTabOverflowItems(config)
+  const tabOverflowItems = await getPendingTabOverflowItems(config)
   const filteredTabOverflowItems = tabOverflowItems.filter((item) =>
     isPageObjectResponse(item)
   )
@@ -474,15 +505,6 @@ export const enrichAllTabOverflowItems = async (
           )
         ) {
           console.log(`Skipping ${pageName} because it already has a summary.`)
-          return
-        }
-
-        if (
-          item.properties.Status.type === "select" &&
-          item.properties.Status.select &&
-          item.properties.Status.select.name !== "Shelved"
-        ) {
-          console.log(`Skipping ${pageName} because it is not shelved.`)
           return
         }
 
