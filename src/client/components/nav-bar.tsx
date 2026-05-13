@@ -6,7 +6,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Bars3Icon } from "@heroicons/react/24/outline"
 import { ChevronLeft, X } from "lucide-react"
-import { useEffect, useState } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
 import CurrentTrack from "@/client/components/spotify/current-track"
@@ -60,10 +60,35 @@ export default function NavBar() {
   const navigate = useNavigate()
   const [isHovering, setIsHovering] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const headerRef = useRef<HTMLElement | null>(null)
+  const [headerRect, setHeaderRect] = useState({
+    bottom: 0,
+    left: 0,
+    right: 0
+  })
 
   useEffect(() => {
     setIsMobileMenuOpen(false)
   }, [location.pathname])
+
+  useLayoutEffect(() => {
+    if (!isMobileMenuOpen) return
+
+    const updateHeaderRect = () => {
+      if (headerRef.current) {
+        const rect = headerRef.current.getBoundingClientRect()
+        setHeaderRect({
+          bottom: rect.bottom,
+          left: rect.left,
+          right: window.innerWidth - rect.right
+        })
+      }
+    }
+
+    updateHeaderRect()
+    window.addEventListener("resize", updateHeaderRect)
+    return () => window.removeEventListener("resize", updateHeaderRect)
+  }, [isMobileMenuOpen])
 
   const navigateToParent = () => {
     const pathSegments = location.pathname.split("/")
@@ -73,7 +98,10 @@ export default function NavBar() {
   }
 
   return (
-    <header className="relative mt-4 flex items-center justify-between border-b border-zinc-200 py-2 transition-colors duration-500 dark:border-zinc-800">
+    <header
+      className="relative mt-4 flex items-center justify-between border-b border-zinc-200 py-2 transition-colors duration-500 dark:border-zinc-800"
+      ref={headerRef}
+    >
       <h2 className="flex text-lg font-semibold">
         <Link
           className="absolute self-center whitespace-nowrap border-none !no-underline"
@@ -176,22 +204,31 @@ export default function NavBar() {
       </div>
 
       {isMobileMenuOpen ? (
-        <div className="absolute inset-x-0 top-full z-50 bg-background sm:hidden">
+        <div
+          className="fixed bottom-0 z-40 flex flex-col bg-background sm:hidden"
+          style={{
+            top: headerRect.bottom,
+            left: headerRect.left,
+            right: headerRect.right
+          }}
+        >
           <nav className="flex flex-col">
-            {routes.map((route) => (
-              <Link
-                className={cn(
-                  "block border-b border-zinc-200 px-1 py-4 text-base font-medium no-underline transition-colors duration-300 dark:border-zinc-800",
-                  location.pathname === route.path
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-                key={route.path}
-                to={route.path}
-              >
-                {route.name}
-              </Link>
-            ))}
+            {routes
+              .filter((route) => route.path !== "/")
+              .map((route) => (
+                <Link
+                  className={cn(
+                    "block border-b border-zinc-200 px-1 py-4 text-base font-medium no-underline transition-colors duration-300 dark:border-zinc-800",
+                    location.pathname === route.path
+                      ? "text-foreground"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                  key={route.path}
+                  to={route.path}
+                >
+                  {route.name}
+                </Link>
+              ))}
           </nav>
 
           <div className="flex items-center gap-6 px-1 py-4">
@@ -216,7 +253,7 @@ export default function NavBar() {
             </div>
           </div>
 
-          <div className="flex justify-center px-1 pb-6">
+          <div className="mt-auto flex justify-center px-1 pb-8">
             <CurrentTrack variant="sheet" />
           </div>
         </div>
