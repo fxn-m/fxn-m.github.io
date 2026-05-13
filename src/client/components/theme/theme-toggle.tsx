@@ -91,7 +91,7 @@ function MobileThemeToggle() {
       </button>
       <span
         className={cn(
-          "pointer-events-none absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-[12px] text-[#777] transition-opacity duration-300 dark:text-[#aaa]",
+          "pointer-events-none absolute right-full top-1/2 mr-2 -translate-y-1/2 whitespace-nowrap text-[12px] text-[#777] transition-opacity duration-300 dark:text-[#aaa]",
           showLabel ? "opacity-100" : "opacity-0"
         )}
       >
