@@ -1,4 +1,4 @@
-name = "api"
+name = "fxn-m-api"
 main = "src/server/worker.ts"
 compatibility_date = "2025-10-25"
 compatibility_flags = ["nodejs_compat"]
