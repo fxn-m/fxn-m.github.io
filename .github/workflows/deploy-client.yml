@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 env:
-  BACKEND_URL: https://api.fxn-m.workers.dev
+  BACKEND_URL: https://fxn-m-api.fxn-m.workers.dev
 
 permissions:
   contents: read
