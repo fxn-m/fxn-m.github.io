@@ -339,6 +339,19 @@ const worker: WorkerEntrypoint<WorkerBindings> = {
       console.error("Fetch handler error:", error)
       return errorResponse("Internal Server Error", 500)
     }
+  },
+
+  async scheduled(controller, env) {
+    try {
+      const config = createConfigFromBindings(env)
+      const tabOverflow = await refreshTabOverflowApi(config, env.TAB_OVERFLOW_KV)
+      console.log(
+        `Scheduled ${controller.cron} refreshed ${tabOverflow.length} Tab Overflow items.`
+      )
+    } catch (error) {
+      console.error("Scheduled handler error:", error)
+      throw error
+    }
   }
 }
 

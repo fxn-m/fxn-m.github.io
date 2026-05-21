@@ -5,8 +5,8 @@ import {
 } from "@fortawesome/free-brands-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { Bars3Icon } from "@heroicons/react/24/outline"
-import { ArrowUpRight, ChevronLeft, X } from "lucide-react"
-import { useEffect, useState } from "react"
+import { ChevronLeft, X } from "lucide-react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 
 import CurrentTrack from "@/client/components/spotify/current-track"
@@ -60,10 +60,35 @@ export default function NavBar() {
   const navigate = useNavigate()
   const [isHovering, setIsHovering] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const headerRef = useRef<HTMLElement | null>(null)
+  const [headerRect, setHeaderRect] = useState({
+    bottom: 0,
+    left: 0,
+    right: 0
+  })
 
   useEffect(() => {
     setIsMobileMenuOpen(false)
   }, [location.pathname])
+
+  useLayoutEffect(() => {
+    if (!isMobileMenuOpen) return
+
+    const updateHeaderRect = () => {
+      if (headerRef.current) {
+        const rect = headerRef.current.getBoundingClientRect()
+        setHeaderRect({
+          bottom: rect.bottom,
+          left: rect.left,
+          right: window.innerWidth - rect.right
+        })
+      }
+    }
+
+    updateHeaderRect()
+    window.addEventListener("resize", updateHeaderRect)
+    return () => window.removeEventListener("resize", updateHeaderRect)
+  }, [isMobileMenuOpen])
 
   const navigateToParent = () => {
     const pathSegments = location.pathname.split("/")
@@ -73,7 +98,10 @@ export default function NavBar() {
   }
 
   return (
-    <header className="mt-4 flex items-center justify-between border-b border-zinc-200 py-2 transition-colors duration-500 dark:border-zinc-800">
+    <header
+      className="relative mt-4 flex items-center justify-between border-b border-zinc-200 py-2 transition-colors duration-500 dark:border-zinc-800"
+      ref={headerRef}
+    >
       <h2 className="flex text-lg font-semibold">
         <Link
           className="absolute self-center whitespace-nowrap border-none !no-underline"
@@ -125,12 +153,20 @@ export default function NavBar() {
         </ul>
 
         <button
-          aria-label="open navigation drawer"
+          aria-label={
+            isMobileMenuOpen
+              ? "close navigation drawer"
+              : "open navigation drawer"
+          }
           className="translate-y-px cursor-pointer rounded-none border-0 bg-transparent p-0 text-muted-foreground transition-all duration-300 sm:hidden"
-          onClick={() => setIsMobileMenuOpen(true)}
+          onClick={() => setIsMobileMenuOpen((open) => !open)}
           type="button"
         >
-          <Bars3Icon className="size-6" />
+          {isMobileMenuOpen ? (
+            <X className="size-6" />
+          ) : (
+            <Bars3Icon className="size-6" />
+          )}
         </button>
 
         <div className="hidden flex-row justify-between gap-[5px] sm:flex">
@@ -168,30 +204,21 @@ export default function NavBar() {
       </div>
 
       {isMobileMenuOpen ? (
-        <div className="fixed inset-0 z-50 bg-background sm:hidden">
-          <div className="mx-auto flex min-h-dvh w-11/12 flex-col">
-            <div className="mt-4 flex items-center justify-between border-b border-zinc-200 py-2 transition-colors duration-500 dark:border-zinc-800">
-              <Link
-                className="text-lg font-semibold whitespace-nowrap border-none !no-underline"
-                to="/"
-              >
-                fxn-m.com
-              </Link>
-              <button
-                aria-label="close navigation"
-                className="translate-y-px cursor-pointer border-0 bg-transparent p-0 text-muted-foreground transition-all duration-300"
-                onClick={() => setIsMobileMenuOpen(false)}
-                type="button"
-              >
-                <X className="size-6" />
-              </button>
-            </div>
-
-            <nav className="mt-12 flex flex-col gap-6">
-              {routes.map((route) => (
+        <div
+          className="fixed bottom-0 z-40 flex flex-col bg-background sm:hidden"
+          style={{
+            top: headerRect.bottom,
+            left: headerRect.left,
+            right: headerRect.right
+          }}
+        >
+          <nav className="flex flex-col">
+            {routes
+              .filter((route) => route.path !== "/")
+              .map((route) => (
                 <Link
                   className={cn(
-                    "w-fit border-none text-2xl font-semibold uppercase tracking-[0.3em] no-underline transition-colors duration-300",
+                    "block border-b border-zinc-200 px-1 py-4 text-base font-medium no-underline transition-colors duration-300 dark:border-zinc-800",
                     location.pathname === route.path
                       ? "text-foreground"
                       : "text-muted-foreground hover:text-foreground"
@@ -202,29 +229,32 @@ export default function NavBar() {
                   {route.name}
                 </Link>
               ))}
-            </nav>
+          </nav>
 
-            <div className="my-8 w-8 border-t border-zinc-300 dark:border-zinc-700" />
-
-            <div className="flex flex-col gap-4">
-              {links.map((link) => (
-                <a
-                  className="flex w-fit items-center gap-2 border-none text-xs font-medium uppercase tracking-[0.3em] text-muted-foreground no-underline transition-colors duration-300 hover:text-foreground"
-                  href={link.href}
-                  key={link.href}
-                  rel="noreferrer noopener"
-                  target="_blank"
-                >
-                  {link.label}
-                  <ArrowUpRight className="size-3" />
-                </a>
-              ))}
-            </div>
-
-            <div className="mt-auto flex flex-col items-center gap-6 pb-8">
-              <CurrentTrack variant="sheet" />
+          <div className="flex items-center gap-6 px-1 py-4">
+            {links.map((link) => (
+              <a
+                aria-label={link.label}
+                className={cn(
+                  "border-none text-[#5a5a5a] no-underline transition-colors duration-300 dark:text-[#949494]",
+                  link.className
+                )}
+                href={link.href}
+                key={link.href}
+                rel="noreferrer noopener"
+                target="_blank"
+                title={link.label}
+              >
+                <FontAwesomeIcon icon={link.icon} size="xl" />
+              </a>
+            ))}
+            <div className="ml-auto">
               <ThemeToggle isMobileMenuOpen />
             </div>
+          </div>
+
+          <div className="mt-auto flex justify-center px-1 pb-8">
+            <CurrentTrack variant="sheet" />
           </div>
         </div>
       ) : null}

@@ -144,6 +144,24 @@ const extractTabOverflowCategoriesFromDataSource = async (
   return categories
 }
 
+const serializeError = (error: unknown): Record<string, unknown> => {
+  if (error instanceof Error) {
+    const details: Record<string, unknown> = {
+      message: error.message,
+      name: error.name,
+      stack: error.stack
+    }
+
+    if ("cause" in error && error.cause) {
+      details.cause = serializeError(error.cause)
+    }
+
+    return details
+  }
+
+  return { message: String(error) }
+}
+
 type EnrichInput = {
   props: PageProperties
   categories: string[]
@@ -350,6 +368,37 @@ export const getTabOverflowItems = async (
   return tabOverflowItems
 }
 
+const getPendingTabOverflowItems = async (
+  config: AppConfig
+): Promise<NotionResponse[]> => {
+  console.log("Fetching pending Tab Overflow items from Notion...")
+  const notion = createNotionClient(config.notionTabOverflowSecret)
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config)
+
+  let tabOverflowItems: NotionResponse[] = []
+  let hasNextPage = true
+  let startCursor: string | undefined | null = undefined
+
+  while (hasNextPage) {
+    const response = await notion.dataSources.query({
+      data_source_id: resolvedDataSourceId,
+      filter: {
+        property: "Status",
+        select: {
+          is_empty: true
+        }
+      },
+      start_cursor: startCursor ?? undefined
+    })
+
+    tabOverflowItems = [...tabOverflowItems, ...response.results]
+    startCursor = response.next_cursor
+    hasNextPage = response.has_more
+  }
+
+  return tabOverflowItems
+}
+
 export const refreshTabOverflowCache = async (
   config: AppConfig,
   kv: KVNamespace
@@ -391,19 +440,31 @@ export const enrichTabOverflowItem = async (
     console.log("Refreshed tab overflow cache after duplicate deletion")
     return
   }
-  const enrichedItem = await enrich({
-    props,
-    categories,
-    openai
-  })
-  console.log("Enriched item:", enrichedItem)
-  await updateNotionPage(
-    config,
-    pageId,
-    enrichedItem,
-    props.created,
-    isDuplicate
-  )
+
+  try {
+    const enrichedItem = await enrich({
+      props,
+      categories,
+      openai
+    })
+    console.log("Enriched item:", enrichedItem)
+    await updateNotionPage(
+      config,
+      pageId,
+      enrichedItem,
+      props.created,
+      isDuplicate
+    )
+  } catch (error) {
+    console.error("Tab Overflow item enrichment failed:", {
+      error: serializeError(error),
+      pageId,
+      title: props.title,
+      url: props.url
+    })
+    throw error
+  }
+
   console.log(
     `Updated Notion page with enriched item (duplicate: ${isDuplicate})`
   )
@@ -415,7 +476,7 @@ export const enrichAllTabOverflowItems = async (
   config: AppConfig,
   kv: KVNamespace
 ) => {
-  const tabOverflowItems = await getTabOverflowItems(config)
+  const tabOverflowItems = await getPendingTabOverflowItems(config)
   const filteredTabOverflowItems = tabOverflowItems.filter((item) =>
     isPageObjectResponse(item)
   )
@@ -447,15 +508,6 @@ export const enrichAllTabOverflowItems = async (
           return
         }
 
-        if (
-          item.properties.Status.type === "select" &&
-          item.properties.Status.select &&
-          item.properties.Status.select.name !== "Shelved"
-        ) {
-          console.log(`Skipping ${pageName} because it is not shelved.`)
-          return
-        }
-
         console.log(`Enriching ${pageName}...`)
 
         try {
@@ -478,11 +530,14 @@ export const enrichAllTabOverflowItems = async (
             item.created_time,
             isDuplicate
           )
+          console.log(`Updated ${pageName} with enriched item`)
         } catch (error) {
-          console.error(`Error enriching ${pageName}:`, error)
+          console.error("Tab Overflow batch item enrichment failed:", {
+            error: serializeError(error),
+            pageId: item.id,
+            pageName
+          })
         }
-
-        console.log(`Updated ${pageName} with enriched item`)
       })
     )
   )

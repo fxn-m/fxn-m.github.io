@@ -1,4 +1,4 @@
-name = "api"
+name = "fxn-m-api"
 main = "src/server/worker.ts"
 compatibility_date = "2025-10-25"
 compatibility_flags = ["nodejs_compat"]
@@ -6,6 +6,9 @@ compatibility_flags = ["nodejs_compat"]
 [[kv_namespaces]]
 binding = "TAB_OVERFLOW_KV"
 id = "ba2c9eb2462342939acc6135b9c80a2f"
+
+[triggers]
+crons = ["0 * * * *"]
 
 [env.production]
 
