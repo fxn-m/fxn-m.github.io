@@ -21,7 +21,6 @@ export default {
   stravaClientSecret: process.env.STRAVA_CLIENT_SECRET,
   stravaRefreshToken: process.env.STRAVA_REFRESH_TOKEN,
 
-  openaiApiKey: process.env.OPENAI_API_KEY,
   googleGenerativeAiApiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 
   githubRepoDispatchToken: process.env.GITHUB_REPO_DISPATCH_TOKEN
