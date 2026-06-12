@@ -14,9 +14,14 @@ import { useEffect, useRef, useState } from "react"
 
 import type { StravaActivity as StravaActivityType } from "@/shared/types/strava"
 
-const IS_GOAL = true
-const GOAL_TITLE = "Spartan Beast | Hvar"
-const GOAL_COUNTDOWN_TO = new Date("2025-10-12T09:00:00Z").getTime()
+type Goal = {
+  title: string
+  countdownTo: number
+}
+
+// Set to a goal to render the countdown banner, or null for no active goal.
+const GOAL: Goal | null = null
+
 const EMPTY_ACTIVITIES: StravaActivityType[] = []
 
 function formatDuration(seconds: number) {
@@ -61,9 +66,13 @@ export default function StravaActivity() {
   const activities = data ?? EMPTY_ACTIVITIES
 
   useEffect(() => {
+    if (!GOAL) {
+      return
+    }
+
     const updateCountdown = () => {
       const now = new Date().getTime()
-      const distance = GOAL_COUNTDOWN_TO - now
+      const distance = GOAL.countdownTo - now
       const days = Math.floor(distance / (1000 * 60 * 60 * 24))
       const hours = Math.floor(
         (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
@@ -268,11 +277,11 @@ export default function StravaActivity() {
             }`}
           />
 
-          {IS_GOAL ? (
+          {GOAL ? (
             <div className="absolute left-0 top-0 z-10 flex items-center gap-3 text-xs text-gray-400">
               <Flag className="size-3.5" />
               <div>
-                <p className="my-0">{GOAL_TITLE}</p>
+                <p className="my-0">{GOAL.title}</p>
                 <p>{countdown}</p>
               </div>
             </div>
