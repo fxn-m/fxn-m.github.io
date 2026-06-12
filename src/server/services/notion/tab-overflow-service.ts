@@ -1,5 +1,5 @@
-import { createOpenAI } from "@ai-sdk/openai"
-import { generateObject, generateText } from "ai"
+import { createGoogleGenerativeAI } from "@ai-sdk/google"
+import { generateText, Output } from "ai"
 import pLimit from "p-limit"
 import { z } from "zod"
 
@@ -21,9 +21,9 @@ const boundFetch: typeof fetch = (...args) => {
   return globalThis.fetch(...args)
 }
 
-const createOpenAIProvider = (config: AppConfig) =>
-  createOpenAI({
-    apiKey: config.openaiApiKey,
+const createGoogleProvider = (config: AppConfig) =>
+  createGoogleGenerativeAI({
+    apiKey: config.googleGenerativeAiApiKey,
     fetch: boundFetch
   })
 
@@ -165,7 +165,7 @@ const serializeError = (error: unknown): Record<string, unknown> => {
 type EnrichInput = {
   props: PageProperties
   categories: string[]
-  openai: ReturnType<typeof createOpenAIProvider>
+  google: ReturnType<typeof createGoogleProvider>
 }
 
 const hasDuplicateURL = async (
@@ -232,37 +232,45 @@ const hasDuplicateURL = async (
   return false
 }
 
-const enrich = async ({ props, categories, openai }: EnrichInput) => {
+const extractJson = (value: string): unknown => {
+  try {
+    return JSON.parse(value)
+  } catch {
+    const match = value.match(/\{[\s\S]*\}/)
+    if (!match) {
+      throw new Error("No JSON object found in model response.")
+    }
+    return JSON.parse(match[0])
+  }
+}
+
+const enrich = async ({ props, categories, google }: EnrichInput) => {
   const { text } = await generateText({
-    model: openai.responses("gpt-4o"),
-    prompt: `
-    Summarize the following article in 3 sentences or less, provide a list of categories, and best guesses for the author and reading time estimate: ${
-      props.title
-    } ${props.url}. 
-    Return 1-3 categories, and they should be from the following list: ${categories.join(
-      ", "
-    )}. 
-    Be as specific as you can about the categories, ideally there would only be 1 category if the other 2 are somewhat redundant. 
-    The author should be a single name, and the reading time estimate should be in minutes. 
-    If the author is unclear, use "Unknown". 
-    If the reading time estimate is unclear, use 0.`,
+    model: google("gemini-3.1-flash-lite"),
+    output: Output.text(),
+    prompt: `Summarize the article at the URL using URL context for the page content.
+Title: ${props.title}
+URL: ${props.url}
+
+Return 1-3 categories from this list: ${categories.join(", ")}.
+Be as specific as possible; prefer 1 category if extra categories are redundant.
+The author should be a single name. If unclear, use "Unknown".
+The reading time estimate should be in minutes. If unclear, use 0.
+
+Return ONLY a JSON object that matches this schema:
+{
+  "summary": string,
+  "categories": string[],
+  "author": string,
+  "readingTimeEstimate": number
+}`,
     tools: {
-      web_search_preview: openai.tools.webSearch()
-    },
-    toolChoice: {
-      type: "tool",
-      toolName: "web_search_preview"
+      url_context: google.tools.urlContext({})
     }
   })
 
-  const { object } = await generateObject({
-    model: openai.responses("gpt-4o"),
-    prompt: `Extract the summary, categories, author, and reading time estimate from the following text: ${text}`,
-    schema: enrichedTabOverflowItemSchema
-  })
-
   const { success, data, error } =
-    enrichedTabOverflowItemSchema.safeParse(object)
+    enrichedTabOverflowItemSchema.safeParse(extractJson(text))
 
   if (success === false) {
     throw new Error(error.message, error)
@@ -414,7 +422,7 @@ export const enrichTabOverflowItem = async (
   pageId: string,
   dataSourceId: string
 ) => {
-  const openai = createOpenAIProvider(config)
+  const google = createGoogleProvider(config)
   const props = await getPagePropertiesById(config, pageId)
   const resolvedDataSourceId = await resolveTabOverflowDataSourceId(
     config,
@@ -445,7 +453,7 @@ export const enrichTabOverflowItem = async (
     const enrichedItem = await enrich({
       props,
       categories,
-      openai
+      google
     })
     console.log("Enriched item:", enrichedItem)
     await updateNotionPage(
@@ -486,7 +494,7 @@ export const enrichAllTabOverflowItems = async (
     config,
     resolvedDataSourceId
   )
-  const openai = createOpenAIProvider(config)
+  const google = createGoogleProvider(config)
   const limit = pLimit(5)
 
   await Promise.all(
@@ -521,7 +529,7 @@ export const enrichAllTabOverflowItems = async (
           const enrichedItem = await enrich({
             props,
             categories,
-            openai
+            google
           })
           await updateNotionPage(
             config,

@@ -44,7 +44,6 @@ export type AppConfig = {
   notionBlogDataSourceId: string
   stravaClientSecret: string
   stravaRefreshToken: string
-  openaiApiKey: string
   googleGenerativeAiApiKey: string
   githubRepoDispatchToken: string
 }
@@ -90,7 +89,6 @@ export const createAppConfig = (source: ConfigSource): AppConfig => ({
   stravaRefreshToken: requireValue(source, "STRAVA_REFRESH_TOKEN", [
     "STRAVA_REFRESH_TOKEN"
   ]),
-  openaiApiKey: requireValue(source, "OPENAI_API_KEY", ["OPENAI_API_KEY"]),
   googleGenerativeAiApiKey: requireValue(
     source,
     "GOOGLE_GENERATIVE_AI_API_KEY",
