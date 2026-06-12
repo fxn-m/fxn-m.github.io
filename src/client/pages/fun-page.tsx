@@ -1,78 +1,205 @@
+import { ArrowRight, ArrowUpRight } from "lucide-react"
+import type { ReactNode } from "react"
 import { Link } from "react-router-dom"
 
 import StravaActivity from "@/client/components/strava-activity"
+import { cn } from "@/client/lib/utils"
 
-const projects = [
+type ProjectVisual = {
+  alt: string
+  src: string
+  variant: "icon" | "sticker"
+}
+
+type Project = {
+  description: ReactNode
+  href: string
+  isExternal?: boolean
+  meta: string
+  tags: string[]
+  title: string
+  visual?: ProjectVisual
+}
+
+const projects: Project[] = [
   {
-    date: "2024-11",
     description:
-      "Hosts every Paul Graham essay in 8 languages, tuned for speed and SEO so readers can find a translation fast.",
-    id: 2,
-    link: "https://paulgraham-translated.vercel.app",
-    mobileDescription:
-      "Hosts every Paul Graham essay in 8 languages, tuned for speed and SEO so readers can find a translation fast.",
-    title: "pgt"
+      "A phone-first pub-hunt game where one player hides as the chicken, teams hunt through a shrinking map, and the organiser runs the whole session without accounts.",
+    href: "https://oelp.app",
+    isExternal: true,
+    meta: "Cloudflare Workers · Durable Objects · MapLibre",
+    tags: ["PWA", "Realtime", "GPS"],
+    title: "où est le poulet",
+    visual: {
+      alt: "Où est le poulet chicken mascot",
+      src: "/projects/oelp-chicken.gif",
+      variant: "sticker"
+    }
   },
   {
-    date: "2023-10 (updated 2025-11)",
-    description: `Randomly surfaces one of my saved reads. The hardest thing about the abundance of information today is deciding <a href="https://jeremy.zawodny.com/blog/archives/008581.html" target="_blank">what to ignore</a>.`,
-    id: 1,
-    link: "/fun/tab-overflow",
-    mobileDescription:
-      "Surface a random summary from my 400+ saved reads, with tags and reading time so I actually pick one.",
-    title: "tab-overflow"
+    description:
+      "A native iOS reading app for French learners: import something you already want to read, get a French-first version, then hold a sentence for temporary English help.",
+    href: "https://pousse.page",
+    isExternal: true,
+    meta: "SwiftUI · Cloudflare Workers · D1/R2",
+    tags: ["iOS", "Reading", "Language"],
+    title: "Pousse",
+    visual: {
+      alt: "Pousse app icon",
+      src: "/projects/pousse-logo.png",
+      variant: "icon"
+    }
+  },
+  {
+    description:
+      "Every Paul Graham essay translated across eight languages, with a static, fast browsing surface tuned for readers landing from search.",
+    href: "https://paulgraham-translated.vercel.app",
+    isExternal: true,
+    meta: "Vercel · Static content · SEO",
+    tags: ["Essays", "Translation", "Archive"],
+    title: "PGT",
+    visual: {
+      alt: "PGT logo",
+      src: "/projects/pgt-logo.png",
+      variant: "sticker"
+    }
+  },
+  {
+    description: (
+      <>
+        A small antidote to saved-link overload: pull a random read from my
+        Notion list, show a summary, tags, and time estimate. The hardest thing
+        about the abundance of information today is deciding{" "}
+        <CitationLink href="https://jeremy.zawodny.com/blog/archives/008581.html">
+          what to ignore
+        </CitationLink>
+        .
+      </>
+    ),
+    href: "/fun/tab-overflow",
+    meta: "Notion · OpenAI · Cloudflare KV",
+    tags: ["Reading list", "Notion", "AI"],
+    title: "Tab Overflow"
   }
 ]
 
 export default function FunPage() {
   return (
     <div className="mt-8 space-y-12 pb-16 sm:pb-0">
-      <div className="flex flex-col">
-        {projects.map((project, index) => (
-          <div key={project.id}>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between gap-4">
-                <h3 className="flex items-center gap-1 font-semibold">
-                  {project.link.startsWith("https") ? (
-                    <a
-                      className="flex items-center gap-1"
-                      href={project.link}
-                      target="_blank"
-                    >
-                      {project.title}
-                    </a>
-                  ) : (
-                    <Link className="flex items-center gap-1" to={project.link}>
-                      {project.title}
-                    </Link>
-                  )}
-                </h3>
-
-                <p className="my-2 text-xs text-neutral-400">{project.date}</p>
-              </div>
-
-              {project.mobileDescription ? (
-                <p className="text-sm text-neutral-600 dark:text-neutral-500 sm:hidden">
-                  {project.mobileDescription}
-                </p>
-              ) : null}
-
-              <p
-                className={
-                  project.mobileDescription
-                    ? "hidden text-sm text-neutral-600 dark:text-neutral-500 sm:block"
-                    : "text-sm text-neutral-600 dark:text-neutral-500"
-                }
-                dangerouslySetInnerHTML={{ __html: project.description }}
-              />
-            </div>
-
-            <div className="my-8 border-b border-neutral-200 dark:border-neutral-800" />
-          </div>
+      <section className="grid border-t border-l border-zinc-200 dark:border-zinc-800 sm:grid-cols-2">
+        {projects.map((project) => (
+          <ProjectCard key={project.title} project={project} />
         ))}
-      </div>
+      </section>
 
       <StravaActivity />
     </div>
+  )
+}
+
+function ProjectCard({ project }: { project: Project }) {
+  const content = (
+    <>
+      <header className="flex items-start justify-between gap-4">
+        <h2 className="min-w-0 truncate text-lg font-medium lowercase leading-tight text-foreground">
+          {project.title}
+        </h2>
+
+        <span className="mt-0.5 shrink-0 text-muted-foreground transition-colors group-hover:text-foreground">
+          {project.isExternal ? (
+            <ArrowUpRight
+              aria-hidden="true"
+              className="size-4 transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+            />
+          ) : (
+            <ArrowRight
+              aria-hidden="true"
+              className="size-4 transition-transform duration-300 ease-out group-hover:translate-x-0.5"
+            />
+          )}
+        </span>
+      </header>
+
+      <p className="mt-4 max-w-[42ch] text-sm leading-relaxed text-muted-foreground">
+        {project.description}
+      </p>
+
+      <div className="mt-auto space-y-3 pt-8 pr-24">
+        <div className="flex flex-wrap gap-2">
+          {project.tags.map((tag) => (
+            <span
+              className="border border-zinc-300 px-2.5 py-1 text-xs font-medium lowercase text-foreground dark:border-zinc-700"
+              key={tag}
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground">{project.meta}</p>
+      </div>
+
+      {project.visual ? <ProjectMedia visual={project.visual} /> : null}
+    </>
+  )
+
+  const className =
+    "group relative flex min-h-[19rem] flex-col overflow-hidden border-r border-b border-zinc-200 p-6 no-underline transition-colors duration-300 hover:bg-secondary/50 hover:no-underline dark:border-zinc-800"
+
+  if (project.isExternal) {
+    return (
+      <a
+        className={className}
+        href={project.href}
+        rel="noreferrer"
+        target="_blank"
+      >
+        {content}
+      </a>
+    )
+  }
+
+  return (
+    <Link className={className} to={project.href}>
+      {content}
+    </Link>
+  )
+}
+
+function ProjectMedia({ visual }: { visual: ProjectVisual }) {
+  return (
+    <img
+      alt={visual.alt}
+      className={cn(
+        "pointer-events-none absolute object-contain",
+        visual.variant === "icon"
+          ? "bottom-6 right-6 size-16 rounded-2xl border border-zinc-200 object-cover shadow-sm dark:border-zinc-800"
+          : "bottom-5 right-5 size-20"
+      )}
+      loading="lazy"
+      src={visual.src}
+    />
+  )
+}
+
+function CitationLink({
+  children,
+  href
+}: {
+  children: ReactNode
+  href: string
+}) {
+  return (
+    <span
+      className="cursor-pointer text-foreground underline decoration-muted-foreground/40 underline-offset-[3px] transition-colors hover:decoration-foreground"
+      onClick={(event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        window.open(href, "_blank", "noopener")
+      }}
+      role="link"
+      tabIndex={0}
+    >
+      {children}
+    </span>
   )
 }
