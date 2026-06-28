@@ -101,6 +101,20 @@
     background-color: #fafafa;
   }
 
+  html.fun-route,
+  body.fun-route {
+    -ms-overflow-style: none;
+    scrollbar-gutter: auto;
+    scrollbar-width: none;
+  }
+
+  html.fun-route::-webkit-scrollbar,
+  body.fun-route::-webkit-scrollbar {
+    display: none;
+    height: 0;
+    width: 0;
+  }
+
   #app {
     @apply min-h-dvh;
   }
