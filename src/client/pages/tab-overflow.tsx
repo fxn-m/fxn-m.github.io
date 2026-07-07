@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query"
+import Fuse from "fuse.js"
 import {
   ArrowUpRight,
   Bookmark,
@@ -6,9 +7,10 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Hourglass
+  Hourglass,
+  Search
 } from "lucide-react"
-import { useEffect, useEffectEvent, useRef, useState } from "react"
+import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react"
 
 import { cn } from "@/client/lib/utils"
 
@@ -32,6 +34,12 @@ type TabOverflowItem = {
     Summary?: { rich_text: { plain_text: string }[] }
     URL?: { url: string }
   }
+}
+
+type TabOverflowTableRow = {
+  categories: string
+  index: number
+  item: TabOverflowSuggestion
 }
 
 const BOOKMARK_STORAGE_KEY = "tabOverflow:bookmarks"
@@ -82,12 +90,15 @@ function loadBookmarks() {
 }
 
 export default function TabOverflow() {
+  const tableSearchInputRef = useRef<HTMLInputElement | null>(null)
   const suggestionCardRef = useRef<HTMLDivElement | null>(null)
   const readingTimeFilterRootRef = useRef<HTMLDivElement | null>(null)
   const [bookmarkedIds, setBookmarkedIds] = useState<string[]>([])
   const [currentIndex, setCurrentIndex] = useState(-1)
   const [isReadingTimeFilterOpen, setIsReadingTimeFilterOpen] = useState(false)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isTableVisible, setIsTableVisible] = useState(false)
+  const [searchQuery, setSearchQuery] = useState("")
   const [selectedReadingTimeFilter, setSelectedReadingTimeFilter] =
     useState<ReadingTimeValue | null>(null)
   const [showOnlyBookmarked, setShowOnlyBookmarked] = useState(false)
@@ -118,7 +129,10 @@ export default function TabOverflow() {
     refetchOnWindowFocus: false
   })
 
-  const normalizedItems = (data ?? EMPTY_ITEMS).map(mapItemToSuggestion)
+  const normalizedItems = useMemo(
+    () => (data ?? EMPTY_ITEMS).map(mapItemToSuggestion),
+    [data]
+  )
   const tabOverflowCount = normalizedItems.length
   const bookmarkCount = bookmarkedIds.length
   const isCurrentBookmarked = bookmarkedIds.includes(tabOverflowSuggestion.id)
@@ -126,6 +140,30 @@ export default function TabOverflow() {
     readingTimeOptions.find(
       (option) => option.value === selectedReadingTimeFilter
     )?.label ?? ""
+  const trimmedSearchQuery = searchQuery.trim()
+  const tableSearchRows = useMemo<TabOverflowTableRow[]>(
+    () =>
+      normalizedItems.map((item, index) => ({
+        categories: item.categories.join(" "),
+        index,
+        item
+      })),
+    [normalizedItems]
+  )
+  const tableSearch = useMemo(
+    () =>
+      new Fuse(tableSearchRows, {
+        ignoreLocation: true,
+        keys: [
+          { name: "item.name", weight: 0.5 },
+          { name: "item.summary", weight: 0.25 },
+          { name: "categories", weight: 0.2 },
+          { name: "item.url", weight: 0.05 }
+        ],
+        threshold: 0.35
+      }),
+    [tableSearchRows]
+  )
 
   const persistBookmarks = (nextBookmarkedIds: string[]) => {
     setBookmarkedIds(nextBookmarkedIds)
@@ -200,25 +238,39 @@ export default function TabOverflow() {
     }
   }
 
-  const filteredTableItems = normalizedItems
-    .map((item, index) => ({ index, item }))
-    .filter(({ item }) =>
-      showOnlyBookmarked ? bookmarkedIds.includes(item.id) : true
-    )
-    .filter(({ item }) => {
-      if (selectedReadingTimeFilter === null) {
-        return true
-      }
+  const filteredTableItems = (() => {
+    const searchMatchedItems = trimmedSearchQuery
+      ? tableSearch.search(trimmedSearchQuery).map((result) => result.item)
+      : tableSearchRows
+    const filteredItems = searchMatchedItems
+      .filter(({ item }) =>
+        showOnlyBookmarked ? bookmarkedIds.includes(item.id) : true
+      )
+      .filter(({ item }) => {
+        if (selectedReadingTimeFilter === null) {
+          return true
+        }
 
-      if (typeof item.readingTime !== "number") {
-        return false
-      }
+        if (typeof item.readingTime !== "number") {
+          return false
+        }
 
-      return item.readingTime < selectedReadingTimeFilter
-    })
-    .sort(
+        return item.readingTime < selectedReadingTimeFilter
+      })
+
+    if (trimmedSearchQuery) {
+      return filteredItems
+    }
+
+    return [...filteredItems].sort(
       (a, b) => (b.item.added?.getTime() ?? 0) - (a.item.added?.getTime() ?? 0)
     )
+  })()
+  const emptyTableMessage = trimmedSearchQuery
+    ? "No matches found."
+    : showOnlyBookmarked
+      ? "No items to display. Try saving a bookmark first."
+      : "No items to display."
 
   const scrollToSuggestionCard = () => {
     if (!suggestionCardRef.current) {
@@ -270,7 +322,22 @@ export default function TabOverflow() {
   }, [currentIndex, isLoading, nextSuggestion, tabOverflowCount])
 
   useEffect(() => {
+    if (isSearchOpen) {
+      tableSearchInputRef.current?.focus()
+    }
+  }, [isSearchOpen])
+
+  useEffect(() => {
     const handleKeydown = (event: KeyboardEvent) => {
+      const target = event.target
+      if (
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        (target instanceof HTMLElement && target.isContentEditable)
+      ) {
+        return
+      }
+
       if (event.key === "ArrowLeft") {
         previousSuggestion()
       }
@@ -455,93 +522,132 @@ export default function TabOverflow() {
         )}
 
         <div className="border-t border-zinc-300 pt-4 dark:border-zinc-800">
-        <div className="flex h-8 flex-wrap items-center justify-between gap-2">
-          <button
-            className="flex cursor-pointer items-center gap-1 border-0 p-0 text-xs font-semibold hover:text-primary"
-            onClick={() => setIsTableVisible((value) => !value)}
-            type="button"
-          >
-            {isTableVisible ? "hide all" : "show all"}
-            {isTableVisible ? (
-              <ChevronDown className="size-4" />
-            ) : (
-              <ChevronRight className="size-4" />
-            )}
-          </button>
-
-          <div
-            className={cn(
-              "relative items-center gap-2",
-              isTableVisible ? "flex" : "hidden"
-            )}
-            ref={readingTimeFilterRootRef}
-          >
-            {readingTimeFilterLabel ? (
-              <span className="text-xs text-muted-foreground">
-                under {readingTimeFilterLabel}
-              </span>
-            ) : null}
-
+          <div className="flex min-h-8 flex-wrap items-center justify-between gap-2">
             <button
-              className={cn(
-                "cursor-pointer border-0 p-2",
-                selectedReadingTimeFilter ? "bg-secondary" : "bg-transparent"
-              )}
-              onClick={() => setIsReadingTimeFilterOpen((value) => !value)}
-              title="filter by read time"
+              className="flex cursor-pointer items-center gap-1 border-0 p-0 text-xs font-semibold hover:text-primary"
+              onClick={() => setIsTableVisible((value) => !value)}
               type="button"
             >
-              <Hourglass className="size-4" />
+              {isTableVisible ? "hide all" : "show all"}
+              {isTableVisible ? (
+                <ChevronDown className="size-4" />
+              ) : (
+                <ChevronRight className="size-4" />
+              )}
             </button>
 
-            {isReadingTimeFilterOpen ? (
-              <div className="absolute right-0 top-full z-10 mt-2 min-w-[160px] rounded-md border border-zinc-300 bg-background/95 p-2 shadow-lg backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/95">
-                <p className="px-1 pb-2 text-[11px] uppercase tracking-wide text-muted-foreground">
-                  under
-                </p>
-                <div className="flex flex-col gap-1">
-                  {readingTimeOptions.map((option) => (
-                    <button
-                      className={cn(
-                        "cursor-pointer justify-start rounded-sm border-0 bg-transparent px-3 py-2 text-left text-xs capitalize",
-                        option.value === selectedReadingTimeFilter
-                          ? "bg-primary/10 text-primary hover:bg-primary/20"
-                          : ""
-                      )}
-                      key={option.value}
-                      onClick={() => {
-                        setSelectedReadingTimeFilter((currentValue) =>
-                          currentValue === option.value ? null : option.value
-                        )
-                        setIsReadingTimeFilterOpen(false)
-                      }}
-                      type="button"
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
+            <div
+              className={cn(
+                "relative flex-wrap items-center justify-end gap-2",
+                isTableVisible ? "flex" : "hidden"
+              )}
+              ref={readingTimeFilterRootRef}
+            >
+              {readingTimeFilterLabel ? (
+                <span className="text-xs text-muted-foreground">
+                  under {readingTimeFilterLabel}
+                </span>
+              ) : null}
+
+              <div className="flex items-center">
+                <button
+                  aria-controls="tab-overflow-table-search"
+                  aria-expanded={isSearchOpen}
+                  aria-label="search tabs"
+                  className={cn(
+                    "cursor-pointer border-0 p-2",
+                    isSearchOpen || trimmedSearchQuery
+                      ? "bg-secondary"
+                      : "bg-transparent"
+                  )}
+                  onClick={() => {
+                    setIsSearchOpen(true)
+                    window.requestAnimationFrame(() =>
+                      tableSearchInputRef.current?.focus()
+                    )
+                  }}
+                  title="search tabs"
+                  type="button"
+                >
+                  <Search className="size-4" />
+                </button>
+
+                <input
+                  className={cn(
+                    "h-8 border-0 border-b bg-transparent px-0 text-xs text-foreground outline-none transition-all duration-200 placeholder:text-muted-foreground/70 focus:border-foreground dark:focus:border-zinc-300",
+                    isSearchOpen
+                      ? "ml-1 w-28 border-zinc-300 opacity-100 dark:border-zinc-700 sm:w-44"
+                      : "pointer-events-none w-0 border-transparent opacity-0"
+                  )}
+                  id="tab-overflow-table-search"
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder="search tabs"
+                  ref={tableSearchInputRef}
+                  type="search"
+                  value={searchQuery}
+                />
               </div>
-            ) : null}
 
-            <button
-              className={cn(
-                "cursor-pointer border-0 px-2 py-1 text-xs",
-                showOnlyBookmarked ? "bg-secondary" : "bg-transparent"
-              )}
-              onClick={() => setShowOnlyBookmarked((value) => !value)}
-              title="filter by bookmarked"
-              type="button"
-            >
-              <BookmarkCheck className="size-4" />
-            </button>
+              <button
+                className={cn(
+                  "cursor-pointer border-0 p-2",
+                  selectedReadingTimeFilter ? "bg-secondary" : "bg-transparent"
+                )}
+                onClick={() => setIsReadingTimeFilterOpen((value) => !value)}
+                title="filter by read time"
+                type="button"
+              >
+                <Hourglass className="size-4" />
+              </button>
 
-            <span className="text-xs text-gray-500 dark:text-gray-400">
-              {bookmarkCount} saved
-            </span>
+              {isReadingTimeFilterOpen ? (
+                <div className="absolute right-0 top-full z-10 mt-2 min-w-[160px] rounded-md border border-zinc-300 bg-background/95 p-2 shadow-lg backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/95">
+                  <p className="px-1 pb-2 text-[11px] uppercase tracking-wide text-muted-foreground">
+                    under
+                  </p>
+                  <div className="flex flex-col gap-1">
+                    {readingTimeOptions.map((option) => (
+                      <button
+                        className={cn(
+                          "cursor-pointer justify-start rounded-sm border-0 bg-transparent px-3 py-2 text-left text-xs capitalize",
+                          option.value === selectedReadingTimeFilter
+                            ? "bg-primary/10 text-primary hover:bg-primary/20"
+                            : ""
+                        )}
+                        key={option.value}
+                        onClick={() => {
+                          setSelectedReadingTimeFilter((currentValue) =>
+                            currentValue === option.value ? null : option.value
+                          )
+                          setIsReadingTimeFilterOpen(false)
+                        }}
+                        type="button"
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              <button
+                className={cn(
+                  "cursor-pointer border-0 px-2 py-1 text-xs",
+                  showOnlyBookmarked ? "bg-secondary" : "bg-transparent"
+                )}
+                onClick={() => setShowOnlyBookmarked((value) => !value)}
+                title="filter by bookmarked"
+                type="button"
+              >
+                <BookmarkCheck className="size-4" />
+              </button>
+
+              <span className="text-xs text-gray-500 dark:text-gray-400">
+                {bookmarkCount} saved
+              </span>
+            </div>
           </div>
         </div>
-      </div>
       </div>
 
       {isTableVisible ? (
@@ -630,7 +736,7 @@ export default function TabOverflow() {
                     <tr>
                       <td className="py-10 text-center" colSpan={4}>
                         <span className="text-sm text-gray-500 dark:text-gray-400">
-                          No items to display. Try saving a bookmark first.
+                          {emptyTableMessage}
                         </span>
                       </td>
                     </tr>
