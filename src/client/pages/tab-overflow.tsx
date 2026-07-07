@@ -538,7 +538,7 @@ export default function TabOverflow() {
 
             <div
               className={cn(
-                "relative flex-wrap items-center justify-end gap-2",
+                "relative z-30 flex-wrap items-center justify-end gap-2",
                 isTableVisible ? "flex" : "hidden"
               )}
               ref={readingTimeFilterRootRef}
@@ -601,7 +601,7 @@ export default function TabOverflow() {
               </button>
 
               {isReadingTimeFilterOpen ? (
-                <div className="absolute right-0 top-full z-10 mt-2 min-w-[160px] rounded-md border border-zinc-300 bg-background/95 p-2 shadow-lg backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/95">
+                <div className="absolute right-0 top-full z-50 mt-2 min-w-[160px] rounded-md border border-zinc-300 bg-background/95 p-2 shadow-lg backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/95">
                   <p className="px-1 pb-2 text-[11px] uppercase tracking-wide text-muted-foreground">
                     under
                   </p>
