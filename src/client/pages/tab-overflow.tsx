@@ -10,7 +10,15 @@ import {
   Hourglass,
   Search
 } from "lucide-react"
-import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react"
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState
+} from "react"
 
 import {
   type TabOverflowItem,
@@ -28,7 +36,7 @@ type TabOverflowSuggestion = {
   url: string
 }
 
-type TabOverflowTableRow = {
+type TabOverflowTableRowData = {
   categories: string
   index: number
   item: TabOverflowSuggestion
@@ -43,6 +51,90 @@ const readingTimeOptions = [
 ] as const
 
 type ReadingTimeValue = (typeof readingTimeOptions)[number]["value"]
+
+const TabOverflowTableRow = memo(function TabOverflowTableRow({
+  isBookmarked,
+  isSelected,
+  onOpen,
+  onOpenLink,
+  onToggleBookmark,
+  row
+}: {
+  isBookmarked: boolean
+  isSelected: boolean
+  onOpen: (_index: number) => void
+  onOpenLink: (_url: string) => void
+  onToggleBookmark: (_id: string) => void
+  row: TabOverflowTableRowData
+}) {
+  return (
+    <tr
+      className={cn(
+        "cursor-pointer border-b border-zinc-300/90 text-zinc-600 transition-colors hover:bg-zinc-300/80 dark:border-zinc-700/90 dark:text-zinc-400 dark:hover:bg-zinc-900/45",
+        isSelected ? "bg-zinc-200 dark:bg-zinc-900/60" : ""
+      )}
+      onClick={() => onOpen(row.index)}
+    >
+      <td className="overflow-hidden py-1.5 pr-5 text-sm font-medium lowercase text-zinc-800 dark:text-zinc-300">
+        <div className="truncate">{row.item.name}</div>
+      </td>
+      <td className="px-2 py-1.5 text-sm">
+        {row.item.readingTime ? (
+          <span>{row.item.readingTime} min</span>
+        ) : (
+          <span className="opacity-70">—</span>
+        )}
+      </td>
+      <td className="hidden overflow-hidden px-2 py-1.5 lowercase sm:table-cell">
+        <div className="no-scrollbar w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden">
+          <div className="inline-flex flex-nowrap gap-1">
+            {row.item.categories.length ? (
+              row.item.categories.map((category, index) => (
+                <span
+                  className="shrink-0 bg-zinc-100 px-3 py-[3px] text-[11px] font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
+                  key={`${row.item.id}-cat-${index}`}
+                >
+                  {category}
+                </span>
+              ))
+            ) : (
+              <span className="shrink-0 text-xs opacity-70">—</span>
+            )}
+          </div>
+        </div>
+      </td>
+      <td className="relative z-10 px-2 py-1.5 text-right sm:px-4">
+        <div className="flex items-center justify-end gap-3 sm:gap-4">
+          <button
+            className="cursor-pointer border-0 bg-transparent p-0 transition-colors hover:text-zinc-800 dark:hover:text-zinc-300"
+            onClick={(event) => {
+              event.stopPropagation()
+              onToggleBookmark(row.item.id)
+            }}
+            type="button"
+          >
+            {isBookmarked ? (
+              <BookmarkCheck className="size-4" />
+            ) : (
+              <Bookmark className="size-4" />
+            )}
+          </button>
+
+          <button
+            className="cursor-pointer border-0 bg-transparent p-0 transition-colors hover:text-zinc-800 dark:hover:text-zinc-300"
+            onClick={(event) => {
+              event.stopPropagation()
+              onOpenLink(row.item.url)
+            }}
+            type="button"
+          >
+            <ArrowUpRight className="size-4" />
+          </button>
+        </div>
+      </td>
+    </tr>
+  )
+})
 
 function mapItemToSuggestion(item: TabOverflowItem): TabOverflowSuggestion {
   const props = item.properties ?? {}
@@ -117,13 +209,14 @@ export default function TabOverflow() {
   )
   const tabOverflowCount = normalizedItems.length
   const bookmarkCount = bookmarkedIds.length
+  const bookmarkedIdSet = useMemo(() => new Set(bookmarkedIds), [bookmarkedIds])
   const isCurrentBookmarked = bookmarkedIds.includes(tabOverflowSuggestion.id)
   const readingTimeFilterLabel =
     readingTimeOptions.find(
       (option) => option.value === selectedReadingTimeFilter
     )?.label ?? ""
   const trimmedSearchQuery = searchQuery.trim()
-  const tableSearchRows = useMemo<TabOverflowTableRow[]>(
+  const tableSearchRows = useMemo<TabOverflowTableRowData[]>(
     () =>
       normalizedItems.map((item, index) => ({
         categories: item.categories.join(" "),
@@ -155,12 +248,15 @@ export default function TabOverflow() {
     )
   }
 
-  const applySuggestionFromIndex = (index: number) => {
-    const item = normalizedItems[index]
-    if (item) {
-      setTabOverflowSuggestion({ ...item })
-    }
-  }
+  const applySuggestionFromIndex = useCallback(
+    (index: number) => {
+      const item = normalizedItems[index]
+      if (item) {
+        setTabOverflowSuggestion({ ...item })
+      }
+    },
+    [normalizedItems]
+  )
 
   const chooseRandomIndex = () =>
     Math.floor(Math.random() * normalizedItems.length)
@@ -200,45 +296,47 @@ export default function TabOverflow() {
     applySuggestionFromIndex(suggestionHistory[nextIndex])
   })
 
-  const openLink = (url: string) => {
+  const openLink = useCallback((url: string) => {
     if (!url || url === "#") {
       return
     }
 
     window.open(url, "_blank", "noopener")
-  }
+  }, [])
 
-  const toggleBookmarkById = (id: string) => {
-    if (!id) {
-      return
-    }
+  const toggleBookmarkById = useCallback(
+    (id: string) => {
+      if (!id) {
+        return
+      }
 
-    if (bookmarkedIds.includes(id)) {
-      persistBookmarks(bookmarkedIds.filter((bookmarkId) => bookmarkId !== id))
-    } else {
-      persistBookmarks([...bookmarkedIds, id])
-    }
-  }
+      if (bookmarkedIdSet.has(id)) {
+        persistBookmarks(bookmarkedIds.filter((bookmarkId) => bookmarkId !== id))
+      } else {
+        persistBookmarks([...bookmarkedIds, id])
+      }
+    },
+    [bookmarkedIdSet, bookmarkedIds]
+  )
 
-  const filteredTableItems = (() => {
+  const filteredTableItems = useMemo(() => {
     const searchMatchedItems = trimmedSearchQuery
       ? tableSearch.search(trimmedSearchQuery).map((result) => result.item)
       : tableSearchRows
-    const filteredItems = searchMatchedItems
-      .filter(({ item }) =>
-        showOnlyBookmarked ? bookmarkedIds.includes(item.id) : true
+    const filteredItems = searchMatchedItems.filter(({ item }) => {
+      if (showOnlyBookmarked && !bookmarkedIdSet.has(item.id)) {
+        return false
+      }
+
+      if (selectedReadingTimeFilter === null) {
+        return true
+      }
+
+      return (
+        typeof item.readingTime === "number" &&
+        item.readingTime < selectedReadingTimeFilter
       )
-      .filter(({ item }) => {
-        if (selectedReadingTimeFilter === null) {
-          return true
-        }
-
-        if (typeof item.readingTime !== "number") {
-          return false
-        }
-
-        return item.readingTime < selectedReadingTimeFilter
-      })
+    })
 
     if (trimmedSearchQuery) {
       return filteredItems
@@ -247,14 +345,21 @@ export default function TabOverflow() {
     return [...filteredItems].sort(
       (a, b) => (b.item.added?.getTime() ?? 0) - (a.item.added?.getTime() ?? 0)
     )
-  })()
+  }, [
+    bookmarkedIdSet,
+    selectedReadingTimeFilter,
+    showOnlyBookmarked,
+    tableSearch,
+    tableSearchRows,
+    trimmedSearchQuery
+  ])
   const emptyTableMessage = trimmedSearchQuery
     ? "No matches found."
     : showOnlyBookmarked
       ? "No items to display. Try saving a bookmark first."
       : "No items to display."
 
-  const scrollToSuggestionCard = () => {
+  const scrollToSuggestionCard = useCallback(() => {
     if (!suggestionCardRef.current) {
       window.scrollTo({ behavior: "smooth", top: 0 })
       return
@@ -267,9 +372,9 @@ export default function TabOverflow() {
       behavior: "smooth",
       top: target > 0 ? target : 0
     })
-  }
+  }, [])
 
-  const openSuggestionFromTable = (index: number) => {
+  const openSuggestionFromTable = useCallback((index: number) => {
     if (index < 0 || index >= normalizedItems.length) {
       return
     }
@@ -283,7 +388,12 @@ export default function TabOverflow() {
     setCurrentIndex(nextHistory.length - 1)
     applySuggestionFromIndex(index)
     window.requestAnimationFrame(scrollToSuggestionCard)
-  }
+  }, [
+    applySuggestionFromIndex,
+    normalizedItems.length,
+    scrollToSuggestionCard,
+    suggestionHistory
+  ])
 
   useEffect(() => {
     setBookmarkedIds(loadBookmarks())
@@ -645,76 +755,15 @@ export default function TabOverflow() {
               <tbody>
                 {filteredTableItems.length ? (
                   filteredTableItems.map((row) => (
-                    <tr
-                      className={cn(
-                        "cursor-pointer border-b border-zinc-300/90 text-zinc-600 transition-colors hover:bg-zinc-300/80 dark:border-zinc-700/90 dark:text-zinc-400 dark:hover:bg-zinc-900/45",
-                        row.item.id === tabOverflowSuggestion.id
-                          ? "bg-zinc-200 dark:bg-zinc-900/60"
-                          : ""
-                      )}
+                    <TabOverflowTableRow
+                      isBookmarked={bookmarkedIdSet.has(row.item.id)}
+                      isSelected={row.item.id === tabOverflowSuggestion.id}
                       key={row.item.id}
-                      onClick={() => openSuggestionFromTable(row.index)}
-                    >
-                      <td className="overflow-hidden py-1.5 pr-5 text-sm font-medium lowercase text-zinc-800 dark:text-zinc-300">
-                        <div className="truncate">{row.item.name}</div>
-                      </td>
-                      <td className="px-2 py-1.5 text-sm">
-                        {row.item.readingTime ? (
-                          <span>{row.item.readingTime} min</span>
-                        ) : (
-                          <span className="opacity-70">—</span>
-                        )}
-                      </td>
-                      <td className="hidden overflow-hidden px-2 py-1.5 lowercase sm:table-cell">
-                        <div className="no-scrollbar w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden">
-                          <div className="inline-flex flex-nowrap gap-1">
-                            {row.item.categories.length ? (
-                              row.item.categories.map((category, index) => (
-                                <span
-                                  className="shrink-0 bg-zinc-100 px-3 py-[3px] text-[11px] font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
-                                  key={`${row.item.id}-cat-${index}`}
-                                >
-                                  {category}
-                                </span>
-                              ))
-                            ) : (
-                              <span className="shrink-0 text-xs opacity-70">
-                                —
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="relative z-10 px-2 py-1.5 text-right sm:px-4">
-                        <div className="flex items-center justify-end gap-3 sm:gap-4">
-                          <button
-                            className="cursor-pointer border-0 bg-transparent p-0 transition-colors hover:text-zinc-800 dark:hover:text-zinc-300"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              toggleBookmarkById(row.item.id)
-                            }}
-                            type="button"
-                          >
-                            {bookmarkedIds.includes(row.item.id) ? (
-                              <BookmarkCheck className="size-4" />
-                            ) : (
-                              <Bookmark className="size-4" />
-                            )}
-                          </button>
-
-                          <button
-                            className="cursor-pointer border-0 bg-transparent p-0 transition-colors hover:text-zinc-800 dark:hover:text-zinc-300"
-                            onClick={(event) => {
-                              event.stopPropagation()
-                              openLink(row.item.url)
-                            }}
-                            type="button"
-                          >
-                            <ArrowUpRight className="size-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                      onOpen={openSuggestionFromTable}
+                      onOpenLink={openLink}
+                      onToggleBookmark={toggleBookmarkById}
+                      row={row}
+                    />
                   ))
                 ) : (
                   <tr>
