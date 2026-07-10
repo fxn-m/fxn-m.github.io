@@ -32,6 +32,11 @@ type NotionWebhookBody = {
   }
 }
 
+const tabOverflowCacheHeaders = {
+  "Cache-Control":
+    "public, max-age=300, s-maxage=300, stale-while-revalidate=3600"
+}
+
 const normalizeNotionWebhookBody = (
   body: unknown
 ): NotionWebhookBody | null => {
@@ -78,7 +83,7 @@ const handlePing = () => jsonResponse({ message: "pong" })
 
 const handleTabOverflow = async (config: AppConfig, env: WorkerBindings) => {
   const tabOverflow = await getTabOverflowApi(config, env.TAB_OVERFLOW_KV)
-  return jsonResponse(tabOverflow)
+  return jsonResponse(tabOverflow, 200, tabOverflowCacheHeaders)
 }
 
 const handleTabOverflowRefresh = async (
@@ -344,7 +349,10 @@ const worker: WorkerEntrypoint<WorkerBindings> = {
   async scheduled(controller, env) {
     try {
       const config = createConfigFromBindings(env)
-      const tabOverflow = await refreshTabOverflowApi(config, env.TAB_OVERFLOW_KV)
+      const tabOverflow = await refreshTabOverflowApi(
+        config,
+        env.TAB_OVERFLOW_KV
+      )
       console.log(
         `Scheduled ${controller.cron} refreshed ${tabOverflow.length} Tab Overflow items.`
       )

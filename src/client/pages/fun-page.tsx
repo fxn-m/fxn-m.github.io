@@ -1,7 +1,9 @@
+import { useQueryClient } from "@tanstack/react-query"
 import { ArrowRight, ArrowUpRight } from "lucide-react"
-import type { ReactNode } from "react"
+import { type ReactNode, useEffect } from "react"
 import { Link } from "react-router-dom"
 
+import { tabOverflowQueryOptions } from "@/client/api/tab-overflow"
 import StravaActivity from "@/client/components/strava-activity"
 import { cn } from "@/client/lib/utils"
 
@@ -84,6 +86,12 @@ const projects: Project[] = [
 ]
 
 export default function FunPage() {
+  const queryClient = useQueryClient()
+
+  useEffect(() => {
+    void queryClient.prefetchQuery(tabOverflowQueryOptions())
+  }, [queryClient])
+
   return (
     <div className="mt-8 space-y-12 pb-16 sm:pb-0">
       <section className="grid border-t border-l border-zinc-200 dark:border-zinc-800 sm:grid-cols-2">
@@ -98,6 +106,12 @@ export default function FunPage() {
 }
 
 function ProjectCard({ project }: { project: Project }) {
+  const queryClient = useQueryClient()
+  const prefetchTabOverflow = () => {
+    if (project.href === "/fun/tab-overflow") {
+      void queryClient.prefetchQuery(tabOverflowQueryOptions())
+    }
+  }
   const content = (
     <>
       <header className="flex items-start justify-between gap-4">
@@ -150,6 +164,8 @@ function ProjectCard({ project }: { project: Project }) {
       <a
         className={className}
         href={project.href}
+        onFocus={prefetchTabOverflow}
+        onMouseEnter={prefetchTabOverflow}
         rel="noreferrer"
         target="_blank"
       >
@@ -159,7 +175,12 @@ function ProjectCard({ project }: { project: Project }) {
   }
 
   return (
-    <Link className={className} to={project.href}>
+    <Link
+      className={className}
+      onFocus={prefetchTabOverflow}
+      onMouseEnter={prefetchTabOverflow}
+      to={project.href}
+    >
       {content}
     </Link>
   )

@@ -12,6 +12,10 @@ import {
 } from "lucide-react"
 import { useEffect, useEffectEvent, useMemo, useRef, useState } from "react"
 
+import {
+  type TabOverflowItem,
+  tabOverflowQueryOptions
+} from "@/client/api/tab-overflow"
 import { cn } from "@/client/lib/utils"
 
 type TabOverflowSuggestion = {
@@ -22,18 +26,6 @@ type TabOverflowSuggestion = {
   readingTime: number | null
   summary: string
   url: string
-}
-
-type TabOverflowItem = {
-  id: string
-  properties: {
-    Added?: { date?: { start?: string | null } | null; type: "date" }
-    Categories?: { multi_select: { name: string }[] }
-    Name?: { title: { plain_text: string }[] }
-    "Read Time"?: { number: number }
-    Summary?: { rich_text: { plain_text: string }[] }
-    URL?: { url: string }
-  }
 }
 
 type TabOverflowTableRow = {
@@ -115,17 +107,7 @@ export default function TabOverflow() {
     })
 
   const { data, isLoading } = useQuery({
-    queryFn: async () => {
-      const response = await fetch(
-        `${import.meta.env.VITE_BACKEND_URL}/tab-overflow`
-      )
-      if (!response.ok) {
-        throw new Error("Network response was not ok")
-      }
-
-      return (await response.json()) as TabOverflowItem[]
-    },
-    queryKey: ["tab-overflow"],
+    ...tabOverflowQueryOptions(),
     refetchOnWindowFocus: false
   })
 
@@ -654,94 +636,96 @@ export default function TabOverflow() {
         <div className="mt-4 overflow-hidden border-zinc-300 dark:border-zinc-800">
           <div className="overflow-x-auto">
             <table className="w-full table-fixed caption-bottom text-sm">
-                <colgroup>
-                  <col className="w-[calc(100%-128px)] sm:w-[48%]" />
-                  <col className="w-[56px] sm:w-[72px]" />
-                  <col className="hidden sm:table-column sm:w-[calc(52%-160px)]" />
-                  <col className="w-[72px] sm:w-[88px]" />
-                </colgroup>
-                <tbody>
-                  {filteredTableItems.length ? (
-                    filteredTableItems.map((row) => (
-                      <tr
-                        className={cn(
-                          "cursor-pointer border-b border-zinc-300/90 text-zinc-600 transition-colors hover:bg-zinc-300/80 dark:border-zinc-700/90 dark:text-zinc-400 dark:hover:bg-zinc-900/45",
-                          row.item.id === tabOverflowSuggestion.id
-                            ? "bg-zinc-200 dark:bg-zinc-900/60"
-                            : ""
+              <colgroup>
+                <col className="w-[calc(100%-128px)] sm:w-[48%]" />
+                <col className="w-[56px] sm:w-[72px]" />
+                <col className="hidden sm:table-column sm:w-[calc(52%-160px)]" />
+                <col className="w-[72px] sm:w-[88px]" />
+              </colgroup>
+              <tbody>
+                {filteredTableItems.length ? (
+                  filteredTableItems.map((row) => (
+                    <tr
+                      className={cn(
+                        "cursor-pointer border-b border-zinc-300/90 text-zinc-600 transition-colors hover:bg-zinc-300/80 dark:border-zinc-700/90 dark:text-zinc-400 dark:hover:bg-zinc-900/45",
+                        row.item.id === tabOverflowSuggestion.id
+                          ? "bg-zinc-200 dark:bg-zinc-900/60"
+                          : ""
+                      )}
+                      key={row.item.id}
+                      onClick={() => openSuggestionFromTable(row.index)}
+                    >
+                      <td className="overflow-hidden py-1.5 pr-5 text-sm font-medium lowercase text-zinc-800 dark:text-zinc-300">
+                        <div className="truncate">{row.item.name}</div>
+                      </td>
+                      <td className="px-2 py-1.5 text-sm">
+                        {row.item.readingTime ? (
+                          <span>{row.item.readingTime} min</span>
+                        ) : (
+                          <span className="opacity-70">—</span>
                         )}
-                        key={row.item.id}
-                        onClick={() => openSuggestionFromTable(row.index)}
-                      >
-                        <td className="overflow-hidden py-1.5 pr-5 text-sm font-medium lowercase text-zinc-800 dark:text-zinc-300">
-                          <div className="truncate">{row.item.name}</div>
-                        </td>
-                        <td className="px-2 py-1.5 text-sm">
-                          {row.item.readingTime ? (
-                            <span>{row.item.readingTime} min</span>
-                          ) : (
-                            <span className="opacity-70">—</span>
-                          )}
-                        </td>
-                        <td className="hidden overflow-hidden px-2 py-1.5 lowercase sm:table-cell">
-                          <div className="no-scrollbar w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden">
-                            <div className="inline-flex flex-nowrap gap-1">
-                              {row.item.categories.length ? (
-                                row.item.categories.map((category, index) => (
-                                  <span
-                                    className="shrink-0 bg-zinc-100 px-3 py-[3px] text-[11px] font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
-                                    key={`${row.item.id}-cat-${index}`}
-                                  >
-                                    {category}
-                                  </span>
-                                ))
-                              ) : (
-                                <span className="shrink-0 text-xs opacity-70">—</span>
-                              )}
-                            </div>
+                      </td>
+                      <td className="hidden overflow-hidden px-2 py-1.5 lowercase sm:table-cell">
+                        <div className="no-scrollbar w-full min-w-0 max-w-full overflow-x-auto overflow-y-hidden">
+                          <div className="inline-flex flex-nowrap gap-1">
+                            {row.item.categories.length ? (
+                              row.item.categories.map((category, index) => (
+                                <span
+                                  className="shrink-0 bg-zinc-100 px-3 py-[3px] text-[11px] font-medium text-zinc-800 dark:bg-zinc-800 dark:text-zinc-300"
+                                  key={`${row.item.id}-cat-${index}`}
+                                >
+                                  {category}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="shrink-0 text-xs opacity-70">
+                                —
+                              </span>
+                            )}
                           </div>
-                        </td>
-                        <td className="relative z-10 px-2 py-1.5 text-right sm:px-4">
-                          <div className="flex items-center justify-end gap-3 sm:gap-4">
-                            <button
-                              className="cursor-pointer border-0 bg-transparent p-0 transition-colors hover:text-zinc-800 dark:hover:text-zinc-300"
-                              onClick={(event) => {
-                                event.stopPropagation()
-                                toggleBookmarkById(row.item.id)
-                              }}
-                              type="button"
-                            >
-                              {bookmarkedIds.includes(row.item.id) ? (
-                                <BookmarkCheck className="size-4" />
-                              ) : (
-                                <Bookmark className="size-4" />
-                              )}
-                            </button>
+                        </div>
+                      </td>
+                      <td className="relative z-10 px-2 py-1.5 text-right sm:px-4">
+                        <div className="flex items-center justify-end gap-3 sm:gap-4">
+                          <button
+                            className="cursor-pointer border-0 bg-transparent p-0 transition-colors hover:text-zinc-800 dark:hover:text-zinc-300"
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              toggleBookmarkById(row.item.id)
+                            }}
+                            type="button"
+                          >
+                            {bookmarkedIds.includes(row.item.id) ? (
+                              <BookmarkCheck className="size-4" />
+                            ) : (
+                              <Bookmark className="size-4" />
+                            )}
+                          </button>
 
-                            <button
-                              className="cursor-pointer border-0 bg-transparent p-0 transition-colors hover:text-zinc-800 dark:hover:text-zinc-300"
-                              onClick={(event) => {
-                                event.stopPropagation()
-                                openLink(row.item.url)
-                              }}
-                              type="button"
-                            >
-                              <ArrowUpRight className="size-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td className="py-10 text-center" colSpan={4}>
-                        <span className="text-sm text-gray-500 dark:text-gray-400">
-                          {emptyTableMessage}
-                        </span>
+                          <button
+                            className="cursor-pointer border-0 bg-transparent p-0 transition-colors hover:text-zinc-800 dark:hover:text-zinc-300"
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              openLink(row.item.url)
+                            }}
+                            type="button"
+                          >
+                            <ArrowUpRight className="size-4" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
-                  )}
-                </tbody>
+                  ))
+                ) : (
+                  <tr>
+                    <td className="py-10 text-center" colSpan={4}>
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {emptyTableMessage}
+                      </span>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
             </table>
           </div>
         </div>
