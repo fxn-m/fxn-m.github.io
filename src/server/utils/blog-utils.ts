@@ -1,26 +1,26 @@
-import * as cheerio from "cheerio"
-import he from "he"
-import showdown from "showdown"
+import * as cheerio from "cheerio";
+import he from "he";
+import showdown from "showdown";
 
-import type { BlogPost, SlugMap } from "@/shared/types"
+import type { BlogPost, SlugMap } from "@/shared/types";
 
 export async function getSlugMap(blogPosts: BlogPost[]): Promise<SlugMap> {
-  const map: SlugMap = {}
+  const map: SlugMap = {};
   for (const blog of blogPosts) {
-    const slug = blog.slug
-    map[slug] = blog.id
+    const slug = blog.slug;
+    map[slug] = blog.id;
   }
-  return map
+  return map;
 }
 
 const replaceVideoLinksWithIframes = (html: string): string => {
-  const $ = cheerio.load(html)
+  const $ = cheerio.load(html);
 
   $("a").each((_, el) => {
-    const anchor = $(el)
-    const text = anchor.text().trim()
-    const href = anchor.attr("href") || ""
-    const parent = anchor.closest("p")
+    const anchor = $(el);
+    const text = anchor.text().trim();
+    const href = anchor.attr("href") || "";
+    const parent = anchor.closest("p");
 
     if (
       parent.length &&
@@ -30,50 +30,50 @@ const replaceVideoLinksWithIframes = (html: string): string => {
       text &&
       href.includes("youtube.com/watch")
     ) {
-      const videoIdMatch = href.match(/v=([a-zA-Z0-9_-]{11})/)
+      const videoIdMatch = href.match(/v=([a-zA-Z0-9_-]{11})/);
       if (!videoIdMatch) {
-        return
+        return;
       }
 
-      const videoId = videoIdMatch[1]
+      const videoId = videoIdMatch[1];
       const iframe = `
       <div class='YTContainer' title="${text}">
         <iframe src="https://www.youtube.com/embed/${videoId}" frameborder="0" allowfullscreen></iframe>
-      </div>`
+      </div>`;
 
-      parent.replaceWith(iframe)
+      parent.replaceWith(iframe);
     }
-  })
+  });
 
-  return $.html()
-}
+  return $.html();
+};
 
 type Metadata = {
-  date: string
-  title: string
-}
+  date: string;
+  title: string;
+};
 
 export const convertMarkdownToHTML = (
-  markdown: string
+  markdown: string,
 ): {
-  content: string
-  meta: Metadata
+  content: string;
+  meta: Metadata;
 } => {
   const converter = new showdown.Converter({
-    metadata: true
-  })
-  const html = converter.makeHtml(markdown)
+    metadata: true,
+  });
+  const html = converter.makeHtml(markdown);
 
-  const rawMetadata = converter.getMetadata()
+  const rawMetadata = converter.getMetadata();
   if (typeof rawMetadata !== "object") {
-    throw new Error("Invalid metadata format")
+    throw new Error("Invalid metadata format");
   }
 
   return {
     content: replaceVideoLinksWithIframes(html),
     meta: {
       date: he.decode(rawMetadata.Date).replace(/^"|"$/g, ""),
-      title: he.decode(rawMetadata.Title).replace(/^"|"$/g, "")
-    }
-  }
-}
+      title: he.decode(rawMetadata.Title).replace(/^"|"$/g, ""),
+    },
+  };
+};

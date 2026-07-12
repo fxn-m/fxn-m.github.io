@@ -1,366 +1,328 @@
-import {
-  fetchBlogPostMarkdownApi,
-  fetchBlogPostsApi,
-  triggerBlogBuildApi
-} from "./api/blog"
-import { enrichLinksApi } from "./api/links"
-import { getCurrentTrackApi } from "./api/spotify"
-import { getStravaActivitiesApi } from "./api/strava"
-import { getTabOverflowApi, refreshTabOverflowApi } from "./api/tab-overflow"
-import {
-  type AppConfig,
-  createConfigFromBindings,
-  type WorkerBindings
-} from "./config/app-config"
+import { fetchBlogPostMarkdownApi, fetchBlogPostsApi, triggerBlogBuildApi } from "./api/blog";
+import { enrichLinksApi } from "./api/links";
+import { getCurrentTrackApi } from "./api/spotify";
+import { getStravaActivitiesApi } from "./api/strava";
+import { getTabOverflowApi, refreshTabOverflowApi } from "./api/tab-overflow";
+import { type AppConfig, createConfigFromBindings, type WorkerBindings } from "./config/app-config";
 import {
   enrichAllTabOverflowItems,
   enrichLinkItem,
-  enrichTabOverflowItem
-} from "./services/notion"
-import type { ExecutionContext, WorkerEntrypoint } from "./types/cloudflare"
-import {
-  errorResponse,
-  jsonResponse,
-  noContentResponse
-} from "./utils/responses"
+  enrichTabOverflowItem,
+} from "./services/notion";
+import type { ExecutionContext, WorkerEntrypoint } from "./types/cloudflare";
+import { errorResponse, jsonResponse, noContentResponse } from "./utils/responses";
 
 type NotionWebhookBody = {
-  verification_token?: string
-  entity?: { id?: string }
+  verification_token?: string;
+  entity?: { id?: string };
   data?: {
-    parent?: { id?: string; data_source_id?: string; database_id?: string }
-  }
-}
+    parent?: { id?: string; data_source_id?: string; database_id?: string };
+  };
+};
 
 const tabOverflowCacheHeaders = {
-  "Cache-Control":
-    "public, max-age=300, s-maxage=300, stale-while-revalidate=3600"
-}
+  "Cache-Control": "public, max-age=300, s-maxage=300, stale-while-revalidate=3600",
+};
 
-const normalizeNotionWebhookBody = (
-  body: unknown
-): NotionWebhookBody | null => {
+const normalizeNotionWebhookBody = (body: unknown): NotionWebhookBody | null => {
   if (!body || typeof body !== "object") {
-    return null
+    return null;
   }
-  return body as NotionWebhookBody
-}
+  return body as NotionWebhookBody;
+};
 
 const parseNotionWebhookBody = async (
-  request: Request
+  request: Request,
 ): Promise<{ body: NotionWebhookBody | null } | Response> => {
-  const rawBody = await request.text()
+  const rawBody = await request.text();
 
   try {
-    const parsed = rawBody.length > 0 ? JSON.parse(rawBody) : null
-    return { body: normalizeNotionWebhookBody(parsed) }
+    const parsed = rawBody.length > 0 ? JSON.parse(rawBody) : null;
+    return { body: normalizeNotionWebhookBody(parsed) };
   } catch (error) {
-    console.error("Failed to parse Notion webhook body:", error)
-    return errorResponse("Invalid webhook payload", 400)
+    console.error("Failed to parse Notion webhook body:", error);
+    return errorResponse("Invalid webhook payload", 400);
   }
-}
+};
 
-const normalizeIdFromPath = (
-  pathname: string,
-  prefix: string
-): string | null => {
+const normalizeIdFromPath = (pathname: string, prefix: string): string | null => {
   if (!pathname.startsWith(prefix)) {
-    return null
+    return null;
   }
-  const id = pathname.slice(prefix.length)
+  const id = pathname.slice(prefix.length);
   if (!id) {
-    return null
+    return null;
   }
-  return decodeURIComponent(id)
-}
+  return decodeURIComponent(id);
+};
 
 const handleRoot = () =>
   jsonResponse({
-    message: "Hey... whatcha doin' there?"
-  })
+    message: "Hey... whatcha doin' there?",
+  });
 
-const handlePing = () => jsonResponse({ message: "pong" })
+const handlePing = () => jsonResponse({ message: "pong" });
 
 const handleTabOverflow = async (config: AppConfig, env: WorkerBindings) => {
-  const tabOverflow = await getTabOverflowApi(config, env.TAB_OVERFLOW_KV)
-  return jsonResponse(tabOverflow, 200, tabOverflowCacheHeaders)
-}
+  const tabOverflow = await getTabOverflowApi(config, env.TAB_OVERFLOW_KV);
+  return jsonResponse(tabOverflow, 200, tabOverflowCacheHeaders);
+};
 
-const handleTabOverflowRefresh = async (
-  config: AppConfig,
-  env: WorkerBindings
-) => {
-  const tabOverflow = await refreshTabOverflowApi(config, env.TAB_OVERFLOW_KV)
+const handleTabOverflowRefresh = async (config: AppConfig, env: WorkerBindings) => {
+  const tabOverflow = await refreshTabOverflowApi(config, env.TAB_OVERFLOW_KV);
   return jsonResponse({
     count: tabOverflow.length,
-    message: "Tab Overflow cache refreshed"
-  })
-}
+    message: "Tab Overflow cache refreshed",
+  });
+};
 
-const enqueueLinksEnrichment = async (
-  config: AppConfig,
-  ctx: ExecutionContext
-) => {
-  ctx.waitUntil(enrichLinksApi(config))
-  return jsonResponse({ message: "Links enrichment started" }, 202)
-}
+const enqueueLinksEnrichment = async (config: AppConfig, ctx: ExecutionContext) => {
+  ctx.waitUntil(enrichLinksApi(config));
+  return jsonResponse({ message: "Links enrichment started" }, 202);
+};
 
 const enqueueTabOverflowEnrichment = async (
   config: AppConfig,
   env: WorkerBindings,
-  ctx: ExecutionContext
+  ctx: ExecutionContext,
 ) => {
-  ctx.waitUntil(enrichAllTabOverflowItems(config, env.TAB_OVERFLOW_KV))
-  return jsonResponse({ message: "Tab Overflow enrichment started" }, 202)
-}
+  ctx.waitUntil(enrichAllTabOverflowItems(config, env.TAB_OVERFLOW_KV));
+  return jsonResponse({ message: "Tab Overflow enrichment started" }, 202);
+};
 
 const handleBlogIndex = async (config: AppConfig, url: URL) => {
-  const isDevelopment = url.searchParams.get("development") === "true"
-  const blogs = await fetchBlogPostsApi(config, isDevelopment)
-  return jsonResponse(blogs)
-}
+  const isDevelopment = url.searchParams.get("development") === "true";
+  const blogs = await fetchBlogPostsApi(config, isDevelopment);
+  return jsonResponse(blogs);
+};
 
 const handleBlogPost = async (config: AppConfig, pathname: string) => {
-  const postId = normalizeIdFromPath(pathname, "/blog/")
+  const postId = normalizeIdFromPath(pathname, "/blog/");
   if (!postId) {
-    return errorResponse("Blog post id is required", 400)
+    return errorResponse("Blog post id is required", 400);
   }
-  const markdown = await fetchBlogPostMarkdownApi(config, postId)
-  return jsonResponse(markdown)
-}
+  const markdown = await fetchBlogPostMarkdownApi(config, postId);
+  return jsonResponse(markdown);
+};
 
 const handleBlogBuild = async (config: AppConfig) => {
-  await triggerBlogBuildApi(config)
-  return jsonResponse({ message: "Blog build triggered" })
-}
+  await triggerBlogBuildApi(config);
+  return jsonResponse({ message: "Blog build triggered" });
+};
 
 const handleSpotifyCurrentTrack = async (config: AppConfig) => {
-  const currentTrack = await getCurrentTrackApi(config)
+  const currentTrack = await getCurrentTrackApi(config);
 
   if (!currentTrack) {
-    return jsonResponse({ message: "No song currently playing" })
+    return jsonResponse({ message: "No song currently playing" });
   }
 
-  return jsonResponse(currentTrack)
-}
+  return jsonResponse(currentTrack);
+};
 
 const handleStravaActivities = async (config: AppConfig) => {
-  const activities = await getStravaActivitiesApi(config)
+  const activities = await getStravaActivitiesApi(config);
   if (!activities) {
-    return jsonResponse({ message: "No activities found" })
+    return jsonResponse({ message: "No activities found" });
   }
-  return jsonResponse(activities)
-}
+  return jsonResponse(activities);
+};
 
-let tabOverflowStartupRefreshPromise: Promise<unknown> | null = null
+let tabOverflowStartupRefreshPromise: Promise<unknown> | null = null;
 
-const ensureTabOverflowCacheInitialized = async (
-  config: AppConfig,
-  env: WorkerBindings
-) => {
+const ensureTabOverflowCacheInitialized = async (config: AppConfig, env: WorkerBindings) => {
   if (!tabOverflowStartupRefreshPromise) {
-    tabOverflowStartupRefreshPromise = refreshTabOverflowApi(
-      config,
-      env.TAB_OVERFLOW_KV
-    ).catch((error) => {
-      tabOverflowStartupRefreshPromise = null
-      throw error
-    })
+    tabOverflowStartupRefreshPromise = refreshTabOverflowApi(config, env.TAB_OVERFLOW_KV).catch(
+      (error) => {
+        tabOverflowStartupRefreshPromise = null;
+        throw error;
+      },
+    );
   }
 
-  await tabOverflowStartupRefreshPromise
-}
+  await tabOverflowStartupRefreshPromise;
+};
 
 const handleNotionTabOverflowWebhook = async (
   request: Request,
   env: WorkerBindings,
   config: AppConfig,
-  ctx: ExecutionContext
+  ctx: ExecutionContext,
 ) => {
-  const parseResult = await parseNotionWebhookBody(request)
+  const parseResult = await parseNotionWebhookBody(request);
   if (parseResult instanceof Response) {
-    return parseResult
+    return parseResult;
   }
-  const { body } = parseResult
+  const { body } = parseResult;
 
-  console.log("Notion webhook body:", body)
+  console.log("Notion webhook body:", body);
 
-  const verificationToken = body?.verification_token as string | undefined
+  const verificationToken = body?.verification_token as string | undefined;
 
   if (verificationToken) {
     console.warn(
-      "Notion verification token received. Store this value as the webhook secret to enable signature verification."
-    )
+      "Notion verification token received. Store this value as the webhook secret to enable signature verification.",
+    );
     return jsonResponse(
       {
         message: "Webhook verification token received",
-        verification_token: verificationToken
+        verification_token: verificationToken,
       },
-      200
-    )
+      200,
+    );
   }
 
-  const pageId = body?.entity?.id as string | undefined
+  const pageId = body?.entity?.id as string | undefined;
   const parent = body?.data?.parent as
     | { id?: string; data_source_id?: string; database_id?: string }
-    | undefined
-  const dataSourceId =
-    parent?.data_source_id ?? parent?.id ?? parent?.database_id
+    | undefined;
+  const dataSourceId = parent?.data_source_id ?? parent?.id ?? parent?.database_id;
 
   if (!pageId || !dataSourceId) {
-    return errorResponse("Invalid webhook payload", 400)
+    return errorResponse("Invalid webhook payload", 400);
   }
 
-  ctx.waitUntil(
-    enrichTabOverflowItem(config, env.TAB_OVERFLOW_KV, pageId, dataSourceId)
-  )
+  ctx.waitUntil(enrichTabOverflowItem(config, env.TAB_OVERFLOW_KV, pageId, dataSourceId));
 
-  return jsonResponse({ message: "Webhook received" }, 202)
-}
+  return jsonResponse({ message: "Webhook received" }, 202);
+};
 
 const handleNotionLinksWebhook = async (
   request: Request,
   config: AppConfig,
-  ctx: ExecutionContext
+  ctx: ExecutionContext,
 ) => {
-  const parseResult = await parseNotionWebhookBody(request)
+  const parseResult = await parseNotionWebhookBody(request);
   if (parseResult instanceof Response) {
-    return parseResult
+    return parseResult;
   }
-  const { body } = parseResult
+  const { body } = parseResult;
 
-  console.log("Notion links webhook body:", body)
+  console.log("Notion links webhook body:", body);
 
-  const verificationToken = body?.verification_token as string | undefined
+  const verificationToken = body?.verification_token as string | undefined;
 
   if (verificationToken) {
     console.warn(
-      "Notion verification token received. Store this value as the webhook secret to enable signature verification."
-    )
+      "Notion verification token received. Store this value as the webhook secret to enable signature verification.",
+    );
     return jsonResponse(
       {
         message: "Webhook verification token received",
-        verification_token: verificationToken
+        verification_token: verificationToken,
       },
-      200
-    )
+      200,
+    );
   }
 
-  const pageId = body?.entity?.id as string | undefined
+  const pageId = body?.entity?.id as string | undefined;
   const parent = body?.data?.parent as
     | { id?: string; data_source_id?: string; database_id?: string }
-    | undefined
-  const dataSourceId =
-    parent?.data_source_id ?? config.notionLinksDataSourceId ?? parent?.id
+    | undefined;
+  const dataSourceId = parent?.data_source_id ?? config.notionLinksDataSourceId ?? parent?.id;
 
   if (!pageId || !dataSourceId) {
-    return errorResponse("Invalid webhook payload", 400)
+    return errorResponse("Invalid webhook payload", 400);
   }
 
-  ctx.waitUntil(enrichLinkItem(config, pageId, dataSourceId))
+  ctx.waitUntil(enrichLinkItem(config, pageId, dataSourceId));
 
-  return jsonResponse({ message: "Links webhook received" }, 202)
-}
+  return jsonResponse({ message: "Links webhook received" }, 202);
+};
 
 const routeRequest = async (
   request: Request,
   env: WorkerBindings,
   config: AppConfig,
-  ctx: ExecutionContext
+  ctx: ExecutionContext,
 ): Promise<Response> => {
-  const url = new URL(request.url)
-  const { pathname } = url
-  const method = request.method.toUpperCase()
+  const url = new URL(request.url);
+  const { pathname } = url;
+  const method = request.method.toUpperCase();
 
   if (method === "OPTIONS") {
-    return noContentResponse()
+    return noContentResponse();
   }
 
   if (method === "GET" && pathname === "/") {
-    return handleRoot()
+    return handleRoot();
   }
 
   if (method === "GET" && pathname === "/ping") {
-    return handlePing()
+    return handlePing();
   }
 
   if (pathname === "/tab-overflow" && method === "GET") {
-    return handleTabOverflow(config, env)
+    return handleTabOverflow(config, env);
   }
 
   if (pathname === "/tab-overflow/refresh" && method === "POST") {
-    return handleTabOverflowRefresh(config, env)
+    return handleTabOverflowRefresh(config, env);
   }
 
   if (pathname === "/tab-overflow/enrich" && method === "POST") {
-    return enqueueTabOverflowEnrichment(config, env, ctx)
+    return enqueueTabOverflowEnrichment(config, env, ctx);
   }
 
   if (pathname === "/links/enrich" && method === "POST") {
-    return enqueueLinksEnrichment(config, ctx)
+    return enqueueLinksEnrichment(config, ctx);
   }
 
   if (pathname === "/blog" && method === "GET") {
-    return handleBlogIndex(config, url)
+    return handleBlogIndex(config, url);
   }
 
   if (pathname === "/blog/build" && method === "GET") {
-    return handleBlogBuild(config)
+    return handleBlogBuild(config);
   }
 
   if (pathname.startsWith("/blog/") && method === "GET") {
-    return handleBlogPost(config, pathname)
+    return handleBlogPost(config, pathname);
   }
 
   if (pathname === "/spotify/current-track" && method === "GET") {
-    return handleSpotifyCurrentTrack(config)
+    return handleSpotifyCurrentTrack(config);
   }
 
   if (pathname === "/strava/activities" && method === "GET") {
-    return handleStravaActivities(config)
+    return handleStravaActivities(config);
   }
 
   if (pathname === "/notion/webhooks/enrich/link" && method === "POST") {
-    return handleNotionLinksWebhook(request, config, ctx)
+    return handleNotionLinksWebhook(request, config, ctx);
   }
 
-  if (
-    pathname === "/notion/webhooks/enrich/tab-overflow" &&
-    method === "POST"
-  ) {
-    return handleNotionTabOverflowWebhook(request, env, config, ctx)
+  if (pathname === "/notion/webhooks/enrich/tab-overflow" && method === "POST") {
+    return handleNotionTabOverflowWebhook(request, env, config, ctx);
   }
 
-  return errorResponse("Not Found", 404)
-}
+  return errorResponse("Not Found", 404);
+};
 
 const worker: WorkerEntrypoint<WorkerBindings> = {
   async fetch(request, env, ctx) {
     try {
-      const config = createConfigFromBindings(env)
-      await ensureTabOverflowCacheInitialized(config, env)
-      return await routeRequest(request, env, config, ctx)
+      const config = createConfigFromBindings(env);
+      await ensureTabOverflowCacheInitialized(config, env);
+      return await routeRequest(request, env, config, ctx);
     } catch (error) {
-      console.error("Fetch handler error:", error)
-      return errorResponse("Internal Server Error", 500)
+      console.error("Fetch handler error:", error);
+      return errorResponse("Internal Server Error", 500);
     }
   },
 
   async scheduled(controller, env) {
     try {
-      const config = createConfigFromBindings(env)
-      const tabOverflow = await refreshTabOverflowApi(
-        config,
-        env.TAB_OVERFLOW_KV
-      )
+      const config = createConfigFromBindings(env);
+      const tabOverflow = await refreshTabOverflowApi(config, env.TAB_OVERFLOW_KV);
       console.log(
-        `Scheduled ${controller.cron} refreshed ${tabOverflow.length} Tab Overflow items.`
-      )
+        `Scheduled ${controller.cron} refreshed ${tabOverflow.length} Tab Overflow items.`,
+      );
     } catch (error) {
-      console.error("Scheduled handler error:", error)
-      throw error
+      console.error("Scheduled handler error:", error);
+      throw error;
     }
-  }
-}
+  },
+};
 
-export default worker
+export default worker;

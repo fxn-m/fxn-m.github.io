@@ -1,11 +1,11 @@
-import type { StravaActivity } from "@/shared/types/strava"
+import type { StravaActivity } from "@/shared/types/strava";
 
-import type { AppConfig } from "../config/app-config"
+import type { AppConfig } from "../config/app-config";
 import {
   STRAVA_ACTIVITIES_ENDPOINT,
   STRAVA_CLIENT_ID,
-  STRAVA_TOKEN_ENDPOINT
-} from "../config/constants"
+  STRAVA_TOKEN_ENDPOINT,
+} from "../config/constants";
 
 /**
  * Fetches a new access token for the Strava API
@@ -16,42 +16,49 @@ export async function getStravaAccessToken(config: AppConfig): Promise<string> {
   const response = await fetch(STRAVA_TOKEN_ENDPOINT, {
     method: "POST",
     headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
+      "Content-Type": "application/x-www-form-urlencoded",
     },
     body: new URLSearchParams({
       client_id: STRAVA_CLIENT_ID,
       client_secret: config.stravaClientSecret,
       refresh_token: config.stravaRefreshToken,
-      grant_type: "refresh_token"
-    })
-  })
+      grant_type: "refresh_token",
+    }),
+  });
 
   if (!response.ok) {
-    throw new Error("Failed to refresh Strava access token")
+    throw new Error("Failed to refresh Strava access token");
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const data = (await response.json()) as any
-  return data.access_token
+  const data: unknown = await response.json();
+
+  if (
+    typeof data !== "object" ||
+    data === null ||
+    !("access_token" in data) ||
+    typeof data.access_token !== "string"
+  ) {
+    throw new Error("Strava token response did not include an access token");
+  }
+
+  return data.access_token;
 }
 
-export async function getStravaActivities(
-  accessToken: string
-): Promise<StravaActivity[]> {
-  const url = new URL(STRAVA_ACTIVITIES_ENDPOINT)
-  url.searchParams.append("per_page", "50")
+export async function getStravaActivities(accessToken: string): Promise<StravaActivity[]> {
+  const url = new URL(STRAVA_ACTIVITIES_ENDPOINT);
+  url.searchParams.append("per_page", "50");
 
   const response = await fetch(url, {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${accessToken}`
-    }
-  })
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 
   if (!response.ok) {
-    throw new Error("Failed to fetch Strava activities")
+    throw new Error("Failed to fetch Strava activities");
   }
 
-  const data = (await response.json()) as StravaActivity[]
-  return data
+  const data = (await response.json()) as StravaActivity[];
+  return data;
 }

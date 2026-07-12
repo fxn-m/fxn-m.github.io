@@ -1,62 +1,56 @@
-import { createGoogleGenerativeAI } from "@ai-sdk/google"
-import { generateText, Output } from "ai"
-import pLimit from "p-limit"
-import { z } from "zod"
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { generateText, Output } from "ai";
+import pLimit from "p-limit";
+import { z } from "zod";
 
-import {
-  isPageObjectResponse,
-  type NotionResponse
-} from "@/shared/types/notion"
+import { isPageObjectResponse, type NotionResponse } from "@/shared/types/notion";
 
-import type { AppConfig } from "../../config/app-config"
-import type { KVNamespace } from "../../types/cloudflare"
-import { writeTabOverflowToCache } from "../../utils/tab-overflow-store"
-import { createNotionClient, resolveDataSourceId } from "./utils/notion-client"
-import {
-  extractPropertyConfig,
-  parseCategoriesProperty
-} from "./utils/notion-properties"
+import type { AppConfig } from "../../config/app-config";
+import type { KVNamespace } from "../../types/cloudflare";
+import { writeTabOverflowToCache } from "../../utils/tab-overflow-store";
+import { createNotionClient, resolveDataSourceId } from "./utils/notion-client";
+import { extractPropertyConfig, parseCategoriesProperty } from "./utils/notion-properties";
 
 const boundFetch: typeof fetch = (...args) => {
-  return globalThis.fetch(...args)
-}
+  return globalThis.fetch(...args);
+};
 
 const createGoogleProvider = (config: AppConfig) =>
   createGoogleGenerativeAI({
     apiKey: config.googleGenerativeAiApiKey,
-    fetch: boundFetch
-  })
+    fetch: boundFetch,
+  });
 
 const normalizeUrlForComparison = (
-  rawUrl: string
+  rawUrl: string,
 ): { normalized: string; hostname: string } | null => {
   try {
-    const parsed = new URL(rawUrl)
-    const hostname = parsed.hostname.toLowerCase()
-    let pathname = parsed.pathname || "/"
-    pathname = pathname.replace(/\/+$/, "") || "/" // trim trailing slash, keep root
+    const parsed = new URL(rawUrl);
+    const hostname = parsed.hostname.toLowerCase();
+    let pathname = parsed.pathname || "/";
+    pathname = pathname.replace(/\/+$/, "") || "/"; // trim trailing slash, keep root
     if (!pathname.startsWith("/")) {
-      pathname = `/${pathname}`
+      pathname = `/${pathname}`;
     }
-    return { normalized: `${hostname}${pathname}`, hostname }
+    return { normalized: `${hostname}${pathname}`, hostname };
   } catch {
-    return null
+    return null;
   }
-}
+};
 
 const enrichedTabOverflowItemSchema = z.object({
   summary: z.string(),
   categories: z.array(z.string()),
   author: z.string(),
-  readingTimeEstimate: z.number()
-})
+  readingTimeEstimate: z.number(),
+});
 
 type PageProperties = {
-  id: string
-  title: string
-  created: string
-  url: string
-}
+  id: string;
+  title: string;
+  created: string;
+  url: string;
+};
 
 const PagePropertiesSchema = z.object({
   id: z.string(),
@@ -66,126 +60,117 @@ const PagePropertiesSchema = z.object({
       title: z.array(
         z.object({
           text: z.object({
-            content: z.string()
-          })
-        })
-      )
+            content: z.string(),
+          }),
+        }),
+      ),
     }),
     URL: z.object({
-      url: z.string()
-    })
-  })
-})
+      url: z.string(),
+    }),
+  }),
+});
 
 const getPagePropertiesById = async (config: AppConfig, pageId: string) => {
-  const notion = createNotionClient(config.notionTabOverflowSecret)
+  const notion = createNotionClient(config.notionTabOverflowSecret);
 
   const response = await notion.pages.retrieve({
-    page_id: pageId
-  })
+    page_id: pageId,
+  });
 
-  const parsed = PagePropertiesSchema.parse(response)
+  const parsed = PagePropertiesSchema.parse(response);
   const relevantProperties = {
     id: parsed.id,
     title: parsed.properties.Name.title[0].text.content,
     created: parsed.created_time,
-    url: parsed.properties.URL.url
-  }
+    url: parsed.properties.URL.url,
+  };
 
-  return relevantProperties
-}
+  return relevantProperties;
+};
 
-const resolveTabOverflowDataSourceId = async (
-  config: AppConfig,
-  dataSourceId?: string
-) => {
-  const notion = createNotionClient(config.notionTabOverflowSecret)
-  const candidates = [
-    dataSourceId,
-    config.notionTabOverflowDataSourceId
-  ].filter((value): value is string => Boolean(value))
+const resolveTabOverflowDataSourceId = async (config: AppConfig, dataSourceId?: string) => {
+  const notion = createNotionClient(config.notionTabOverflowSecret);
+  const candidates = [dataSourceId, config.notionTabOverflowDataSourceId].filter(
+    (value): value is string => Boolean(value),
+  );
 
-  let lastError: unknown
+  let lastError: unknown;
   for (const candidate of candidates) {
     try {
       return await resolveDataSourceId(notion, candidate, {
         label: "Tab Overflow",
-        envKey: "NOTION_TAB_OVERFLOW_DATA_SOURCE_ID"
-      })
+        envKey: "NOTION_TAB_OVERFLOW_DATA_SOURCE_ID",
+      });
     } catch (error) {
-      lastError = error
+      lastError = error;
     }
   }
 
-  throw lastError ?? new Error("Unable to resolve Tab Overflow data source id.")
-}
+  throw lastError ?? new Error("Unable to resolve Tab Overflow data source id.");
+};
 
 const extractTabOverflowCategoriesFromDataSource = async (
   config: AppConfig,
-  dataSourceId: string
+  dataSourceId: string,
 ) => {
-  const notion = createNotionClient(config.notionTabOverflowSecret)
+  const notion = createNotionClient(config.notionTabOverflowSecret);
   const resolvedId = await resolveDataSourceId(notion, dataSourceId, {
     label: "Tab Overflow",
-    envKey: "NOTION_TAB_OVERFLOW_DATA_SOURCE_ID"
-  })
+    envKey: "NOTION_TAB_OVERFLOW_DATA_SOURCE_ID",
+  });
   const response = await notion.dataSources.retrieve({
-    data_source_id: resolvedId
-  })
-  const properties = extractPropertyConfig(response)
-  const categories = properties ? parseCategoriesProperty(properties) : null
+    data_source_id: resolvedId,
+  });
+  const properties = extractPropertyConfig(response);
+  const categories = properties ? parseCategoriesProperty(properties) : null;
 
   if (!categories || categories.length === 0) {
-    throw new Error(
-      `Unable to resolve Categories property for Tab Overflow source ${resolvedId}`
-    )
+    throw new Error(`Unable to resolve Categories property for Tab Overflow source ${resolvedId}`);
   }
 
-  return categories
-}
+  return categories;
+};
 
 const serializeError = (error: unknown): Record<string, unknown> => {
   if (error instanceof Error) {
     const details: Record<string, unknown> = {
       message: error.message,
       name: error.name,
-      stack: error.stack
-    }
+      stack: error.stack,
+    };
 
     if ("cause" in error && error.cause) {
-      details.cause = serializeError(error.cause)
+      details.cause = serializeError(error.cause);
     }
 
-    return details
+    return details;
   }
 
-  return { message: String(error) }
-}
+  return { message: String(error) };
+};
 
 type EnrichInput = {
-  props: PageProperties
-  categories: string[]
-  google: ReturnType<typeof createGoogleProvider>
-}
+  props: PageProperties;
+  categories: string[];
+  google: ReturnType<typeof createGoogleProvider>;
+};
 
 const hasDuplicateURL = async (
   config: AppConfig,
   pageId: string,
   url: string,
-  dataSourceId?: string
+  dataSourceId?: string,
 ): Promise<boolean> => {
-  const normalizedTarget = normalizeUrlForComparison(url)
+  const normalizedTarget = normalizeUrlForComparison(url);
   if (!normalizedTarget) {
-    return false
+    return false;
   }
 
-  const notion = createNotionClient(config.notionTabOverflowSecret)
-  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(
-    config,
-    dataSourceId
-  )
-  let startCursor: string | undefined | null = undefined
-  let hasMore = true
+  const notion = createNotionClient(config.notionTabOverflowSecret);
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config, dataSourceId);
+  let startCursor: string | undefined | null = undefined;
+  let hasMore = true;
 
   while (hasMore) {
     const response = await notion.dataSources.query({
@@ -193,56 +178,50 @@ const hasDuplicateURL = async (
       filter: {
         property: "URL",
         url: {
-          contains: normalizedTarget.hostname
-        }
+          contains: normalizedTarget.hostname,
+        },
       },
-      start_cursor: startCursor ?? undefined
-    })
+      start_cursor: startCursor ?? undefined,
+    });
 
     for (const result of response.results) {
       if (!isPageObjectResponse(result) || result.id === pageId) {
-        continue
+        continue;
       }
-      const URLProperty = result.properties?.URL
+      const URLProperty = result.properties?.URL;
       if (!URLProperty || URLProperty.type !== "url" || !URLProperty.url) {
-        continue
+        continue;
       }
 
-      const normalizedCandidate = normalizeUrlForComparison(URLProperty.url)
+      const normalizedCandidate = normalizeUrlForComparison(URLProperty.url);
 
-      if (
-        normalizedCandidate &&
-        normalizedCandidate.hostname === "news.ycombinator.com"
-      ) {
-        continue
+      if (normalizedCandidate && normalizedCandidate.hostname === "news.ycombinator.com") {
+        continue;
       }
 
-      if (
-        normalizedCandidate &&
-        normalizedCandidate.normalized === normalizedTarget.normalized
-      ) {
-        return true
+      if (normalizedCandidate && normalizedCandidate.normalized === normalizedTarget.normalized) {
+        return true;
       }
     }
 
-    startCursor = response.next_cursor
-    hasMore = response.has_more
+    startCursor = response.next_cursor;
+    hasMore = response.has_more;
   }
 
-  return false
-}
+  return false;
+};
 
 const extractJson = (value: string): unknown => {
   try {
-    return JSON.parse(value)
+    return JSON.parse(value);
   } catch {
-    const match = value.match(/\{[\s\S]*\}/)
+    const match = value.match(/\{[\s\S]*\}/);
     if (!match) {
-      throw new Error("No JSON object found in model response.")
+      throw new Error("No JSON object found in model response.");
     }
-    return JSON.parse(match[0])
+    return JSON.parse(match[0]);
   }
-}
+};
 
 const enrich = async ({ props, categories, google }: EnrichInput) => {
   const { text } = await generateText({
@@ -265,28 +244,27 @@ Return ONLY a JSON object that matches this schema:
   "readingTimeEstimate": number
 }`,
     tools: {
-      url_context: google.tools.urlContext({})
-    }
-  })
+      url_context: google.tools.urlContext({}),
+    },
+  });
 
-  const { success, data, error } =
-    enrichedTabOverflowItemSchema.safeParse(extractJson(text))
+  const { success, data, error } = enrichedTabOverflowItemSchema.safeParse(extractJson(text));
 
   if (success === false) {
-    throw new Error(error.message, error)
+    throw new Error(error.message, error);
   }
 
-  return data
-}
+  return data;
+};
 
 const updateNotionPage = async (
   config: AppConfig,
   pageId: string,
   enrichedItem: z.infer<typeof enrichedTabOverflowItemSchema>,
   created: string,
-  isDuplicate: boolean
+  isDuplicate: boolean,
 ) => {
-  const notion = createNotionClient(config.notionTabOverflowSecret)
+  const notion = createNotionClient(config.notionTabOverflowSecret);
 
   await notion.pages.update({
     page_id: pageId,
@@ -296,61 +274,59 @@ const updateNotionPage = async (
           {
             type: "text",
             text: {
-              content: enrichedItem.summary
-            }
-          }
-        ]
+              content: enrichedItem.summary,
+            },
+          },
+        ],
       },
       Categories: {
         multi_select: enrichedItem.categories.map((category) => ({
-          name: category
-        }))
+          name: category,
+        })),
       },
       Author: {
         select: {
-          name: enrichedItem.author
-        }
+          name: enrichedItem.author,
+        },
       },
       Duplicate: {
         select: {
-          name: isDuplicate ? "True" : "False"
-        }
+          name: isDuplicate ? "True" : "False",
+        },
       },
       "Read Time": {
-        number: enrichedItem.readingTimeEstimate
+        number: enrichedItem.readingTimeEstimate,
       },
       Added: {
         date: {
-          start: created
-        }
+          start: created,
+        },
       },
       Status: {
         select: {
-          name: "Shelved"
-        }
-      }
-    }
-  })
-}
+          name: "Shelved",
+        },
+      },
+    },
+  });
+};
 
 const deleteNotionPage = async (config: AppConfig, pageId: string) => {
-  const notion = createNotionClient(config.notionTabOverflowSecret)
+  const notion = createNotionClient(config.notionTabOverflowSecret);
   await notion.pages.update({
     page_id: pageId,
-    archived: true
-  })
-}
+    archived: true,
+  });
+};
 
-export const getTabOverflowItems = async (
-  config: AppConfig
-): Promise<NotionResponse[]> => {
-  console.log("Fetching tab overflow from Notion...")
-  const notion = createNotionClient(config.notionTabOverflowSecret)
-  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config)
+export const getTabOverflowItems = async (config: AppConfig): Promise<NotionResponse[]> => {
+  console.log("Fetching tab overflow from Notion...");
+  const notion = createNotionClient(config.notionTabOverflowSecret);
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config);
 
-  let tabOverflowItems: NotionResponse[] = []
-  let hasNextPage = true
-  let startCursor: string | undefined | null = undefined
+  let tabOverflowItems: NotionResponse[] = [];
+  let hasNextPage = true;
+  let startCursor: string | undefined | null = undefined;
 
   while (hasNextPage) {
     const response = await notion.dataSources.query({
@@ -360,32 +336,30 @@ export const getTabOverflowItems = async (
           {
             property: "Status",
             select: {
-              equals: "Shelved"
-            }
-          }
-        ]
+              equals: "Shelved",
+            },
+          },
+        ],
       },
-      start_cursor: startCursor ?? undefined
-    })
+      start_cursor: startCursor ?? undefined,
+    });
 
-    tabOverflowItems = [...tabOverflowItems, ...response.results]
-    startCursor = response.next_cursor
-    hasNextPage = response.has_more
+    tabOverflowItems = [...tabOverflowItems, ...response.results];
+    startCursor = response.next_cursor;
+    hasNextPage = response.has_more;
   }
 
-  return tabOverflowItems
-}
+  return tabOverflowItems;
+};
 
-const getPendingTabOverflowItems = async (
-  config: AppConfig
-): Promise<NotionResponse[]> => {
-  console.log("Fetching pending Tab Overflow items from Notion...")
-  const notion = createNotionClient(config.notionTabOverflowSecret)
-  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config)
+const getPendingTabOverflowItems = async (config: AppConfig): Promise<NotionResponse[]> => {
+  console.log("Fetching pending Tab Overflow items from Notion...");
+  const notion = createNotionClient(config.notionTabOverflowSecret);
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config);
 
-  let tabOverflowItems: NotionResponse[] = []
-  let hasNextPage = true
-  let startCursor: string | undefined | null = undefined
+  let tabOverflowItems: NotionResponse[] = [];
+  let hasNextPage = true;
+  let startCursor: string | undefined | null = undefined;
 
   while (hasNextPage) {
     const response = await notion.dataSources.query({
@@ -393,162 +367,126 @@ const getPendingTabOverflowItems = async (
       filter: {
         property: "Status",
         select: {
-          is_empty: true
-        }
+          is_empty: true,
+        },
       },
-      start_cursor: startCursor ?? undefined
-    })
+      start_cursor: startCursor ?? undefined,
+    });
 
-    tabOverflowItems = [...tabOverflowItems, ...response.results]
-    startCursor = response.next_cursor
-    hasNextPage = response.has_more
+    tabOverflowItems = [...tabOverflowItems, ...response.results];
+    startCursor = response.next_cursor;
+    hasNextPage = response.has_more;
   }
 
-  return tabOverflowItems
-}
+  return tabOverflowItems;
+};
 
 export const refreshTabOverflowCache = async (
   config: AppConfig,
-  kv: KVNamespace
+  kv: KVNamespace,
 ): Promise<NotionResponse[]> => {
-  const tabOverflowItems = await getTabOverflowItems(config)
-  await writeTabOverflowToCache(kv, tabOverflowItems)
-  return tabOverflowItems
-}
+  const tabOverflowItems = await getTabOverflowItems(config);
+  await writeTabOverflowToCache(kv, tabOverflowItems);
+  return tabOverflowItems;
+};
 
 export const enrichTabOverflowItem = async (
   config: AppConfig,
   kv: KVNamespace,
   pageId: string,
-  dataSourceId: string
+  dataSourceId: string,
 ) => {
-  const google = createGoogleProvider(config)
-  const props = await getPagePropertiesById(config, pageId)
-  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(
-    config,
-    dataSourceId
-  )
-  const categories = await extractTabOverflowCategoriesFromDataSource(
-    config,
-    resolvedDataSourceId
-  )
-  const isDuplicate = await hasDuplicateURL(
-    config,
-    pageId,
-    props.url,
-    resolvedDataSourceId
-  )
+  const google = createGoogleProvider(config);
+  const props = await getPagePropertiesById(config, pageId);
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config, dataSourceId);
+  const categories = await extractTabOverflowCategoriesFromDataSource(config, resolvedDataSourceId);
+  const isDuplicate = await hasDuplicateURL(config, pageId, props.url, resolvedDataSourceId);
   if (isDuplicate) {
-    console.warn(
-      `Duplicate Tab Overflow URL detected for ${props.url}; deleting page ${pageId}`
-    )
-    await deleteNotionPage(config, pageId)
-    console.log("Deleted duplicate Notion page")
-    await refreshTabOverflowCache(config, kv)
-    console.log("Refreshed tab overflow cache after duplicate deletion")
-    return
+    console.warn(`Duplicate Tab Overflow URL detected for ${props.url}; deleting page ${pageId}`);
+    await deleteNotionPage(config, pageId);
+    console.log("Deleted duplicate Notion page");
+    await refreshTabOverflowCache(config, kv);
+    console.log("Refreshed tab overflow cache after duplicate deletion");
+    return;
   }
 
   try {
     const enrichedItem = await enrich({
       props,
       categories,
-      google
-    })
-    console.log("Enriched item:", enrichedItem)
-    await updateNotionPage(
-      config,
-      pageId,
-      enrichedItem,
-      props.created,
-      isDuplicate
-    )
+      google,
+    });
+    console.log("Enriched item:", enrichedItem);
+    await updateNotionPage(config, pageId, enrichedItem, props.created, isDuplicate);
   } catch (error) {
     console.error("Tab Overflow item enrichment failed:", {
       error: serializeError(error),
       pageId,
       title: props.title,
-      url: props.url
-    })
-    throw error
+      url: props.url,
+    });
+    throw error;
   }
 
-  console.log(
-    `Updated Notion page with enriched item (duplicate: ${isDuplicate})`
-  )
-  await refreshTabOverflowCache(config, kv)
-  console.log("Updated tab overflow cache")
-}
+  console.log(`Updated Notion page with enriched item (duplicate: ${isDuplicate})`);
+  await refreshTabOverflowCache(config, kv);
+  console.log("Updated tab overflow cache");
+};
 
-export const enrichAllTabOverflowItems = async (
-  config: AppConfig,
-  kv: KVNamespace
-) => {
-  const tabOverflowItems = await getPendingTabOverflowItems(config)
-  const filteredTabOverflowItems = tabOverflowItems.filter((item) =>
-    isPageObjectResponse(item)
-  )
+export const enrichAllTabOverflowItems = async (config: AppConfig, kv: KVNamespace) => {
+  const tabOverflowItems = await getPendingTabOverflowItems(config);
+  const filteredTabOverflowItems = tabOverflowItems.filter((item) => isPageObjectResponse(item));
 
-  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config)
-  const categories = await extractTabOverflowCategoriesFromDataSource(
-    config,
-    resolvedDataSourceId
-  )
-  const google = createGoogleProvider(config)
-  const limit = pLimit(5)
+  const resolvedDataSourceId = await resolveTabOverflowDataSourceId(config);
+  const categories = await extractTabOverflowCategoriesFromDataSource(config, resolvedDataSourceId);
+  const google = createGoogleProvider(config);
+  const limit = pLimit(5);
 
   await Promise.all(
     filteredTabOverflowItems.map((item) =>
       limit(async () => {
         const pageName =
-          item.properties.Name.type === "title" &&
-          item.properties.Name.title.length > 0
+          item.properties.Name.type === "title" && item.properties.Name.title.length > 0
             ? item.properties.Name.title[0].plain_text
-            : ""
+            : "";
         if (
           item.properties.Summary.type === "rich_text" &&
           item.properties.Summary.rich_text &&
           item.properties.Summary.rich_text.some(
-            (rt) => rt.plain_text && rt.plain_text.trim().length > 0
+            (rt) => rt.plain_text && rt.plain_text.trim().length > 0,
           )
         ) {
-          console.log(`Skipping ${pageName} because it already has a summary.`)
-          return
+          console.log(`Skipping ${pageName} because it already has a summary.`);
+          return;
         }
 
-        console.log(`Enriching ${pageName}...`)
+        console.log(`Enriching ${pageName}...`);
 
         try {
-          const props = await getPagePropertiesById(config, item.id)
+          const props = await getPagePropertiesById(config, item.id);
           const isDuplicate = await hasDuplicateURL(
             config,
             item.id,
             props.url,
-            resolvedDataSourceId
-          )
+            resolvedDataSourceId,
+          );
           const enrichedItem = await enrich({
             props,
             categories,
-            google
-          })
-          await updateNotionPage(
-            config,
-            item.id,
-            enrichedItem,
-            item.created_time,
-            isDuplicate
-          )
-          console.log(`Updated ${pageName} with enriched item`)
+            google,
+          });
+          await updateNotionPage(config, item.id, enrichedItem, item.created_time, isDuplicate);
+          console.log(`Updated ${pageName} with enriched item`);
         } catch (error) {
           console.error("Tab Overflow batch item enrichment failed:", {
             error: serializeError(error),
             pageId: item.id,
-            pageName
-          })
+            pageName,
+          });
         }
-      })
-    )
-  )
+      }),
+    ),
+  );
 
-  await refreshTabOverflowCache(config, kv)
-}
+  await refreshTabOverflowCache(config, kv);
+};

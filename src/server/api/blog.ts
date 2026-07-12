@@ -1,59 +1,47 @@
-import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints"
-import slugify from "slugify"
+import type { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints";
+import slugify from "slugify";
 
-import type { BlogPost } from "@/shared/types"
+import type { BlogPost } from "@/shared/types";
 
-import type { AppConfig } from "../config/app-config"
-import { triggerRebuild } from "../services/github-service"
-import { getBlogPostById, getBlogPosts } from "../services/notion"
+import type { AppConfig } from "../config/app-config";
+import { triggerRebuild } from "../services/github-service";
+import { getBlogPostById, getBlogPosts } from "../services/notion";
 
-const parseBlogsFromNotionResponse = (
-  response: PageObjectResponse[]
-): BlogPost[] =>
+const parseBlogsFromNotionResponse = (response: PageObjectResponse[]): BlogPost[] =>
   response.map((page) => {
-    const id = page.id
-    const titleProp = page.properties["Title"]
+    const id = page.id;
+    const titleProp = page.properties["Title"];
     const title =
       titleProp?.type === "title" && titleProp.title.length > 0
         ? (titleProp.title[0].plain_text ?? "Untitled")
-        : "Untitled"
-    const dateProp = page.properties["Date"]
+        : "Untitled";
+    const dateProp = page.properties["Date"];
     const date =
-      dateProp?.type === "date" && dateProp.date?.start
-        ? dateProp.date.start
-        : "Unknown"
+      dateProp?.type === "date" && dateProp.date?.start ? dateProp.date.start : "Unknown";
     const slug = slugify(title, {
       lower: true,
       strict: true,
       locale: "en",
-      replacement: "-"
-    })
+      replacement: "-",
+    });
     return {
       id,
       title,
       date,
-      slug
-    }
-  })
+      slug,
+    };
+  });
 
-export const fetchBlogPostsApi = async (
-  config: AppConfig,
-  isDevelopment: boolean
-) => {
-  const notionBlogsResponse = await getBlogPosts(config, isDevelopment)
-  return parseBlogsFromNotionResponse(
-    notionBlogsResponse as PageObjectResponse[]
-  )
-}
+export const fetchBlogPostsApi = async (config: AppConfig, isDevelopment: boolean) => {
+  const notionBlogsResponse = await getBlogPosts(config, isDevelopment);
+  return parseBlogsFromNotionResponse(notionBlogsResponse as PageObjectResponse[]);
+};
 
-export const fetchBlogPostMarkdownApi = async (
-  config: AppConfig,
-  id: string
-) => {
-  const blogPost = await getBlogPostById(config, id)
-  return blogPost
-}
+export const fetchBlogPostMarkdownApi = async (config: AppConfig, id: string) => {
+  const blogPost = await getBlogPostById(config, id);
+  return blogPost;
+};
 
 export const triggerBlogBuildApi = async (config: AppConfig) => {
-  await triggerRebuild(config)
-}
+  await triggerRebuild(config);
+};

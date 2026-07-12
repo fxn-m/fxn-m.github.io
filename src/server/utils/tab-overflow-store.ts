@@ -1,34 +1,34 @@
-import type { NotionResponse } from "@/shared/types/notion"
+import type { NotionResponse } from "@/shared/types/notion";
 
-import type { KVNamespace } from "../types/cloudflare"
+import type { KVNamespace } from "../types/cloudflare";
 
-const TAB_OVERFLOW_CACHE_KEY = "tab-overflow"
+const TAB_OVERFLOW_CACHE_KEY = "tab-overflow";
 
 export const readTabOverflowFromCache = async (
-  kv: KVNamespace
+  kv: KVNamespace,
 ): Promise<NotionResponse[] | null> => {
-  const raw = await kv.get(TAB_OVERFLOW_CACHE_KEY)
+  const raw = await kv.get(TAB_OVERFLOW_CACHE_KEY);
 
   if (!raw) {
-    return null
+    return null;
   }
 
   try {
-    const parsed = JSON.parse(raw) as NotionResponse[]
-    return parsed
+    const parsed = JSON.parse(raw) as NotionResponse[];
+    return parsed;
   } catch (error) {
-    console.error("Failed to parse cached tab overflow:", error)
-    return null
+    console.error("Failed to parse cached tab overflow:", error);
+    return null;
   }
-}
+};
 
 export const writeTabOverflowToCache = async (
   kv: KVNamespace,
-  tabOverflow: NotionResponse[]
+  tabOverflow: NotionResponse[],
 ): Promise<void> => {
-  await kv.put(TAB_OVERFLOW_CACHE_KEY, JSON.stringify(tabOverflow))
-}
+  await kv.put(TAB_OVERFLOW_CACHE_KEY, JSON.stringify(tabOverflow));
+};
 
 export const clearTabOverflowCache = async (kv: KVNamespace): Promise<void> => {
-  await kv.delete(TAB_OVERFLOW_CACHE_KEY)
-}
+  await kv.delete(TAB_OVERFLOW_CACHE_KEY);
+};

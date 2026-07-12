@@ -1,6 +1,6 @@
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 
-dotenv.config()
+dotenv.config();
 
 export default {
   port: process.env.PORT || 3000,
@@ -23,5 +23,5 @@ export default {
 
   googleGenerativeAiApiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY,
 
-  githubRepoDispatchToken: process.env.GITHUB_REPO_DISPATCH_TOKEN
-} as const
+  githubRepoDispatchToken: process.env.GITHUB_REPO_DISPATCH_TOKEN,
+} as const;

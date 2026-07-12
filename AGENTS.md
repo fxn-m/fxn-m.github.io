@@ -2,74 +2,53 @@
 
 ## Stack At A Glance
 
-- **React 19** + **Vite 6** front end lives in `src/client`, bootstrapped from `src/app.tsx` and `src/client/app.tsx` with React Router DOM and Font Awesome wired in.
-- Cloudflare Worker (Wrangler 4 with `nodejs_compat`) in `src/server` serves all API traffic, talks to Notion/Spotify/Strava/OpenAI, and stores Tab Overflow data in KV.
-- Shared TypeScript contracts remain in `src/shared` and are consumed by both builds through the `@` alias defined in Vite and the tsconfigs.
-- Tailwind CSS 4 (via `@tailwindcss/vite`) and utility helpers in `src/main.css` drive styling; shadcn-vue components are scaffolded under `src/client/components/ui`.
-- Blog posts are sourced from Notion; `scripts/buildBlog.ts` materializes static HTML into `public/html` prior to production builds.
+- The frontend is a clean React 19 and Vite app. `src/main.tsx` mounts the intentionally blank `src/client/app.tsx`; `src/main.css` has no styling rules.
+- The Cloudflare Worker in `src/server` serves the existing Notion, Spotify, Strava, and link-enrichment APIs and stores Tab Overflow data in KV.
+- Shared TypeScript contracts live in `src/shared` and are consumed through the `@` alias configured in the TypeScript configs.
+- Blog posts are sourced from Notion; `scripts/buildBlog.ts` can still materialize static HTML into `public/html` when explicitly run.
 
 ## Layout Highlights
 
-- `src/client/` holds `pages/` (router targets like `HomePage`, `WritingPage`, and `TabOverflow`), shared UI (`components/`), analytics (`analytics/posthog.ts`), and local helpers (`lib/utils.ts`).
-- `src/server/` is organized by concern: `api/` (per-endpoint orchestration), `services/` (Notion enrichment, Spotify, Strava, GitHub dispatch), `config/` (env + constants), `utils/` (blog transforms, KV cache, response helpers), and the Worker entry at `worker.ts`.
-- `src/shared/` exposes domain models for blogs, Strava, and Notion so the client, worker, and scripts stay in sync.
-- `scripts/buildBlog.ts` fetches from the worker using `process.env.BACKEND_URL` and regenerates `public/html` (clearing the folder first) plus `index.json` used for client-side cache.
-- `public/` keeps favicons and theme icons; compiled assets land in `dist/`; `components.json` tracks the shadcn registry.
-- Root configs: `vite.config.ts` sets `@` to `./src`, `tsconfig.*.json` split app/server targets, `wrangler.toml` binds `TAB_OVERFLOW_KV` and sets `compatibility_date` to 2025-10-25.
+- `src/client/app.tsx` is the only client module. Add new frontend modules under `src/client` as the redesign takes shape.
+- `src/server` is organized by concern: `api`, `services`, `config`, `utils`, and the Worker entry at `worker.ts`.
+- `src/shared` exposes domain models for blogs, Strava, and Notion.
+- `scripts/buildBlog.ts` fetches from the Worker using `BACKEND_URL`, clears `public/html`, and writes HTML snapshots plus `index.json`.
+- Root configuration is intentionally small: Vite uses only the React plugin, Oxlint and Oxfmt use their defaults, and Bun manages dependencies.
 
 ## Tooling & Commands
 
-- Install with `pnpm install` (repo pins `packageManager` to `pnpm@10.26.2`).
-- Run the client with `pnpm dev` (Vite at `localhost:5173`, host-access enabled for ngrok domains).
-- Run the worker locally with `pnpm dev:server` (Wrangler dev server on `localhost:8787`, exposing the Cloudflare Worker routes).
-- Run both simultaneously with `pnpm dev:all` or `pnpm run dev:client dev:voltaire`.
-- `pnpm build` chains `build:voltaire`, `build:markdown`, `type-check`, and `build-only`; use `pnpm build-only` if `public/html` is already fresh.
-- Validation: `pnpm type-check` runs both app and server TypeScript; `pnpm lint` (or `pnpm lint --fix`) lints React + TS; `pnpm preview` serves the built site; `pnpm tunnel:*` scripts open curated ngrok tunnels.
+- Install with `bun install`; CI uses `bun ci` against the committed `bun.lock`.
+- Run the client with `bun run dev` and the Worker with `bun run dev:server`.
+- `bun run build` type-checks the app and Worker before building the client.
+- `bun run build:markdown` is separate because the blank client does not consume the generated blog snapshots.
+- `bun run lint` and `bun run lint:fix` use Oxlint.
+- `bun run format` and `bun run format:check` use Oxfmt.
+- `bun run check` verifies formatting, linting, and all TypeScript projects.
+- `bun run preview` serves the production client bundle.
 
 ## Environment & Secrets
 
-- **Worker bindings (wrangler):** required `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`, `SPOTIFY_REFRESH_TOKEN`, `NOTION_TAB_OVERFLOW_TOKEN`, `NOTION_TAB_OVERFLOW_DATA_SOURCE_ID`, `NOTION_BLOG_TOKEN`, `NOTION_BLOG_DATA_SOURCE_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_REFRESH_TOKEN`, `OPENAI_API_KEY`, `GITHUB_REPO_DISPATCH_TOKEN`. Wrangler injects `TAB_OVERFLOW_KV`.
-- **Client `.env` (Vite):** `VITE_BACKEND_URL` (point at the worker, e.g., `http://localhost:8787`), `VITE_POSTHOG_KEY`, `VITE_POSTHOG_HOST` (defaults to EU cluster), `VITE_POSTHOG_CAPTURE_DEV` toggles analytics during local dev.
-- **Blog build script:** set `BACKEND_URL` to the worker base before running `pnpm build:markdown`; the script wipes and rewrites `public/html`.
-- **Third-party expectations:** Spotify and Strava secrets must correspond to the configured accounts; Notion entries rely on data source IDs (not classic database IDs) and the OpenAI key powers Tab Overflow enrichment.
-- **Local storage keys:** Tab Overflow persists slug maps in `localStorage.slugMap`.
+- Worker bindings are defined by `src/server/config/env.ts` and validated by `src/server/config/app-config.ts`. Keep all secrets out of the repository.
+- The current blank client has no required Vite environment variables.
+- Set `BACKEND_URL` before running `bun run build:markdown`.
+- Wrangler injects `TAB_OVERFLOW_KV`; the remaining integrations require their corresponding Notion, Spotify, Strava, Google AI, and GitHub credentials.
 
-## Frontend Notes
+## Frontend Baseline
 
-- Router (hash history) lives in `src/client/router/index.ts`; routes cover `/`, `/writing`, `/writing/:slug`, `/fun`, `/fun/:name`, `/contact`, and the project page at `/project`, with a catch-all redirect.
-- `WritingPage` and `WritingPost` use TanStack Query against the worker in development and fall back to `public/html/index.json` + HTML files in production, caching a slug/id map in `localStorage`.
-- `TabOverflow.tsx` fetches from `/tab-overflow`, randomizes suggestions with keyboard navigation, and displays KV-backed enrichment (summary, tags, reading time) returned by the worker.
-- `FunPage` aggregates projects; `StravaActivity.tsx` pulls `/strava/activities`, renders decoded GPS routes on a `<canvas>`, and shows a countdown to the Spartan Beast on 2025-10-12.
-- `ThemeToggle` flips between light/dark/system, rewrites the favicon, and `main.css` constrains the page to a centered column with Tailwind tokens; `app.tsx` mounts the root React element.
+- The browser document contains only Vite's root element and standard metadata. There are no remote fonts, analytics scripts, favicons, theme assets, routers, query clients, UI libraries, or global design tokens.
+- Keep the frontend dependency set minimal as the redesign grows. Add packages only when the new UI actually uses them.
+- Keep `src/main.css` unopinionated until the new styling direction is chosen.
 
-## Worker & API Notes
+## Worker & Content Notes
 
-- `src/server/worker.ts` routes: `/` handshake, `/ping`, `/tab-overflow` (GET cached list), `/tab-overflow/enrich` (POST background enrichment), `/blog` and `/blog/:id`, `/blog/build`, `/spotify/current-track`, `/strava/activities`, and `/notion/webhooks` (POST fires enrichment on new Notion items).
-- `createConfigFromBindings` in `config/appConfig.ts` enforces environment presence at runtime; missing keys throw descriptive errors during worker startup.
-- `services/notionService.ts` fetches from Notion Data Sources, enriches Tab Overflow items using `@ai-sdk/openai` or `@ai-sdk/google` with web-search tool calls, deduplicates links, updates Notion properties, and refreshes the Cloudflare KV cache.
-- KV helpers in `utils/tabOverflowStore.ts` back the `/tab-overflow` response; cache is automatically refreshed when enrichment runs or no cache exists.
-- `services/spotifyService.ts` and `services/stravaService.ts` handle OAuth refresh flows; responses are normalized by the API layer before returning to the client.
-- `services/githubService.ts` triggers the `build-blog.yml` GitHub Actions workflow when `/blog/build` is invoked; CORS headers are consistently set via `utils/responses.ts`.
-
-## Content Pipeline
-
-- `scripts/buildBlog.ts` pulls the blog index and per-post markdown from the worker, converts content via `convertMarkdownToHTML` (using showdown), and serializes HTML snapshots plus JSON index; it deletes the previous output directory before writing.
-- The client consumes `public/html/index.json` in production to avoid runtime Notion calls; ensure this directory is committed when publishing static content.
-- Highlight.js themes are swapped dynamically in `WritingPost.tsx` based on the document's dark mode class, and captions are auto-generated from image alt text.
-- GitHub workflow dispatch keeps GitHub Pages in sync by rebuilding markdown when triggered from the worker endpoint or manually.
-
-## Shared Tooling & Conventions
-
-- Type safety is split: `tsconfig.app.json` targets DOM + React SFCs, `tsconfig.server.json` targets Node/WebWorker for the Cloudflare worker and scripts.
-- ESLint 9 with `eslint-plugin-react-hooks` and `@eslint/css` governs linting; Prettier is available via `pnpm format` but lint rules are the source of truth.
-- Tailwind definitions live directly in `src/main.css`; `class-variance-authority` and `tailwind-merge` power the `cn` helper in `src/client/lib/utils.ts`.
-- Iconography mixes Font Awesome (registered in `src/client/app.tsx`) and Lucide (`lucide-react`) for in-app controls.
-- Hero icons (`@heroicons/react`) are used throughout the UI for navigation and action elements.
+- `src/server/worker.ts` routes the handshake, health check, Tab Overflow, blog, Spotify, Strava, and Notion webhook endpoints.
+- `createConfigFromBindings` fails fast when required Worker bindings are missing.
+- Notion services enrich and cache data; Spotify and Strava services handle OAuth refresh flows; response helpers apply CORS consistently.
+- The blog snapshot pipeline remains available but is no longer part of the normal client build.
 
 ## After You Change Things
 
-- After meaningful edits, run `pnpm type-check` and `pnpm lint --fix`; fix only issues introduced by your changes.
-- For release validation, run `pnpm build` to regenerate markdown, type-check, and produce the production bundle.
-- Keep secrets out of the repo—see `src/server/config/env.ts` for the current list, and rotate tokens after local testing when possible.
-- When touching worker logic, smoke-test with `pnpm dev:server` so missing bindings or env vars fail locally instead of in production.
-- When modifying Voltaire integration, run `pnpm voltaire:copy` or `pnpm voltaire:build` as needed.
+- After meaningful edits, run `bun run format`, `bun run lint:fix`, and `bun run type-check`; fix only issues introduced by your work.
+- For release validation, run `bun run build`.
+- When changing the blog snapshot pipeline, also run `BACKEND_URL=... bun run build:markdown`.
+- When touching Worker logic, smoke-test with `bun run dev:server` so missing bindings fail locally.
