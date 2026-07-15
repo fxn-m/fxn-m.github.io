@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import Fuse from "fuse.js";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { type TabSuggestion, tabOverflowQueryOptions } from "../api/tab-overflow";
 import { BackLink } from "./back-link";
@@ -12,6 +12,10 @@ const tableCellClassName =
   "border-b border-line px-2 py-[0.45rem] align-middle text-sm leading-[1.25] text-muted";
 const emptyTableCellClassName =
   "border-b border-line px-2 py-8 text-center text-sm leading-[1.25] text-muted";
+const descriptionHeightClassName = "h-[8.25rem]";
+const suggestionCardClassName =
+  "min-h-[20.5rem] w-full border-y border-line pt-[1.4rem] pb-7 max-[42rem]:min-h-[24.5rem]";
+const loadingTableRows = Array.from({ length: 8 }, (_, index) => index);
 
 function pickRandomId(items: TabSuggestion[], currentId: string | null = null) {
   if (items.length === 0) {
@@ -42,6 +46,43 @@ function formatDate(value: string | null) {
   return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(date);
 }
 
+function TabSuggestionSkeleton() {
+  return (
+    <article
+      aria-busy="true"
+      aria-label="Loading tab suggestion"
+      className={`${suggestionCardClassName} animate-pulse motion-reduce:animate-none`}
+      role="status"
+    >
+      <div aria-hidden="true">
+        <div className="flex items-baseline justify-between gap-4">
+          <div className="h-3 w-24 rounded-sm bg-surface" />
+          <div className="h-3 w-12 rounded-sm bg-surface" />
+        </div>
+
+        <div className="mt-[0.9rem] mb-3 h-[1.875rem] w-3/5 rounded-sm bg-surface" />
+
+        <div className={`${descriptionHeightClassName} space-y-[0.9rem] py-1`}>
+          <div className="h-3 w-full rounded-sm bg-surface" />
+          <div className="h-3 w-11/12 rounded-sm bg-surface" />
+          <div className="h-3 w-full rounded-sm bg-surface" />
+          <div className="h-3 w-4/5 rounded-sm bg-surface" />
+          <div className="h-3 w-2/3 rounded-sm bg-surface" />
+        </div>
+
+        <div className="mt-7 grid grid-cols-3 gap-6 max-[42rem]:grid-cols-2">
+          {Array.from({ length: 3 }, (_, index) => (
+            <div className="space-y-2" key={index}>
+              <div className="h-2.5 w-12 rounded-sm bg-surface" />
+              <div className="h-3 w-20 rounded-sm bg-surface" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </article>
+  );
+}
+
 export function TabOverflowView() {
   const {
     data: items = EMPTY_ITEMS,
@@ -51,11 +92,17 @@ export function TabOverflowView() {
   } = useQuery(tabOverflowQueryOptions());
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
   const suggestionRef = useRef<HTMLElement | null>(null);
 
-  useEffect(() => {
-    if (items.length > 0 && !selectedId) {
-      setSelectedId(pickRandomId(items));
+  useLayoutEffect(() => {
+    if (items.length === 0) {
+      return;
+    }
+
+    const selectionIsAvailable = items.some((item) => item.id === selectedId);
+    if (!selectionIsAvailable) {
+      setSelectedId(pickRandomId(items, selectedId));
     }
   }, [items, selectedId]);
 
@@ -92,6 +139,11 @@ export function TabOverflowView() {
     });
   };
 
+  const clearSearch = () => {
+    setSearchQuery("");
+    searchInputRef.current?.focus();
+  };
+
   return (
     <main className="relative mx-auto mb-16 w-[min(50rem,calc(100%-5rem))] leading-[1.6]">
       <BackLink />
@@ -101,21 +153,18 @@ export function TabOverflowView() {
         <p className="text-muted">Things I opened with good intentions and saved for later.</p>
       </header>
 
-      {isPending && <p className="text-muted">Loading tabs…</p>}
+      {isPending && <TabSuggestionSkeleton />}
       {isError && <p className="text-muted">Tab Overflow is unavailable right now.</p>}
 
       {isSuccess && selectedItem && (
-        <article
-          className="w-full scroll-mt-8 border-y border-line pt-[1.4rem] pb-7"
-          ref={suggestionRef}
-        >
+        <article className={`${suggestionCardClassName} scroll-mt-8`} ref={suggestionRef}>
           <div className="flex items-baseline justify-between gap-4">
             <p className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
               Try this one
             </p>
             <button
               className="cursor-pointer border-0 bg-transparent p-0 text-[0.8rem] text-muted underline underline-offset-[0.15em] hover:text-foreground focus-visible:text-foreground"
-              onClick={() => setSelectedId((currentId) => pickRandomId(items, currentId))}
+              onClick={() => setSelectedId(pickRandomId(items, selectedId))}
               type="button"
             >
               Another
@@ -125,7 +174,7 @@ export function TabOverflowView() {
           <h2 className="mt-[0.9rem] mb-3 text-2xl leading-[1.25] font-bold">
             {selectedItem.url ? (
               <a
-                className="text-inherit underline decoration-1 underline-offset-[0.15em]"
+                className="text-inherit underline decoration-1 underline-offset-[0.15em] line-clamp-1"
                 href={selectedItem.url}
                 rel="noreferrer"
                 target="_blank"
@@ -137,7 +186,9 @@ export function TabOverflowView() {
             )}
           </h2>
 
-          <p className="line-clamp-5 max-w-[46rem] leading-[1.65] text-foreground">
+          <p
+            className={`${descriptionHeightClassName} line-clamp-5 max-w-[46rem] leading-[1.65] text-foreground`}
+          >
             {selectedItem.summary || "No introduction is available for this item yet."}
           </p>
 
@@ -177,18 +228,37 @@ export function TabOverflowView() {
             <label className="sr-only" htmlFor="tab-overflow-search">
               Search tabs
             </label>
-            <input
-              className="w-48 border-0 border-b border-line bg-transparent py-[0.3rem] text-xs text-foreground outline-0 placeholder:text-xs placeholder:text-muted focus:border-foreground max-[42rem]:min-w-0 max-[42rem]:flex-1"
-              disabled={!isSuccess}
-              id="tab-overflow-search"
-              onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Search tabs"
-              type="search"
-              value={searchQuery}
-            />
-            <p className="text-xs text-muted">
-              {trimmedSearchQuery ? `${filteredItems.length} of ` : ""}
-              {items.length} saved
+            <div className="relative w-48 border-b border-line focus-within:border-foreground max-[42rem]:min-w-0 max-[42rem]:flex-1">
+              <input
+                className="w-full border-0 bg-transparent py-[0.3rem] pr-6 text-xs text-foreground outline-0 placeholder:text-xs placeholder:text-muted [&::-webkit-search-cancel-button]:hidden"
+                disabled={!isSuccess}
+                id="tab-overflow-search"
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search tabs"
+                ref={searchInputRef}
+                type="search"
+                value={searchQuery}
+              />
+              {searchQuery && (
+                <button
+                  aria-label="Clear search"
+                  className="absolute inset-y-0 right-0 grid w-6 cursor-pointer place-items-center border-0 bg-transparent p-0 text-sm text-muted hover:text-foreground focus-visible:text-foreground"
+                  onClick={clearSearch}
+                  type="button"
+                >
+                  ×
+                </button>
+              )}
+            </div>
+            <p className="min-w-20 text-right text-xs text-muted tabular-nums">
+              {isPending ? (
+                <span
+                  aria-hidden="true"
+                  className="inline-block h-3 w-16 animate-pulse rounded-sm bg-surface align-middle motion-reduce:animate-none"
+                />
+              ) : (
+                `${items.length} saved`
+              )}
             </p>
           </div>
         </header>
@@ -217,11 +287,26 @@ export function TabOverflowView() {
             </thead>
             <tbody>
               {isPending ? (
-                <tr>
-                  <td className={emptyTableCellClassName} colSpan={4}>
-                    Loading tabs…
-                  </td>
-                </tr>
+                loadingTableRows.map((row) => (
+                  <tr
+                    aria-hidden="true"
+                    className="animate-pulse motion-reduce:animate-none"
+                    key={row}
+                  >
+                    <td className={tableCellClassName}>
+                      <div className="h-3 w-4/5 rounded-sm bg-surface" />
+                    </td>
+                    <td className={tableCellClassName}>
+                      <div className="h-3 w-10 rounded-sm bg-surface" />
+                    </td>
+                    <td className={`${tableCellClassName} relative max-w-0 overflow-hidden`}>
+                      <div className="h-3 w-3/5 rounded-sm bg-surface" />
+                    </td>
+                    <td className={tableCellClassName}>
+                      <div className="ml-auto h-3 w-3 rounded-sm bg-surface" />
+                    </td>
+                  </tr>
+                ))
               ) : isError ? (
                 <tr>
                   <td className={emptyTableCellClassName} colSpan={4}>
