@@ -2,16 +2,16 @@
 
 ## Stack At A Glance
 
-- The frontend is a clean React 19 and Vite app. `src/main.tsx` mounts `src/client/app.tsx` inside the theme provider; `src/main.css` holds the small homepage, blog typography, and light/dark theme baseline.
+- The frontend is a clean React 19 and Vite app. `src/main.tsx` mounts `src/client/app.tsx` inside the theme provider; `src/main.css` holds the homepage, blog typography, Tab Overflow layout, and light/dark theme baseline.
 - The Cloudflare Worker in `src/server` serves the existing Notion, Spotify, Strava, and link-enrichment APIs and stores Tab Overflow data in KV.
 - Shared TypeScript contracts live in `src/shared` and are consumed through the `@` alias configured in the TypeScript configs.
 - Blog posts are sourced from Notion; `scripts/buildBlog.ts` materializes the index and HTML consumed by the client into `public/html`.
 
 ## Layout Highlights
 
-- `src/client/app.tsx` owns the homepage/view switch, `src/client/components/blog.tsx` loads the static blog snapshots, and `src/client/components/theme` contains the light/dark/system provider and toggle.
+- `src/client/app.tsx` owns the homepage/view switch, `src/client/components/blog.tsx` loads the static blog snapshots, `src/client/components/tab-overflow.tsx` renders the live Tab Overflow view with Fuse-powered search, and `src/client/components/theme` contains the light/dark/system provider and toggle.
 - `src/server` is organized by concern: `api`, `services`, `config`, `utils`, and the Worker entry at `worker.ts`.
-- `src/shared` exposes domain models for blogs, Strava, and Notion.
+- `src/shared` exposes domain models for blogs, Strava, Notion, and Tab Overflow.
 - `scripts/buildBlog.ts` fetches from the Worker using `BACKEND_URL`, clears `public/html`, and writes HTML snapshots plus `index.json`.
 - Root configuration is intentionally small: Vite uses only the React plugin, Oxlint and Oxfmt use their defaults, and Bun manages dependencies.
 
@@ -29,7 +29,7 @@
 ## Environment & Secrets
 
 - Worker bindings are defined by `src/server/config/env.ts` and validated by `src/server/config/app-config.ts`. Keep all secrets out of the repository.
-- The client has no required Vite environment variables; its blog content is served from the generated `/html` directory.
+- `VITE_BACKEND_URL` selects the Worker used by the live Tab Overflow view and defaults to the production Worker; blog content is served from the generated `/html` directory.
 - Set `BACKEND_URL` before running `bun run build:markdown`.
 - Wrangler injects `TAB_OVERFLOW_KV`; the remaining integrations require their corresponding Notion, Spotify, Strava, Google AI, and GitHub credentials.
 
@@ -38,7 +38,7 @@
 - The browser document stays minimal: it has the Vite root, standard metadata, and a theme-aware favicon. There are no remote fonts, analytics scripts, routers, query clients, or UI libraries.
 - Theme mode cycles through system, dark, and light, persists for the browser session, and uses the sun/moon and light/dark favicon assets in `public`.
 - Keep the frontend dependency set minimal as the redesign grows. Add packages only when the new UI actually uses them.
-- Keep `src/main.css` restrained: the current baseline is the narrow homepage and blog layout, readable article typography, and the small set of light/dark color tokens needed by the theme toggle.
+- Keep `src/main.css` restrained: the current baseline is the narrow homepage and blog layout, readable article typography, the Tab Overflow suggestion/search/table surface, and the small set of light/dark color tokens needed by the theme toggle.
 
 ## Worker & Content Notes
 

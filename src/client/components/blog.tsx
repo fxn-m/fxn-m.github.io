@@ -1,51 +1,16 @@
-import { useEffect, useState } from "react";
-
 import type { BlogPost } from "@/shared";
 
-type BlogAssetState<T> = { status: "loading" } | { data: T; status: "ready" } | { status: "error" };
+import { type RemoteResourceReader, useRemoteResource } from "../hooks/use-remote-resource";
 
-type BlogAssetReader<T> = (response: Response) => Promise<T>;
-
-const readBlogIndex: BlogAssetReader<BlogPost[]> = async (response) => {
+const readBlogIndex: RemoteResourceReader<BlogPost[]> = async (response) => {
   const posts = (await response.json()) as BlogPost[];
   return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 };
 
-const readBlogContent: BlogAssetReader<string> = (response) => response.text();
-
-function useBlogAsset<T>(path: string, read: BlogAssetReader<T>): BlogAssetState<T> {
-  const [state, setState] = useState<BlogAssetState<T>>({ status: "loading" });
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    const loadAsset = async () => {
-      setState({ status: "loading" });
-
-      try {
-        const response = await fetch(path, { signal: controller.signal });
-
-        if (!response.ok) {
-          throw new Error(`Unable to load blog asset: ${response.status}`);
-        }
-
-        setState({ data: await read(response), status: "ready" });
-      } catch (error) {
-        if (!(error instanceof DOMException && error.name === "AbortError")) {
-          setState({ status: "error" });
-        }
-      }
-    };
-
-    void loadAsset();
-    return () => controller.abort();
-  }, [path, read]);
-
-  return state;
-}
+const readBlogContent: RemoteResourceReader<string> = (response) => response.text();
 
 export function WritingList({ onSelect }: { onSelect: (post: BlogPost) => void }) {
-  const index = useBlogAsset("/html/index.json", readBlogIndex);
+  const index = useRemoteResource("/html/index.json", readBlogIndex);
 
   if (index.status === "loading") {
     return <p className="blog-status">Loading…</p>;
@@ -75,11 +40,11 @@ export function WritingList({ onSelect }: { onSelect: (post: BlogPost) => void }
 }
 
 export function BlogView({ onBack, post }: { onBack: () => void; post: BlogPost }) {
-  const state = useBlogAsset(`/html/${post.slug}.html`, readBlogContent);
+  const state = useRemoteResource(`/html/${post.slug}.html`, readBlogContent);
 
   return (
-    <main className="blog-view content">
-      <button aria-label="Back to home" className="blog-back" onClick={onBack} type="button">
+    <main className="blog-view content detail-view">
+      <button aria-label="Back to home" className="view-back" onClick={onBack} type="button">
         ←
       </button>
 
