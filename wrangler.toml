@@ -7,10 +7,21 @@ compatibility_flags = ["nodejs_compat"]
 binding = "TAB_OVERFLOW_KV"
 id = "ba2c9eb2462342939acc6135b9c80a2f"
 
+[[queues.producers]]
+binding = "ENRICHMENT_QUEUE"
+queue = "fxn-m-enrichment"
+
+[[queues.consumers]]
+queue = "fxn-m-enrichment"
+dead_letter_queue = "fxn-m-enrichment-dlq"
+max_batch_size = 1
+max_batch_timeout = 5
+max_concurrency = 1
+max_retries = 3
+retry_delay = 60
+
 [triggers]
 crons = ["0 * * * *"]
-
-[env.production]
 
 [observability.logs]
 enabled = true

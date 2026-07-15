@@ -3,7 +3,7 @@
 ## Stack At A Glance
 
 - The frontend is a React 19, React Router 8, Tailwind CSS 4, and Vite app. `src/main.tsx` mounts the hash router inside the TanStack Query and theme providers; `src/main.css` is limited to Tailwind and global theme tokens.
-- The Cloudflare Worker in `src/server` serves the existing Notion, Spotify, Strava, and link-enrichment APIs and stores Tab Overflow data in KV.
+- The Cloudflare Worker in `src/server` uses Hono for HTTP routing, serves the blog and Tab Overflow reads, accepts signed Notion webhooks, and runs link/Tab Overflow enrichment through Cloudflare Queues.
 - Shared TypeScript contracts live in `src/shared` and are consumed through the `@` alias configured in the TypeScript configs.
 - Blog posts are sourced from Notion; `scripts/buildBlog.ts` materializes the index and HTML consumed by the client into `public/html`.
 
@@ -11,8 +11,8 @@
 
 - `src/client/router.tsx` owns the static-host-safe hash routes and route-aware PostHog pageviews. `src/client/app.tsx` owns the shared shell and homepage, `src/client/components/blog.tsx` loads the static blog snapshots, `src/client/components/tab-overflow.tsx` renders the cached live Tab Overflow view with Fuse-powered search, and `src/client/components/theme` contains the light/dark/system provider and toggle.
 - TanStack Query configuration lives in `src/client/config/query.ts`; reusable query definitions live under `src/client/api`. Tab Overflow is prefetched from the homepage and on link intent.
-- `src/server` is organized by concern: `api`, `services`, `config`, `utils`, and the Worker entry at `worker.ts`.
-- `src/shared` exposes domain models for blogs, Strava, Notion, and Tab Overflow.
+- `src/server/app.ts` owns the Hono transport seam and `src/server/worker.ts` composes fetch, scheduled, and queue handlers. Feature modules live under `blog`, `links`, and `tab-overflow`; shared Notion infrastructure is intentionally limited to `src/server/notion`.
+- `src/shared` exposes the browser-facing blog and Tab Overflow contracts. External Notion SDK response types stay inside the Worker adapters.
 - `scripts/buildBlog.ts` fetches from the Worker using `BACKEND_URL`, clears `public/html`, and writes HTML snapshots plus `index.json`.
 - Root configuration is intentionally small: Vite uses the React and Tailwind plugins, Oxlint and Oxfmt use their defaults, and Bun manages dependencies.
 
@@ -24,15 +24,17 @@
 - `bun run build:markdown` refreshes the blog snapshots consumed by the client and remains separate from the normal Vite build.
 - `bun run lint` and `bun run lint:fix` use Oxlint.
 - `bun run format` and `bun run format:check` use Oxfmt.
+- `bun run test:server` runs the Worker contract and feature-module tests inside the Cloudflare Vitest pool.
+- `bun run typegen:worker` regenerates the committed Cloudflare runtime types after `wrangler.toml` or its compatibility settings change.
 - `bun run check` verifies formatting, linting, and all TypeScript projects.
 - `bun run preview` serves the production client bundle.
 
 ## Environment & Secrets
 
-- Worker bindings are defined by `src/server/config/env.ts` and validated by `src/server/config/app-config.ts`. Keep all secrets out of the repository.
+- Worker bindings are declared in `src/server/bindings.ts`. String secrets are validated lazily by the feature that consumes them, so health checks do not depend on unrelated integrations. Keep all secret values out of the repository.
 - `VITE_BACKEND_URL` selects the Worker used by the live Tab Overflow view and defaults to the production Worker; blog content is served from the generated `/html` directory.
 - Set `BACKEND_URL` before running `bun run build:markdown`.
-- Wrangler injects `TAB_OVERFLOW_KV`; the remaining integrations require their corresponding Notion, Spotify, Strava, Google AI, and GitHub credentials.
+- Wrangler injects `TAB_OVERFLOW_KV` and `ENRICHMENT_QUEUE`. Notion reads, Gemini enrichment, GitHub workflow dispatch, admin routes, and Notion webhook signatures require their corresponding secrets.
 
 ## Frontend Baseline
 
@@ -43,9 +45,9 @@
 
 ## Worker & Content Notes
 
-- `src/server/worker.ts` routes the handshake, health check, Tab Overflow, blog, Spotify, Strava, and Notion webhook endpoints.
-- `createConfigFromBindings` fails fast when required Worker bindings are missing.
-- Notion services enrich and cache data; Spotify and Strava services handle OAuth refresh flows; response helpers apply CORS consistently.
+- Public HTTP routes are `GET /`, `GET /ping`, `GET /blog`, `GET /blog/:id`, and `GET /tab-overflow`. Mutating routes live under `/admin` and require `ADMIN_API_TOKEN`.
+- The existing Notion webhook paths remain stable. Event payloads require their `X-Notion-Signature`; one-time subscription verification payloads are accepted before the verification secret is configured.
+- Tab Overflow uses cache-aside KV reads plus the hourly scheduled refresh. AI enrichment is queued and idempotent so at-least-once delivery does not repeat completed work.
 - The homepage writing list and in-place post view consume the blog snapshot pipeline; refresh `public/html` before testing blog content locally.
 
 ## After You Change Things
@@ -53,4 +55,4 @@
 - After meaningful edits, run `bun run format`, `bun run lint:fix`, and `bun run type-check`; fix only issues introduced by your work.
 - For release validation, run `bun run build`.
 - When changing the blog snapshot pipeline, also run `BACKEND_URL=... bun run build:markdown`.
-- When touching Worker logic, smoke-test with `bun run dev:server` so missing bindings fail locally.
+- When touching Worker logic, run `bun run test:server` and smoke-test with `bun run dev:server`. Provision the configured enrichment queue and dead-letter queue before deploying a new environment.

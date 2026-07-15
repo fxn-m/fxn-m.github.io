@@ -11,8 +11,9 @@ import fs from "fs";
 import path from "path";
 import { z } from "zod";
 
-import { convertMarkdownToHTML } from "@/server/utils/blog-utils";
 import { type BlogPost, BlogPostsSchema } from "@/shared";
+
+import { convertMarkdownToHTML } from "./blog-markdown";
 
 dotenv.config();
 
