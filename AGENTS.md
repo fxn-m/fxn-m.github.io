@@ -2,18 +2,19 @@
 
 ## Stack At A Glance
 
-- The frontend is a clean React 19 and Vite app. `src/main.tsx` mounts `src/client/app.tsx` inside the theme provider; `src/main.css` holds the homepage, blog typography, Tab Overflow layout, and light/dark theme baseline.
+- The frontend is a React 19, React Router 8, Tailwind CSS 4, and Vite app. `src/main.tsx` mounts the hash router inside the TanStack Query and theme providers; `src/main.css` is limited to Tailwind and global theme tokens.
 - The Cloudflare Worker in `src/server` serves the existing Notion, Spotify, Strava, and link-enrichment APIs and stores Tab Overflow data in KV.
 - Shared TypeScript contracts live in `src/shared` and are consumed through the `@` alias configured in the TypeScript configs.
 - Blog posts are sourced from Notion; `scripts/buildBlog.ts` materializes the index and HTML consumed by the client into `public/html`.
 
 ## Layout Highlights
 
-- `src/client/app.tsx` owns the homepage/view switch, `src/client/components/blog.tsx` loads the static blog snapshots, `src/client/components/tab-overflow.tsx` renders the live Tab Overflow view with Fuse-powered search, and `src/client/components/theme` contains the light/dark/system provider and toggle.
+- `src/client/router.tsx` owns the static-host-safe hash routes and route-aware PostHog pageviews. `src/client/app.tsx` owns the shared shell and homepage, `src/client/components/blog.tsx` loads the static blog snapshots, `src/client/components/tab-overflow.tsx` renders the cached live Tab Overflow view with Fuse-powered search, and `src/client/components/theme` contains the light/dark/system provider and toggle.
+- TanStack Query configuration lives in `src/client/config/query.ts`; reusable query definitions live under `src/client/api`. Tab Overflow is prefetched from the homepage and on link intent.
 - `src/server` is organized by concern: `api`, `services`, `config`, `utils`, and the Worker entry at `worker.ts`.
 - `src/shared` exposes domain models for blogs, Strava, Notion, and Tab Overflow.
 - `scripts/buildBlog.ts` fetches from the Worker using `BACKEND_URL`, clears `public/html`, and writes HTML snapshots plus `index.json`.
-- Root configuration is intentionally small: Vite uses only the React plugin, Oxlint and Oxfmt use their defaults, and Bun manages dependencies.
+- Root configuration is intentionally small: Vite uses the React and Tailwind plugins, Oxlint and Oxfmt use their defaults, and Bun manages dependencies.
 
 ## Tooling & Commands
 
@@ -35,10 +36,10 @@
 
 ## Frontend Baseline
 
-- The browser document stays minimal: it has the Vite root, standard metadata, and a theme-aware favicon. There are no remote fonts, analytics scripts, routers, query clients, or UI libraries.
+- The browser document stays minimal: it has the Vite root, standard metadata, and a theme-aware favicon. React Router, TanStack Query, PostHog, and Tailwind provide routing, server-state caching, analytics, and utility styling without a component library.
 - Theme mode cycles through system, dark, and light, persists for the browser session, and uses the sun/moon and light/dark favicon assets in `public`.
 - Keep the frontend dependency set minimal as the redesign grows. Add packages only when the new UI actually uses them.
-- Keep `src/main.css` restrained: the current baseline is the narrow homepage and blog layout, readable article typography, the Tab Overflow suggestion/search/table surface, and the small set of light/dark color tokens needed by the theme toggle.
+- Keep `src/main.css` restrained to Tailwind setup and global light/dark tokens. Use Tailwind utilities in components; generated blog HTML typography is the scoped exception in `src/client/components/blog-content.module.css`.
 
 ## Worker & Content Notes
 

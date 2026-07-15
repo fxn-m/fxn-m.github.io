@@ -1,63 +1,72 @@
-import type { BlogPost } from "@/shared";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Link, useParams } from "react-router";
 
-import { type RemoteResourceReader, useRemoteResource } from "../hooks/use-remote-resource";
+import { blogIndexQueryOptions, blogPostQueryOptions } from "../api/blog";
+import { BackLink } from "./back-link";
+import styles from "./blog-content.module.css";
 
-const readBlogIndex: RemoteResourceReader<BlogPost[]> = async (response) => {
-  const posts = (await response.json()) as BlogPost[];
-  return posts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-};
+export function WritingList() {
+  const index = useQuery(blogIndexQueryOptions());
+  const queryClient = useQueryClient();
 
-const readBlogContent: RemoteResourceReader<string> = (response) => response.text();
-
-export function WritingList({ onSelect }: { onSelect: (post: BlogPost) => void }) {
-  const index = useRemoteResource("/html/index.json", readBlogIndex);
-
-  if (index.status === "loading") {
-    return <p className="blog-status">Loading…</p>;
+  if (index.isPending) {
+    return <p className="text-muted">Loading…</p>;
   }
 
-  if (index.status === "error") {
-    return <p className="blog-status">Writing is unavailable right now.</p>;
+  if (index.isError) {
+    return <p className="text-muted">Writing is unavailable right now.</p>;
   }
 
   return (
-    <ul className="writing-list">
-      {index.data.map((post) => (
-        <li key={post.id}>
-          <a
-            href={`/html/${post.slug}.html`}
-            onClick={(event) => {
-              event.preventDefault();
-              onSelect(post);
-            }}
-          >
-            {post.title}
-          </a>
-        </li>
-      ))}
+    <ul className="m-0 list-disc pl-5">
+      {index.data.map((post) => {
+        const prefetchPost = () => {
+          void queryClient.prefetchQuery(blogPostQueryOptions(post.slug));
+        };
+
+        return (
+          <li key={post.id}>
+            <Link
+              className="text-inherit underline underline-offset-[0.15em]"
+              onFocus={prefetchPost}
+              onMouseEnter={prefetchPost}
+              to={`/writing/${post.slug}`}
+            >
+              {post.title}
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 }
 
-export function BlogView({ onBack, post }: { onBack: () => void; post: BlogPost }) {
-  const state = useRemoteResource(`/html/${post.slug}.html`, readBlogContent);
+export function BlogView() {
+  const { slug = "" } = useParams();
+  const index = useQuery(blogIndexQueryOptions());
+  const content = useQuery(blogPostQueryOptions(slug));
+  const post = index.data?.find((candidate) => candidate.slug === slug) ?? null;
 
   return (
-    <main className="blog-view content detail-view">
-      <button aria-label="Back to home" className="view-back" onClick={onBack} type="button">
-        ←
-      </button>
+    <main className="relative mx-auto mb-16 w-[min(50rem,calc(100%-5rem))] leading-[1.6]">
+      <BackLink />
 
       <article>
-        <header className="blog-header">
-          <h1>{post.title}</h1>
-          <time dateTime={post.date}>{post.date}</time>
-        </header>
+        {post && (
+          <header className="mb-10">
+            <h1 className="mb-[0.35rem] text-[1.75rem] leading-[1.25] font-bold">{post.title}</h1>
+            <time className="text-sm text-muted" dateTime={post.date}>
+              {post.date}
+            </time>
+          </header>
+        )}
 
-        {state.status === "loading" && <p className="blog-status">Loading…</p>}
-        {state.status === "error" && <p className="blog-status">This piece could not be loaded.</p>}
-        {state.status === "ready" && (
-          <div className="blog-content" dangerouslySetInnerHTML={{ __html: state.data }} />
+        {(index.isPending || content.isPending) && <p className="text-muted">Loading…</p>}
+        {(index.isError || content.isError || (index.isSuccess && !post)) && (
+          <p className="text-muted">This piece could not be loaded.</p>
+        )}
+        {post && content.isSuccess && (
+          <div className={styles.content} dangerouslySetInnerHTML={{ __html: content.data }} />
         )}
       </article>
     </main>

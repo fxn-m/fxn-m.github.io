@@ -1,48 +1,17 @@
+import { useQuery } from "@tanstack/react-query";
 import Fuse from "fuse.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import type { TabOverflowItem } from "@/shared";
+import { type TabSuggestion, tabOverflowQueryOptions } from "../api/tab-overflow";
+import { BackLink } from "./back-link";
 
-import { type RemoteResourceReader, useRemoteResource } from "../hooks/use-remote-resource";
-
-type TabSuggestion = {
-  added: string | null;
-  author: string | null;
-  categories: string[];
-  id: string;
-  name: string;
-  readingTime: number | null;
-  summary: string;
-  url: string | null;
-};
-
-const DEFAULT_BACKEND_URL = "https://fxn-m-api.fxn-m.workers.dev";
-const backendUrl = (import.meta.env.VITE_BACKEND_URL || DEFAULT_BACKEND_URL).replace(/\/$/, "");
-
-function mapTabOverflowItem(item: TabOverflowItem): TabSuggestion {
-  const properties = item.properties ?? {};
-
-  return {
-    added: properties.Added?.date?.start ?? null,
-    author: properties.Author?.select?.name ?? null,
-    categories:
-      properties.Categories?.multi_select
-        ?.map((category) => category.name)
-        .filter((category): category is string => Boolean(category)) ?? [],
-    id: item.id,
-    name: properties.Name?.title?.[0]?.plain_text || "Untitled",
-    readingTime: properties["Read Time"]?.number ?? null,
-    summary:
-      properties.Summary?.rich_text
-        ?.map((text) => text.plain_text)
-        .filter((text): text is string => Boolean(text))
-        .join(" ") ?? "",
-    url: properties.URL?.url ?? null,
-  };
-}
-
-const readTabOverflow: RemoteResourceReader<TabSuggestion[]> = async (response) =>
-  ((await response.json()) as TabOverflowItem[]).map(mapTabOverflowItem);
+const EMPTY_ITEMS: TabSuggestion[] = [];
+const tableHeadingClassName =
+  "border-b border-line px-2 py-[0.45rem] text-left text-xs font-medium tracking-[0.05em] text-muted uppercase";
+const tableCellClassName =
+  "border-b border-line px-2 py-[0.45rem] align-middle text-sm leading-[1.25] text-muted";
+const emptyTableCellClassName =
+  "border-b border-line px-2 py-8 text-center text-sm leading-[1.25] text-muted";
 
 function pickRandomId(items: TabSuggestion[], currentId: string | null = null) {
   if (items.length === 0) {
@@ -73,19 +42,23 @@ function formatDate(value: string | null) {
   return new Intl.DateTimeFormat("en-GB", { dateStyle: "medium" }).format(date);
 }
 
-export function TabOverflowView({ onBack }: { onBack: () => void }) {
-  const state = useRemoteResource(`${backendUrl}/tab-overflow`, readTabOverflow);
+export function TabOverflowView() {
+  const {
+    data: items = EMPTY_ITEMS,
+    isError,
+    isPending,
+    isSuccess,
+  } = useQuery(tabOverflowQueryOptions());
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const suggestionRef = useRef<HTMLElement | null>(null);
 
-  const items = state.status === "ready" ? state.data : [];
-
   useEffect(() => {
-    if (state.status === "ready" && !selectedId) {
-      setSelectedId(pickRandomId(state.data));
+    if (items.length > 0 && !selectedId) {
+      setSelectedId(pickRandomId(items));
     }
-  }, [selectedId, state]);
+  }, [items, selectedId]);
+
   const selectedItem = useMemo(
     () => items.find((item) => item.id === selectedId) ?? null,
     [items, selectedId],
@@ -120,27 +93,28 @@ export function TabOverflowView({ onBack }: { onBack: () => void }) {
   };
 
   return (
-    <main className="content detail-view tab-overflow-view">
-      <button aria-label="Back to home" className="view-back" onClick={onBack} type="button">
-        ←
-      </button>
+    <main className="relative mx-auto mb-16 w-[min(50rem,calc(100%-5rem))] leading-[1.6]">
+      <BackLink />
 
-      <header className="tab-overflow-header">
-        <h1>Tab Overflow</h1>
-        <p>Things I opened with good intentions and saved for later.</p>
+      <header className="mb-11 max-w-[34rem]">
+        <h1 className="mb-[0.4rem] text-[1.75rem] leading-[1.2] font-bold">Tab Overflow</h1>
+        <p className="text-muted">Things I opened with good intentions and saved for later.</p>
       </header>
 
-      {state.status === "loading" && <p className="tab-overflow-status">Loading tabs…</p>}
-      {state.status === "error" && (
-        <p className="tab-overflow-status">Tab Overflow is unavailable right now.</p>
-      )}
+      {isPending && <p className="text-muted">Loading tabs…</p>}
+      {isError && <p className="text-muted">Tab Overflow is unavailable right now.</p>}
 
-      {state.status === "ready" && selectedItem && (
-        <article className="tab-suggestion" ref={suggestionRef}>
-          <div className="tab-suggestion-heading">
-            <p className="tab-suggestion-label">Try this one</p>
+      {isSuccess && selectedItem && (
+        <article
+          className="w-full scroll-mt-8 border-y border-line pt-[1.4rem] pb-7"
+          ref={suggestionRef}
+        >
+          <div className="flex items-baseline justify-between gap-4">
+            <p className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
+              Try this one
+            </p>
             <button
-              className="tab-another"
+              className="cursor-pointer border-0 bg-transparent p-0 text-[0.8rem] text-muted underline underline-offset-[0.15em] hover:text-foreground focus-visible:text-foreground"
               onClick={() => setSelectedId((currentId) => pickRandomId(items, currentId))}
               type="button"
             >
@@ -148,9 +122,14 @@ export function TabOverflowView({ onBack }: { onBack: () => void }) {
             </button>
           </div>
 
-          <h2>
+          <h2 className="mt-[0.9rem] mb-3 text-2xl leading-[1.25] font-bold">
             {selectedItem.url ? (
-              <a href={selectedItem.url} rel="noreferrer" target="_blank">
+              <a
+                className="text-inherit underline decoration-1 underline-offset-[0.15em]"
+                href={selectedItem.url}
+                rel="noreferrer"
+                target="_blank"
+              >
                 {selectedItem.name} ↗
               </a>
             ) : (
@@ -158,103 +137,122 @@ export function TabOverflowView({ onBack }: { onBack: () => void }) {
             )}
           </h2>
 
-          <p className="tab-suggestion-summary">
+          <p className="line-clamp-5 max-w-[46rem] leading-[1.65] text-foreground">
             {selectedItem.summary || "No introduction is available for this item yet."}
           </p>
 
-          <dl className="tab-metadata">
+          <dl className="mt-7 grid grid-cols-3 gap-6 max-[42rem]:grid-cols-2">
             {selectedItem.author && (
               <div>
-                <dt>Author</dt>
-                <dd>{selectedItem.author}</dd>
+                <dt className="mb-[0.15rem] text-[0.7rem] tracking-[0.06em] text-muted uppercase">
+                  Author
+                </dt>
+                <dd className="m-0 text-[0.8rem] leading-[1.4]">{selectedItem.author}</dd>
               </div>
             )}
             <div>
-              <dt>Read</dt>
-              <dd>{selectedItem.readingTime ? `${selectedItem.readingTime} min` : "—"}</dd>
+              <dt className="mb-[0.15rem] text-[0.7rem] tracking-[0.06em] text-muted uppercase">
+                Read
+              </dt>
+              <dd className="m-0 text-[0.8rem] leading-[1.4]">
+                {selectedItem.readingTime ? `${selectedItem.readingTime} min` : "—"}
+              </dd>
             </div>
             <div>
-              <dt>Added</dt>
-              <dd>{formatDate(selectedItem.added) ?? "—"}</dd>
+              <dt className="mb-[0.15rem] text-[0.7rem] tracking-[0.06em] text-muted uppercase">
+                Added
+              </dt>
+              <dd className="m-0 text-[0.8rem] leading-[1.4]">
+                {formatDate(selectedItem.added) ?? "—"}
+              </dd>
             </div>
           </dl>
         </article>
       )}
 
-      <section className="tab-library">
-        <header>
-          <h2>All tabs</h2>
-          <div className="tab-library-tools">
-            <label className="visually-hidden" htmlFor="tab-overflow-search">
+      <section className="mt-14 w-full max-w-none">
+        <header className="mb-3 flex items-center justify-between gap-4 max-[42rem]:items-start max-[42rem]:flex-col">
+          <h2 className="text-base font-bold">All tabs</h2>
+          <div className="flex items-center gap-3 max-[42rem]:w-full">
+            <label className="sr-only" htmlFor="tab-overflow-search">
               Search tabs
             </label>
             <input
-              disabled={state.status !== "ready"}
+              className="w-48 border-0 border-b border-line bg-transparent py-[0.3rem] text-xs text-foreground outline-0 placeholder:text-xs placeholder:text-muted focus:border-foreground max-[42rem]:min-w-0 max-[42rem]:flex-1"
+              disabled={!isSuccess}
               id="tab-overflow-search"
               onChange={(event) => setSearchQuery(event.target.value)}
               placeholder="Search tabs"
               type="search"
               value={searchQuery}
             />
-            <p>
+            <p className="text-xs text-muted">
               {trimmedSearchQuery ? `${filteredItems.length} of ` : ""}
               {items.length} saved
             </p>
           </div>
         </header>
 
-        <div className="tab-table-scroll">
-          <table className="tab-table">
+        <div className="w-full max-w-full overflow-x-auto overscroll-x-contain border-t border-line">
+          <table className="w-full min-w-[50rem] table-fixed border-collapse">
             <colgroup>
-              <col className="tab-col-name" />
-              <col className="tab-col-read" />
-              <col className="tab-col-categories" />
-              <col className="tab-col-open" />
+              <col className="w-[25rem]" />
+              <col className="w-[4.5rem]" />
+              <col className="w-[18rem]" />
+              <col className="w-10" />
             </colgroup>
             <thead>
               <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Read</th>
-                <th scope="col">Categories</th>
-                <th aria-label="Open" scope="col" />
+                <th className={tableHeadingClassName} scope="col">
+                  Name
+                </th>
+                <th className={tableHeadingClassName} scope="col">
+                  Read
+                </th>
+                <th className={tableHeadingClassName} scope="col">
+                  Categories
+                </th>
+                <th aria-label="Open" className={tableHeadingClassName} scope="col" />
               </tr>
             </thead>
             <tbody>
-              {state.status === "loading" ? (
+              {isPending ? (
                 <tr>
-                  <td className="tab-table-empty" colSpan={4}>
+                  <td className={emptyTableCellClassName} colSpan={4}>
                     Loading tabs…
                   </td>
                 </tr>
-              ) : state.status === "error" ? (
+              ) : isError ? (
                 <tr>
-                  <td className="tab-table-empty" colSpan={4}>
+                  <td className={emptyTableCellClassName} colSpan={4}>
                     Tab Overflow is unavailable right now.
                   </td>
                 </tr>
               ) : filteredItems.length > 0 ? (
                 filteredItems.map((item) => (
-                  <tr className={item.id === selectedId ? "is-selected" : undefined} key={item.id}>
-                    <td>
+                  <tr className={item.id === selectedId ? "bg-surface" : undefined} key={item.id}>
+                    <td className={tableCellClassName}>
                       <button
-                        className="tab-row-select"
+                        className="block w-full cursor-pointer overflow-hidden border-0 bg-transparent p-0 text-left text-ellipsis whitespace-nowrap text-foreground hover:underline hover:underline-offset-[0.15em] focus-visible:underline focus-visible:underline-offset-[0.15em]"
                         onClick={() => selectFromTable(item.id)}
                         type="button"
                       >
                         {item.name}
                       </button>
                     </td>
-                    <td>{item.readingTime ? `${item.readingTime} min` : "—"}</td>
-                    <td>
-                      <div className="tab-categories-scroll">
+                    <td className={tableCellClassName}>
+                      {item.readingTime ? `${item.readingTime} min` : "—"}
+                    </td>
+                    <td className={`${tableCellClassName} relative max-w-0 overflow-hidden`}>
+                      <div className="absolute inset-[0.45rem_0.5rem] overflow-x-auto overflow-y-hidden whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                         {item.categories.join(", ") || "—"}
                       </div>
                     </td>
-                    <td>
+                    <td className={tableCellClassName}>
                       {item.url && (
                         <a
                           aria-label={`Open ${item.name}`}
-                          className="tab-row-open"
+                          className="text-base text-muted no-underline hover:text-foreground focus-visible:text-foreground"
                           href={item.url}
                           rel="noreferrer"
                           target="_blank"
@@ -267,7 +265,7 @@ export function TabOverflowView({ onBack }: { onBack: () => void }) {
                 ))
               ) : (
                 <tr>
-                  <td className="tab-table-empty" colSpan={4}>
+                  <td className={emptyTableCellClassName} colSpan={4}>
                     {trimmedSearchQuery ? "No matching tabs." : "No saved tabs."}
                   </td>
                 </tr>

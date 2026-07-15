@@ -9,6 +9,9 @@ on:
 
 env:
   VITE_BACKEND_URL: https://fxn-m-api.fxn-m.workers.dev
+  VITE_POSTHOG_KEY: ${{ secrets.VITE_POSTHOG_KEY }}
+  VITE_POSTHOG_HOST: ${{ secrets.VITE_POSTHOG_HOST }}
+  VITE_POSTHOG_CAPTURE_DEV: "false"
 
 permissions:
   contents: read

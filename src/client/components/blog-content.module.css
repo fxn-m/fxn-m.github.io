@@ -1,0 +1,97 @@
+.content a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.content h1,
+.content h2,
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
+  margin: 2rem 0 0.75rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.content h1 {
+  font-size: 1.5rem;
+}
+
+.content h2 {
+  font-size: 1.25rem;
+}
+
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
+  font-size: 1rem;
+}
+
+.content p,
+.content ul,
+.content ol {
+  margin: 1.25rem 0;
+}
+
+.content ul {
+  padding-left: 1.25rem;
+  list-style: disc;
+}
+
+.content ol {
+  padding-left: 2.5rem;
+  list-style: decimal;
+}
+
+.content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 2rem auto;
+}
+
+.content pre {
+  max-width: 100%;
+  padding: 1rem;
+  overflow-x: auto;
+  border-radius: 0.4rem;
+  background: var(--surface);
+}
+
+.content code {
+  font-size: 0.875em;
+}
+
+.content blockquote {
+  margin: 1.5rem 0;
+  padding-left: 1rem;
+  color: var(--muted);
+  border-left: 2px solid var(--surface);
+}
+
+.content table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.content th,
+.content td {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--surface);
+}
+
+.content th {
+  font-weight: 700;
+  text-align: center;
+}
+
+.content :global(.YTContainer) iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}

@@ -1,12 +1,10 @@
-import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { Link, Outlet } from "react-router";
 
-import type { BlogPost } from "@/shared";
-
-import { BlogView, WritingList } from "./components/blog";
-import { TabOverflowView } from "./components/tab-overflow";
+import { tabOverflowQueryOptions } from "./api/tab-overflow";
+import { WritingList } from "./components/blog";
 import ThemeToggle from "./components/theme/theme-toggle";
-
-type ActiveView = { kind: "home" } | { kind: "blog"; post: BlogPost } | { kind: "tab-overflow" };
 
 const projects = [
   {
@@ -22,67 +20,77 @@ const projects = [
     name: "PGT",
   },
   {
-    action: "tab-overflow",
+    href: "/tab-overflow",
     icon: null,
     name: "Tab Overflow",
   },
 ];
 
-export default function App() {
-  const [activeView, setActiveView] = useState<ActiveView>({ kind: "home" });
+export function HomePage() {
+  const queryClient = useQueryClient();
+  const prefetchTabOverflow = () => {
+    void queryClient.prefetchQuery(tabOverflowQueryOptions());
+  };
 
-  const goHome = () => setActiveView({ kind: "home" });
+  useEffect(prefetchTabOverflow, [queryClient]);
 
   return (
-    <>
-      <ThemeToggle />
-      {activeView.kind === "blog" ? (
-        <BlogView onBack={goHome} post={activeView.post} />
-      ) : activeView.kind === "tab-overflow" ? (
-        <TabOverflowView onBack={goHome} />
-      ) : (
-        <main className="content">
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua.
-          </p>
+    <main className="mx-auto mb-16 w-[min(50rem,calc(100%-2rem))] leading-[1.6]">
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
+        labore et dolore magna aliqua.
+      </p>
 
-          <section>
-            <h2>Writing</h2>
-            <WritingList onSelect={(post) => setActiveView({ kind: "blog", post })} />
-          </section>
+      <section className="mt-10">
+        <h2 className="mb-3 text-base font-bold">Writing</h2>
+        <WritingList />
+      </section>
 
-          <section>
-            <h2>Projects</h2>
-            <ul className="project-list">
-              {projects.map((project) => (
-                <li className="project" key={project.name}>
-                  {project.action === "tab-overflow" ? (
-                    <a
-                      className="project-row project-link"
-                      href="#tab-overflow"
-                      onClick={(event) => {
-                        event.preventDefault();
-                        setActiveView({ kind: "tab-overflow" });
-                      }}
-                    >
-                      <span aria-hidden="true" className="project-icon project-mark">
-                        TO
-                      </span>
-                      <span className="project-name">{project.name}</span>
-                    </a>
-                  ) : (
-                    <div className="project-row">
-                      {project.icon && <img alt="" className="project-icon" src={project.icon} />}
-                      <span>{project.name}</span>
-                    </div>
+      <section className="mt-10">
+        <h2 className="mb-3 text-base font-bold">Projects</h2>
+        <ul className="m-0 list-none p-0">
+          {projects.map((project) => (
+            <li className="min-h-10 [&+&]:mt-2" key={project.name}>
+              {project.href ? (
+                <Link
+                  className="group flex w-fit items-center gap-3 text-inherit no-underline"
+                  onFocus={prefetchTabOverflow}
+                  onMouseEnter={prefetchTabOverflow}
+                  to={project.href}
+                >
+                  <span
+                    aria-hidden="true"
+                    className="grid size-7 shrink-0 place-items-center rounded-[0.3rem] bg-surface text-[0.625rem] font-semibold text-muted"
+                  >
+                    TO
+                  </span>
+                  <span className="underline underline-offset-[0.15em]">{project.name}</span>
+                </Link>
+              ) : (
+                <div className="flex w-fit items-center gap-3 text-inherit no-underline">
+                  {project.icon && (
+                    <img
+                      alt=""
+                      className="size-7 shrink-0 rounded-[0.3rem] object-cover"
+                      src={project.icon}
+                    />
                   )}
-                </li>
-              ))}
-            </ul>
-          </section>
-        </main>
-      )}
-    </>
+                  <span>{project.name}</span>
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
+      </section>
+    </main>
+  );
+}
+
+export default function App() {
+  return (
+    <div className="min-h-screen bg-background pt-[clamp(4rem,14vh,8rem)] font-sans text-foreground transition-colors duration-200 [font-synthesis:none]">
+      <ThemeToggle />
+      <Outlet />
+    </div>
   );
 }
