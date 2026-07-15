@@ -2,14 +2,14 @@
 
 ## Stack At A Glance
 
-- The frontend is a clean React 19 and Vite app. `src/main.tsx` mounts the intentionally blank `src/client/app.tsx`; `src/main.css` has no styling rules.
+- The frontend is a clean React 19 and Vite app. `src/main.tsx` mounts `src/client/app.tsx` inside the theme provider; `src/main.css` holds the small homepage and light/dark theme baseline.
 - The Cloudflare Worker in `src/server` serves the existing Notion, Spotify, Strava, and link-enrichment APIs and stores Tab Overflow data in KV.
 - Shared TypeScript contracts live in `src/shared` and are consumed through the `@` alias configured in the TypeScript configs.
 - Blog posts are sourced from Notion; `scripts/buildBlog.ts` can still materialize static HTML into `public/html` when explicitly run.
 
 ## Layout Highlights
 
-- `src/client/app.tsx` is the only client module. Add new frontend modules under `src/client` as the redesign takes shape.
+- `src/client/app.tsx` owns the homepage scaffold, while `src/client/components/theme` contains the light/dark/system provider and toggle.
 - `src/server` is organized by concern: `api`, `services`, `config`, `utils`, and the Worker entry at `worker.ts`.
 - `src/shared` exposes domain models for blogs, Strava, and Notion.
 - `scripts/buildBlog.ts` fetches from the Worker using `BACKEND_URL`, clears `public/html`, and writes HTML snapshots plus `index.json`.
@@ -35,9 +35,10 @@
 
 ## Frontend Baseline
 
-- The browser document contains only Vite's root element and standard metadata. There are no remote fonts, analytics scripts, favicons, theme assets, routers, query clients, UI libraries, or global design tokens.
+- The browser document contains only Vite's root element and standard metadata. There are no remote fonts, analytics scripts, favicons, routers, query clients, or UI libraries.
+- Theme mode cycles through system, dark, and light, persists for the browser session, and uses the sun/moon assets in `public`.
 - Keep the frontend dependency set minimal as the redesign grows. Add packages only when the new UI actually uses them.
-- Keep `src/main.css` unopinionated until the new styling direction is chosen.
+- Keep `src/main.css` restrained: the current baseline is the narrow homepage layout plus the small set of light/dark color tokens needed by the theme toggle.
 
 ## Worker & Content Notes
 

@@ -1,6 +1,11 @@
 :root {
-  color: #1d1d1f;
-  background: #fff;
+  --background: #fff;
+  --foreground: #1d1d1f;
+  --muted: #666;
+  --surface: #f1f1f1;
+
+  color: var(--foreground);
+  background: var(--background);
   font-family: system-ui, sans-serif;
   font-synthesis: none;
 }
@@ -10,12 +15,26 @@
 }
 
 body {
+  min-height: 100vh;
   margin: 0;
+  padding-top: clamp(4rem, 14vh, 8rem);
+  color: var(--foreground);
+  background: var(--background);
+  transition:
+    color 200ms ease,
+    background-color 200ms ease;
+}
+
+body.dark {
+  --background: #17171a;
+  --foreground: #cdcdcd;
+  --muted: #aaa;
+  --surface: #29292d;
 }
 
 .content {
   width: min(34rem, calc(100% - 2rem));
-  margin: clamp(4rem, 14vh, 8rem) auto 4rem;
+  margin: 0 auto 4rem;
   line-height: 1.6;
 }
 
@@ -64,8 +83,58 @@ body {
 .project-mark {
   display: grid;
   place-items: center;
-  background: #f1f1f1;
-  color: #666;
+  background: var(--surface);
+  color: var(--muted);
   font-size: 0.625rem;
   font-weight: 600;
+}
+
+.theme-control {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1;
+}
+
+.theme-toggle {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  padding: 0.4rem;
+  cursor: pointer;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  place-items: center;
+}
+
+.theme-toggle:hover,
+.theme-toggle:focus-visible {
+  background: var(--surface);
+}
+
+.theme-toggle img {
+  width: 1.75rem;
+  height: 1.75rem;
+  opacity: 0.7;
+}
+
+body.dark .theme-toggle img {
+  filter: invert(1);
+}
+
+.theme-label {
+  position: absolute;
+  top: 50%;
+  right: calc(100% + 0.5rem);
+  color: var(--muted);
+  font-size: 0.75rem;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity 150ms ease;
+}
+
+.theme-control:hover .theme-label,
+.theme-control:focus-within .theme-label {
+  opacity: 1;
 }

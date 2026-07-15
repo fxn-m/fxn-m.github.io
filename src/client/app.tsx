@@ -1,3 +1,5 @@
+import ThemeToggle from "./components/theme/theme-toggle";
+
 const projects = [
   {
     icon: "/projects/oelp-chicken.gif",
@@ -19,36 +21,39 @@ const projects = [
 
 export default function App() {
   return (
-    <main className="content">
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
-        labore et dolore magna aliqua.
-      </p>
+    <>
+      <ThemeToggle />
+      <main className="content">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt
+          ut labore et dolore magna aliqua.
+        </p>
 
-      <section>
-        <h2>Writing</h2>
-        <ul>
-          <li>Change Makers: Geohot</li>
-        </ul>
-      </section>
+        <section>
+          <h2>Writing</h2>
+          <ul>
+            <li>Change Makers: Geohot</li>
+          </ul>
+        </section>
 
-      <section>
-        <h2>Projects</h2>
-        <ul className="project-list">
-          {projects.map((project) => (
-            <li className="project" key={project.name}>
-              {project.icon ? (
-                <img alt="" className="project-icon" src={project.icon} />
-              ) : (
-                <span aria-hidden="true" className="project-icon project-mark">
-                  TO
-                </span>
-              )}
-              <span>{project.name}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
-    </main>
+        <section>
+          <h2>Projects</h2>
+          <ul className="project-list">
+            {projects.map((project) => (
+              <li className="project" key={project.name}>
+                {project.icon ? (
+                  <img alt="" className="project-icon" src={project.icon} />
+                ) : (
+                  <span aria-hidden="true" className="project-icon project-mark">
+                    TO
+                  </span>
+                )}
+                <span>{project.name}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </main>
+    </>
   );
 }
