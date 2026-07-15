@@ -1,1 +1,71 @@
-/* Add global styles here. */
+:root {
+  color: #1d1d1f;
+  background: #fff;
+  font-family: system-ui, sans-serif;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+.content {
+  width: min(34rem, calc(100% - 2rem));
+  margin: clamp(4rem, 14vh, 8rem) auto 4rem;
+  line-height: 1.6;
+}
+
+.content p {
+  margin: 0;
+}
+
+.content section {
+  margin-top: 2.5rem;
+}
+
+.content h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.content ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.content .project-list {
+  list-style: none;
+  padding: 0;
+}
+
+.project {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 2.5rem;
+}
+
+.project + .project {
+  margin-top: 0.5rem;
+}
+
+.project-icon {
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: 0 0 auto;
+  border-radius: 0.3rem;
+  object-fit: cover;
+}
+
+.project-mark {
+  display: grid;
+  place-items: center;
+  background: #f1f1f1;
+  color: #666;
+  font-size: 0.625rem;
+  font-weight: 600;
+}
