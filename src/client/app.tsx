@@ -2,7 +2,7 @@ import ThemeToggle from "./components/theme/theme-toggle";
 
 const projects = [
   {
-    icon: "/projects/oelp-chicken.gif",
+    icon: "/projects/oelp-logo.ico",
     name: "Où est le poulet",
   },
   {

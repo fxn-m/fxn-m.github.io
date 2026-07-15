@@ -35,8 +35,8 @@
 
 ## Frontend Baseline
 
-- The browser document contains only Vite's root element and standard metadata. There are no remote fonts, analytics scripts, favicons, routers, query clients, or UI libraries.
-- Theme mode cycles through system, dark, and light, persists for the browser session, and uses the sun/moon assets in `public`.
+- The browser document stays minimal: it has the Vite root, standard metadata, and a theme-aware favicon. There are no remote fonts, analytics scripts, routers, query clients, or UI libraries.
+- Theme mode cycles through system, dark, and light, persists for the browser session, and uses the sun/moon and light/dark favicon assets in `public`.
 - Keep the frontend dependency set minimal as the redesign grows. Add packages only when the new UI actually uses them.
 - Keep `src/main.css` restrained: the current baseline is the narrow homepage layout plus the small set of light/dark color tokens needed by the theme toggle.
 
