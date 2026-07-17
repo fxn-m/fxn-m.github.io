@@ -7,15 +7,15 @@ export default function ThemeToggle() {
   const Icon = resolvedTheme === "dark" ? MoonIcon : SunIcon;
 
   return (
-    <div className="group fixed top-4 right-4 z-10">
+    <div className="group relative">
       <button
         aria-label={`Theme: ${theme}. Switch to ${nextTheme}.`}
-        className="grid size-6 cursor-pointer place-items-center border-0 bg-transparent p-0 text-foreground"
+        className="grid cursor-pointer place-items-center border-0 bg-transparent p-0 text-foreground"
         onClick={toggleTheme}
         title={theme}
         type="button"
       >
-        <Icon className="size-5 opacity-60 transition-opacity duration-150 group-hover:opacity-90 group-focus-within:opacity-90" />
+        <Icon className="size-5 transition-opacity duration-150 group-hover:opacity-70 group-focus-within:opacity-70" />
       </button>
       <span
         aria-live="polite"

@@ -1,3 +1,7 @@
+.content {
+  overflow-wrap: anywhere;
+}
+
 .content a {
   color: inherit;
   text-decoration: underline;
@@ -42,7 +46,7 @@
 }
 
 .content ol {
-  padding-left: 2.5rem;
+  padding-left: 1.5rem;
   list-style: decimal;
 }
 
@@ -94,4 +98,35 @@
   width: 100%;
   aspect-ratio: 16 / 9;
   border: 0;
+}
+
+@media (max-width: 40rem) {
+  .content {
+    font-size: 1rem;
+    line-height: 1.65;
+  }
+
+  .content h1,
+  .content h2,
+  .content h3,
+  .content h4,
+  .content h5,
+  .content h6 {
+    margin-top: 2.25rem;
+  }
+
+  .content p,
+  .content ul,
+  .content ol {
+    margin: 1.35rem 0;
+  }
+
+  .content pre {
+    padding: 0.875rem;
+    font-size: 0.9rem;
+  }
+
+  .content blockquote {
+    padding-left: 0.875rem;
+  }
 }

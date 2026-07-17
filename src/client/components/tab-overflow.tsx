@@ -1,21 +1,37 @@
-import { Cross2Icon, ExternalLinkIcon, UpdateIcon } from "@radix-ui/react-icons";
+import { Cross2Icon, ExternalLinkIcon, ShuffleIcon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
 import Fuse from "fuse.js";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { type TabSuggestion, tabOverflowQueryOptions } from "../api/tab-overflow";
-import { BackLink } from "./back-link";
+import { PageContainer } from "./page-container";
 
 const EMPTY_ITEMS: TabSuggestion[] = [];
-const tableHeadingClassName =
-  "border-b border-line px-2 py-1.5 text-left text-[0.68rem] leading-4 font-medium tracking-[0.05em] text-muted uppercase";
 const tableCellClassName =
   "border-b border-line px-2 py-1.5 align-middle text-[0.78rem] leading-4 text-muted";
 const emptyTableCellClassName =
   "border-b border-line px-2 py-7 text-center text-[0.78rem] leading-4 text-muted";
+const categoryChipClassName =
+  "inline-block shrink-0 bg-surface px-2 py-1 text-[0.7rem] leading-4 text-foreground lowercase";
 const descriptionHeightClassName = "h-[8.25rem]";
 const suggestionCardClassName = "w-full border-y border-line pt-[1.4rem] pb-7";
 const loadingTableRows = Array.from({ length: 8 }, (_, index) => index);
+const mobilePageSize = 24;
+
+function useMediaQuery(query: string) {
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(query);
+    const updateMatches = () => setMatches(mediaQuery.matches);
+
+    updateMatches();
+    mediaQuery.addEventListener("change", updateMatches);
+    return () => mediaQuery.removeEventListener("change", updateMatches);
+  }, [query]);
+
+  return matches;
+}
 
 function pickRandomId(items: TabSuggestion[], currentId: string | null = null) {
   if (items.length === 0) {
@@ -55,10 +71,7 @@ function TabSuggestionSkeleton() {
       role="status"
     >
       <div aria-hidden="true">
-        <div className="flex items-baseline justify-between gap-4">
-          <div className="h-[1.875rem] w-3/5 rounded-sm bg-surface" />
-          <div className="h-3 w-12 rounded-sm bg-surface" />
-        </div>
+        <div className="h-[1.875rem] w-3/5 rounded-sm bg-surface" />
 
         <div className={`${descriptionHeightClassName} mt-3 space-y-[0.9rem] py-1`}>
           <div className="h-3 w-full rounded-sm bg-surface" />
@@ -90,8 +103,10 @@ export function TabOverflowView() {
   } = useQuery(tabOverflowQueryOptions());
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [mobileVisibleCount, setMobileVisibleCount] = useState(mobilePageSize);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const suggestionRef = useRef<HTMLElement | null>(null);
+  const isTableLayout = useMediaQuery("(min-width: 56rem)");
 
   useLayoutEffect(() => {
     if (items.length === 0) {
@@ -129,6 +144,7 @@ export function TabOverflowView() {
       trimmedSearchQuery ? search.search(trimmedSearchQuery).map((result) => result.item) : items,
     [items, search, trimmedSearchQuery],
   );
+  const visibleMobileItems = filteredItems.slice(0, mobileVisibleCount);
 
   const selectFromTable = (id: string) => {
     setSelectedId(id);
@@ -139,16 +155,19 @@ export function TabOverflowView() {
 
   const clearSearch = () => {
     setSearchQuery("");
+    setMobileVisibleCount(mobilePageSize);
     searchInputRef.current?.focus();
   };
 
   return (
-    <main className="relative mx-auto mb-16 w-[min(50rem,calc(100%-5rem))] leading-[1.6]">
-      <BackLink />
-
-      <header className="mb-11 max-w-[34rem]">
-        <h1 className="mb-[0.4rem] text-[1.75rem] leading-[1.2] font-bold">Tab Overflow</h1>
-        <p className="text-muted">Things I opened with good intentions and saved for later.</p>
+    <PageContainer as="main" className="mb-16 leading-[1.6]">
+      <header className="mb-9 max-w-[34rem] sm:mb-11">
+        <h1 className="mb-[0.4rem] text-[1.625rem] leading-[1.2] font-bold sm:text-[1.75rem]">
+          Tab Overflow
+        </h1>
+        <p className="text-[0.9375rem] text-muted sm:text-base">
+          Things I opened with good intentions and saved for later.
+        </p>
       </header>
 
       {isPending && <TabSuggestionSkeleton />}
@@ -156,83 +175,85 @@ export function TabOverflowView() {
 
       {isSuccess && selectedItem && (
         <article className={`${suggestionCardClassName} scroll-mt-8`} ref={suggestionRef}>
-          <div className="mb-3 flex items-baseline justify-between gap-4">
-            <h2 className="min-w-0 flex-1 text-2xl leading-[1.25] font-bold">
-              {selectedItem.url ? (
-                <a
-                  className="text-inherit underline decoration-1 underline-offset-[0.15em] line-clamp-1"
-                  href={selectedItem.url}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  {selectedItem.name}
-                  <ExternalLinkIcon
-                    aria-hidden="true"
-                    className="ml-1 inline-block size-[0.75em] align-baseline"
-                  />
-                </a>
-              ) : (
-                selectedItem.name
-              )}
-            </h2>
-            <button
-              className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 border border-line bg-transparent px-2.5 py-1 text-[0.8rem] text-muted transition-colors duration-150 hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground"
-              onClick={() => setSelectedId(pickRandomId(items, selectedId))}
-              type="button"
-            >
-              <UpdateIcon aria-hidden="true" className="size-3.5" />
-              Another
-            </button>
-          </div>
+          <h2 className="mb-3 min-w-0 text-xl leading-[1.25] font-bold sm:text-2xl">
+            {selectedItem.url ? (
+              <a
+                className="text-inherit underline decoration-1 underline-offset-[0.15em] line-clamp-2 sm:line-clamp-1"
+                href={selectedItem.url}
+                rel="noreferrer"
+                target="_blank"
+              >
+                {selectedItem.name}
+                <ExternalLinkIcon
+                  aria-hidden="true"
+                  className="ml-1 inline-block size-[0.75em] align-baseline"
+                />
+              </a>
+            ) : (
+              selectedItem.name
+            )}
+          </h2>
 
-          <p
-            className={`${descriptionHeightClassName} line-clamp-5 leading-[1.65] text-foreground`}
-          >
+          <p className="h-[9.5rem] line-clamp-6 text-[0.9375rem] leading-[1.7] text-foreground sm:h-[8.25rem] sm:line-clamp-5 sm:text-base sm:leading-[1.65]">
             {selectedItem.summary || "No introduction is available for this item yet."}
           </p>
 
-          <dl className="mt-7 flex flex-wrap gap-x-12 gap-y-4">
-            {selectedItem.author && (
+          <div className="mt-7 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+            <dl className="grid flex-1 grid-cols-2 gap-x-5 gap-y-4 sm:flex sm:flex-wrap sm:gap-x-12">
+              {selectedItem.author && (
+                <div>
+                  <dt className="mb-[0.15rem] text-[0.7rem] tracking-[0.06em] text-muted uppercase">
+                    Author
+                  </dt>
+                  <dd className="m-0 text-[0.8rem] leading-[1.4]">{selectedItem.author}</dd>
+                </div>
+              )}
               <div>
                 <dt className="mb-[0.15rem] text-[0.7rem] tracking-[0.06em] text-muted uppercase">
-                  Author
+                  Read
                 </dt>
-                <dd className="m-0 text-[0.8rem] leading-[1.4]">{selectedItem.author}</dd>
+                <dd className="m-0 text-[0.8rem] leading-[1.4]">
+                  {selectedItem.readingTime ? `${selectedItem.readingTime} min` : "—"}
+                </dd>
               </div>
-            )}
-            <div>
-              <dt className="mb-[0.15rem] text-[0.7rem] tracking-[0.06em] text-muted uppercase">
-                Read
-              </dt>
-              <dd className="m-0 text-[0.8rem] leading-[1.4]">
-                {selectedItem.readingTime ? `${selectedItem.readingTime} min` : "—"}
-              </dd>
-            </div>
-            <div>
-              <dt className="mb-[0.15rem] text-[0.7rem] tracking-[0.06em] text-muted uppercase">
-                Added
-              </dt>
-              <dd className="m-0 text-[0.8rem] leading-[1.4]">
-                {formatDate(selectedItem.added) ?? "—"}
-              </dd>
-            </div>
-          </dl>
+              <div>
+                <dt className="mb-[0.15rem] text-[0.7rem] tracking-[0.06em] text-muted uppercase">
+                  Added
+                </dt>
+                <dd className="m-0 text-[0.8rem] leading-[1.4]">
+                  {formatDate(selectedItem.added) ?? "—"}
+                </dd>
+              </div>
+            </dl>
+            <button
+              aria-label="Show another random tab"
+              className="inline-flex min-h-11 w-fit shrink-0 cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 font-geist-mono text-xs text-muted hover:text-foreground hover:underline hover:underline-offset-[0.15em] focus-visible:text-foreground focus-visible:underline focus-visible:underline-offset-[0.15em] sm:min-h-0 sm:pb-[0.15rem]"
+              onClick={() => setSelectedId(pickRandomId(items, selectedId))}
+              type="button"
+            >
+              <ShuffleIcon aria-hidden="true" className="size-3.5" />
+              Shuffle
+            </button>
+          </div>
         </article>
       )}
 
-      <section className="mt-14 w-full max-w-none">
-        <header className="mb-3 flex items-center justify-between gap-4 max-[42rem]:items-start max-[42rem]:flex-col">
+      <section className="mt-12 w-full max-w-none sm:mt-14">
+        <header className="mb-3 flex flex-col items-start gap-3 min-[56rem]:flex-row min-[56rem]:items-center min-[56rem]:justify-between min-[56rem]:gap-4">
           <h2 className="text-base font-bold">All</h2>
-          <div className="flex items-center gap-3 max-[42rem]:w-full">
+          <div className="flex w-full items-center gap-3 min-[56rem]:w-auto">
             <label className="sr-only" htmlFor="tab-overflow-search">
               Search tabs
             </label>
-            <div className="relative w-48 border-b border-line focus-within:border-foreground max-[42rem]:min-w-0 max-[42rem]:flex-1">
+            <div className="relative min-w-0 flex-1 border-b border-line focus-within:border-foreground min-[56rem]:w-48 min-[56rem]:flex-none">
               <input
-                className="w-full border-0 bg-transparent py-[0.3rem] pr-6 text-xs text-foreground outline-0 placeholder:text-xs placeholder:text-muted [&::-webkit-search-cancel-button]:hidden"
+                className="min-h-11 w-full border-0 bg-transparent py-2 pr-9 text-base text-foreground outline-0 placeholder:text-base placeholder:text-muted min-[56rem]:min-h-0 min-[56rem]:py-[0.3rem] min-[56rem]:pr-6 min-[56rem]:text-xs min-[56rem]:placeholder:text-xs [&::-webkit-search-cancel-button]:hidden"
                 disabled={!isSuccess}
                 id="tab-overflow-search"
-                onChange={(event) => setSearchQuery(event.target.value)}
+                onChange={(event) => {
+                  setSearchQuery(event.target.value);
+                  setMobileVisibleCount(mobilePageSize);
+                }}
                 placeholder="Search tabs"
                 ref={searchInputRef}
                 type="search"
@@ -241,7 +262,7 @@ export function TabOverflowView() {
               {searchQuery && (
                 <button
                   aria-label="Clear search"
-                  className="absolute inset-y-0 right-0 grid w-6 cursor-pointer place-items-center border-0 bg-transparent p-0 text-sm text-muted hover:text-foreground focus-visible:text-foreground"
+                  className="absolute inset-y-0 right-0 grid w-11 cursor-pointer place-items-center border-0 bg-transparent p-0 text-sm text-muted hover:text-foreground focus-visible:text-foreground min-[56rem]:w-6"
                   onClick={clearSearch}
                   type="button"
                 >
@@ -256,130 +277,210 @@ export function TabOverflowView() {
                   className="inline-block h-3 w-16 animate-pulse rounded-sm bg-surface align-middle motion-reduce:animate-none"
                 />
               ) : (
-                `${items.length} saved`
+                `${trimmedSearchQuery ? filteredItems.length : items.length} ${
+                  trimmedSearchQuery ? "found" : "saved"
+                }`
               )}
             </p>
           </div>
         </header>
 
-        <div className="w-full max-w-full overflow-x-auto overscroll-x-contain border-t border-line">
-          <table className="w-full min-w-[50rem] table-fixed border-collapse font-geist-mono">
-            <colgroup>
-              <col className="w-[25rem]" />
-              <col className="w-[4.5rem]" />
-              <col className="w-[18rem]" />
-              <col className="w-10" />
-            </colgroup>
-            <thead>
-              <tr>
-                <th className={tableHeadingClassName} scope="col">
-                  Name
-                </th>
-                <th className={tableHeadingClassName} scope="col">
-                  Read
-                </th>
-                <th className={tableHeadingClassName} scope="col">
-                  Categories
-                </th>
-                <th aria-label="Open" className={tableHeadingClassName} scope="col" />
-              </tr>
-            </thead>
-            <tbody>
-              {isPending ? (
-                loadingTableRows.map((row) => (
-                  <tr
-                    aria-hidden="true"
-                    className="animate-pulse motion-reduce:animate-none"
-                    key={row}
-                  >
-                    <td className={tableCellClassName}>
-                      <div className="h-3 w-4/5 rounded-sm bg-surface" />
-                    </td>
-                    <td className={tableCellClassName}>
-                      <div className="h-3 w-10 rounded-sm bg-surface" />
-                    </td>
-                    <td className={`${tableCellClassName} max-w-0 overflow-hidden`}>
-                      <div className="h-3 w-3/5 rounded-sm bg-surface" />
-                    </td>
-                    <td className={tableCellClassName}>
-                      <div className="ml-auto h-3 w-3 rounded-sm bg-surface" />
+        {isTableLayout ? (
+          <div className="w-full max-w-full overflow-x-auto overscroll-x-contain border-t border-line">
+            <table
+              aria-label="Saved tabs"
+              className="w-full min-w-[50rem] table-fixed border-collapse font-geist-mono"
+            >
+              <colgroup>
+                <col className="w-[25rem]" />
+                <col className="w-[4.5rem]" />
+                <col className="w-[18rem]" />
+                <col className="w-10" />
+              </colgroup>
+              <tbody>
+                {isPending ? (
+                  loadingTableRows.map((row) => (
+                    <tr
+                      aria-hidden="true"
+                      className="animate-pulse motion-reduce:animate-none"
+                      key={row}
+                    >
+                      <td className={tableCellClassName}>
+                        <div className="h-3 w-4/5 rounded-sm bg-surface" />
+                      </td>
+                      <td className={tableCellClassName}>
+                        <div className="h-3 w-10 rounded-sm bg-surface" />
+                      </td>
+                      <td className={`${tableCellClassName} max-w-0 overflow-hidden`}>
+                        <div className="h-3 w-3/5 rounded-sm bg-surface" />
+                      </td>
+                      <td className={tableCellClassName}>
+                        <div className="ml-auto h-3 w-3 rounded-sm bg-surface" />
+                      </td>
+                    </tr>
+                  ))
+                ) : isError ? (
+                  <tr>
+                    <td className={emptyTableCellClassName} colSpan={4}>
+                      Tab Overflow is unavailable right now.
                     </td>
                   </tr>
-                ))
-              ) : isError ? (
-                <tr>
-                  <td className={emptyTableCellClassName} colSpan={4}>
-                    Tab Overflow is unavailable right now.
-                  </td>
-                </tr>
-              ) : filteredItems.length > 0 ? (
-                filteredItems.map((item) => (
-                  <tr
-                    aria-label={`Show ${item.name}`}
-                    aria-selected={item.id === selectedId}
-                    className={`group cursor-pointer transition-colors hover:bg-surface focus-visible:bg-surface focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-foreground ${
-                      item.id === selectedId ? "bg-surface" : ""
-                    }`}
-                    key={item.id}
-                    onClick={(event) => {
-                      if (event.target instanceof Element && event.target.closest("a")) {
-                        return;
-                      }
+                ) : filteredItems.length > 0 ? (
+                  filteredItems.map((item) => (
+                    <tr
+                      aria-label={`Show ${item.name}`}
+                      aria-selected={item.id === selectedId}
+                      className={`group cursor-pointer transition-colors hover:bg-surface focus-visible:bg-surface focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-foreground ${
+                        item.id === selectedId ? "bg-surface" : ""
+                      }`}
+                      key={item.id}
+                      onClick={(event) => {
+                        if (event.target instanceof Element && event.target.closest("a")) {
+                          return;
+                        }
 
-                      selectFromTable(item.id);
-                    }}
-                    onKeyDown={(event) => {
-                      if (
-                        event.target !== event.currentTarget ||
-                        (event.key !== "Enter" && event.key !== " ")
-                      ) {
-                        return;
-                      }
+                        selectFromTable(item.id);
+                      }}
+                      onKeyDown={(event) => {
+                        if (
+                          event.target !== event.currentTarget ||
+                          (event.key !== "Enter" && event.key !== " ")
+                        ) {
+                          return;
+                        }
 
-                      event.preventDefault();
-                      selectFromTable(item.id);
-                    }}
-                    tabIndex={0}
-                  >
-                    <td className={tableCellClassName}>
-                      <span className="block w-full overflow-hidden text-left text-ellipsis whitespace-nowrap text-foreground group-hover:underline group-hover:underline-offset-[0.15em] group-focus-visible:underline group-focus-visible:underline-offset-[0.15em]">
-                        {item.name}
-                      </span>
+                        event.preventDefault();
+                        selectFromTable(item.id);
+                      }}
+                      tabIndex={0}
+                    >
+                      <td className={tableCellClassName}>
+                        <span className="block w-full overflow-hidden text-left text-ellipsis whitespace-nowrap text-foreground group-hover:underline group-hover:underline-offset-[0.15em] group-focus-visible:underline group-focus-visible:underline-offset-[0.15em]">
+                          {item.name}
+                        </span>
+                      </td>
+                      <td className={tableCellClassName}>
+                        {item.readingTime ? `${item.readingTime} min` : "—"}
+                      </td>
+                      <td className={`${tableCellClassName} max-w-0 overflow-hidden`}>
+                        {item.categories.length > 0 ? (
+                          <div className="flex gap-1 overflow-x-auto overflow-y-hidden whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                            {item.categories.map((category) => (
+                              <span className={categoryChipClassName} key={category}>
+                                {category}
+                              </span>
+                            ))}
+                          </div>
+                        ) : (
+                          "—"
+                        )}
+                      </td>
+                      <td className={tableCellClassName}>
+                        {item.url && (
+                          <a
+                            aria-label={`Open ${item.name}`}
+                            className="mx-auto inline-grid size-5 place-items-center text-muted no-underline hover:text-foreground focus-visible:text-foreground"
+                            href={item.url}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            <ExternalLinkIcon aria-hidden="true" className="size-3.5" />
+                          </a>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td className={emptyTableCellClassName} colSpan={4}>
+                      {trimmedSearchQuery ? "No matching tabs." : "No saved tabs."}
                     </td>
-                    <td className={tableCellClassName}>
-                      {item.readingTime ? `${item.readingTime} min` : "—"}
-                    </td>
-                    <td className={`${tableCellClassName} max-w-0 overflow-hidden`}>
-                      <div className="overflow-x-auto overflow-y-hidden whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                        {item.categories.join(", ") || "—"}
-                      </div>
-                    </td>
-                    <td className={tableCellClassName}>
-                      {item.url && (
-                        <a
-                          aria-label={`Open ${item.name}`}
-                          className="mx-auto inline-grid size-5 place-items-center text-muted no-underline hover:text-foreground focus-visible:text-foreground"
-                          href={item.url}
-                          rel="noreferrer"
-                          target="_blank"
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="border-t border-line">
+            {isPending ? (
+              <div
+                aria-busy="true"
+                aria-label="Loading saved tabs"
+                className="divide-y divide-line"
+                role="status"
+              >
+                {loadingTableRows.map((row) => (
+                  <div className="animate-pulse py-4 motion-reduce:animate-none" key={row}>
+                    <div className="h-4 w-4/5 rounded-sm bg-surface" />
+                    <div className="mt-3 h-3 w-2/5 rounded-sm bg-surface" />
+                  </div>
+                ))}
+              </div>
+            ) : isError ? (
+              <p className="border-b border-line py-7 text-center text-sm text-muted">
+                Tab Overflow is unavailable right now.
+              </p>
+            ) : visibleMobileItems.length > 0 ? (
+              <>
+                <ul className="m-0 list-none divide-y divide-line p-0">
+                  {visibleMobileItems.map((item) => (
+                    <li className={item.id === selectedId ? "bg-surface" : ""} key={item.id}>
+                      <div className="flex min-h-16 items-center gap-2 py-2 pl-2">
+                        <button
+                          aria-label={`Show ${item.name}`}
+                          className="min-h-11 min-w-0 flex-1 cursor-pointer border-0 bg-transparent p-0 text-left font-geist-mono text-sm leading-5 text-foreground"
+                          onClick={() => selectFromTable(item.id)}
+                          type="button"
                         >
-                          <ExternalLinkIcon aria-hidden="true" className="size-3.5" />
-                        </a>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td className={emptyTableCellClassName} colSpan={4}>
-                    {trimmedSearchQuery ? "No matching tabs." : "No saved tabs."}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                          <span className="line-clamp-2">{item.name}</span>
+                          <span className="mt-1 block text-[0.7rem] leading-4 text-muted">
+                            {item.readingTime ? `${item.readingTime} min` : "No read time"}
+                          </span>
+                          {item.categories.length > 0 && (
+                            <span className="mt-2 flex flex-wrap gap-1">
+                              {item.categories.map((category) => (
+                                <span className={categoryChipClassName} key={category}>
+                                  {category}
+                                </span>
+                              ))}
+                            </span>
+                          )}
+                        </button>
+                        {item.url && (
+                          <a
+                            aria-label={`Open ${item.name}`}
+                            className="grid size-11 shrink-0 place-items-center text-muted no-underline hover:text-foreground focus-visible:text-foreground"
+                            href={item.url}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            <ExternalLinkIcon aria-hidden="true" className="size-4" />
+                          </a>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                {visibleMobileItems.length < filteredItems.length && (
+                  <button
+                    className="mt-4 min-h-11 w-full cursor-pointer border border-line bg-transparent px-4 text-sm text-muted transition-colors hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground"
+                    onClick={() => setMobileVisibleCount((count) => count + mobilePageSize)}
+                    type="button"
+                  >
+                    Show{" "}
+                    {Math.min(mobilePageSize, filteredItems.length - visibleMobileItems.length)}{" "}
+                    more
+                  </button>
+                )}
+              </>
+            ) : (
+              <p className="border-b border-line py-7 text-center text-sm text-muted">
+                {trimmedSearchQuery ? "No matching tabs." : "No saved tabs."}
+              </p>
+            )}
+          </div>
+        )}
       </section>
-    </main>
+    </PageContainer>
   );
 }

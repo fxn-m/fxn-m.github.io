@@ -5,10 +5,10 @@ export function BackLink() {
   return (
     <Link
       aria-label="Back to home"
-      className="absolute -top-[0.2rem] -left-10 grid size-8 place-items-center text-foreground no-underline opacity-60 transition-opacity duration-150 hover:opacity-90 focus-visible:opacity-90"
+      className="grid size-6 place-items-center text-foreground no-underline transition-opacity duration-150 hover:opacity-70 focus-visible:opacity-70"
       to="/"
     >
-      <ArrowLeftIcon aria-hidden="true" className="size-5" />
+      <ArrowLeftIcon aria-hidden="true" className="size-3.5" />
     </Link>
   );
 }

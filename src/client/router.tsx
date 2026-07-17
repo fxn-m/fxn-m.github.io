@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useLayoutEffect } from "react";
 import { HashRouter, Navigate, Route, Routes, useLocation } from "react-router";
 
 import App, { HomePage } from "./app";
@@ -29,10 +29,21 @@ function PostHogPageviews() {
   return null;
 }
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 export function AppRouter() {
   return (
     <HashRouter>
       <PostHogPageviews />
+      <ScrollToTop />
       <Routes>
         <Route element={<App />} path="/">
           <Route element={<HomePage />} index />

@@ -2,8 +2,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router";
 
 import { blogIndexQueryOptions, blogPostQueryOptions } from "../api/blog";
-import { BackLink } from "./back-link";
 import styles from "./blog-content.module.css";
+import { PageContainer } from "./page-container";
 
 export function WritingList() {
   const index = useQuery(blogIndexQueryOptions());
@@ -48,13 +48,13 @@ export function BlogView() {
   const post = index.data?.find((candidate) => candidate.slug === slug) ?? null;
 
   return (
-    <main className="relative mx-auto mb-16 w-[min(50rem,calc(100%-5rem))] leading-[1.6]">
-      <BackLink />
-
-      <article>
+    <PageContainer as="main" className="mb-16 leading-[1.6]">
+      <article className="max-w-[42rem]">
         {post && (
-          <header className="mb-10">
-            <h1 className="mb-[0.35rem] text-[1.75rem] leading-[1.25] font-bold">{post.title}</h1>
+          <header className="mb-9 sm:mb-10">
+            <h1 className="mb-[0.35rem] text-[1.625rem] leading-[1.2] font-bold sm:text-[2rem]">
+              {post.title}
+            </h1>
             <time className="text-sm text-muted" dateTime={post.date}>
               {post.date}
             </time>
@@ -69,6 +69,6 @@ export function BlogView() {
           <div className={styles.content} dangerouslySetInnerHTML={{ __html: content.data }} />
         )}
       </article>
-    </main>
+    </PageContainer>
   );
 }
