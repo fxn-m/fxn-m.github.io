@@ -13,8 +13,8 @@ const emptyTableCellClassName =
   "border-b border-line px-2 py-7 text-center text-[0.78rem] leading-4 text-muted";
 const categoryChipClassName =
   "inline-block shrink-0 bg-surface px-2 py-1 text-[0.7rem] leading-4 text-foreground lowercase";
-const descriptionHeightClassName = "h-[8.25rem]";
-const suggestionCardClassName = "w-full border-y border-line pt-[1.4rem] pb-7";
+const descriptionHeightClassName = "h-[6.4rem] sm:h-[8.25rem]";
+const suggestionCardClassName = "w-full border-y border-line pt-4 pb-5 sm:pt-[1.4rem] sm:pb-7";
 const loadingTableRows = Array.from({ length: 8 }, (_, index) => index);
 const mobilePageSize = 24;
 
@@ -161,7 +161,7 @@ export function TabOverflowView() {
 
   return (
     <PageContainer as="main" className="mb-16 leading-[1.6]">
-      <header className="mb-9 max-w-[34rem] sm:mb-11">
+      <header className="mb-7 max-w-[34rem] sm:mb-11">
         <h1 className="mb-[0.4rem] text-[1.625rem] leading-[1.2] font-bold sm:text-[1.75rem]">
           Tab Overflow
         </h1>
@@ -175,7 +175,7 @@ export function TabOverflowView() {
 
       {isSuccess && selectedItem && (
         <article className={`${suggestionCardClassName} scroll-mt-8`} ref={suggestionRef}>
-          <h2 className="mb-3 min-w-0 text-xl leading-[1.25] font-bold sm:text-2xl">
+          <h2 className="mb-2 min-w-0 text-lg leading-[1.25] font-bold sm:mb-3 sm:text-2xl">
             {selectedItem.url ? (
               <a
                 className="text-inherit underline decoration-1 underline-offset-[0.15em] line-clamp-2 sm:line-clamp-1"
@@ -194,52 +194,54 @@ export function TabOverflowView() {
             )}
           </h2>
 
-          <p className="h-[9.5rem] line-clamp-6 text-[0.9375rem] leading-[1.7] text-foreground sm:h-[8.25rem] sm:line-clamp-5 sm:text-base sm:leading-[1.65]">
+          <p className="line-clamp-4 text-sm leading-[1.6] text-foreground sm:h-[8.25rem] sm:line-clamp-5 sm:text-base sm:leading-[1.65]">
             {selectedItem.summary || "No introduction is available for this item yet."}
           </p>
 
-          <div className="mt-7 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-            <dl className="grid flex-1 grid-cols-2 gap-x-5 gap-y-4 sm:flex sm:flex-wrap sm:gap-x-12">
+          <div className="mt-5 flex items-end justify-between gap-3 sm:mt-7 sm:gap-5">
+            <dl className="grid min-w-0 flex-1 grid-cols-3 gap-x-4 sm:flex sm:flex-wrap sm:gap-x-12">
               {selectedItem.author && (
-                <div>
-                  <dt className="mb-[0.15rem] text-[0.7rem] tracking-[0.06em] text-muted uppercase">
+                <div className="min-w-0">
+                  <dt className="mb-[0.15rem] text-[0.625rem] tracking-[0.06em] text-muted uppercase sm:text-[0.7rem]">
                     Author
                   </dt>
-                  <dd className="m-0 text-[0.8rem] leading-[1.4]">{selectedItem.author}</dd>
+                  <dd className="m-0 line-clamp-1 text-xs leading-[1.4] sm:text-[0.8rem]">
+                    {selectedItem.author}
+                  </dd>
                 </div>
               )}
-              <div>
-                <dt className="mb-[0.15rem] text-[0.7rem] tracking-[0.06em] text-muted uppercase">
+              <div className="min-w-0">
+                <dt className="mb-[0.15rem] text-[0.625rem] tracking-[0.06em] text-muted uppercase sm:text-[0.7rem]">
                   Read
                 </dt>
-                <dd className="m-0 text-[0.8rem] leading-[1.4]">
+                <dd className="m-0 line-clamp-1 text-xs leading-[1.4] sm:text-[0.8rem]">
                   {selectedItem.readingTime ? `${selectedItem.readingTime} min` : "—"}
                 </dd>
               </div>
-              <div>
-                <dt className="mb-[0.15rem] text-[0.7rem] tracking-[0.06em] text-muted uppercase">
+              <div className="min-w-0">
+                <dt className="mb-[0.15rem] text-[0.625rem] tracking-[0.06em] text-muted uppercase sm:text-[0.7rem]">
                   Added
                 </dt>
-                <dd className="m-0 text-[0.8rem] leading-[1.4]">
+                <dd className="m-0 line-clamp-1 text-xs leading-[1.4] sm:text-[0.8rem]">
                   {formatDate(selectedItem.added) ?? "—"}
                 </dd>
               </div>
             </dl>
             <button
               aria-label="Show another random tab"
-              className="inline-flex min-h-11 w-fit shrink-0 cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 font-geist-mono text-xs text-muted hover:text-foreground hover:underline hover:underline-offset-[0.15em] focus-visible:text-foreground focus-visible:underline focus-visible:underline-offset-[0.15em] sm:min-h-0 sm:pb-[0.15rem]"
+              className="inline-flex min-h-8 w-fit shrink-0 cursor-pointer items-center gap-1 border-0 bg-transparent p-0 font-geist-mono text-[0.7rem] text-muted hover:text-foreground hover:underline hover:underline-offset-[0.15em] focus-visible:text-foreground focus-visible:underline focus-visible:underline-offset-[0.15em] sm:min-h-0 sm:gap-1.5 sm:pb-[0.15rem] sm:text-xs"
               onClick={() => setSelectedId(pickRandomId(items, selectedId))}
               type="button"
             >
-              <ShuffleIcon aria-hidden="true" className="size-3.5" />
+              <ShuffleIcon aria-hidden="true" className="size-3 sm:size-3.5" />
               Shuffle
             </button>
           </div>
         </article>
       )}
 
-      <section className="mt-12 w-full max-w-none sm:mt-14">
-        <header className="mb-3 flex flex-col items-start gap-3 min-[56rem]:flex-row min-[56rem]:items-center min-[56rem]:justify-between min-[56rem]:gap-4">
+      <section className="mt-8 w-full max-w-none sm:mt-14">
+        <header className="mb-2 flex flex-col items-start gap-2 min-[56rem]:mb-3 min-[56rem]:flex-row min-[56rem]:items-center min-[56rem]:justify-between min-[56rem]:gap-4">
           <h2 className="text-base font-bold">All</h2>
           <div className="flex w-full items-center gap-3 min-[56rem]:w-auto">
             <label className="sr-only" htmlFor="tab-overflow-search">
@@ -425,7 +427,7 @@ export function TabOverflowView() {
                 <ul className="m-0 list-none divide-y divide-line p-0">
                   {visibleMobileItems.map((item) => (
                     <li className={item.id === selectedId ? "bg-surface" : ""} key={item.id}>
-                      <div className="flex min-h-16 items-center gap-2 py-2 pl-2">
+                      <div className="flex min-h-16 items-center gap-2 py-2">
                         <button
                           aria-label={`Show ${item.name}`}
                           className="min-h-11 min-w-0 flex-1 cursor-pointer border-0 bg-transparent p-0 text-left font-geist-mono text-sm leading-5 text-foreground"
@@ -449,7 +451,7 @@ export function TabOverflowView() {
                         {item.url && (
                           <a
                             aria-label={`Open ${item.name}`}
-                            className="grid size-11 shrink-0 place-items-center text-muted no-underline hover:text-foreground focus-visible:text-foreground"
+                            className="mt-1 grid size-11 shrink-0 place-items-center self-start text-muted no-underline hover:text-foreground focus-visible:text-foreground"
                             href={item.url}
                             rel="noreferrer"
                             target="_blank"

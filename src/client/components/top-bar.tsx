@@ -71,7 +71,7 @@ export function TopBar() {
       <PageContainer className="flex h-14 items-center justify-between">
         <div className="relative ml-1 flex items-center">
           {pathname !== "/" && (
-            <div className="absolute top-1/2 right-full -translate-y-1/2">
+            <div className="absolute top-1/2 right-[calc(100%-0.25rem)] -translate-y-1/2 sm:right-full">
               <BackLink />
             </div>
           )}
