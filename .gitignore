@@ -29,3 +29,4 @@ src/server/readingList.json
 .wrangler
 **/frm.json
 .claude
+docs/
