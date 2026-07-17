@@ -23,13 +23,9 @@ node_modules
 
 # misc
 desktop.ini
-
 /public/html
-
 *.code-workspace
-
 src/server/readingList.json
-
 .wrangler
-
 **/frm.json
+.claude
