@@ -9,15 +9,15 @@ import ThemeToggle from "./components/theme/theme-toggle";
 const projects = [
   {
     icon: "/projects/oelp-logo.ico",
-    name: "Où est le poulet",
+    name: "oelp.app",
   },
   {
     icon: "/projects/pousse-logo.png",
-    name: "Pousse",
+    name: "pousse.page",
   },
   {
     icon: "/projects/pgt-logo.png",
-    name: "PGT",
+    name: "paulgrahamtranslated.com",
   },
   {
     href: "/tab-overflow",

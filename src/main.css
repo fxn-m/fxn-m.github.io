@@ -1,6 +1,22 @@
 @import "tailwindcss";
 
 @font-face {
+  font-family: "Geist Sans";
+  src: url("/fonts/geist-sans-variable.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 100 900;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("/fonts/geist-mono-variable.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 100 900;
+}
+
+@font-face {
   font-family: "Geist Pixel Square";
   src: url("/fonts/geist-pixel-square.woff2") format("woff2");
   font-display: swap;
@@ -16,11 +32,18 @@
   --color-line: var(--line);
   --color-muted: var(--muted);
   --color-surface: var(--surface);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-heading);
+  --font-geist-mono: "Geist Mono", "SFMono-Regular", Menlo, monospace;
+  --font-mono: var(--font-code);
   --font-pixel: "Geist Pixel Square", ui-monospace, monospace;
 }
 
 :root {
   --background: #fff;
+  --font-body: "Geist Sans", Arial, sans-serif;
+  --font-code: "Geist Mono", "SFMono-Regular", Menlo, monospace;
+  --font-heading: "Geist Sans", Arial, sans-serif;
   --foreground: #1d1d1f;
   --line: #dedede;
   --muted: #666;
@@ -29,6 +52,30 @@
 
 body {
   background: var(--background);
+  font-family: var(--font-body);
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-code);
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-code);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
 }
 
 body.dark {

@@ -8,14 +8,13 @@ import { BackLink } from "./back-link";
 
 const EMPTY_ITEMS: TabSuggestion[] = [];
 const tableHeadingClassName =
-  "border-b border-line px-2 py-[0.45rem] text-left text-xs font-medium tracking-[0.05em] text-muted uppercase";
+  "border-b border-line px-2 py-1.5 text-left text-[0.68rem] leading-4 font-medium tracking-[0.05em] text-muted uppercase";
 const tableCellClassName =
-  "border-b border-line px-2 py-[0.45rem] align-middle text-sm leading-[1.25] text-muted";
+  "border-b border-line px-2 py-1.5 align-middle text-[0.78rem] leading-4 text-muted";
 const emptyTableCellClassName =
-  "border-b border-line px-2 py-8 text-center text-sm leading-[1.25] text-muted";
+  "border-b border-line px-2 py-7 text-center text-[0.78rem] leading-4 text-muted";
 const descriptionHeightClassName = "h-[8.25rem]";
-const suggestionCardClassName =
-  "min-h-[20.5rem] w-full border-y border-line pt-[1.4rem] pb-7 max-[42rem]:min-h-[24.5rem]";
+const suggestionCardClassName = "w-full border-y border-line pt-[1.4rem] pb-7";
 const loadingTableRows = Array.from({ length: 8 }, (_, index) => index);
 
 function pickRandomId(items: TabSuggestion[], currentId: string | null = null) {
@@ -69,7 +68,7 @@ function TabSuggestionSkeleton() {
           <div className="h-3 w-2/3 rounded-sm bg-surface" />
         </div>
 
-        <div className="mt-7 grid grid-cols-3 gap-6 max-[42rem]:grid-cols-2">
+        <div className="mt-7 flex flex-wrap gap-x-12 gap-y-4">
           {Array.from({ length: 3 }, (_, index) => (
             <div className="space-y-2" key={index}>
               <div className="h-2.5 w-12 rounded-sm bg-surface" />
@@ -177,7 +176,7 @@ export function TabOverflowView() {
               )}
             </h2>
             <button
-              className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 font-pixel text-[0.8rem] text-foreground opacity-60 transition-opacity duration-150 hover:opacity-90 focus-visible:opacity-90"
+              className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 border border-line bg-transparent px-2.5 py-1 text-[0.8rem] text-muted transition-colors duration-150 hover:border-foreground hover:text-foreground focus-visible:border-foreground focus-visible:text-foreground"
               onClick={() => setSelectedId(pickRandomId(items, selectedId))}
               type="button"
             >
@@ -187,12 +186,12 @@ export function TabOverflowView() {
           </div>
 
           <p
-            className={`${descriptionHeightClassName} line-clamp-5 max-w-[46rem] leading-[1.65] text-foreground`}
+            className={`${descriptionHeightClassName} line-clamp-5 leading-[1.65] text-foreground`}
           >
             {selectedItem.summary || "No introduction is available for this item yet."}
           </p>
 
-          <dl className="mt-7 grid grid-cols-3 gap-6 max-[42rem]:grid-cols-2">
+          <dl className="mt-7 flex flex-wrap gap-x-12 gap-y-4">
             {selectedItem.author && (
               <div>
                 <dt className="mb-[0.15rem] text-[0.7rem] tracking-[0.06em] text-muted uppercase">
@@ -223,7 +222,7 @@ export function TabOverflowView() {
 
       <section className="mt-14 w-full max-w-none">
         <header className="mb-3 flex items-center justify-between gap-4 max-[42rem]:items-start max-[42rem]:flex-col">
-          <h2 className="text-base font-bold">All tabs</h2>
+          <h2 className="text-base font-bold">All</h2>
           <div className="flex items-center gap-3 max-[42rem]:w-full">
             <label className="sr-only" htmlFor="tab-overflow-search">
               Search tabs
@@ -264,7 +263,7 @@ export function TabOverflowView() {
         </header>
 
         <div className="w-full max-w-full overflow-x-auto overscroll-x-contain border-t border-line">
-          <table className="w-full min-w-[50rem] table-fixed border-collapse">
+          <table className="w-full min-w-[50rem] table-fixed border-collapse font-geist-mono">
             <colgroup>
               <col className="w-[25rem]" />
               <col className="w-[4.5rem]" />
@@ -299,7 +298,7 @@ export function TabOverflowView() {
                     <td className={tableCellClassName}>
                       <div className="h-3 w-10 rounded-sm bg-surface" />
                     </td>
-                    <td className={`${tableCellClassName} relative max-w-0 overflow-hidden`}>
+                    <td className={`${tableCellClassName} max-w-0 overflow-hidden`}>
                       <div className="h-3 w-3/5 rounded-sm bg-surface" />
                     </td>
                     <td className={tableCellClassName}>
@@ -315,21 +314,43 @@ export function TabOverflowView() {
                 </tr>
               ) : filteredItems.length > 0 ? (
                 filteredItems.map((item) => (
-                  <tr className={item.id === selectedId ? "bg-surface" : undefined} key={item.id}>
+                  <tr
+                    aria-label={`Show ${item.name}`}
+                    aria-selected={item.id === selectedId}
+                    className={`group cursor-pointer transition-colors hover:bg-surface focus-visible:bg-surface focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-foreground ${
+                      item.id === selectedId ? "bg-surface" : ""
+                    }`}
+                    key={item.id}
+                    onClick={(event) => {
+                      if (event.target instanceof Element && event.target.closest("a")) {
+                        return;
+                      }
+
+                      selectFromTable(item.id);
+                    }}
+                    onKeyDown={(event) => {
+                      if (
+                        event.target !== event.currentTarget ||
+                        (event.key !== "Enter" && event.key !== " ")
+                      ) {
+                        return;
+                      }
+
+                      event.preventDefault();
+                      selectFromTable(item.id);
+                    }}
+                    tabIndex={0}
+                  >
                     <td className={tableCellClassName}>
-                      <button
-                        className="block w-full cursor-pointer overflow-hidden border-0 bg-transparent p-0 text-left text-ellipsis whitespace-nowrap text-foreground hover:underline hover:underline-offset-[0.15em] focus-visible:underline focus-visible:underline-offset-[0.15em]"
-                        onClick={() => selectFromTable(item.id)}
-                        type="button"
-                      >
+                      <span className="block w-full overflow-hidden text-left text-ellipsis whitespace-nowrap text-foreground group-hover:underline group-hover:underline-offset-[0.15em] group-focus-visible:underline group-focus-visible:underline-offset-[0.15em]">
                         {item.name}
-                      </button>
+                      </span>
                     </td>
                     <td className={tableCellClassName}>
                       {item.readingTime ? `${item.readingTime} min` : "—"}
                     </td>
-                    <td className={`${tableCellClassName} relative max-w-0 overflow-hidden`}>
-                      <div className="absolute inset-[0.45rem_0.5rem] overflow-x-auto overflow-y-hidden whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                    <td className={`${tableCellClassName} max-w-0 overflow-hidden`}>
+                      <div className="overflow-x-auto overflow-y-hidden whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                         {item.categories.join(", ") || "—"}
                       </div>
                     </td>
@@ -337,12 +358,12 @@ export function TabOverflowView() {
                       {item.url && (
                         <a
                           aria-label={`Open ${item.name}`}
-                          className="text-base text-muted no-underline hover:text-foreground focus-visible:text-foreground"
+                          className="mx-auto inline-grid size-5 place-items-center text-muted no-underline hover:text-foreground focus-visible:text-foreground"
                           href={item.url}
                           rel="noreferrer"
                           target="_blank"
                         >
-                          <ExternalLinkIcon aria-hidden="true" className="size-4" />
+                          <ExternalLinkIcon aria-hidden="true" className="size-3.5" />
                         </a>
                       )}
                     </td>
