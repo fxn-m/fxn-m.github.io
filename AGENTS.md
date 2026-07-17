@@ -22,7 +22,8 @@
 - Run the client with `bun run dev` and the Worker with `bun run dev:server`.
 - `bun run build` type-checks the app and Worker before building the client.
 - `bun run build:markdown` refreshes the blog snapshots consumed by the client and remains separate from the normal Vite build.
-- `bun run lint` and `bun run lint:fix` use Oxlint.
+- `bun run lint` and `bun run lint:fix` use Oxlint and check Tailwind classes
+  against Tailwind's canonical forms.
 - `bun run format` and `bun run format:check` use Oxfmt.
 - `bun run test:server` runs the Worker contract and feature-module tests inside the Cloudflare Vitest pool.
 - `bun run typegen:worker` regenerates the committed Cloudflare runtime types after `wrangler.toml` or its compatibility settings change.
@@ -55,4 +56,4 @@
 - After meaningful edits, run `bun run format`, `bun run lint:fix`, and `bun run type-check`; fix only issues introduced by your work.
 - For release validation, run `bun run build`.
 - When changing the blog snapshot pipeline, also run `BACKEND_URL=... bun run build:markdown`.
-- When touching Worker logic, run `bun run test:server` and smoke-test with `bun run dev:server`. Provision the configured enrichment queue and dead-letter queue before deploying a new environment.
+- When touching Worker logic, run `bun run test:server` and smoke-test with `bun run dev:server`. The Worker deployment workflow provisions the configured enrichment queue and dead-letter queue when they are missing.

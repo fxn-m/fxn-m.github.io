@@ -13,7 +13,7 @@ const emptyTableCellClassName =
   "border-b border-line px-2 py-7 text-center text-[0.78rem] leading-4 text-muted";
 const categoryChipClassName =
   "inline-block shrink-0 bg-surface px-2 py-1 text-[0.7rem] leading-4 text-foreground lowercase";
-const descriptionHeightClassName = "h-[6.4rem] sm:h-[8.25rem]";
+const descriptionHeightClassName = "h-[6.4rem] sm:h-33";
 const suggestionCardClassName = "w-full border-y border-line pt-4 pb-5 sm:pt-[1.4rem] sm:pb-7";
 const loadingTableRows = Array.from({ length: 8 }, (_, index) => index);
 const mobilePageSize = 24;
@@ -71,7 +71,7 @@ function TabSuggestionSkeleton() {
       role="status"
     >
       <div aria-hidden="true">
-        <div className="h-[1.875rem] w-3/5 rounded-sm bg-surface" />
+        <div className="h-7.5 w-3/5 rounded-sm bg-surface" />
 
         <div className={`${descriptionHeightClassName} mt-3 space-y-[0.9rem] py-1`}>
           <div className="h-3 w-full rounded-sm bg-surface" />
@@ -161,7 +161,7 @@ export function TabOverflowView() {
 
   return (
     <PageContainer as="main" className="mb-16 leading-[1.6]">
-      <header className="mb-7 max-w-[34rem] sm:mb-11">
+      <header className="mb-7 max-w-136 sm:mb-11">
         <h1 className="mb-[0.4rem] text-[1.625rem] leading-[1.2] font-bold sm:text-[1.75rem]">
           Tab Overflow
         </h1>
@@ -175,7 +175,7 @@ export function TabOverflowView() {
 
       {isSuccess && selectedItem && (
         <article className={`${suggestionCardClassName} scroll-mt-8`} ref={suggestionRef}>
-          <h2 className="mb-2 min-w-0 text-lg leading-[1.25] font-bold sm:mb-3 sm:text-2xl">
+          <h2 className="mb-2 min-w-0 text-lg leading-tight font-bold sm:mb-3 sm:text-2xl">
             {selectedItem.url ? (
               <a
                 className="text-inherit underline decoration-1 underline-offset-[0.15em] line-clamp-2 sm:line-clamp-1"
@@ -194,7 +194,7 @@ export function TabOverflowView() {
             )}
           </h2>
 
-          <p className="line-clamp-4 text-sm leading-[1.6] text-foreground sm:h-[8.25rem] sm:line-clamp-5 sm:text-base sm:leading-[1.65]">
+          <p className="line-clamp-4 text-sm leading-[1.6] text-foreground sm:h-33 sm:line-clamp-5 sm:text-base sm:leading-[1.65]">
             {selectedItem.summary || "No introduction is available for this item yet."}
           </p>
 
@@ -291,11 +291,11 @@ export function TabOverflowView() {
           <div className="w-full max-w-full overflow-x-auto overscroll-x-contain border-t border-line">
             <table
               aria-label="Saved tabs"
-              className="w-full min-w-[50rem] table-fixed border-collapse font-geist-mono"
+              className="w-full min-w-200 table-fixed border-collapse font-geist-mono"
             >
               <colgroup>
-                <col className="w-[25rem]" />
-                <col className="w-[4.5rem]" />
+                <col className="w-100" />
+                <col className="w-18" />
                 <col className="w-[18rem]" />
                 <col className="w-10" />
               </colgroup>
@@ -332,7 +332,7 @@ export function TabOverflowView() {
                     <tr
                       aria-label={`Show ${item.name}`}
                       aria-selected={item.id === selectedId}
-                      className={`group cursor-pointer transition-colors hover:bg-surface focus-visible:bg-surface focus-visible:outline-1 focus-visible:outline-offset-[-1px] focus-visible:outline-foreground ${
+                      className={`group cursor-pointer transition-colors hover:bg-surface focus-visible:bg-surface focus-visible:outline-1 focus-visible:-outline-offset-1 focus-visible:outline-foreground ${
                         item.id === selectedId ? "bg-surface" : ""
                       }`}
                       key={item.id}
@@ -366,7 +366,7 @@ export function TabOverflowView() {
                       </td>
                       <td className={`${tableCellClassName} max-w-0 overflow-hidden`}>
                         {item.categories.length > 0 ? (
-                          <div className="flex gap-1 overflow-x-auto overflow-y-hidden whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                          <div className="flex gap-1 overflow-x-auto overflow-y-hidden whitespace-nowrap scrollbar-none [&::-webkit-scrollbar]:hidden">
                             {item.categories.map((category) => (
                               <span className={categoryChipClassName} key={category}>
                                 {category}

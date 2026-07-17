@@ -13,14 +13,16 @@
     "dev:server": "wrangler dev",
     "format": "oxfmt .",
     "format:check": "oxfmt --check .",
-    "lint": "oxlint --deny-warnings .",
-    "lint:fix": "oxlint --fix --deny-warnings .",
+    "lint": "oxlint --deny-warnings . && bun run lint:tailwind",
+    "lint:fix": "oxlint --fix --deny-warnings . && bun run lint:tailwind:fix",
+    "lint:tailwind": "bun ./scripts/lintTailwind.ts",
+    "lint:tailwind:fix": "bun ./scripts/lintTailwind.ts --fix",
     "preview": "vite preview",
     "test:server": "vitest run",
     "test:server:watch": "vitest",
     "typegen:worker": "wrangler types worker-configuration.d.ts --env-interface CloudflareBindings --include-env=false",
     "type-check": "bun run type-check:app && bun run type-check:server",
-    "type-check:app": "tsc --noEmit -p tsconfig.app.json",
+    "type-check:app": "tsc --noEmit -p tsconfig.json",
     "type-check:server": "tsc --noEmit -p tsconfig.server.json"
   },
   "dependencies": {
@@ -49,6 +51,8 @@
   },
   "devDependencies": {
     "@cloudflare/vitest-pool-workers": "0.18.4",
+    "@tailwindcss/node": "4.3.2",
+    "@tailwindcss/oxide": "4.3.2",
     "@types/he": "1.2.3",
     "@types/node": "26.1.1",
     "@types/react": "19.2.17",

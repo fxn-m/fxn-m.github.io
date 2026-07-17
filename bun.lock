@@ -30,6 +30,8 @@
       },
       "devDependencies": {
         "@cloudflare/vitest-pool-workers": "0.18.4",
+        "@tailwindcss/node": "4.3.2",
+        "@tailwindcss/oxide": "4.3.2",
         "@types/he": "1.2.3",
         "@types/node": "26.1.1",
         "@types/react": "19.2.17",

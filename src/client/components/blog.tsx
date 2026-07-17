@@ -49,7 +49,7 @@ export function BlogView() {
 
   return (
     <PageContainer as="main" className="mb-16 leading-[1.6]">
-      <article className="max-w-[42rem]">
+      <article className="max-w-2xl">
         {post && (
           <header className="mb-9 sm:mb-10">
             <h1 className="mb-[0.35rem] text-[1.625rem] leading-[1.2] font-bold sm:text-[2rem]">

@@ -36,6 +36,7 @@ const buildDate = new Intl.DateTimeFormat("en-GB", {
   month: "2-digit",
   year: "numeric",
 })
+  // @ts-expect-error
   .format(new Date(__BUILD_DATE__))
   .replaceAll("/", "-");
 
@@ -101,6 +102,7 @@ export function HomePage() {
 
       <footer className="mt-auto flex items-center justify-between gap-4 pt-16 text-xs text-muted">
         <p>
+          {/*@ts-expect-error*/}
           Last updated: <time dateTime={__BUILD_DATE__}>{buildDate}</time>
         </p>
         <nav aria-label="Social links">

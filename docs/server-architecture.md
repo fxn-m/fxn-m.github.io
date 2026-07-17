@@ -57,7 +57,8 @@ Secrets and string configuration:
 - `NOTION_TAB_OVERFLOW_DATA_SOURCE_ID`
 - `NOTION_TAB_OVERFLOW_WEBHOOK_SECRET`
 
-Before deploying the queue configuration for the first time, create both resources in the target Cloudflare account:
+The Worker deployment workflow creates these resources when they are missing. To provision
+them manually in another environment, run:
 
 ```sh
 bunx wrangler queues create fxn-m-enrichment
