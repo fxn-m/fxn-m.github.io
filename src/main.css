@@ -1,5 +1,13 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Geist Pixel Square";
+  src: url("/fonts/geist-pixel-square.woff2") format("woff2");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 500;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
@@ -8,6 +16,7 @@
   --color-line: var(--line);
   --color-muted: var(--muted);
   --color-surface: var(--surface);
+  --font-pixel: "Geist Pixel Square", ui-monospace, monospace;
 }
 
 :root {

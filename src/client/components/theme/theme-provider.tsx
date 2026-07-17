@@ -33,12 +33,6 @@ function resolveTheme(theme: ThemeMode): ResolvedTheme {
 function applyTheme(theme: ResolvedTheme) {
   document.body.classList.toggle("dark", theme === "dark");
   document.documentElement.style.colorScheme = theme;
-
-  const favicon = document.querySelector<HTMLLinkElement>("#theme-favicon");
-
-  if (favicon) {
-    favicon.href = theme === "dark" ? "/favicon-dark.png" : "/favicon-light.png";
-  }
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {

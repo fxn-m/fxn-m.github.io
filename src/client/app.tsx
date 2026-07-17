@@ -36,10 +36,7 @@ export function HomePage() {
 
   return (
     <main className="mx-auto mb-16 w-[min(50rem,calc(100%-2rem))] leading-[1.6]">
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
-        labore et dolore magna aliqua.
-      </p>
+      <p>Hey! You've reached Felix's homepage.</p>
 
       <section className="mt-10">
         <h2 className="mb-3 text-base font-bold">Writing</h2>

@@ -1,3 +1,4 @@
+import { Cross2Icon, ExternalLinkIcon, UpdateIcon } from "@radix-ui/react-icons";
 import { useQuery } from "@tanstack/react-query";
 import Fuse from "fuse.js";
 import { useLayoutEffect, useMemo, useRef, useState } from "react";
@@ -56,13 +57,11 @@ function TabSuggestionSkeleton() {
     >
       <div aria-hidden="true">
         <div className="flex items-baseline justify-between gap-4">
-          <div className="h-3 w-24 rounded-sm bg-surface" />
+          <div className="h-[1.875rem] w-3/5 rounded-sm bg-surface" />
           <div className="h-3 w-12 rounded-sm bg-surface" />
         </div>
 
-        <div className="mt-[0.9rem] mb-3 h-[1.875rem] w-3/5 rounded-sm bg-surface" />
-
-        <div className={`${descriptionHeightClassName} space-y-[0.9rem] py-1`}>
+        <div className={`${descriptionHeightClassName} mt-3 space-y-[0.9rem] py-1`}>
           <div className="h-3 w-full rounded-sm bg-surface" />
           <div className="h-3 w-11/12 rounded-sm bg-surface" />
           <div className="h-3 w-full rounded-sm bg-surface" />
@@ -158,33 +157,34 @@ export function TabOverflowView() {
 
       {isSuccess && selectedItem && (
         <article className={`${suggestionCardClassName} scroll-mt-8`} ref={suggestionRef}>
-          <div className="flex items-baseline justify-between gap-4">
-            <p className="text-xs font-semibold tracking-[0.08em] text-muted uppercase">
-              Try this one
-            </p>
+          <div className="mb-3 flex items-baseline justify-between gap-4">
+            <h2 className="min-w-0 flex-1 text-2xl leading-[1.25] font-bold">
+              {selectedItem.url ? (
+                <a
+                  className="text-inherit underline decoration-1 underline-offset-[0.15em] line-clamp-1"
+                  href={selectedItem.url}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {selectedItem.name}
+                  <ExternalLinkIcon
+                    aria-hidden="true"
+                    className="ml-1 inline-block size-[0.75em] align-baseline"
+                  />
+                </a>
+              ) : (
+                selectedItem.name
+              )}
+            </h2>
             <button
-              className="cursor-pointer border-0 bg-transparent p-0 text-[0.8rem] text-muted underline underline-offset-[0.15em] hover:text-foreground focus-visible:text-foreground"
+              className="inline-flex shrink-0 cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 font-pixel text-[0.8rem] text-foreground opacity-60 transition-opacity duration-150 hover:opacity-90 focus-visible:opacity-90"
               onClick={() => setSelectedId(pickRandomId(items, selectedId))}
               type="button"
             >
+              <UpdateIcon aria-hidden="true" className="size-3.5" />
               Another
             </button>
           </div>
-
-          <h2 className="mt-[0.9rem] mb-3 text-2xl leading-[1.25] font-bold">
-            {selectedItem.url ? (
-              <a
-                className="text-inherit underline decoration-1 underline-offset-[0.15em] line-clamp-1"
-                href={selectedItem.url}
-                rel="noreferrer"
-                target="_blank"
-              >
-                {selectedItem.name} ↗
-              </a>
-            ) : (
-              selectedItem.name
-            )}
-          </h2>
 
           <p
             className={`${descriptionHeightClassName} line-clamp-5 max-w-[46rem] leading-[1.65] text-foreground`}
@@ -246,7 +246,7 @@ export function TabOverflowView() {
                   onClick={clearSearch}
                   type="button"
                 >
-                  ×
+                  <Cross2Icon aria-hidden="true" className="size-3.5" />
                 </button>
               )}
             </div>
@@ -342,7 +342,7 @@ export function TabOverflowView() {
                           rel="noreferrer"
                           target="_blank"
                         >
-                          ↗
+                          <ExternalLinkIcon aria-hidden="true" className="size-4" />
                         </a>
                       )}
                     </td>
