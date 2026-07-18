@@ -18,11 +18,28 @@ export const createWorker = (
     queue: (batch, env) => consumeEnrichmentJobs(batch, env, factories),
 
     async scheduled(controller, env) {
-      const items = await factories.tabOverflow(env).refresh();
+      const readCountRefresh = Promise.resolve()
+        .then(() => factories.blogReadCounts(env).refresh())
+        .catch((error: unknown) => {
+          console.error("Blog read count refresh failed", {
+            errorName: error instanceof Error ? error.name : "UnknownError",
+          });
+          return null;
+        });
+      const [items, readCounts] = await Promise.all([
+        factories.tabOverflow(env).refresh(),
+        readCountRefresh,
+      ]);
       console.log("Tab Overflow cache refreshed", {
         count: items.length,
         cron: controller.cron,
       });
+      if (readCounts) {
+        console.log("Blog read count cache refreshed", {
+          count: Object.keys(readCounts).length,
+          cron: controller.cron,
+        });
+      }
     },
   };
 };

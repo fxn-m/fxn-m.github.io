@@ -27,7 +27,10 @@ export function MoonIcon(props: ThemeIconProps) {
       viewBox="0 0 17 17"
       {...props}
     >
-      <path d="M5 1h5v1H5zM4 2h5v1H4zM3 3h5v1H3zM2 4h5v4H2zM2 8h6v1H2zM2 9h7v1H2zM2 10h8v1H2zM14 10h1v1h-1zM2 11h13v1H2zM3 12h12v1H3zM4 13h10v1H4zM5 14h8v1H5z" />
+      <path
+        d="M5 1h5v1H5zM4 2h5v1H4zM3 3h5v1H3zM2 4h5v4H2zM2 8h6v1H2zM2 9h7v1H2zM2 10h8v1H2zM14 10h1v1h-1zM2 11h13v1H2zM3 12h12v1H3zM4 13h10v1H4zM5 14h8v1H5z"
+        transform="translate(2)"
+      />
     </svg>
   );
 }

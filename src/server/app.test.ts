@@ -86,6 +86,24 @@ describe("blog routes", () => {
     expect(await response.json()).toBe("# post one");
   });
 
+  it("returns a cached read count for a blog post", async () => {
+    const app = createApp({
+      blogReadCounts: () => ({
+        get: async (postId) => (postId === "post one" ? 42 : 0),
+        refresh: async () => ({}),
+      }),
+    });
+
+    const response = await app.request("/blog/post%20one/reads");
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("Access-Control-Allow-Origin")).toBe("*");
+    expect(response.headers.get("Cache-Control")).toBe(
+      "public, max-age=300, s-maxage=3600, stale-while-revalidate=3600",
+    );
+    expect(await response.json()).toEqual({ reads: 42 });
+  });
+
   it("does not expose drafts through the public development query", async () => {
     const app = createApp({
       blog: () => ({
