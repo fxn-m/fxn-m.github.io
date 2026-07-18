@@ -2,6 +2,7 @@ import type { EnrichmentJob } from "./jobs/messages";
 
 export type WorkerBindings = {
   ADMIN_API_TOKEN: string;
+  BLOG_PREVIEW?: string;
   ENRICHMENT_QUEUE: Queue<EnrichmentJob>;
   GITHUB_REPO_DISPATCH_TOKEN: string;
   GOOGLE_GENERATIVE_AI_API_KEY: string;

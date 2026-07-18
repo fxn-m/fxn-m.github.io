@@ -2,6 +2,9 @@ import * as cheerio from "cheerio";
 import he from "he";
 import showdown from "showdown";
 
+import { blogImageFigures } from "../src/shared/blog/markdown-images";
+import { blogSyntaxHighlighting } from "../src/shared/blog/markdown-highlighting";
+
 const replaceVideoLinksWithIframes = (html: string): string => {
   const document = cheerio.load(html);
 
@@ -38,7 +41,10 @@ const replaceVideoLinksWithIframes = (html: string): string => {
 export const convertMarkdownToHTML = (
   markdown: string,
 ): { content: string; meta: { date: string; title: string } } => {
-  const converter = new showdown.Converter({ metadata: true });
+  const converter = new showdown.Converter({
+    extensions: [...blogImageFigures, ...blogSyntaxHighlighting],
+    metadata: true,
+  });
   const html = converter.makeHtml(markdown);
   const metadata = converter.getMetadata();
   if (typeof metadata !== "object") {

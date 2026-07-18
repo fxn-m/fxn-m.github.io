@@ -57,6 +57,219 @@
   margin: 2rem auto;
 }
 
+.gifPlayer {
+  position: relative;
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin: 2rem auto;
+  line-height: 0;
+  cursor: pointer;
+}
+
+.content .gifPlayer img {
+  margin: 0;
+}
+
+.gifPlayer > a {
+  display: block;
+}
+
+.gifFrame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.gifToggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: inline-flex;
+  min-width: 6.25rem;
+  height: 2rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 0.625rem;
+  color: #fff;
+  font-size: 0.6875rem;
+  line-height: 1;
+  cursor: pointer;
+  background: rgb(17 17 17 / 82%);
+  border: 0;
+  border-radius: 0;
+  opacity: 0;
+  backdrop-filter: blur(4px);
+  transition: opacity 150ms ease;
+}
+
+.gifPlayer:hover .gifToggle,
+.gifPlayer:focus-within .gifToggle,
+.gifPlayer[data-state="paused"] .gifToggle {
+  opacity: 1;
+}
+
+.gifToggle:focus-visible {
+  outline: 2px solid var(--background);
+  outline-offset: -4px;
+}
+
+.gifIcon {
+  position: relative;
+  display: inline-block;
+  width: 0.75rem;
+  height: 0.75rem;
+  flex: none;
+}
+
+.gifPlayer[data-state="playing"] .gifIcon::before {
+  position: absolute;
+  top: 0.0625rem;
+  left: 0.1875rem;
+  width: 0;
+  height: 0;
+  content: "";
+  border-top: 0.3125rem solid transparent;
+  border-bottom: 0.3125rem solid transparent;
+  border-left: 0.5rem solid currentColor;
+}
+
+.gifPlayer[data-state="paused"] .gifIcon::before,
+.gifPlayer[data-state="paused"] .gifIcon::after {
+  position: absolute;
+  top: 0.0625rem;
+  width: 0.1875rem;
+  height: 0.625rem;
+  content: "";
+  background: currentColor;
+}
+
+.gifPlayer[data-state="paused"] .gifIcon::before {
+  left: 0.125rem;
+}
+
+.gifPlayer[data-state="paused"] .gifIcon::after {
+  right: 0.125rem;
+}
+
+@media (hover: none) {
+  .gifToggle {
+    opacity: 1;
+  }
+}
+
+.imageZoomTrigger {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin: 2rem auto;
+  padding: 0;
+  cursor: zoom-in;
+  background: transparent;
+  border: 0;
+}
+
+.content .imageZoomTrigger img {
+  margin: 0;
+}
+
+.content :global(.blog-image) {
+  width: max-content;
+  max-width: 100%;
+  margin: 2rem auto;
+}
+
+.content :global(.blog-image) .imageZoomTrigger {
+  margin: 0;
+}
+
+.content :global(.blog-image) > figcaption {
+  width: 100%;
+  padding-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.imageCaption {
+  display: block;
+  width: 100%;
+  padding-top: 0.5rem;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.imageZoomTrigger:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 3px;
+}
+
+.imagePopover {
+  width: fit-content;
+  max-width: none;
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  overflow: visible;
+  color: #fff;
+  background: transparent;
+  border: 0;
+}
+
+.imagePopover::backdrop {
+  background: rgb(0 0 0 / 82%);
+  backdrop-filter: blur(2px);
+}
+
+.content .imagePopoverImage {
+  display: block;
+  width: auto;
+  max-width: 92vw;
+  height: auto;
+  max-height: calc(90vh - 3rem);
+  margin: 0;
+  object-fit: contain;
+}
+
+.imagePopoverCaption {
+  display: block;
+  width: 0;
+  min-width: 100%;
+  padding-top: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.imagePopoverClose {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  color: #fff;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  background: rgb(17 17 17 / 82%);
+  border: 0;
+  border-radius: 0;
+  place-items: center;
+}
+
+.imagePopoverClose:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: -4px;
+}
+
 .content pre {
   max-width: 100%;
   padding: 1rem;
@@ -67,6 +280,45 @@
 
 .content code {
   font-size: 0.875em;
+}
+
+.content :global(.hljs-comment),
+.content :global(.hljs-quote) {
+  color: var(--syntax-comment);
+}
+
+.content :global(.hljs-keyword),
+.content :global(.hljs-selector-tag),
+.content :global(.hljs-subst) {
+  color: var(--syntax-keyword);
+}
+
+.content :global(.hljs-attr),
+.content :global(.hljs-attribute),
+.content :global(.hljs-meta) {
+  color: var(--syntax-attribute);
+}
+
+.content :global(.hljs-string),
+.content :global(.hljs-doctag),
+.content :global(.hljs-regexp) {
+  color: var(--syntax-string);
+}
+
+.content :global(.hljs-number),
+.content :global(.hljs-literal),
+.content :global(.hljs-variable),
+.content :global(.hljs-template-variable) {
+  color: var(--syntax-number);
+}
+
+.content :global(.hljs-title),
+.content :global(.hljs-section),
+.content :global(.hljs-selector-id),
+.content :global(.hljs-selector-class),
+.content :global(.hljs-type),
+.content :global(.hljs-built_in) {
+  color: var(--syntax-title);
 }
 
 .content blockquote {

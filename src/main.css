@@ -48,6 +48,16 @@
   --line: #dedede;
   --muted: #666;
   --surface: #f1f1f1;
+  --syntax-attribute: #953800;
+  --syntax-comment: #6e7781;
+  --syntax-keyword: #cf222e;
+  --syntax-number: #0550ae;
+  --syntax-string: #0a3069;
+  --syntax-title: #8250df;
+}
+
+html {
+  scrollbar-gutter: stable;
 }
 
 body {
@@ -84,4 +94,10 @@ body.dark {
   --line: #38383e;
   --muted: #aaa;
   --surface: #29292d;
+  --syntax-attribute: #ffa657;
+  --syntax-comment: #8b949e;
+  --syntax-keyword: #ff7b72;
+  --syntax-number: #79c0ff;
+  --syntax-string: #a5d6ff;
+  --syntax-title: #d2a8ff;
 }

@@ -17,6 +17,7 @@ describe("system routes", () => {
         listPublishedPosts: async () => {
           throw new Error("super-secret-provider-detail");
         },
+        listPreviewPosts: async () => [],
         triggerBuild: async () => {},
       }),
     });
@@ -51,6 +52,7 @@ describe("blog routes", () => {
             title: "Deep Modules",
           },
         ],
+        listPreviewPosts: async () => [],
         triggerBuild: async () => {},
       }),
     });
@@ -73,6 +75,7 @@ describe("blog routes", () => {
       blog: () => ({
         getPostMarkdown: async (id) => `# ${id}`,
         listPublishedPosts: async () => [],
+        listPreviewPosts: async () => [],
         triggerBuild: async () => {},
       }),
     });
@@ -95,6 +98,7 @@ describe("blog routes", () => {
             title: "Published",
           },
         ],
+        listPreviewPosts: async () => [],
         triggerBuild: async () => {},
       }),
     });
@@ -109,6 +113,85 @@ describe("blog routes", () => {
         title: "Published",
       },
     ]);
+  });
+
+  it("does not expose the preview index unless local preview mode is enabled", async () => {
+    const app = createApp({
+      blog: () => ({
+        getPostMarkdown: async () => "",
+        listPublishedPosts: async () => [],
+        listPreviewPosts: async () => {
+          throw new Error("Disabled preview routes must not query Notion");
+        },
+        triggerBuild: async () => {},
+      }),
+    });
+
+    const response = await app.request("/blog/preview");
+
+    expect(response.status).toBe(404);
+  });
+
+  it("returns published posts and drafts from the local preview index", async () => {
+    const app = createApp({
+      blog: () => ({
+        getPostMarkdown: async () => "",
+        listPublishedPosts: async () => [],
+        listPreviewPosts: async () => [
+          {
+            date: "2026-07-15",
+            id: "post-1",
+            slug: "published",
+            title: "Published",
+          },
+          {
+            date: "2026-07-17",
+            id: "post-2",
+            slug: "draft",
+            title: "Draft",
+          },
+        ],
+        triggerBuild: async () => {},
+      }),
+    });
+
+    const response = await app.request("/blog/preview", undefined, {
+      BLOG_PREVIEW: "true",
+    } as never);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual([
+      {
+        date: "2026-07-15",
+        id: "post-1",
+        slug: "published",
+        title: "Published",
+      },
+      {
+        date: "2026-07-17",
+        id: "post-2",
+        slug: "draft",
+        title: "Draft",
+      },
+    ]);
+  });
+
+  it("returns draft markdown through the local preview route", async () => {
+    const app = createApp({
+      blog: () => ({
+        getPostMarkdown: async (id) => `# ${id}`,
+        listPublishedPosts: async () => [],
+        listPreviewPosts: async () => [],
+        triggerBuild: async () => {},
+      }),
+    });
+
+    const response = await app.request("/blog/preview/post%20two", undefined, {
+      BLOG_PREVIEW: "true",
+    } as never);
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toBe("# post two");
   });
 });
 

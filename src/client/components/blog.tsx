@@ -2,7 +2,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useParams } from "react-router";
 
 import { blogIndexQueryOptions, blogPostQueryOptions } from "../api/blog";
-import styles from "./blog-content.module.css";
+import { BlogContent } from "./blog-content";
 import { PageContainer } from "./page-container";
 
 export function WritingList() {
@@ -21,7 +21,7 @@ export function WritingList() {
     <ul className="m-0 list-disc pl-5">
       {index.data.map((post) => {
         const prefetchPost = () => {
-          void queryClient.prefetchQuery(blogPostQueryOptions(post.slug));
+          void queryClient.prefetchQuery(blogPostQueryOptions(post.slug, post.id));
         };
 
         return (
@@ -44,8 +44,8 @@ export function WritingList() {
 export function BlogView() {
   const { slug = "" } = useParams();
   const index = useQuery(blogIndexQueryOptions());
-  const content = useQuery(blogPostQueryOptions(slug));
   const post = index.data?.find((candidate) => candidate.slug === slug) ?? null;
+  const content = useQuery(blogPostQueryOptions(slug, post?.id));
 
   return (
     <PageContainer as="main" className="mb-16 leading-[1.6]">
@@ -65,9 +65,7 @@ export function BlogView() {
         {(index.isError || content.isError || (index.isSuccess && !post)) && (
           <p className="text-muted">This piece could not be loaded.</p>
         )}
-        {post && content.isSuccess && (
-          <div className={styles.content} dangerouslySetInnerHTML={{ __html: content.data }} />
-        )}
+        {post && content.isSuccess && <BlogContent html={content.data} />}
       </article>
     </PageContainer>
   );
