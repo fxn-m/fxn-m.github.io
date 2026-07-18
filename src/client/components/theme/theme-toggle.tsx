@@ -18,8 +18,8 @@ export default function ThemeToggle() {
         <Icon className="size-5 transition-opacity duration-150 group-hover:opacity-70 group-focus-within:opacity-70" />
       </button>
       <span
-        aria-live="polite"
-        className="pointer-events-none absolute top-1/2 right-[calc(100%+0.5rem)] -translate-y-1/2 font-pixel text-xs text-muted opacity-0 transition-opacity duration-150 group-hover:opacity-100"
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/2 right-9 -translate-y-1/2 font-pixel text-xs text-muted opacity-0 transition-opacity duration-150 group-hover:opacity-100"
       >
         {theme}
       </span>
