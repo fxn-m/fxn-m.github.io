@@ -53,10 +53,7 @@ export function HomePage() {
 
       <section className="mt-10">
         <p>I'm a software engineer based in London.</p>
-        <p>
-          Previously founding engineer at Kenobi.ai (YC W22), I'm having some downtime before the
-          next thing.
-        </p>
+        <p>Previously founding engineer at Kenobi.ai (YC W22), I'm having some downtime before the next thing.</p>
       </section>
 
       <div className="mt-10 grid gap-10 md:grid-cols-2 md:gap-x-16">
