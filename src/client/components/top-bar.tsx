@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router";
 
-import { BackLink } from "./back-link";
 import { PageContainer } from "./page-container";
 import { SiteHomeLink } from "./site-home-link";
 import ThemeToggle from "./theme/theme-toggle";
@@ -69,14 +68,7 @@ export function TopBar() {
       onFocusCapture={() => updateVisibility(true)}
     >
       <PageContainer className="flex h-14 items-center justify-between">
-        <div className="relative ml-1 flex items-center">
-          {pathname !== "/" && (
-            <div className="absolute top-1/2 right-[calc(100%-0.25rem)] -translate-y-1/2 sm:right-full">
-              <BackLink />
-            </div>
-          )}
-          <SiteHomeLink />
-        </div>
+        <SiteHomeLink />
         <ThemeToggle />
       </PageContainer>
     </header>

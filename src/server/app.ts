@@ -30,7 +30,7 @@ export const createApp = (overrides: Partial<FeatureFactories> = {}) => {
     }),
   );
   app.get("/ping", (context) => context.json({ message: "pong" }));
-  app.route("/blog", createBlogRoutes(factories.blog));
+  app.route("/blog", createBlogRoutes(factories.blog, factories.blogReadCounts));
   app.route("/tab-overflow", createTabOverflowRoutes(factories.tabOverflow));
   app.route("/admin", createAdminRoutes(factories));
   app.route("/notion/webhooks", createWebhookRoutes(factories));

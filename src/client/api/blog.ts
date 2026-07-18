@@ -1,10 +1,11 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import type { BlogPost } from "@/shared";
+import type { BlogPost, BlogReadCount } from "@/shared";
 
 import { fetchResource } from "./fetch-resource";
 
 const backendUrl = (import.meta.env.VITE_BACKEND_URL || "http://localhost:8787").replace(/\/$/, "");
+const READ_COUNT_STALE_TIME = 1000 * 60 * 5;
 
 export const blogIndexQueryOptions = () =>
   queryOptions({
@@ -35,4 +36,18 @@ export const blogPostQueryOptions = (slug: string, id?: string) =>
       const response = await fetchResource(`/html/${slug}.html`, { signal });
       return response.text();
     },
+  });
+
+export const blogReadCountQueryOptions = (postId?: string) =>
+  queryOptions({
+    enabled: Boolean(postId),
+    queryKey: ["blog-read-count", postId],
+    queryFn: async ({ signal }) => {
+      const response = await fetchResource(
+        `${backendUrl}/blog/${encodeURIComponent(postId ?? "")}/reads`,
+        { signal },
+      );
+      return (await response.json()) as BlogReadCount;
+    },
+    staleTime: READ_COUNT_STALE_TIME,
   });

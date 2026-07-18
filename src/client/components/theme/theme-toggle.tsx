@@ -7,10 +7,10 @@ export default function ThemeToggle() {
   const Icon = resolvedTheme === "dark" ? MoonIcon : SunIcon;
 
   return (
-    <div className="group relative">
+    <div className="group relative -mr-3">
       <button
         aria-label={`Theme: ${theme}. Switch to ${nextTheme}.`}
-        className="grid cursor-pointer place-items-center border-0 bg-transparent p-0 text-foreground"
+        className="grid size-11 cursor-pointer place-items-center border-0 bg-transparent p-0 text-foreground"
         onClick={toggleTheme}
         title={theme}
         type="button"

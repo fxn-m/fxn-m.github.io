@@ -14,6 +14,8 @@ export type WorkerBindings = {
   NOTION_TAB_OVERFLOW_DATA_SOURCE_ID: string;
   NOTION_TAB_OVERFLOW_SECRET: string;
   NOTION_TAB_OVERFLOW_WEBHOOK_SECRET: string;
+  POSTHOG_PERSONAL_API_KEY: string;
+  POSTHOG_PROJECT_ID: string;
   TAB_OVERFLOW_KV: KVNamespace;
 };
 

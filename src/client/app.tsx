@@ -49,55 +49,62 @@ export function HomePage() {
 
   return (
     <PageContainer as="main" className="flex flex-1 flex-col pb-6 leading-[1.6]">
-      <p>Hey! You've reached Felix's homepage.</p>
+      <h1 className="font-pixel text-2xl">Felix Newport-Mangell</h1>
 
       <section className="mt-10">
-        <h2 className="mb-3 text-base font-bold">Writing</h2>
-        <WritingList />
+        <p>I'm a software engineer based in London.</p>
+        <p>Previously founding engineer at Kenobi.ai (YC W22), I'm having some downtime before the next thing.</p>
       </section>
 
-      <section className="mt-10">
-        <h2 className="mb-3 text-base font-bold">Fun</h2>
-        <ul className="m-0 list-none p-0">
-          {projects.map((project) => (
-            <li className="[&+&]:mt-1" key={project.name}>
-              {project.href.startsWith("http") ? (
-                <a
-                  className="group flex min-h-11 w-fit items-center gap-3 text-inherit no-underline"
-                  href={project.href}
-                  rel="noreferrer"
-                  target="_blank"
-                >
-                  <img
-                    alt=""
-                    className="size-7 shrink-0 rounded-[0.3rem] object-cover"
-                    src={project.icon ?? undefined}
-                  />
-                  <span className="inline-flex items-center gap-1.5 underline underline-offset-[0.15em]">
-                    {project.name}
-                    <ExternalLinkIcon aria-hidden="true" className="size-3.5" />
-                  </span>
-                </a>
-              ) : (
-                <Link
-                  className="group flex min-h-11 w-fit items-center gap-3 text-inherit no-underline"
-                  onFocus={prefetchTabOverflow}
-                  onMouseEnter={prefetchTabOverflow}
-                  to={project.href}
-                >
-                  <span
-                    aria-hidden="true"
-                    className="grid size-7 shrink-0 place-items-center rounded-[0.3rem] bg-surface text-[0.625rem] font-semibold text-muted"
+      <div className="mt-10 grid gap-10 md:grid-cols-2 md:gap-x-16">
+        <section>
+          <h2 className="mb-3 text-base font-bold">Writing</h2>
+          <WritingList />
+        </section>
+
+        <section>
+          <h2 className="mb-3 text-base font-bold">Projects</h2>
+          <ul className="m-0 list-none p-0">
+            {projects.map((project) => (
+              <li className="[&+&]:mt-1" key={project.name}>
+                {project.href.startsWith("http") ? (
+                  <a
+                    className="group flex min-h-11 w-fit items-center gap-3 text-inherit no-underline"
+                    href={project.href}
+                    rel="noreferrer"
+                    target="_blank"
                   >
-                    TO
-                  </span>
-                  <span className="underline underline-offset-[0.15em]">{project.name}</span>
-                </Link>
-              )}
-            </li>
-          ))}
-        </ul>
-      </section>
+                    <img
+                      alt=""
+                      className="size-7 shrink-0 rounded-[0.3rem] object-cover"
+                      src={project.icon ?? undefined}
+                    />
+                    <span className="inline-flex items-center gap-1.5 underline underline-offset-[0.15em]">
+                      {project.name}
+                      <ExternalLinkIcon aria-hidden="true" className="size-3.5" />
+                    </span>
+                  </a>
+                ) : (
+                  <Link
+                    className="group flex min-h-11 w-fit items-center gap-3 text-inherit no-underline"
+                    onFocus={prefetchTabOverflow}
+                    onMouseEnter={prefetchTabOverflow}
+                    to={project.href}
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="grid size-7 shrink-0 place-items-center rounded-[0.3rem] bg-surface text-[0.625rem] font-semibold text-muted"
+                    >
+                      TO
+                    </span>
+                    <span className="underline underline-offset-[0.15em]">{project.name}</span>
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
 
       <footer className="mt-auto flex items-center justify-between gap-4 pt-16 text-xs text-muted">
         <p>

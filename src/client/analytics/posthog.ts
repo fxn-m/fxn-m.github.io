@@ -16,7 +16,7 @@ export function getPostHog() {
       posthog.init(apiKey, {
         api_host: apiHost,
         capture_pageview: false,
-        person_profiles: "always",
+        person_profiles: "identified_only",
       });
     }
 

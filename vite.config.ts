@@ -7,6 +7,11 @@ export default defineConfig({
     __BUILD_DATE__: JSON.stringify(new Date().toISOString()),
   },
   plugins: [tailwindcss(), react()],
+  resolve: {
+    alias: {
+      "@": new URL("./src", import.meta.url).pathname,
+    },
+  },
   server: {
     allowedHosts: ["dev.fxn-m.com"],
   },

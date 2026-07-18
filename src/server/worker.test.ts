@@ -3,15 +3,23 @@ import { describe, expect, it } from "vitest";
 import { createWorker } from "./worker";
 
 describe("Worker events", () => {
-  it("refreshes Tab Overflow on the scheduled event", async () => {
-    let refreshed = false;
+  it("refreshes public caches on the scheduled event", async () => {
+    let readCountsRefreshed = false;
+    let tabOverflowRefreshed = false;
     const worker = createWorker({
+      blogReadCounts: () => ({
+        get: async () => 0,
+        refresh: async () => {
+          readCountsRefreshed = true;
+          return {};
+        },
+      }),
       tabOverflow: () => ({
         enrichOne: async () => {},
         enrichPending: async () => {},
         list: async () => [],
         refresh: async () => {
-          refreshed = true;
+          tabOverflowRefreshed = true;
           return [];
         },
       }),
@@ -23,7 +31,10 @@ describe("Worker events", () => {
       { passThroughOnException: () => {}, props: {}, waitUntil: () => {} } as never,
     );
 
-    expect(refreshed).toBe(true);
+    expect({ readCountsRefreshed, tabOverflowRefreshed }).toEqual({
+      readCountsRefreshed: true,
+      tabOverflowRefreshed: true,
+    });
   });
 
   it("acknowledges a successfully processed enrichment job", async () => {
