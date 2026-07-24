@@ -25,6 +25,11 @@ const projects = [
     name: "Pousse",
   },
   {
+    href: "https://motamot.top",
+    icon: "/projects/motamot-logo.png",
+    name: "motamot",
+  },
+  {
     href: "/tab-overflow",
     icon: null,
     name: "Tab Overflow",
