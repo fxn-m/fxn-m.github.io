@@ -1,4 +1,5 @@
 import {
+  BookmarkFilledIcon,
   ExternalLinkIcon,
   GitHubLogoIcon,
   LinkedInLogoIcon,
@@ -58,7 +59,10 @@ export function HomePage() {
 
       <section className="mt-10">
         <p>I'm a software engineer based in London.</p>
-        <p>Previously founding engineer at Kenobi.ai (YC W22), I'm having some downtime before the next thing.</p>
+        <p>
+          Previously founding engineer at Kenobi.ai (YC W22), I'm having some downtime before the
+          next thing.
+        </p>
       </section>
 
       <div className="mt-10 grid gap-10 md:grid-cols-2 md:gap-x-16">
@@ -98,9 +102,9 @@ export function HomePage() {
                   >
                     <span
                       aria-hidden="true"
-                      className="grid size-7 shrink-0 place-items-center rounded-[0.3rem] bg-surface text-[0.625rem] font-semibold text-muted"
+                      className="grid size-7 shrink-0 place-items-center rounded-[0.3rem] bg-surface text-muted"
                     >
-                      TO
+                      <BookmarkFilledIcon className="size-4" />
                     </span>
                     <span className="underline underline-offset-[0.15em]">{project.name}</span>
                   </Link>
