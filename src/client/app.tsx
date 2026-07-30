@@ -28,7 +28,7 @@ const projects = [
   {
     href: "https://motamot.top",
     icon: "/projects/motamot-logo.png",
-    name: "motamot",
+    name: "Motamot",
   },
   {
     href: "/tab-overflow",
