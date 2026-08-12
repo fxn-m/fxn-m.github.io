@@ -30,7 +30,7 @@ URL: ${page.url}
 
 Return 1-3 categories from this list: ${categories.join(", ")}.
 Be as specific as possible; prefer 1 category if extra categories are redundant.
-The author should be a single name. If unclear, use "Unknown".
+The author must be exactly one person's name and must not contain commas. If multiple authors are listed, choose the primary author; if no primary author is clear, use "Unknown".
 The reading time estimate should be in minutes. If unclear, use 0.`,
         tools: {
           url_context: google.tools.urlContext({}),
