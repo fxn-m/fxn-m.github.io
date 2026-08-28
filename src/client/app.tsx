@@ -31,6 +31,11 @@ const projects = [
     name: "Motamot",
   },
   {
+    href: "https://github.com/fxn-m/galley",
+    icon: "/projects/galley-logo.png",
+    name: "Galley",
+  },
+  {
     href: "/tab-overflow",
     icon: null,
     name: "Tab Overflow",
