@@ -16,14 +16,14 @@ import { TopBar } from "./components/top-bar";
 
 const projects = [
   {
-    href: "https://oelp.app",
-    icon: "/projects/oelp-logo.ico",
-    name: "Oelp",
-  },
-  {
     href: "https://pousse.page",
     icon: "/projects/pousse-logo.png",
     name: "Pousse",
+  },
+  {
+    href: "https://github.com/fxn-m/galley",
+    icon: "/projects/galley-logo.png",
+    name: "Galley",
   },
   {
     href: "https://motamot.top",
@@ -31,9 +31,9 @@ const projects = [
     name: "Motamot",
   },
   {
-    href: "https://github.com/fxn-m/galley",
-    icon: "/projects/galley-logo.png",
-    name: "Galley",
+    href: "https://oelp.app",
+    icon: "/projects/oelp-logo.ico",
+    name: "Oelp",
   },
   {
     href: "/tab-overflow",
