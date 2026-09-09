@@ -1,46 +1,9 @@
-import {
-  BookmarkFilledIcon,
-  ExternalLinkIcon,
-  GitHubLogoIcon,
-  LinkedInLogoIcon,
-  TwitterLogoIcon,
-} from "@radix-ui/react-icons";
-import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
-import { Link, Outlet } from "react-router";
+import { GitHubLogoIcon, LinkedInLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
+import { Outlet } from "react-router";
 
-import { tabOverflowQueryOptions } from "./api/tab-overflow";
 import { WritingList } from "./components/blog";
 import { PageContainer } from "./components/page-container";
 import { TopBar } from "./components/top-bar";
-
-const projects = [
-  {
-    href: "https://pousse.page",
-    icon: "/projects/pousse-logo.png",
-    name: "Pousse",
-  },
-  {
-    href: "https://github.com/fxn-m/galley",
-    icon: "/projects/galley-logo.png",
-    name: "Galley",
-  },
-  {
-    href: "https://motamot.top",
-    icon: "/projects/motamot-logo.png",
-    name: "Motamot",
-  },
-  {
-    href: "https://oelp.app",
-    icon: "/projects/oelp-logo.ico",
-    name: "Oelp",
-  },
-  {
-    href: "/tab-overflow",
-    icon: null,
-    name: "Tab Overflow",
-  },
-];
 
 const buildDate = new Intl.DateTimeFormat("en-GB", {
   day: "2-digit",
@@ -51,13 +14,6 @@ const buildDate = new Intl.DateTimeFormat("en-GB", {
   .replaceAll("/", "-");
 
 export function HomePage() {
-  const queryClient = useQueryClient();
-  const prefetchTabOverflow = () => {
-    void queryClient.prefetchQuery(tabOverflowQueryOptions());
-  };
-
-  useEffect(prefetchTabOverflow, [queryClient]);
-
   return (
     <PageContainer as="main" className="flex flex-1 flex-col pb-6 leading-[1.6]">
       <h1 className="font-pixel text-2xl">Felix Newport-Mangell</h1>
@@ -70,55 +26,10 @@ export function HomePage() {
         </p>
       </section>
 
-      <div className="mt-10 grid gap-10 md:grid-cols-2 md:gap-x-16">
-        <section>
-          <h2 className="mb-3 text-base font-bold">Writing</h2>
-          <WritingList />
-        </section>
-
-        <section>
-          <h2 className="mb-3 text-base font-bold">Projects</h2>
-          <ul className="m-0 list-none p-0">
-            {projects.map((project) => (
-              <li className="[&+&]:mt-1" key={project.name}>
-                {project.href.startsWith("http") ? (
-                  <a
-                    className="group flex min-h-11 w-fit items-center gap-3 text-inherit no-underline"
-                    href={project.href}
-                    rel="noreferrer"
-                    target="_blank"
-                  >
-                    <img
-                      alt=""
-                      className="size-7 shrink-0 rounded-[0.3rem] object-cover"
-                      src={project.icon ?? undefined}
-                    />
-                    <span className="inline-flex items-center gap-1.5 underline underline-offset-[0.15em]">
-                      {project.name}
-                      <ExternalLinkIcon aria-hidden="true" className="size-3.5" />
-                    </span>
-                  </a>
-                ) : (
-                  <Link
-                    className="group flex min-h-11 w-fit items-center gap-3 text-inherit no-underline"
-                    onFocus={prefetchTabOverflow}
-                    onMouseEnter={prefetchTabOverflow}
-                    to={project.href}
-                  >
-                    <span
-                      aria-hidden="true"
-                      className="grid size-7 shrink-0 place-items-center rounded-[0.3rem] bg-surface text-muted"
-                    >
-                      <BookmarkFilledIcon className="size-4" />
-                    </span>
-                    <span className="underline underline-offset-[0.15em]">{project.name}</span>
-                  </Link>
-                )}
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
+      <section className="mt-10">
+        <h2 className="mb-3 text-base font-bold">Writing</h2>
+        <WritingList />
+      </section>
 
       <footer className="mt-auto flex items-center justify-between gap-4 pt-16 text-xs text-muted">
         <p>
