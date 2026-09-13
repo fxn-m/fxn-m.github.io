@@ -3,6 +3,46 @@ import { describe, expect, it } from "vitest";
 import { convertMarkdownToHTML } from "../../../scripts/blog-markdown";
 
 describe("blog markdown", () => {
+  it.each([
+    "https://app.notion.com/p/workspace/Blog-page?p=post",
+    "https://www.notion.so/page",
+    "https://notion.so/page",
+    "https://example.notion.site/page",
+  ])("localizes footnotes from %s", (notionPage) => {
+    const { content } = convertMarkdownToHTML(`---
+Title: "Local footnotes"
+Date: "2026-09-13"
+---
+
+The term[[2]](${notionPage}#fn-2) persists.
+
+1. A useful definition. [↩︎](${notionPage}#fnref-2)
+`);
+
+    expect(content).toContain('<a href="#fn-2" id="fnref-2">[2]</a>');
+    expect(content).toContain('<a href="#fnref-2" id="fn-2">↩︎</a>');
+    expect(content).not.toContain("app.notion.com");
+  });
+
+  it("keeps a paragraph following an ordered list outside the final list item", () => {
+    const { content } = convertMarkdownToHTML(`---
+Title: "List boundary"
+Date: "2026-09-13"
+---
+
+1. surfaces the implicit assumptions
+2. records ADRs and key terms
+This isn’t a new idea.
+
+Without alignment, implementation drifts.
+`);
+
+    expect(content).toContain(
+      "</ol>\n<p>This isn’t a new idea.</p>\n<p>Without alignment, implementation drifts.</p>",
+    );
+    expect(content).not.toContain("This isn’t a new idea.</li>");
+  });
+
   it("renders rich Notion image captions without corrupting image markup", () => {
     const { content } = convertMarkdownToHTML(`---
 Title: "Rich image caption"

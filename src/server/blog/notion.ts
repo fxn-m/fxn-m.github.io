@@ -56,15 +56,20 @@ export const createNotionBlogRepository = ({ dataSourceId, token }: NotionBlogRe
             ? dateProperty.date.start
             : "Unknown";
 
+        const slugProperty = page.properties.Slug;
+        const customSlug =
+          slugProperty?.type === "rich_text"
+            ? slugProperty.rich_text
+                .map((part) => part.plain_text)
+                .join("")
+                .trim()
+            : "";
+        const slugOptions = { locale: "en", lower: true, replacement: "-", strict: true };
+
         pages.push({
           date,
           id: page.id,
-          slug: slugify(title, {
-            locale: "en",
-            lower: true,
-            replacement: "-",
-            strict: true,
-          }),
+          slug: slugify(customSlug, slugOptions) || slugify(title, slugOptions),
           title,
         });
       }

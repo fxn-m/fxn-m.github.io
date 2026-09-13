@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
+import { useLocation } from "react-router";
 
 import styles from "./blog-content.module.css";
 
@@ -185,6 +186,40 @@ const addImagePopover = (image: HTMLImageElement): (() => void) => {
 
 export function BlogContent({ html }: BlogContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  // Preserve enhanced article DOM when navigation only changes the fragment.
+  const innerHTML = useMemo(() => ({ __html: html }), [html]);
+  const { pathname, search, hash } = useLocation();
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // Keep document anchors inside the current HashRouter route.
+    const anchors = [...container.querySelectorAll<HTMLAnchorElement>('a[href^="#"]')].map(
+      (anchor) => ({ anchor, fragment: anchor.getAttribute("href")! }),
+    );
+    anchors.forEach(({ anchor, fragment }) => {
+      anchor.setAttribute("href", `#${pathname}${search}${fragment}`);
+    });
+    return () => {
+      anchors.forEach(({ anchor, fragment }) => anchor.setAttribute("href", fragment));
+    };
+  }, [html, pathname, search]);
+
+  useEffect(() => {
+    if (!hash) return;
+    let id: string;
+    try {
+      id = decodeURIComponent(hash.slice(1));
+    } catch {
+      return;
+    }
+    const target = [...(containerRef.current?.querySelectorAll<HTMLElement>("[id]") ?? [])].find(
+      (element) => element.id === id,
+    );
+    target?.scrollIntoView();
+    target?.focus({ preventScroll: true });
+  }, [html, hash]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -205,7 +240,5 @@ export function BlogContent({ html }: BlogContentProps) {
     };
   }, [html]);
 
-  return (
-    <div className={styles.content} dangerouslySetInnerHTML={{ __html: html }} ref={containerRef} />
-  );
+  return <div className={styles.content} dangerouslySetInnerHTML={innerHTML} ref={containerRef} />;
 }

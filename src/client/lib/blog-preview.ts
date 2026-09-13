@@ -1,5 +1,9 @@
 import showdown from "showdown";
 
+import {
+  localizeNotionFootnote,
+  separateBlocksFollowingLists,
+} from "../../shared/blog/markdown-blocks";
 import { blogImageFigures } from "../../shared/blog/markdown-images";
 import { blogSyntaxHighlighting } from "../../shared/blog/markdown-highlighting";
 
@@ -9,6 +13,12 @@ const replaceVideoLinksWithIframes = (html: string): string => {
   document.querySelectorAll("a").forEach((anchor) => {
     const parent = anchor.parentElement;
     const href = anchor.getAttribute("href") ?? "";
+    const footnote = localizeNotionFootnote(href);
+    if (footnote) {
+      anchor.href = footnote.href;
+      anchor.id = footnote.id;
+      return;
+    }
     const videoId = href.match(/youtube\.com\/watch.*[?&]v=([a-zA-Z0-9_-]{11})/)?.[1];
 
     if (
@@ -41,5 +51,5 @@ export const renderBlogPreview = (markdown: string): string => {
     extensions: [...blogImageFigures, ...blogSyntaxHighlighting],
     metadata: true,
   });
-  return replaceVideoLinksWithIframes(converter.makeHtml(markdown));
+  return replaceVideoLinksWithIframes(converter.makeHtml(separateBlocksFollowingLists(markdown)));
 };

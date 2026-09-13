@@ -15,7 +15,7 @@ const buildDate = new Intl.DateTimeFormat("en-GB", {
 
 export function HomePage() {
   return (
-    <PageContainer as="main" className="flex flex-1 flex-col pb-6 leading-[1.6]">
+    <PageContainer as="main" className="flex flex-1 flex-col pb-6 text-base leading-[1.6]">
       <h1 className="font-pixel text-2xl">Felix Newport-Mangell</h1>
 
       <section className="mt-10">
@@ -27,7 +27,7 @@ export function HomePage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="mb-3 text-base font-bold">Writing</h2>
+        <h2 className="mb-3 font-bold">Writing</h2>
         <WritingList />
       </section>
 

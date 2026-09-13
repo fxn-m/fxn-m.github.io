@@ -2,6 +2,10 @@ import * as cheerio from "cheerio";
 import he from "he";
 import showdown from "showdown";
 
+import {
+  localizeNotionFootnote,
+  separateBlocksFollowingLists,
+} from "../src/shared/blog/markdown-blocks";
 import { blogImageFigures } from "../src/shared/blog/markdown-images";
 import { blogSyntaxHighlighting } from "../src/shared/blog/markdown-highlighting";
 
@@ -12,6 +16,11 @@ const replaceVideoLinksWithIframes = (html: string): string => {
     const anchor = document(element);
     const text = anchor.text().trim();
     const href = anchor.attr("href") ?? "";
+    const footnote = localizeNotionFootnote(href);
+    if (footnote) {
+      anchor.attr(footnote);
+      return;
+    }
     const parent = anchor.closest("p");
 
     if (
@@ -45,7 +54,7 @@ export const convertMarkdownToHTML = (
     extensions: [...blogImageFigures, ...blogSyntaxHighlighting],
     metadata: true,
   });
-  const html = converter.makeHtml(markdown);
+  const html = converter.makeHtml(separateBlocksFollowingLists(markdown));
   const metadata = converter.getMetadata();
   if (typeof metadata !== "object") {
     throw new Error("Invalid metadata format");
