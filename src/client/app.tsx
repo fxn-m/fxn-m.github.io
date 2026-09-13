@@ -82,7 +82,7 @@ export function HomePage() {
 
 export default function App() {
   return (
-    <div className="flex min-h-dvh flex-col bg-background pt-20 font-sans text-foreground [font-synthesis:none] md:pt-[clamp(4rem,14vh,8rem)]">
+    <div className="flex min-h-dvh flex-col bg-background pt-20 font-sans text-foreground md:pt-[clamp(4rem,14vh,8rem)]">
       <TopBar />
       <Outlet />
     </div>
