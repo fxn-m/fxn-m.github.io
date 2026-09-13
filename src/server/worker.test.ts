@@ -4,16 +4,8 @@ import { createWorker } from "./worker";
 
 describe("Worker events", () => {
   it("refreshes public caches on the scheduled event", async () => {
-    let readCountsRefreshed = false;
     let tabOverflowRefreshed = false;
     const worker = createWorker({
-      blogReadCounts: () => ({
-        get: async () => 0,
-        refresh: async () => {
-          readCountsRefreshed = true;
-          return {};
-        },
-      }),
       tabOverflow: () => ({
         enrichOne: async () => {},
         enrichPending: async () => {},
@@ -31,10 +23,7 @@ describe("Worker events", () => {
       { passThroughOnException: () => {}, props: {}, waitUntil: () => {} } as never,
     );
 
-    expect({ readCountsRefreshed, tabOverflowRefreshed }).toEqual({
-      readCountsRefreshed: true,
-      tabOverflowRefreshed: true,
-    });
+    expect(tabOverflowRefreshed).toBe(true);
   });
 
   it("acknowledges a successfully processed enrichment job", async () => {

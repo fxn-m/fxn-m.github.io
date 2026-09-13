@@ -27,6 +27,7 @@ desktop.ini
 *.code-workspace
 src/server/readingList.json
 .wrangler
+.cloudflared/
 **/frm.json
 .claude
 docs/

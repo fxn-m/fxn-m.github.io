@@ -20,6 +20,7 @@
     "preview": "vite preview",
     "test:server": "vitest run",
     "test:server:watch": "vitest",
+    "tunnel": "cloudflared tunnel --config .cloudflared/config.yml run --token-file .cloudflared/token",
     "typegen:worker": "wrangler types worker-configuration.d.ts --env-interface CloudflareBindings --include-env=false",
     "type-check": "bun run type-check:app && bun run type-check:server",
     "type-check:app": "tsc --noEmit -p tsconfig.json",

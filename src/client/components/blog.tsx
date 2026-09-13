@@ -3,11 +3,7 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router";
 
 import { captureBlogReadOnce } from "../analytics/blog-reads";
-import {
-  blogIndexQueryOptions,
-  blogPostQueryOptions,
-  blogReadCountQueryOptions,
-} from "../api/blog";
+import { blogIndexQueryOptions, blogPostQueryOptions } from "../api/blog";
 import { BlogContent } from "./blog-content";
 import { PageContainer } from "./page-container";
 
@@ -52,7 +48,6 @@ export function BlogView() {
   const index = useQuery(blogIndexQueryOptions());
   const post = index.data?.find((candidate) => candidate.slug === slug) ?? null;
   const content = useQuery(blogPostQueryOptions(slug, post?.id));
-  const readCount = useQuery(blogReadCountQueryOptions(post?.id));
 
   useEffect(() => {
     if (post && content.isSuccess) {
@@ -78,17 +73,7 @@ export function BlogView() {
         {(index.isError || content.isError || (index.isSuccess && !post)) && (
           <p className="text-muted">This piece could not be loaded.</p>
         )}
-        {post && content.isSuccess && (
-          <>
-            <BlogContent html={content.data} />
-            {readCount.isSuccess && (
-              <footer className="mt-12 text-sm text-muted">
-                {readCount.data.reads.toLocaleString()}{" "}
-                {readCount.data.reads === 1 ? "read" : "reads"}
-              </footer>
-            )}
-          </>
-        )}
+        {post && content.isSuccess && <BlogContent html={content.data} />}
       </article>
     </PageContainer>
   );
