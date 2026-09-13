@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef } from "react";
-import { useLocation } from "react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useLocation } from "react-router";
 
 import styles from "./blog-content.module.css";
 
@@ -186,9 +186,78 @@ const addImagePopover = (image: HTMLImageElement): (() => void) => {
 
 export function BlogContent({ html }: BlogContentProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [activeHeading, setActiveHeading] = useState<string>();
   // Preserve enhanced article DOM when navigation only changes the fragment.
-  const innerHTML = useMemo(() => ({ __html: html }), [html]);
+  const { innerHTML, headings } = useMemo(() => {
+    const document = new DOMParser().parseFromString(html, "text/html");
+    document.querySelectorAll('a[id^="fnref-"]').forEach((reference) => {
+      const number = reference.textContent?.trim().match(/^\[(\d+)\]$/)?.[1];
+      if (number) reference.textContent = number;
+    });
+    const usedIds = new Set([...document.querySelectorAll("[id]")].map((element) => element.id));
+    const headings = [...document.body.querySelectorAll<HTMLElement>("h1, h2, h3")]
+      .filter((heading) => heading.textContent?.trim())
+      .map((heading, index) => {
+        if (!heading.id) {
+          const base = `section-${index + 1}`;
+          let id = base;
+          let suffix = 2;
+          while (usedIds.has(id)) id = `${base}-${suffix++}`;
+          heading.id = id;
+          usedIds.add(id);
+        }
+        heading.tabIndex = -1;
+        return {
+          id: heading.id,
+          title: heading.textContent!.trim(),
+          level: Number(heading.tagName.slice(1)),
+        };
+      });
+    return { innerHTML: { __html: document.body.innerHTML }, headings };
+  }, [html]);
   const { pathname, search, hash } = useLocation();
+  const firstLevel = Math.min(...headings.map((heading) => heading.level));
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || headings.length < 2) return;
+    const elements = [...container.querySelectorAll<HTMLElement>("h1, h2, h3")].filter((element) =>
+      headings.some((heading) => heading.id === element.id),
+    );
+    let frame = 0;
+    const updateActiveHeading = () => {
+      frame = 0;
+      // Match the sidebar's top clearance, keeping the current section active
+      // until the next heading reaches the reading position.
+      let active: string | undefined = elements[0]?.id;
+      for (const element of elements) {
+        if (element.getBoundingClientRect().top > 96) break;
+        active = element.id;
+      }
+      const page = document.documentElement;
+      if (
+        page.scrollHeight > window.innerHeight &&
+        window.scrollY + window.innerHeight >= page.scrollHeight - 2
+      ) {
+        active = elements.at(-1)?.id;
+      }
+      setActiveHeading(active);
+    };
+    const scheduleUpdate = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateActiveHeading);
+    };
+    updateActiveHeading();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    const observer = new ResizeObserver(scheduleUpdate);
+    observer.observe(container);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+      observer.disconnect();
+    };
+  }, [headings]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -217,9 +286,24 @@ export function BlogContent({ html }: BlogContentProps) {
     const target = [...(containerRef.current?.querySelectorAll<HTMLElement>("[id]") ?? [])].find(
       (element) => element.id === id,
     );
-    target?.scrollIntoView();
+    const isFootnote = /^fn(?:ref)?-\d+$/.test(id);
+    target?.scrollIntoView({ behavior: "instant" });
     target?.focus({ preventScroll: true });
-  }, [html, hash]);
+    if (target && headings.some((heading) => heading.id === id)) setActiveHeading(id);
+    if (!target || !isFootnote) return;
+
+    window.dispatchEvent(new Event("blog-footnote-navigation"));
+    target.dataset.footnoteActive = "";
+    const clearHighlight = (event: MouseEvent) => {
+      if (event.target instanceof Node && target.contains(event.target)) return;
+      delete target.dataset.footnoteActive;
+    };
+    document.addEventListener("click", clearHighlight, true);
+    return () => {
+      delete target.dataset.footnoteActive;
+      document.removeEventListener("click", clearHighlight, true);
+    };
+  }, [html, hash, headings]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -240,5 +324,35 @@ export function BlogContent({ html }: BlogContentProps) {
     };
   }, [html]);
 
-  return <div className={styles.content} dangerouslySetInnerHTML={innerHTML} ref={containerRef} />;
+  return (
+    <>
+      {headings.length > 1 && (
+        <div className="min-[90rem]:absolute min-[90rem]:inset-y-0 min-[90rem]:right-[calc(100%+3rem)] min-[90rem]:w-48">
+          <nav
+            aria-label="Table of contents"
+            className="mb-9 border-l border-surface pl-4 text-sm leading-snug min-[90rem]:sticky min-[90rem]:top-20 min-[90rem]:max-h-[calc(100dvh-6rem)] min-[90rem]:overflow-y-auto"
+          >
+            <p className="mb-3 text-xs font-medium text-muted">On this page</p>
+            <ol className="m-0 list-none space-y-2 p-0">
+              {headings.map((heading) => (
+                <li
+                  key={heading.id}
+                  style={{ paddingLeft: `${(heading.level - firstLevel) * 0.75}rem` }}
+                >
+                  <Link
+                    aria-current={activeHeading === heading.id ? "location" : undefined}
+                    className="text-muted underline-offset-[0.15em] hover:text-foreground hover:underline focus-visible:text-foreground aria-[current=location]:font-normal aria-[current=location]:text-black dark:aria-[current=location]:text-white"
+                    to={`${pathname}${search}#${encodeURIComponent(heading.id)}`}
+                  >
+                    {heading.title}
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </div>
+      )}
+      <div className={styles.content} dangerouslySetInnerHTML={innerHTML} ref={containerRef} />
+    </>
+  );
 }

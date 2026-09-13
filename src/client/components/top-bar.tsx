@@ -5,7 +5,7 @@ import { PageContainer } from "./page-container";
 import { SiteHomeLink } from "./site-home-link";
 import ThemeToggle from "./theme/theme-toggle";
 
-const hideAfterScroll = 96;
+const hideAfterScroll = 24;
 const revealAfterUpwardScroll = 48;
 
 export function TopBar() {
@@ -31,9 +31,16 @@ export function TopBar() {
   }, [pathname]);
 
   useEffect(() => {
+    const handleFootnoteNavigation = () => {
+      previousScrollY.current = Math.max(window.scrollY, 0);
+      upwardScroll.current = 0;
+    };
+
     const handleScroll = () => {
       const currentScrollY = Math.max(window.scrollY, 0);
       const scrollDelta = currentScrollY - previousScrollY.current;
+      // Footnote jumps reset the baseline before their queued scroll event arrives.
+      if (scrollDelta === 0) return;
 
       if (currentScrollY <= hideAfterScroll / 2) {
         upwardScroll.current = 0;
@@ -55,12 +62,16 @@ export function TopBar() {
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
+    window.addEventListener("blog-footnote-navigation", handleFootnoteNavigation);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("blog-footnote-navigation", handleFootnoteNavigation);
+    };
   }, []);
 
   return (
     <header
-      className={`fixed inset-x-0 top-0 z-20 bg-background transition-transform duration-200 ease-out motion-reduce:transition-none ${
+      className={`fixed inset-x-0 top-0 z-20 bg-background transition-transform duration-150 ease-out motion-reduce:transition-none ${
         isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
       data-top-bar=""

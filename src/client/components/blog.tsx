@@ -57,7 +57,7 @@ export function BlogView() {
 
   return (
     <PageContainer as="main" className="mb-16 leading-[1.6]">
-      <article className="w-full text-base font-light">
+      <article className="relative w-full text-base font-light">
         {post && (
           <header className="mb-9 sm:mb-10">
             <h1 className="mb-[0.35rem] text-[1.625rem] leading-[1.2] font-semibold sm:text-[2rem]">
