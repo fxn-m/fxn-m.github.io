@@ -88,6 +88,16 @@ samp {
   h6 {
     font-family: var(--font-heading);
   }
+
+  a {
+    text-decoration-color: color-mix(in srgb, currentColor 38%, transparent);
+    transition: text-decoration-color 150ms ease;
+  }
+
+  a:hover,
+  a:focus-visible {
+    text-decoration-color: color-mix(in srgb, currentColor 82%, transparent);
+  }
 }
 
 body.dark {
