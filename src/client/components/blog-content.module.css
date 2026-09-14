@@ -360,6 +360,7 @@
 .content table {
   display: block;
   max-width: 100%;
+  margin: 2.5rem 0;
   overflow-x: auto;
   border-collapse: collapse;
 }
@@ -367,7 +368,15 @@
 .content th,
 .content td {
   padding: 0.4rem 0.6rem;
-  border: 1px solid var(--surface);
+  border: 0;
+}
+
+.content thead {
+  border-bottom: 1px solid var(--foreground);
+}
+
+.content tbody tr + tr {
+  border-top: 1px solid var(--surface);
 }
 
 .content th {

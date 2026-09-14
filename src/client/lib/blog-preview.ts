@@ -50,6 +50,7 @@ export const renderBlogPreview = (markdown: string): string => {
   const converter = new showdown.Converter({
     extensions: [...blogImageFigures, ...blogSyntaxHighlighting],
     metadata: true,
+    tables: true,
   });
   return replaceVideoLinksWithIframes(converter.makeHtml(separateBlocksFollowingLists(markdown)));
 };

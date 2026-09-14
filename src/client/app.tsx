@@ -2,6 +2,7 @@ import { GitHubLogoIcon, LinkedInLogoIcon, TwitterLogoIcon } from "@radix-ui/rea
 import { Outlet } from "react-router";
 
 import { WritingList } from "./components/blog";
+import { FooterArt } from "./components/footer-art";
 import { PageContainer } from "./components/page-container";
 import { TopBar } from "./components/top-bar";
 
@@ -27,7 +28,6 @@ export function HomePage() {
       </section>
 
       <section className="mt-10">
-        <h2 className="mb-3 font-bold">Writing</h2>
         <WritingList />
       </section>
 
@@ -85,6 +85,7 @@ export default function App() {
     <div className="flex min-h-dvh flex-col bg-background pt-20 font-sans text-foreground md:pt-[clamp(4rem,14vh,8rem)]">
       <TopBar />
       <Outlet />
+      <FooterArt />
     </div>
   );
 }

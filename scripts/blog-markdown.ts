@@ -53,6 +53,7 @@ export const convertMarkdownToHTML = (
   const converter = new showdown.Converter({
     extensions: [...blogImageFigures, ...blogSyntaxHighlighting],
     metadata: true,
+    tables: true,
   });
   const html = converter.makeHtml(separateBlocksFollowingLists(markdown));
   const metadata = converter.getMetadata();

@@ -43,6 +43,23 @@ Without alignment, implementation drifts.
     expect(content).not.toContain("This isn’t a new idea.</li>");
   });
 
+  it("renders pipe tables as HTML tables", () => {
+    const { content } = convertMarkdownToHTML(`---
+Title: "Table"
+Date: "2026-09-14"
+---
+
+| Limit | Value |
+| --- | --- |
+| One | Two |
+`);
+
+    expect(content).toContain("<table>");
+    expect(content).toContain("<th>Limit</th>");
+    expect(content).toContain("<td>Two</td>");
+    expect(content).not.toContain("| Limit | Value |");
+  });
+
   it("renders rich Notion image captions without corrupting image markup", () => {
     const { content } = convertMarkdownToHTML(`---
 Title: "Rich image caption"
