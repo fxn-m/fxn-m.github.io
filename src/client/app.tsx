@@ -20,10 +20,16 @@ export function HomePage() {
       <h1 className="font-pixel text-2xl">Felix Newport-Mangell</h1>
 
       <section className="mt-10">
-        <p>I'm a software engineer based in London.</p>
         <p>
-          Previously founding engineer at Kenobi.ai (YC W22), I'm having some downtime before the
-          next thing.
+          Founder @{" "}
+          <a
+            className="text-inherit underline underline-offset-[0.15em]"
+            href="https://joinef.com"
+            rel="noreferrer"
+            target="_blank"
+          >
+            EF
+          </a>, based in London.
         </p>
       </section>
 
