@@ -12,7 +12,7 @@ export function WritingList() {
   const queryClient = useQueryClient();
 
   if (index.isPending) {
-    return <p className="text-muted">Loading…</p>;
+    return null;
   }
 
   if (index.isError) {
