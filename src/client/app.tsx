@@ -2,17 +2,8 @@ import { GitHubLogoIcon, LinkedInLogoIcon, TwitterLogoIcon } from "@radix-ui/rea
 import { Outlet } from "react-router";
 
 import { WritingList } from "./components/blog";
-import { FooterArt } from "./components/footer-art";
 import { PageContainer } from "./components/page-container";
-import { TopBar } from "./components/top-bar";
-
-const buildDate = new Intl.DateTimeFormat("en-GB", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-})
-  .format(new Date(__BUILD_DATE__))
-  .replaceAll("/", "-");
+import ThemeToggle from "./components/theme/theme-toggle";
 
 export function HomePage() {
   return (
@@ -29,20 +20,11 @@ export function HomePage() {
             target="_blank"
           >
             EF
-          </a>, based in London.
+          </a>
+          , based in London.
         </p>
-      </section>
-
-      <section className="mt-10">
-        <WritingList />
-      </section>
-
-      <footer className="mt-auto flex items-center justify-between gap-4 pt-16 text-xs text-muted">
-        <p>
-          Last updated: <time dateTime={__BUILD_DATE__}>{buildDate}</time>
-        </p>
-        <nav aria-label="Social links">
-          <ul className="flex list-none items-center gap-1 p-0">
+        <nav aria-label="Social links and theme" className="mt-6 text-muted">
+          <ul className="flex list-none items-center justify-end gap-1 p-0 pr-12">
             <li>
               <a
                 aria-label="X"
@@ -79,9 +61,16 @@ export function HomePage() {
                 <LinkedInLogoIcon aria-hidden="true" className="size-4" />
               </a>
             </li>
+            <li>
+              <ThemeToggle />
+            </li>
           </ul>
         </nav>
-      </footer>
+      </section>
+
+      <section className="mt-10">
+        <WritingList />
+      </section>
     </PageContainer>
   );
 }
@@ -89,9 +78,7 @@ export function HomePage() {
 export default function App() {
   return (
     <div className="flex min-h-dvh flex-col bg-background pt-20 font-sans text-foreground md:pt-[clamp(4rem,14vh,8rem)]">
-      <TopBar />
       <Outlet />
-      <FooterArt />
     </div>
   );
 }
